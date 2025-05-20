@@ -1,0 +1,23 @@
+{
+    "name": "FinancialOverview",
+    "alias": "financialoverview",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FinancialOverview\\Providers\\FinancialOverviewServiceProvider"
+    ],
+    "files": [],
+    "autoload": {
+        "psr-4": {
+            "Modules\\FinancialOverview\\": "",
+            "Modules\\FinancialOverview\\Database\\Factories\\": "Database/Factories/",
+            "Modules\\FinancialOverview\\Database\\Seeders\\": "Database/Seeders/",
+            "Modules\\FinancialOverview\\Http\\": "Http/",
+            "Modules\\FinancialOverview\\Models\\": "Models/",
+            "Modules\\FinancialOverview\\Policies\\": "Policies/",
+            "Modules\\FinancialOverview\\Providers\\": "Providers/",
+            "Modules\\FinancialOverview\\Services\\": "Services/"
+        }
+    }
+}

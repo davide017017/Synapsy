@@ -1,0 +1,58 @@
+# Dipendenze
+/vendor
+/node_modules
+
+# Build Artifacts & Output
+/public/build
+/public/hot
+
+# Environment Files & Sensitive Configuration
+.env
+.env.backup
+.env.production
+.env.local
+.env.testing
+/auth.json # File di autenticazione di Composer
+Homestead.json
+Homestead.yaml
+
+# Storage & Framework Generated Files
+/public/storage       # Symlink target per storage/app/public
+/storage/*.key
+/storage/pail
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/* # Se usi cache per i test
+/storage/framework/views/* # Viste Blade compilate
+/storage/logs/*.log   # Log delle applicazioni
+
+# Generated Files & Caches (Tool Specific)
+/.phpunit.cache
+.phpunit.result.cache
+
+
+# IDE & Editor Configuration
+.phpactor.json
+.phpstorm.meta.php
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+
+# Log Files (Other)
+npm-debug.log
+yarn-error.log
+
+# OS Specific Files
+.DS_Store # macOS
+Thumbs.db # Windows
+
+# Personal Files (Custom)
+/Z_appunti personali
+phpinfo.txt
+
+# Custom scripts and tools
+_DEV-Scripts/
+
+coverage/

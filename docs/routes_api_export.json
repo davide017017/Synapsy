@@ -1,0 +1,354 @@
+{
+    "Categories": [
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/categories",
+            "name": "api.categories.api.index",
+            "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@index",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "POST",
+            "uri": "api/v1/categories",
+            "name": "api.categories.api.store",
+            "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@store",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/categories/{category}",
+            "name": "api.categories.api.show",
+            "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@show",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "PUT|PATCH",
+            "uri": "api/v1/categories/{category}",
+            "name": "api.categories.api.update",
+            "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@update",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "uri": "api/v1/categories/{category}",
+            "name": "api.categories.api.destroy",
+            "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@destroy",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        }
+    ],
+    "Entrate": [
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/entrate",
+            "name": "api.entrate.api.index",
+            "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@index",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "POST",
+            "uri": "api/v1/entrate",
+            "name": "api.entrate.api.store",
+            "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@store",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/entrate/{entrata}",
+            "name": "api.entrate.api.show",
+            "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@show",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "PUT|PATCH",
+            "uri": "api/v1/entrate/{entrata}",
+            "name": "api.entrate.api.update",
+            "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@update",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "uri": "api/v1/entrate/{entrata}",
+            "name": "api.entrate.api.destroy",
+            "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@destroy",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        }
+    ],
+    "FinancialOverview": [
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/financialoverview",
+            "name": "api.financialoverview.index",
+            "action": "Modules\\FinancialOverview\\Http\\Controllers\\FinancialOverviewController@index",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "POST",
+            "uri": "api/v1/financialoverview",
+            "name": "api.financialoverview.store",
+            "action": "Modules\\FinancialOverview\\Http\\Controllers\\FinancialOverviewController@store",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/financialoverview/{financialoverview}",
+            "name": "api.financialoverview.show",
+            "action": "Modules\\FinancialOverview\\Http\\Controllers\\FinancialOverviewController@show",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "PUT|PATCH",
+            "uri": "api/v1/financialoverview/{financialoverview}",
+            "name": "api.financialoverview.update",
+            "action": "Modules\\FinancialOverview\\Http\\Controllers\\FinancialOverviewController@update",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "uri": "api/v1/financialoverview/{financialoverview}",
+            "name": "api.financialoverview.destroy",
+            "action": "Modules\\FinancialOverview\\Http\\Controllers\\FinancialOverviewController@destroy",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        }
+    ],
+    "RecurringOperations": [
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/recurring-operations",
+            "name": "api.recurring-operations.index",
+            "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@index",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "POST",
+            "uri": "api/v1/recurring-operations",
+            "name": "api.recurring-operations.store",
+            "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@store",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/recurring-operations/{recurring_operation}",
+            "name": "api.recurring-operations.show",
+            "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@show",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "PUT|PATCH",
+            "uri": "api/v1/recurring-operations/{recurring_operation}",
+            "name": "api.recurring-operations.update",
+            "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@update",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "uri": "api/v1/recurring-operations/{recurring_operation}",
+            "name": "api.recurring-operations.destroy",
+            "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@destroy",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        }
+    ],
+    "Spese": [
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/spese",
+            "name": "api.spese.index",
+            "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@index",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "POST",
+            "uri": "api/v1/spese",
+            "name": "api.spese.store",
+            "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@store",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/spese/{spesa}",
+            "name": "api.spese.show",
+            "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@show",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "PUT|PATCH",
+            "uri": "api/v1/spese/{spesa}",
+            "name": "api.spese.update",
+            "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@update",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "uri": "api/v1/spese/{spesa}",
+            "name": "api.spese.destroy",
+            "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@destroy",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        }
+    ],
+    "User": [
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/users",
+            "name": "api.users.index",
+            "action": "Modules\\User\\Http\\Controllers\\UserController@index",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "POST",
+            "uri": "api/v1/users",
+            "name": "api.users.store",
+            "action": "Modules\\User\\Http\\Controllers\\UserController@store",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/users/{user}",
+            "name": "api.users.show",
+            "action": "Modules\\User\\Http\\Controllers\\UserController@show",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "PUT|PATCH",
+            "uri": "api/v1/users/{user}",
+            "name": "api.users.update",
+            "action": "Modules\\User\\Http\\Controllers\\UserController@update",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "uri": "api/v1/users/{user}",
+            "name": "api.users.destroy",
+            "action": "Modules\\User\\Http\\Controllers\\UserController@destroy",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/profile",
+            "name": "api.profile.edit",
+            "action": "Modules\\User\\Http\\Controllers\\ProfileController@edit",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "PUT",
+            "uri": "api/v1/profile",
+            "name": "api.profile.update",
+            "action": "Modules\\User\\Http\\Controllers\\ProfileController@update",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "uri": "api/v1/profile",
+            "name": "api.profile.destroy",
+            "action": "Modules\\User\\Http\\Controllers\\ProfileController@destroy",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        },
+        {
+            "method": "GET|HEAD",
+            "uri": "api/v1/dashboard",
+            "name": "api.dashboard.index",
+            "action": "Modules\\User\\Http\\Controllers\\DashboardController@index",
+            "middleware": [
+                "api",
+                "auth:sanctum"
+            ]
+        }
+    ]
+}

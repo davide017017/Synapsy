@@ -1,0 +1,23 @@
+{
+    "name": "Entrate",
+    "alias": "entrate",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Entrate\\Providers\\EntrateServiceProvider"
+    ],
+    "files": [],
+    "autoload": {
+        "psr-4": {
+            "Modules\\Entrate\\": "",
+            "Modules\\Entrate\\Database\\Factories\\": "Database/Factories/",
+            "Modules\\Entrate\\Database\\Seeders\\": "Database/Seeders/",
+            "Modules\\Entrate\\Http\\": "Http/",
+            "Modules\\Entrate\\Models\\": "Models/",
+            "Modules\\Entrate\\Policies\\": "Policies/",
+            "Modules\\Entrate\\Providers\\": "Providers/",
+            "Modules\\Entrate\\Services\\": "Services/"
+        }
+    }
+}

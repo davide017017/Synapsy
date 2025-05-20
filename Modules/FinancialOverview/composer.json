@@ -1,0 +1,28 @@
+{
+    "name": "nwidart/financialoverview",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": []
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\FinancialOverview\\": "",
+            "Modules\\FinancialOverview\\Database\\Factories\\": "Database/Factories/",
+            "Modules\\FinancialOverview\\Database\\Seeders\\": "Database/Seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\FinancialOverview\\Tests\\": "tests/"
+        }
+    }
+}
