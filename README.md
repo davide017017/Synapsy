@@ -49,8 +49,8 @@
 ## 📦 Installazione
 
 ```bash
-git clone [https://github.com/tuo-utente/synapsi-finance.git](https://github.com/tuo-utente/synapsi-finance.git)
-cd synapsi-finance
+git clone https://github.com/davide017017/Synapsy.git
+cd Synapsy
 
 composer install
 npm install && npm run dev

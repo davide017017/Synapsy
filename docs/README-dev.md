@@ -94,7 +94,7 @@ Include comandi per Artisan, testing, debugging, migrations, sessioni, moduli pe
 
 Ecco lo schema entità-relazioni dell'applicazione Synapsy:
 
-![Schema ER](docs/schema-er.png)
+![Schema ER](schema-er.png)
 
 
 ---
