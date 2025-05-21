@@ -32,7 +32,7 @@
 
 ## 📸 Screenshot
 
-![Screenshot di Synapsi Finance](docs/Synapsi-Screenshot.png)
+![Screenshot di Synapsi Finance](docs/Synapsi-Screen.png)
 
 ---
 
