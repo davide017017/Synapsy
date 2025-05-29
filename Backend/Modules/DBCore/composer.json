@@ -1,0 +1,28 @@
+{
+    "name": "nwidart/dbcore",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": []
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\DBCore\\": "",
+            "Modules\\DBCore\\Database\\Factories\\": "database/factories/",
+            "Modules\\DBCore\\Database\\Seeders\\": "Database/Seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\DBCore\\Tests\\": "tests/"
+        }
+    }
+}

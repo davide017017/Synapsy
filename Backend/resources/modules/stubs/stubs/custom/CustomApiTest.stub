@@ -1,0 +1,84 @@
+<?php
+
+namespace Modules\{{Module}}\Tests\Feature;
+
+use Modules\{{Module}}\Models\{{Model}};
+use Tests\AuthenticatedTestCase;
+use PHPUnit\Framework\Attributes\Test;
+
+class {{Model}}ApiTest extends AuthenticatedTestCase
+{
+    // ============================
+    // List
+    // ============================
+    #[Test]
+    public function user_can_list_{{model}}s(): void
+    {
+        {{Model}}::factory()->count(3)->create(['user_id' => $this->user->id]);
+
+        $this->getJson('/api/v1/{{module}}')
+            ->assertStatus(200)
+            ->assertJsonCount(3);
+    }
+
+    // ============================
+    // Create
+    // ============================
+    #[Test]
+    public function user_can_create_a_{{model}}(): void
+    {
+        $payload = [
+            // Aggiungi i campi necessari
+        ];
+
+        $this->postJson('/api/v1/{{module}}', $payload)
+            ->assertStatus(201)
+            ->assertJsonFragment([
+                // 'campo' => 'valore'
+            ]);
+    }
+
+    // ============================
+    // Show
+    // ============================
+    #[Test]
+    public function user_can_view_a_{{model}}(): void
+    {
+        $item = {{Model}}::factory()->create(['user_id' => $this->user->id]);
+
+        $this->getJson("/api/v1/{{module}}/{$item->id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $item->id]);
+    }
+
+    // ============================
+    // Update
+    // ============================
+    #[Test]
+    public function user_can_update_a_{{model}}(): void
+    {
+        $item = {{Model}}::factory()->create(['user_id' => $this->user->id]);
+
+        $this->putJson("/api/v1/{{module}}/{$item->id}", [
+            // 'campo' => 'valore aggiornato'
+        ])
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                // 'campo' => 'valore aggiornato'
+            ]);
+    }
+
+    // ============================
+    // Delete
+    // ============================
+    #[Test]
+    public function user_can_delete_a_{{model}}(): void
+    {
+        $item = {{Model}}::factory()->create(['user_id' => $this->user->id]);
+
+        $this->deleteJson("/api/v1/{{module}}/{$item->id}")
+            ->assertStatus(204);
+
+        $this->assertDatabaseMissing('{{module}}', ['id' => $item->id]);
+    }
+}

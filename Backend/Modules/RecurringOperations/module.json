@@ -1,0 +1,11 @@
+{
+    "name": "RecurringOperations",
+    "alias": "recurringoperations",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\RecurringOperations\\Providers\\RecurringOperationsServiceProvider"
+    ],
+    "files": []
+}

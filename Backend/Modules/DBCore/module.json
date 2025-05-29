@@ -1,0 +1,11 @@
+{
+    "name": "DBCore",
+    "alias": "dbcore",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DBCore\\Providers\\DBCoreServiceProvider"
+    ],
+    "files": []
+}
