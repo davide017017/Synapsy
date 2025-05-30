@@ -1,9 +1,0 @@
-{
-    "DBCore": true,
-    "User": true,
-    "Entrate": true,
-    "Spese": true,
-    "Categories": true,
-    "FinancialOverview": true,
-    "RecurringOperations": true
-}
