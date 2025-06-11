@@ -26,13 +26,19 @@ class UserServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
-        $this->loadMigrationsFrom(module_path($this->name, 'Database/Migrations'));
-        $this->loadRoutesFrom(module_path($this->name, 'Routes/web.php'));
 
-        Factory::guessFactoryNamesUsing(fn (string $modelName) =>
+        $this->loadMigrationsFrom(module_path($this->name, 'Database/Migrations'));
+
+        // ✅ Carica anche le rotte API
+        $this->loadRoutesFrom(module_path($this->name, 'Routes/web.php'));
+        $this->loadRoutesFrom(module_path($this->name, 'Routes/api.php'));
+
+        Factory::guessFactoryNamesUsing(
+            fn(string $modelName) =>
             "Modules\\User\\Database\\Factories\\" . class_basename($modelName) . 'Factory'
         );
     }
+
 
     /**
      * Register dei service provider interni.

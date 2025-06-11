@@ -3,8 +3,10 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
-        "dev-full": "concurrently -n vite,server,queue -c green,magenta,yellow \"npm run dev\" \"php artisan serve --host=127.0.0.1 --port=8484\" \"php artisan queue:work\""
+        "server": "php artisan serve --host=0.0.0.0 --port=8484",
+        "queue": "php artisan queue:work",
+        "dev-full": "concurrently -n vite,server,queue -c green,magenta,yellow \"npm run dev\" \"npm run server\" \"npm run queue\"",
+        "build": "vite build"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",

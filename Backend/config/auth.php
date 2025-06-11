@@ -24,8 +24,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            // 🔁 Sovrascrivibile da .env, utile se usi un modello custom
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => Modules\User\Models\User::class,
         ],
         // Alternativa con query diretta sul DB (non usata)
         // 'users' => [

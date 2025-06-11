@@ -27,14 +27,19 @@ class UserDBSeeder extends Seeder
         // 👤 Creazione utente admin
         // =========================================================================
         $this->logInfo('User', 'Creazione utente admin: test@example.com', '👤');
-        User::create([
-            'name'              => 'Test User',
-            'email'             => 'test@example.com',
-            'email_verified_at' => now(),
-            'password'          => Hash::make('password1234'),
-            'remember_token'    => Str::random(10),
-            'is_admin'          => true,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name'              => 'Test',
+                'surname'           => 'User',
+                'password'          => Hash::make('password1234'),
+                'email_verified_at' => now(),
+                'remember_token'    => Str::random(10),
+                'is_admin'          => true,
+            ]
+        );
+
+
 
         // =========================================================================
         // 🧪 Generazione utenti fittizi
@@ -49,4 +54,3 @@ class UserDBSeeder extends Seeder
         $this->logNewLine();
     }
 }
-

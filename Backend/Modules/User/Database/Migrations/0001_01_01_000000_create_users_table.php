@@ -17,7 +17,9 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id(); // Colonna ID autoincrementante (chiave primaria)
             $table->string('name'); // Colonna per il nome
+            $table->string('surname')->nullable(); // 👤 Colonna per il cognome (opzionale)
             $table->string('email')->unique(); // Colonna email unica
+            $table->string('avatar')->nullable(); // 🖼️ Avatar opzionale (path immagine)
             $table->timestamp('email_verified_at')->nullable(); // Data verifica email
             $table->string('password'); // Colonna per password hashata
             $table->rememberToken(); // Token "ricordami"

@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === 🌈 Tema semantico globale === */
+@layer base {
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-sans);
+    }
+
+    :root {
+        --color-primary-light: #ccffd9;
+        --color-primary: #81bb81;
+        --color-primary-dark: #3a9654;
+        --color-primary-foreground: #084c41;
+
+        --color-secondary-light: #c7e3d3;
+        --color-secondary: #9dd1b4;
+        --color-secondary-dark: #5eb686;
+        --color-secondary-foreground: #2f4f4f;
+
+        --color-tertiary-light: #a0bfd5;
+        --color-tertiary: #5a91b7;
+        --color-tertiary-dark: #2c4e74;
+        --color-tertiary-foreground: #102a43;
+
+        --color-success: #49ff7d;
+        --color-warning: #ffd726;
+        --color-danger: #ff4d4d;
+
+        --color-accent-yellow: #ffec99;
+        --color-accent-orange: #ffaf59;
+        --color-accent-red: #e60000;
+        --color-accent-purple: #aa7dd3;
+        --color-accent-brown: #a48462;
+
+        --color-bg: #f3f4f6;
+        --color-bg-soft: #e5e7eb;
+        --color-text: #374151;
+        --color-muted: #6b7280;
+
+        --font-sans: "Inter", "Segoe UI", sans-serif;
+        --font-size-base: 1rem;
+
+        --radius: 0.5rem;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark {
+        --color-bg: #1e293b;
+        --color-bg-soft: #334155;
+        --color-text: #f1f5f9;
+        --color-muted: #94a3b8;
+
+        --color-primary-light: #5effc6;
+        --color-primary: #30e3a3;
+        --color-primary-dark: #1db68a;
+        --color-primary-foreground: #e0fff4;
+
+        --color-secondary-light: #a5dbc6;
+        --color-secondary: #5dbf99;
+        --color-secondary-dark: #3c8a6c;
+        --color-secondary-foreground: #d0f0e5;
+
+        --color-tertiary-light: #6aa7d6;
+        --color-tertiary: #397aa7;
+        --color-tertiary-dark: #285675;
+        --color-tertiary-foreground: #dbefff;
+    }
+
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-sans);
+    }
+}

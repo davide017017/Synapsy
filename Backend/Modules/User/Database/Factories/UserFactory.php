@@ -23,31 +23,34 @@ class UserFactory extends Factory
     public function definition(): array
     {
         $identities = [
-            ['name' => 'Clark Kent', 'email_base' => 'clark.kent'],
-            ['name' => 'Bruce Wayne', 'email_base' => 'bruce.wayne'],
-            ['name' => 'Diana Prince', 'email_base' => 'diana.prince'],
-            ['name' => 'Peter Parker', 'email_base' => 'peter.parker'],
-            ['name' => 'Tony Stark', 'email_base' => 'tony.stark'],
-            ['name' => 'Steve Rogers', 'email_base' => 'steve.rogers'],
-            ['name' => 'Natasha Romanoff', 'email_base' => 'natasha.romanoff'],
-            ['name' => 'Thor Odinson', 'email_base' => 'thor'],
-            ['name' => 'Bruce Banner', 'email_base' => 'bruce.banner'],
-            ['name' => 'Barry Allen', 'email_base' => 'barry.allen'],
-            ['name' => 'Hal Jordan', 'email_base' => 'hal.jordan'],
-            ['name' => 'Arthur Curry', 'email_base' => 'arthur.curry'],
-            ['name' => 'Oliver Queen', 'email_base' => 'oliver.queen'],
-            ['name' => 'Selina Kyle', 'email_base' => 'selina.kyle'],
-            ['name' => 'Harley Quinn', 'email_base' => 'harley.quinn'],
-            ['name' => 'Wade Wilson', 'email_base' => 'wade.wilson'],
-            ['name' => 'Lois Lane', 'email_base' => 'lois.lane'],
-            ['name' => 'Alfred Pennyworth', 'email_base' => 'alfred'],
+            ['full_name' => 'Clark Kent', 'email_base' => 'clark.kent'],
+            ['full_name' => 'Bruce Wayne', 'email_base' => 'bruce.wayne'],
+            ['full_name' => 'Diana Prince', 'email_base' => 'diana.prince'],
+            ['full_name' => 'Peter Parker', 'email_base' => 'peter.parker'],
+            ['full_name' => 'Tony Stark', 'email_base' => 'tony.stark'],
+            ['full_name' => 'Steve Rogers', 'email_base' => 'steve.rogers'],
+            ['full_name' => 'Natasha Romanoff', 'email_base' => 'natasha.romanoff'],
+            ['full_name' => 'Thor Odinson', 'email_base' => 'thor'],
+            ['full_name' => 'Bruce Banner', 'email_base' => 'bruce.banner'],
+            ['full_name' => 'Barry Allen', 'email_base' => 'barry.allen'],
+            ['full_name' => 'Hal Jordan', 'email_base' => 'hal.jordan'],
+            ['full_name' => 'Arthur Curry', 'email_base' => 'arthur.curry'],
+            ['full_name' => 'Oliver Queen', 'email_base' => 'oliver.queen'],
+            ['full_name' => 'Selina Kyle', 'email_base' => 'selina.kyle'],
+            ['full_name' => 'Harley Quinn', 'email_base' => 'harley.quinn'],
+            ['full_name' => 'Wade Wilson', 'email_base' => 'wade.wilson'],
+            ['full_name' => 'Lois Lane', 'email_base' => 'lois.lane'],
+            ['full_name' => 'Alfred Pennyworth', 'email_base' => 'alfred'],
         ];
 
         $identity = $this->faker->unique()->randomElement($identities);
+        [$name, $surname] = explode(' ', $identity['full_name']) + [null, null];
+
         $isVerified = $this->faker->boolean(70);
 
         return [
-            'name'              => $identity['name'],
+            'name'              => $name,
+            'surname'           => $surname,
             'email'             => $identity['email_base'] . '@' . $this->faker->unique()->domainWord() . '.' . $this->faker->tld(),
             'email_verified_at' => $isVerified ? Carbon::now() : null,
             'password'          => Hash::make('password1234'),
@@ -55,12 +58,13 @@ class UserFactory extends Factory
         ];
     }
 
+
     /**
      * Stato: email non verificata.
      */
     public function unverified(): static
     {
-        return $this->state(fn () => ['email_verified_at' => null]);
+        return $this->state(fn() => ['email_verified_at' => null]);
     }
 
     /**
@@ -68,7 +72,7 @@ class UserFactory extends Factory
      */
     public function verified(): static
     {
-        return $this->state(fn () => ['email_verified_at' => now()]);
+        return $this->state(fn() => ['email_verified_at' => now()]);
     }
 
     /**
@@ -76,6 +80,6 @@ class UserFactory extends Factory
      */
     public function admin(): static
     {
-        return $this->state(fn () => ['is_admin' => true]);
+        return $this->state(fn() => ['is_admin' => true]);
     }
 }

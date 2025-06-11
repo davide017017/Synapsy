@@ -91,6 +91,6 @@ Le PR sono benvenute! Per bug o suggerimenti, apri una issue.
 
 Approfondisci il progetto con la nostra documentazione dedicata:
 
-- [Guida tecnica sviluppatori (README-dev)](docs/README-dev.md)
-- [API Routes](docs/routes_api_export.md)
-- [Checklist Deploy](docs/deploy-checklist.md)
+-   [Guida tecnica sviluppatori (README-dev)](docs/README-dev.md)
+-   [API Routes](docs/routes_api_export.md)
+-   [Checklist Deploy](docs/deploy-checklist.md)

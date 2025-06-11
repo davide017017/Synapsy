@@ -57,4 +57,30 @@ _DEV-Scripts/
 
 coverage/
 
-XXXXXXX
+Frontend-rn-exp
+# Node / Next.js
+node_modules/
+.next/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Laravel
+vendor/
+storage/*.key
+storage/app/*
+storage/logs/*
+storage/framework/*
+!storage/framework/.gitignore
+
+# Build & temp
+public/hot
+*.hot-update.js
+*.hot-update.json
+
+
+# Laravel build / dev server
+Backend/public/hot
+
+# Log applicazione
+Backend/storage/logs/*.log

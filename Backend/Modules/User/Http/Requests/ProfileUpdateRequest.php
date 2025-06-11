@@ -29,20 +29,24 @@ class ProfileUpdateRequest extends FormRequest
 
     /**
      * Regole di validazione per l'update del profilo.
+     * 
      */
     public function rules(): array
     {
-        /** @var \Illuminate\Http\Request $this */
+        /** @var \Illuminate\Http\Request $request */
+        $request = $this;
         return [
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => [
+            'name'    => ['required', 'string', 'max:255'],
+            'surname' => ['nullable', 'string', 'max:255'],
+            'email'   => [
                 'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
+                Rule::unique(User::class)->ignore($request->user()->id),
             ],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ];
     }
 
@@ -67,8 +71,10 @@ class ProfileUpdateRequest extends FormRequest
 
     // protected function prepareForValidation(): void
     // {
-    //     $this->merge([
-    //         'email' => strtolower($this->email),
-    //     ]);
+    //     if ($this->has('email')) {
+    //         $this->merge([
+    //             'email' => strtolower($this->email),
+    //         ]);
+    //     }
     // }
 }
