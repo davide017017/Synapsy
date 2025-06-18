@@ -1,31 +1,53 @@
 "use client";
 
+import { signOut, useSession } from "next-auth/react";
 import { LogOut } from "lucide-react";
-import { useAuth } from "@/context/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-
-// ─────────────────────────────────────────────
-// Header con bottone di logout
-// ─────────────────────────────────────────────
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Header() {
-    const { logout } = useAuth();
+    const { data: session } = useSession();
     const router = useRouter();
 
-    const handleLogout = () => {
-        logout();
+    /* logout: invalida cookie + redirect */
+    const handleLogout = async () => {
+        await signOut({ redirect: false });
         router.push("/login");
     };
 
+    const displayName = session?.user?.name ?? (session?.user?.email ? session.user.email.split("@")[0] : undefined);
+
     return (
-        <header className="flex items-center justify-end px-4 py-2 border-b border-white/10 bg-black/50 backdrop-blur-sm text-white">
-            <button
-                onClick={handleLogout}
-                className="p-2 rounded bg-white/10 text-white hover:text-red-400 transition flex items-center gap-1"
-            >
-                <span className="text-sm">Logout</span>
-                <LogOut size={16} />
-            </button>
+        <header className="relative flex items-center px-4 py-2 border-b border-white/10 bg-black/50 backdrop-blur-sm text-white">
+            {/* logo centrato */}
+            <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center" aria-label="Homepage">
+                <Image
+                    src="/images/icon_1024x1024.png"
+                    alt="Sinapsy logo"
+                    width={32}
+                    height={32}
+                    priority
+                    className="h-8 w-auto"
+                />
+            </Link>
+
+            {/* utente + logout a destra */}
+            <div className="flex items-center gap-4 ml-auto">
+                {displayName && (
+                    <span className="text-sm font-medium truncate max-w-[10rem]" title={displayName}>
+                        {displayName}
+                    </span>
+                )}
+
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1 p-2 rounded bg-white/10 text-white hover:text-red-400 transition"
+                >
+                    <span className="text-sm">Logout</span>
+                    <LogOut size={16} />
+                </button>
+            </div>
         </header>
     );
 }

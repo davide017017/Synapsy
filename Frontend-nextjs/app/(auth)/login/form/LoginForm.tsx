@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/context/contexts/AuthContext";
+import { useState, useEffect } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -13,49 +13,47 @@ import PasswordInput from "./form-components/PasswordInput";
 import RememberMeSwitch from "./form-components/RememberMeSwitch";
 import AuthLinks from "./form-components/AuthLinks";
 
-export default function LoginForm() {
-    const { login } = useAuth();
-    const router = useRouter();
+/* ⬇️  dichiara le props (onSubmit) */
+interface LoginFormProps {
+    onSubmit: (email: string, password: string) => Promise<void>;
+}
 
+export default function LoginForm({ onSubmit }: LoginFormProps) {
+    /* stato locale per i campi */
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
+    const [remember, setRemember] = useState(false);
     const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const [showRegister, setShowRegister] = useState(false);
+    /* modali */
+    const [showReg, setShowReg] = useState(false);
     const [showForgot, setShowForgot] = useState(false);
 
-    // Al caricamento, preleva email dal localStorage (se esiste)
+    /* carica email salvata */
     useEffect(() => {
-        const savedEmail = localStorage.getItem("rememberedEmail");
-        if (savedEmail) {
-            setEmail(savedEmail);
-            setRememberMe(true);
+        const saved = localStorage.getItem("rememberedEmail");
+        if (saved) {
+            setEmail(saved);
+            setRemember(true);
         }
     }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        setIsLoading(true);
+        setLoading(true);
+        setError("");
 
-        // Salva o rimuove email da localStorage
-        if (rememberMe) {
-            localStorage.setItem("rememberedEmail", email);
-        } else {
-            localStorage.removeItem("rememberedEmail");
-        }
+        /* remember-me */
+        remember ? localStorage.setItem("rememberedEmail", email) : localStorage.removeItem("rememberedEmail");
 
-        const success = await login(email, password);
-        setIsLoading(false);
+        /* chiama la callback passata dal parent */
+        await onSubmit(email, password).catch(() => setError("Email o password non corretti"));
 
-        if (success) {
-            router.push("/");
-        } else {
-            setError("Email o password non corretti");
-        }
-    };
+        setLoading(false);
+    }
 
+    /* UI invariata */
     return (
         <>
             <motion.div
@@ -71,28 +69,29 @@ export default function LoginForm() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <EmailInput value={email} onChange={setEmail} />
                     <PasswordInput value={password} onChange={setPassword} />
+
                     <div className="flex items-center justify-between">
-                        <RememberMeSwitch checked={rememberMe} onToggle={() => setRememberMe(!rememberMe)} />
+                        <RememberMeSwitch checked={remember} onToggle={() => setRemember(!remember)} />
                     </div>
 
                     <button
                         type="submit"
-                        disabled={isLoading}
+                        disabled={loading}
                         className={`w-full py-2 rounded font-semibold transition ${
-                            isLoading ? "bg-primary/50 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
+                            loading ? "bg-primary/50 cursor-not-allowed" : "bg-primary hover:bg-primary-dark"
                         } text-white flex justify-center items-center gap-2`}
                     >
-                        {isLoading && (
+                        {loading && (
                             <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
                         )}
-                        {isLoading ? "Accesso in corso…" : "Accedi"}
+                        {loading ? "Accesso in corso…" : "Accedi"}
                     </button>
                 </form>
 
-                <AuthLinks onForgotClick={() => setShowForgot(true)} onRegisterClick={() => setShowRegister(true)} />
+                <AuthLinks onForgotClick={() => setShowForgot(true)} onRegisterClick={() => setShowReg(true)} />
             </motion.div>
 
-            <RegisterModal isOpen={showRegister} onClose={() => setShowRegister(false)} />
+            <RegisterModal isOpen={showReg} onClose={() => setShowReg(false)} />
             <ForgotPasswordModal isOpen={showForgot} onClose={() => setShowForgot(false)} />
         </>
     );

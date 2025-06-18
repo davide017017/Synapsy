@@ -1,10 +1,18 @@
-const BASE_URL = "http://192.168.0.111:8484/api/v1";
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  Config & guard (env)                                ║
+ * ╚══════════════════════════════════════════════════════╝ */
+if (!process.env.NEXT_PUBLIC_API_URL) {
+    throw new Error("NEXT_PUBLIC_API_URL non definita in .env.local");
+}
+const API = process.env.NEXT_PUBLIC_API_URL as string;
 
-/**
- * Effettua il login e restituisce { user, token }
- */
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  Auth API helper                                     ║
+ * ╚══════════════════════════════════════════════════════╝ */
+
+/* ────────────── LOGIN  (usato in Credentials.authorize) ────────────── */
 export async function loginUser(email: string, password: string) {
-    const res = await fetch(`${BASE_URL}/login`, {
+    const res = await fetch(`${API}/login`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -14,49 +22,29 @@ export async function loginUser(email: string, password: string) {
     });
 
     if (!res.ok) throw new Error("Login fallito");
-    return await res.json();
+    return res.json(); // { accessToken, user }
 }
 
-/**
- * Recupera il profilo utente con il token
- */
-export async function fetchUserProfile(token: string) {
-    const res = await fetch(`${BASE_URL}/profile`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-        },
-    });
-
-    if (!res.ok) throw new Error("Token non valido");
-    return await res.json();
-}
-
-/**
- * Effettua il logout lato backend (opzionale)
- */
-export async function logoutUser(token: string): Promise<boolean> {
+/* ────────────── LOGOUT (revoca access/refresh token) ──────────────── */
+export async function logoutUser(accessToken: string) {
     try {
-        const res = await fetch(`${BASE_URL}/logout`, {
+        const res = await fetch(`${API}/logout`, {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${accessToken}`,
                 Accept: "application/json",
             },
         });
-
         return res.ok;
-    } catch (error) {
-        console.error("Errore durante il logout:", error);
+    } catch (err) {
+        console.error("Errore logout:", err);
         return false;
     }
 }
 
-/**
- * Registra un nuovo utente (se previsto dal backend)
- */
+/* ────────────── REGISTER (schermata di registrazione) ─────────────── */
 export async function registerUser(name: string, email: string, password: string) {
-    const res = await fetch(`${BASE_URL}/register`, {
+    const res = await fetch(`${API}/register`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -66,5 +54,5 @@ export async function registerUser(name: string, email: string, password: string
     });
 
     if (!res.ok) throw new Error("Registrazione fallita");
-    return await res.json();
+    return res.json();
 }

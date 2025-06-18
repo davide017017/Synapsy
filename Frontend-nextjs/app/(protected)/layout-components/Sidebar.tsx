@@ -16,13 +16,12 @@ import {
     Moon,
 } from "lucide-react";
 import { useSidebar } from "@/context/contexts/SidebarContext";
-import { useDarkMode } from "@/context/contexts/DarkModeContext";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 
-// ─────────────────────────────────────────────
-// Sidebar laterale con toggle, tema, link navigazione
-// ─────────────────────────────────────────────
-
+/* ────────────────────────────────
+   Voci di navigazione
+──────────────────────────────── */
 const navItems = [
     { href: "/", label: "Home", icon: <Home size={18} /> },
     { href: "/riepilogo", label: "Panoramica", icon: <BarChart size={18} /> },
@@ -31,23 +30,39 @@ const navItems = [
     { href: "/profilo", label: "Profilo", icon: <User size={18} /> },
 ];
 
+/* ────────────────────────────────
+   Temi extra
+──────────────────────────────── */
+const extraThemes = ["emerald", "solarized"];
+
+/* ╔══════════════════════════════╗
+ * ║  Sidebar Component          ║
+ * ╚══════════════════════════════╝ */
 export default function Sidebar() {
     const { isCollapsed, toggleSidebar } = useSidebar();
-    const { isDark, toggleDarkMode } = useDarkMode();
-    const pathname = usePathname();
     const [isOpenMobile, setIsOpenMobile] = useState(false);
+    const pathname = usePathname();
+
+    /* next-themes */
+    const { resolvedTheme, theme, setTheme } = useTheme();
+    const isDark = resolvedTheme === "dark";
+
+    /* ── Helpers ───────────────────────────────────────── */
+    const toggleMobile = () => setIsOpenMobile((p) => !p);
+    const toggleDark = () => setTheme(isDark ? "light" : "dark");
+    const pickTheme = (t: string) => () => setTheme(t);
 
     return (
         <>
-            {/* ────────── Mobile menu toggle ────────── */}
+            {/* ─── Mobile burger ─── */}
             <button
                 className="fixed top-4 left-4 z-30 md:hidden p-2 rounded-full bg-primary text-white shadow-lg"
-                onClick={() => setIsOpenMobile(!isOpenMobile)}
+                onClick={toggleMobile}
             >
                 {isOpenMobile ? <X size={20} /> : <Menu size={20} />}
             </button>
 
-            {/* ────────── Collapse button (desktop) ────────── */}
+            {/* ─── Desktop collapse ─── */}
             <button
                 onClick={toggleSidebar}
                 className={`hidden md:flex fixed top-4 z-30 p-1.5 rounded-full bg-primary text-white shadow-md hover:bg-primary/80 transition ${
@@ -57,34 +72,36 @@ export default function Sidebar() {
                 {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
             </button>
 
-            {/* ────────── Sidebar ────────── */}
+            {/* ─── Sidebar panel ─── */}
             <aside
-                className={`fixed top-0 left-0 h-full z-20 w-56 bg-black/60 backdrop-blur-md border-r border-white/10 text-white transform transition-all duration-300
+                className={`fixed top-0 left-0 h-full z-20 w-56 bg-black/60 backdrop-blur-md border-r border-white/10 text-white
+                    transform transition-transform duration-300
                     ${isOpenMobile ? "block" : "hidden"} md:block
                     ${isCollapsed ? "-translate-x-full md:-translate-x-56" : "translate-x-0"}`}
             >
-                {/* ───── Logo / brand ───── */}
+                {/* Logo */}
                 <Link
                     href="/"
                     className="flex items-center justify-center p-4 border-b border-white/10 hover:opacity-90"
+                    onClick={() => setIsOpenMobile(false)}
                 >
                     <span className="ml-2 text-xl font-bold text-primary">Synapsi</span>
                 </Link>
 
-                {/* ───── Menu di navigazione ───── */}
+                {/* Navigazione */}
                 <nav className="p-2 space-y-1">
                     {navItems.map(({ href, label, icon }) => {
-                        const isActive = pathname === href;
+                        const active = pathname === href;
                         return (
                             <Link
                                 key={href}
                                 href={href}
+                                onClick={() => setIsOpenMobile(false)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition ${
-                                    isActive
+                                    active
                                         ? "bg-primary text-white"
                                         : "text-gray-400 hover:text-white hover:bg-white/10"
                                 }`}
-                                onClick={() => setIsOpenMobile(false)}
                             >
                                 {icon}
                                 <span>{label}</span>
@@ -93,15 +110,29 @@ export default function Sidebar() {
                     })}
                 </nav>
 
-                {/* ───── Toggle tema chiaro/scuro ───── */}
-                <div className="p-4 border-t border-white/10">
-                    <button
-                        onClick={toggleDarkMode}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded bg-white/10 text-white hover:text-yellow-300 transition"
-                    >
-                        <span>{isDark ? "Tema chiaro" : "Tema scuro"}</span>
-                        {isDark ? <Sun size={18} /> : <Moon size={18} />}
-                    </button>
+                {/* ────────── Theme Controls ────────── */}
+                <div className="p-4 border-t border-white/10 grid grid-cols-2 gap-2">
+                    {["light", "dark", ...extraThemes].map((t) => {
+                        const isActive = theme === t;
+                        const label = t.charAt(0).toUpperCase() + t.slice(1);
+                        const icon = t === "light" ? <Sun size={18} /> : t === "dark" ? <Moon size={18} /> : null;
+
+                        return (
+                            <button
+                                key={t}
+                                onClick={() => {
+                                    console.log("setTheme(", t, ")");
+                                    setTheme(t);
+                                    console.log("html attr:", document.documentElement.getAttribute("data-theme"));
+                                }}
+                                className={`flex items-center justify-center gap-2 py-2 rounded font-medium transition
+                                    ${isActive ? "bg-primary text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
+                            >
+                                {icon}
+                                {label}
+                            </button>
+                        );
+                    })}
                 </div>
             </aside>
         </>

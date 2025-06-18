@@ -1,24 +1,19 @@
+// context/GlobalContextProvider.tsx
 "use client";
 
 import { ReactNode } from "react";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { SessionProvider } from "next-auth/react";
 import { DarkModeProvider } from "./contexts/DarkModeContext";
 import { SidebarProvider, useSidebar } from "./contexts/SidebarContext";
 
-// ─────────────────────────────────────────────
-// Wrapper unico per tutti i context globali
-// ─────────────────────────────────────────────
 export default function GlobalContextProvider({ children }: { children: ReactNode }) {
     return (
-        <AuthProvider>
+        <SessionProvider>
             <DarkModeProvider>
                 <SidebarProvider>{children}</SidebarProvider>
             </DarkModeProvider>
-        </AuthProvider>
+        </SessionProvider>
     );
 }
 
-// ─────────────────────────────────────────────
-// Named exports dei context hook
-// ─────────────────────────────────────────────
-export { useAuth, useSidebar };
+export { useSidebar };

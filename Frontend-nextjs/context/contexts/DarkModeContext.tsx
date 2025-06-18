@@ -3,19 +3,23 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import type { DarkModeContextType } from "@/types";
 
-// ─────────────────────────────────────────────
-// Context per gestione del tema dark/light globale
-// ─────────────────────────────────────────────
-
-// 1. Creazione del context
+/* ╔════════════  Context  ════════════╗ */
 const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined);
 
-// 2. Provider che gestisce lo stato del tema
+/* ╔════════════  Provider  ═══════════╗ */
 export function DarkModeProvider({ children }: { children: ReactNode }) {
-    const [isDark, setIsDark] = useState(false);
+    /* 1️⃣  Stato iniziale: localStorage → prefers-color-scheme */
+    const [isDark, setIsDark] = useState<boolean>(() => {
+        if (typeof window === "undefined") return false; // SSR fallback
+        const saved = localStorage.getItem("theme");
+        if (saved === "dark" || saved === "light") return saved === "dark";
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    });
 
+    /* 2️⃣  Aggiorna <html class="dark"> e salva */
     useEffect(() => {
         document.documentElement.classList.toggle("dark", isDark);
+        localStorage.setItem("theme", isDark ? "dark" : "light");
     }, [isDark]);
 
     const toggleDarkMode = () => setIsDark((prev) => !prev);
@@ -23,11 +27,11 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
     return <DarkModeContext.Provider value={{ isDark, toggleDarkMode }}>{children}</DarkModeContext.Provider>;
 }
 
-// 3. Hook personalizzato per accedere al context
+/* ╔════════════  Hook  ═══════════════╗ */
 export function useDarkMode() {
-    const context = useContext(DarkModeContext);
-    if (!context) {
+    const ctx = useContext(DarkModeContext);
+    if (!ctx) {
         throw new Error("useDarkMode deve essere usato dentro <DarkModeProvider>");
     }
-    return context;
+    return ctx;
 }

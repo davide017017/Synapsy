@@ -8,6 +8,7 @@ interface Props {
 export default function RememberMeSwitch({ checked, onToggle }: Props) {
     return (
         <label className="flex items-center gap-3 text-sm cursor-pointer select-none">
+            {/* interruttore */}
             <div
                 className={`relative w-10 h-6 transition rounded-full ${checked ? "bg-primary" : "bg-gray-400"}`}
                 onClick={onToggle}
@@ -18,7 +19,10 @@ export default function RememberMeSwitch({ checked, onToggle }: Props) {
                     }`}
                 />
             </div>
-            <span className="text-white">Ricordami</span>
+
+            {/* etichetta */}
+            <span className="text-white">Ricorda la mia e-mail</span>
+            {/* oppure:  Ricordami (solo e-mail) */}
         </label>
     );
 }

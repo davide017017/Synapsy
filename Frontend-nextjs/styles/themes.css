@@ -1,0 +1,68 @@
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  TEMA LIGHT (default) / FALLBACK                     ║
+ * ╚══════════════════════════════════════════════════════╝ */
+[data-theme="light"],
+:root {
+    /* neutrali */
+    --c-bg: 243 244 246;
+    --c-text: 55 65 81;
+
+    /* palette primaria */
+    --c-primary: 129 187 129;
+
+    /* semantic (success, warning, danger...) */
+    --c-success: 73 255 125;
+    --c-warning: 255 215 38;
+    --c-danger: 255 77 77;
+}
+
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  TEMA DARK                                           ║
+ * ╚══════════════════════════════════════════════════════╝ */
+[data-theme="dark"] {
+    /* neutrali */
+    --c-bg: 24 24 24;
+    --c-text: 241 245 249;
+
+    /* palette primaria */
+    --c-primary: 48 227 163;
+
+    /* semantic */
+    --c-success: 49 255 125;
+    --c-warning: 255 215 38;
+    --c-danger: 255 77 77;
+}
+
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  TEMA EMERALD                                        ║
+ * ╚══════════════════════════════════════════════════════╝ */
+[data-theme="emerald"] {
+    /* neutrali */
+    --c-bg: 236 253 245;
+    --c-text: 15 118 110;
+
+    /* palette primaria */
+    --c-primary: 4 120 87;
+
+    /* semantic */
+    --c-success: 73 255 125;
+    --c-warning: 255 215 38;
+    --c-danger: 255 77 77;
+}
+
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  TEMA SOLARIZED                                      ║
+ * ╚══════════════════════════════════════════════════════╝ */
+[data-theme="solarized"] {
+    /* neutrali */
+    --c-bg: 253 246 227;
+    --c-text: 88 110 117;
+
+    /* palette primaria */
+    --c-primary: 38 139 210;
+
+    /* semantic */
+    --c-success: 73 255 125;
+    --c-warning: 255 215 38;
+    --c-danger: 255 77 77;
+}
