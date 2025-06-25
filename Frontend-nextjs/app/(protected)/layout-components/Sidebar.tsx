@@ -20,18 +20,18 @@ import { useTheme } from "next-themes";
 import { useState } from "react";
 
 /* ────────────────────────────────
-   Voci di navigazione
+    Voci di navigazione
 ──────────────────────────────── */
 const navItems = [
     { href: "/", label: "Home", icon: <Home size={18} /> },
-    { href: "/riepilogo", label: "Panoramica", icon: <BarChart size={18} /> },
+    { href: "/panoramica", label: "Panoramica", icon: <BarChart size={18} /> },
     { href: "/ricorrenti", label: "Ricorrenti", icon: <CalendarCheck size={18} /> },
     { href: "/categorie", label: "Categorie", icon: <Folder size={18} /> },
     { href: "/profilo", label: "Profilo", icon: <User size={18} /> },
 ];
 
 /* ────────────────────────────────
-   Temi extra
+    Temi extra
 ──────────────────────────────── */
 const extraThemes = ["emerald", "solarized"];
 
@@ -99,7 +99,7 @@ export default function Sidebar() {
                                 onClick={() => setIsOpenMobile(false)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition ${
                                     active
-                                        ? "bg-primary text-white"
+                                        ? "bg-[hsl(var(--c-primary))] text-white"
                                         : "text-gray-400 hover:text-white hover:bg-white/10"
                                 }`}
                             >

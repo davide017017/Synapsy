@@ -11,105 +11,130 @@ use Modules\Spese\Models\Spesa;
 use Modules\Spese\Services\SpeseService;
 use Modules\Spese\Http\Requests\StoreSpesaRequest;
 use Modules\Spese\Http\Requests\UpdateSpesaRequest;
-use ApiResponse;
 
+// ─────────────────────────────────────────────
+// Controller unico per Web (Blade) + API (JSON)
+// ─────────────────────────────────────────────
 class SpeseController extends Controller
 {
-    // ============================
-    // Constructor
-    // ============================
-    public function __construct(protected SpeseService $service)
+    protected SpeseService $service;
+
+    // =========================
+    // COSTRUTTORE
+    // =========================
+    public function __construct(SpeseService $service)
     {
-        $this->middleware('auth:sanctum');
-        $this->authorizeResource(Spesa::class, 'spesa');
+        $this->service = $service;
     }
 
-    // ============================
-    // Index - List Spese
-    // ============================
-    public function index(Request $request): JsonResponse|View
-    {
-        $user    = $request->user();
-        $filters = $request->only(['start_date', 'end_date', 'description', 'category_id']);
-        $sortBy  = in_array($request->query('sort_by'), ['date', 'description', 'amount']) ? $request->query('sort_by') : 'date';
-        $sortDirection = in_array($request->query('sort_direction'), ['asc', 'desc']) ? $request->query('sort_direction') : 'desc';
+    // =========================
+    // ─── ROTTE WEB (BLADE) ───
+    // =========================
 
-        $spese      = $this->service->getFilteredAndSortedForUser($user, $filters, $sortBy, $sortDirection);
+    // Index (Blade)
+    public function indexWeb(Request $request): View
+    {
+        $user = $request->user();
+        $filters = $request->only(['start_date', 'end_date', 'description', 'category_id']);
+        $sortBy = $request->query('sort_by', 'date');
+        $sortDirection = $request->query('sort_direction', 'desc');
+
+        $spese = $this->service->getFilteredAndSortedForUser($user, $filters, $sortBy, $sortDirection);
         $categories = $this->service->getCategoriesForUser($user);
 
-        return $request->wantsJson()
-            ? ApiResponse::success('Spese caricate.', $spese)
-            : view('spese::spese.index', compact('spese', 'categories', 'sortBy', 'sortDirection'))->with([
-                'filterStartDate'   => $filters['start_date']   ?? null,
-                'filterEndDate'     => $filters['end_date']     ?? null,
-                'filterDescription' => $filters['description']  ?? null,
-                'filterCategoryId'  => $filters['category_id']  ?? null,
-            ]);
+        return view('spese::spese.index', [
+            'spese' => $spese,
+            'categories' => $categories,
+            'sortBy' => $sortBy,
+            'sortDirection' => $sortDirection,
+            'filterStartDate' => $filters['start_date'] ?? null,
+            'filterEndDate' => $filters['end_date'] ?? null,
+            'filterDescription' => $filters['description'] ?? null,
+            'filterCategoryId' => $filters['category_id'] ?? null,
+        ]);
     }
 
-    // ============================
-    // Create - Show Create Form
-    // ============================
-    public function create(Request $request): View
+    // Create (Blade)
+    public function createWeb(Request $request): View
     {
         $categories = $this->service->getCategoriesForUser($request->user());
         return view('spese::spese.create', compact('categories'));
     }
 
-    // ============================
-    // Store - Save New Spesa
-    // ============================
-    public function store(StoreSpesaRequest $request): JsonResponse|RedirectResponse
-    {
-        /** @var \Illuminate\Http\Request $request */
-        $spesa = $this->service->createForUser($request->validated(), $request->user());
-
-        return $request->wantsJson()
-            ? ApiResponse::success('Spesa creata.', $spesa, 201)
-            : redirect()->route('spese.web.index')->with('status', 'Spesa aggiunta con successo!');
-    }
-
-    // ============================
-    // Show - Spesa Detail
-    // ============================
-    public function show(Request $request, Spesa $spesa): JsonResponse|View
-    {
-        return $request->wantsJson()
-            ? ApiResponse::success('Spesa trovata.', $spesa)
-            : view('spese::spese.show', compact('spesa'));
-    }
-
-    // ============================
-    // Edit - Show Edit Form
-    // ============================
-    public function edit(Request $request, Spesa $spesa): View
+    // Edit (Blade)
+    public function editWeb(Request $request, Spesa $spesa): View
     {
         $categories = $this->service->getCategoriesForUser($request->user());
         return view('spese::spese.edit', compact('spesa', 'categories'));
     }
 
-    // ============================
-    // Update - Modify Spesa
-    // ============================
-    public function update(UpdateSpesaRequest $request, Spesa $spesa): JsonResponse|RedirectResponse
+    // Show (Blade)
+    public function showWeb(Request $request, Spesa $spesa): View
     {
-        /** @var \Illuminate\Http\Request $request */
-        $this->service->update($spesa, $request->validated());
-
-        return $request->wantsJson()
-            ? ApiResponse::success('Spesa aggiornata.', $spesa)
-            : redirect()->route('spese.web.index')->with('status', 'Spesa aggiornata con successo!');
+        return view('spese::spese.show', compact('spesa'));
     }
 
-    // ============================
-    // Destroy - Delete Spesa
-    // ============================
-    public function destroy(Request $request, Spesa $spesa): JsonResponse|RedirectResponse
+    // Store (Web)
+    public function storeWeb(StoreSpesaRequest $request): RedirectResponse
+    {
+        $spesa = $this->service->createForUser($request->validated(), $request->user());
+        return redirect()->route('spese.web.index')->with('status', 'Spesa aggiunta con successo!');
+    }
+
+    // Update (Web)
+    public function updateWeb(UpdateSpesaRequest $request, Spesa $spesa): RedirectResponse
+    {
+        $this->service->update($spesa, $request->validated());
+        return redirect()->route('spese.web.index')->with('status', 'Spesa aggiornata con successo!');
+    }
+
+    // Destroy (Web)
+    public function destroyWeb(Request $request, Spesa $spesa): RedirectResponse
     {
         $this->service->delete($spesa);
+        return redirect()->route('spese.web.index')->with('status', 'Spesa eliminata con successo!');
+    }
 
-        return $request->wantsJson()
-            ? ApiResponse::success('Spesa eliminata.', null, 204)
-            : redirect()->route('spese.web.index')->with('status', 'Spesa eliminata con successo!');
+    // =========================
+    // ─── ROTTE API (JSON) ───
+    // =========================
+
+    // Index (API)
+    public function indexApi(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $filters = $request->only(['start_date', 'end_date', 'description', 'category_id']);
+        $sortBy = $request->query('sort_by', 'date');
+        $sortDirection = $request->query('sort_direction', 'desc');
+
+        $spese = $this->service->getFilteredAndSortedForUser($user, $filters, $sortBy, $sortDirection);
+        return response()->json($spese);
+    }
+
+    // Show (API)
+    public function showApi(Request $request, Spesa $spesa): JsonResponse
+    {
+        return response()->json($spesa);
+    }
+
+    // Store (API)
+    public function storeApi(StoreSpesaRequest $request): JsonResponse
+    {
+        $spesa = $this->service->createForUser($request->validated(), $request->user());
+        return response()->json($spesa, 201);
+    }
+
+    // Update (API)
+    public function updateApi(UpdateSpesaRequest $request, Spesa $spesa): JsonResponse
+    {
+        $this->service->update($spesa, $request->validated());
+        return response()->json($spesa);
+    }
+
+    // Destroy (API)
+    public function destroyApi(Request $request, Spesa $spesa): JsonResponse
+    {
+        $this->service->delete($spesa);
+        return response()->json(['success' => true], 204);
     }
 }

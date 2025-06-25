@@ -1,45 +1,48 @@
 "use client";
 
+// ==============================
+// IMPORT PRINCIPALI
+// ==============================
 import { useEffect } from "react";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoginForm from "@/app/(auth)/login/form/LoginForm";
+import { handleLogin } from "@/lib/auth/handleLogin";
 
-/*  Il tuo <LoginForm /> deve accettare onSubmit(email, password)
-    e internamente validare i campi; qui sotto un esempio */
-
+// ==============================
+// PAGINA DI LOGIN CON REDIRECT E SFONDO
+// ==============================
 export default function LoginPage() {
-    /* next-auth session */
-    const { data: session, status } = useSession();
+    // ───── Stato auth sessione ─────
+    const { status } = useSession();
     const router = useRouter();
 
-    /* se già loggato → redirect alla home */
+    // ───── Redirect se già autenticato ─────
     useEffect(() => {
         if (status === "authenticated") {
             router.replace("/");
         }
     }, [status, router]);
 
-    /* handler che il LoginForm chiamerà */
-    async function handleLogin(email: string, password: string) {
-        const res = await signIn("credentials", {
-            redirect: false, // niente redirect automatico
-            email,
-            password,
-        });
-
-        if (res?.error) {
-            alert("Credenziali non valide"); // gestisci come preferisci
+    // ───── Handler login form (usa helper) ─────
+    async function onLogin(email: string, password: string) {
+        const ok = await handleLogin(email, password);
+        if (!ok) {
+            alert("Credenziali non valide");
         } else {
-            router.push("/"); // login OK → homepage
+            router.push("/");
         }
     }
 
+    // ==============================
+    // RENDER
+    // ==============================
     return (
         <div
             className="relative min-h-screen flex items-center justify-center bg-no-repeat bg-center bg-cover"
             style={{ backgroundImage: "url('/images/bg-login.png')" }}
         >
+            {/* Overlay sfocato/oscuro */}
             <div
                 className="absolute inset-0 bg-black z-0 pointer-events-none"
                 style={{
@@ -48,9 +51,8 @@ export default function LoginPage() {
                     WebkitMaskImage: "radial-gradient(circle at center, transparent 20%, black 100%)",
                 }}
             />
-
-            {/* LoginForm ora riceve la callback */}
-            <LoginForm onSubmit={handleLogin} />
+            {/* Form login */}
+            <LoginForm onSubmit={onLogin} />
         </div>
     );
 }

@@ -1,0 +1,112 @@
+/* ============================== */
+/*        Shape e stile Tabella   */
+/* ============================== */
+
+.table-container {
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 0.07);
+    overflow: hidden;
+    background: transparent;
+}
+
+/* ────────────── Tabella base ────────────── */
+.table-base {
+    color: hsl(var(--c-table-text)); /* Colore di base del testo tabella */
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.95rem;
+}
+
+/* ────────────── Intestazione ────────────── */
+.table-header-row {
+    background: hsl(var(--c-table-header-bg));
+}
+.table-base th {
+    padding: 0.65rem 1rem;
+    font-weight: 700;
+    background: inherit;
+    color: hsl(var(--c-table-header-text));
+    border-bottom: 1.5px solid hsl(var(--c-table-divider));
+}
+
+/* ────────────── Corpo tabella ────────────── */
+.table-base td {
+    padding: 0.62rem 0.8rem;
+    border-bottom: 1px solid hsl(var(--c-table-divider));
+    background: transparent;
+    color: hsl(var(--c-table-text));
+}
+
+/* Hover riga corpo */
+.table-base tr:hover td {
+    background: hsl(var(--c-table-row-hover));
+    transition: background 0.16s;
+}
+
+/* Arrotondamenti blocchi header/corpo */
+.table-base thead tr:first-child th:first-child {
+    border-top-left-radius: 1rem;
+}
+.table-base thead tr:first-child th:last-child {
+    border-top-right-radius: 1rem;
+}
+.table-base thead tr:last-child th:first-child {
+    border-bottom-left-radius: 1rem;
+}
+.table-base thead tr:last-child th:last-child {
+    border-bottom-right-radius: 1rem;
+}
+
+tr.rounded-top > td,
+tr.rounded-top > th {
+    border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+}
+tr.rounded-bottom > td:first-child {
+    border-bottom-left-radius: 1rem !important;
+}
+tr.rounded-bottom > td:last-child {
+    border-bottom-right-radius: 1rem !important;
+}
+
+/* ============================== */
+/*        Divider Speciali        */
+/* ============================== */
+
+/* Divider ANNO */
+td.table-divider-year {
+    background: hsl(var(--c-table-divider-year-bg));
+    color: hsl(var(--c-table-header-text));
+    font-weight: 600;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    border-top: 5px solid hsl(var(--c-table-divider));
+    border-bottom: 0;
+}
+
+/* Divider MESE */
+td.table-divider-month {
+    background: hsl(var(--c-table-divider-month-bg));
+    color: hsl(var(--c-table-header-text));
+    font-weight: 600;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    border-top: 2px solid hsl(var(--c-table-divider));
+    border-bottom: 4px solid hsl(var(--c-table-divider-year-bg));
+}
+
+/* ============================== */
+/*         Pillole stato          */
+/* ============================== */
+
+.pill-success {
+    background: hsl(var(--c-table-success));
+    color: hsl(var(--c-bg));
+    border: 1px solid hsl(var(--c-table-success));
+}
+.pill-danger {
+    background: hsl(var(--c-table-danger));
+    color: hsl(var(--c-bg));
+    border: 1px solid hsl(var(--c-table-danger));
+}

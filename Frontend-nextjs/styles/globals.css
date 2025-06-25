@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "./themes.css"; /* ⬅️ nuovo import */
+@import "./table.css";
+@import "./themes.css";
 
 @layer base {
     html {
@@ -10,10 +11,9 @@
     }
     body {
         @apply h-full m-0 p-0;
-    }
-
-    body {
-        @apply bg-[rgb(var(--c-bg))] text-[rgb(var(--c-text))];
+        /* Qui usi hsl() perché ora le variabili sono in HSL! */
+        background-color: hsl(var(--c-bg));
+        color: hsl(var(--c-text));
         font-family: var(--font-sans);
     }
 }

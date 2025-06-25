@@ -1,0 +1,58 @@
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  TEMA DARK — PALETTE ESTESA E OTTIMIZZATA (HSL)     ║
+ * ╚══════════════════════════════════════════════════════╝ */
+[data-theme="dark"] {
+    /* ===== Base generale ===== */
+    --c-bg: 235 15% 10%; /* Sfondo generale (grigio blu scurissimo) */
+    --c-bg-alt: 230 16% 16%; /* Sfondo elevato/box */
+    --c-bg-soft: 235 13% 13%; /* Variante soft */
+    --c-bg-elevate: 230 17% 21%; /* Box/dialog/overlay */
+    --c-bg-glass: 230 12% 17% / 0.8; /* Effetto glass traslucido */
+
+    --c-text: 220 60% 96%; /* Testo primario (quasi bianco, blu tenue) */
+    --c-text-secondary: 220 12% 70%; /* Testo secondario */
+    --c-text-tertiary: 220 7% 50%; /* Testo terziario/disattivato */
+    --c-text-invert: 230 11% 18%; /* Per badge su bg chiaro */
+
+    /* ===== Colori brand/primari ===== */
+    --c-primary: 159 68% 54%; /* Verde menta principale */
+    --c-primary-light: 159 89% 60%; /* Verde menta chiaro */
+    --c-primary-dark: 159 59% 36%; /* Verde menta scuro */
+    --c-primary-gradient: linear-gradient(180deg, hsl(159 68% 54%) 0%, hsl(160, 31%, 21%) 100%);
+    --c-primary-border: 159 68% 54% / 0.18; /* Bordo verde menta soft */
+    --c-primary-shadow: 159 68% 54% / 0.13; /* Ombra verde menta soft */
+
+    /* ===== Semantic ===== */
+    --c-success: 148 68% 73%; /* Verde successo pastello */
+    --c-success-dark: 148 62% 51%; /* Verde successo scuro */
+    --c-danger: 358 74% 68%; /* Rosso errore pastello */
+    --c-danger-dark: 358 54% 48%; /* Rosso errore scuro */
+    --c-warning: 44 95% 58%; /* Giallo avviso */
+    --c-warning-dark: 44 73% 44%; /* Giallo avviso scuro */
+
+    /* ===== Tabella - Palette dedicata ===== */
+    --c-table-bg: 230 11% 13%; /* Sfondo tabella */
+    --c-table-bg-alt: 230 12% 19%; /* Sfondo alternativo (righe alternate) */
+    --c-table-header-bg: 230 12% 16%; /* Sfondo header tabella */
+    --c-table-header-text: 220 17% 80%; /* Testo header */
+    --c-table-text: 220 20% 92%; /* Testo celle principali */
+    --c-table-text-secondary: 220 10% 64%; /* Testo celle secondarie */
+    --c-table-divider: 220 9% 27%; /* Bordo righe e colonne */
+    --c-table-row-hover: 230 12% 20%; /* Hover row */
+    --c-table-row-selected: 159 89% 60% / 0.13; /* Riga selezionata (verde menta trasl.) */
+    --c-table-accent: 200 92% 76%; /* Accent/blu badge o icone */
+
+    --c-table-danger: 358 31% 88%; /* Rosso soft tabella */
+    --c-table-danger-2: 358 70% 67%; /* Rosso soft tabella */
+
+    --c-table-success: 148 37% 88%; /* Verde soft tabella */
+    --c-table-success-2: 148 70% 68%; /* Verde soft tabella */
+
+    /* ===== Divider mese/anno (tabella) ===== */
+    --c-table-divider-year-bg: 220 13% 16%; /* Divider anno (grigio blu pastello) */
+    --c-table-divider-month-bg: 220 14% 20%; /* Divider mese (grigio blu più chiaro) */
+
+    /* ===== Gradients tabella (se servono) ===== */
+    --c-table-header-gradient: linear-gradient(90deg, hsl(230 12% 16%) 0%, hsl(230 11% 13%) 100%);
+    --c-table-row-gradient: linear-gradient(90deg, hsl(230 12% 19%) 0%, hsl(230 11% 13%) 100%);
+}

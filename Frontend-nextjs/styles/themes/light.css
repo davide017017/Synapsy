@@ -1,0 +1,55 @@
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  TEMA LIGHT — PALETTE ESTESA E OTTIMIZZATA (HSL)    ║
+ * ╚══════════════════════════════════════════════════════╝ */
+[data-theme="light"],
+:root {
+    /* ===== Base generale ===== */
+    --c-bg: 220 20% 98%; /* Sfondo generale (grigio chiarissimo) */
+    --c-bg-alt: 0 0% 100%; /* Box/alt (bianco) */
+    --c-bg-soft: 210 60% 99%; /* Variante soft */
+    --c-bg-elevate: 220 14% 96%; /* Elevato/dialog */
+    --c-bg-glass: 0 0% 100% / 0.8; /* Effetto glass */
+
+    --c-text: 220 17% 27%; /* Testo primario */
+    --c-text-secondary: 24 6% 45%; /* Testo secondario */
+    --c-text-tertiary: 240 6% 74%; /* Testo terziario/disattivato */
+    --c-text-invert: 0 0% 100%; /* Su bg scuro */
+
+    /* ===== Brand / Primari ===== */
+    --c-primary: 120 34% 62%; /* Verde principale */
+    --c-primary-light: 138 63% 92%; /* Verde chiaro */
+    --c-primary-dark: 137 38% 34%; /* Verde scuro */
+    --c-primary-gradient: linear-gradient(90deg, hsl(120 34% 62%) 0%, hsl(137 38% 34%) 100%);
+    --c-primary-border: 120 34% 62% / 0.13;
+    --c-primary-shadow: 120 34% 62% / 0.08;
+
+    /* ===== Semantic ===== */
+    --c-success: 134 71% 45%; /* Verde successo */
+    --c-success-dark: 134 70% 29%; /* Verde successo scuro */
+    --c-danger: 0 78% 60%; /* Rosso errore */
+    --c-danger-dark: 0 63% 31%; /* Rosso errore scuro */
+    --c-warning: 48 100% 58%; /* Giallo avviso */
+    --c-warning-dark: 42 97% 40%; /* Giallo avviso scuro */
+
+    /* ===== Tabella - Palette dedicata ===== */
+    --c-table-bg: 0 0% 100%; /* Sfondo tabella (bianco) */
+    --c-table-bg-alt: 220 20% 98%; /* Sfondo alternativo (grigio molto chiaro) */
+    --c-table-header-bg: 220 20% 98%; /* Sfondo header tabella */
+    --c-table-header-text: 240 6% 40%; /* Testo header */
+    --c-table-text: 220 17% 27%; /* Testo celle principali */
+    --c-table-text-secondary: 24 6% 45%; /* Testo celle secondarie */
+    --c-table-divider: 220 21% 85%; /* Bordo righe e colonne */
+    --c-table-row-hover: 220 20% 92%; /* Hover row */
+    --c-table-row-selected: 138 63% 92% / 0.13; /* Riga selezionata verde trasl. */
+    --c-table-accent: 200 92% 76%; /* Accent/blu badge o icone */
+    --c-table-danger: 0 78% 87%; /* Rosso soft tabella */
+    --c-table-success: 120 34% 82%; /* Verde soft tabella */
+
+    /* Divider mese/anno (tabella) */
+    --c-table-divider-year-bg: 210 81% 97%; /* Divider anno (azzurro pallido) */
+    --c-table-divider-month-bg: 220 20% 98%; /* Divider mese (grigio molto chiaro) */
+
+    /* Gradients tabella */
+    --c-table-header-gradient: linear-gradient(90deg, hsl(220 20% 98%) 0%, hsl(0 0% 100%) 100%);
+    --c-table-row-gradient: linear-gradient(90deg, hsl(220 20% 98%) 0%, hsl(210 60% 99%) 100%);
+}

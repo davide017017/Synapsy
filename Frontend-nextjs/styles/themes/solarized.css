@@ -1,0 +1,54 @@
+/* ╔══════════════════════════════════════════════════════╗
+ * ║  TEMA SOLARIZED — PALETTE ESTESA E OTTIMIZZATA (HSL)║
+ * ╚══════════════════════════════════════════════════════╝ */
+[data-theme="solarized"] {
+    /* ===== Base generale ===== */
+    --c-bg: 44 81% 94%; /* Sfondo generale (giallo pallido Solarized) */
+    --c-bg-alt: 44 36% 88%; /* Sfondo elevato/box */
+    --c-bg-soft: 52 90% 91%; /* Variante soft */
+    --c-bg-elevate: 44 36% 88%; /* Box/dialog/overlay */
+    --c-bg-glass: 44 36% 88% / 0.8; /* Effetto glass traslucido */
+
+    --c-text: 193 14% 40%; /* Testo primario (blu-grigio Solarized) */
+    --c-text-secondary: 197 13% 45%; /* Testo secondario */
+    --c-text-tertiary: 187 10% 55%; /* Testo terziario/disattivato */
+    --c-text-invert: 44 81% 94%; /* Su bg scuro */
+
+    /* ===== Brand / Primari ===== */
+    --c-primary: 205 66% 49%; /* Blu Solarized */
+    --c-primary-light: 197 10% 55%; /* Blu-grigio chiaro */
+    --c-primary-dark: 192 80% 14%; /* Blu scuro */
+    --c-primary-gradient: linear-gradient(90deg, hsl(205 66% 49%) 0%, hsl(192 80% 14%) 100%);
+    --c-primary-border: 205 66% 49% / 0.16;
+    --c-primary-shadow: 205 66% 49% / 0.09;
+
+    /* ===== Semantic ===== */
+    --c-success: 82 100% 30%; /* Verde Solarized */
+    --c-success-dark: 197 13% 45%; /* Verde scuro Solarized */
+    --c-danger: 2 64% 52%; /* Rosso Solarized */
+    --c-danger-dark: 193 14% 40%; /* Rosso scuro Solarized */
+    --c-warning: 24 78% 44%; /* Arancione Solarized */
+    --c-warning-dark: 197 13% 45%; /* Arancione scuro Solarized */
+
+    /* ===== Tabella - Palette dedicata ===== */
+    --c-table-bg: 44 81% 94%; /* Sfondo tabella */
+    --c-table-bg-alt: 44 36% 88%; /* Sfondo alternativo */
+    --c-table-header-bg: 44 36% 88%; /* Sfondo header tabella */
+    --c-table-header-text: 205 66% 49%; /* Testo header */
+    --c-table-text: 193 14% 40%; /* Testo celle principali */
+    --c-table-text-secondary: 197 13% 45%; /* Testo celle secondarie */
+    --c-table-divider: 180 9% 60%; /* Bordo righe e colonne */
+    --c-table-row-hover: 52 50% 74%; /* Hover row */
+    --c-table-row-selected: 24 78% 44% / 0.1; /* Riga selezionata arancio trasl. */
+    --c-table-accent: 205 66% 49%; /* Accent/blu Solarized */
+    --c-table-danger: 2 64% 52%; /* Rosso soft tabella */
+    --c-table-success: 82 100% 30%; /* Verde soft tabella */
+
+    /* Divider mese/anno (tabella) */
+    --c-table-divider-year-bg: 49 60% 85%; /* Divider anno (giallo pallido) */
+    --c-table-divider-month-bg: 44 36% 88%; /* Divider mese (giallo chiaro) */
+
+    /* Gradients tabella */
+    --c-table-header-gradient: linear-gradient(90deg, hsl(44 36% 88%) 0%, hsl(44 81% 94%) 100%);
+    --c-table-row-gradient: linear-gradient(90deg, hsl(44 36% 88%) 0%, hsl(52 90% 91%) 100%);
+}

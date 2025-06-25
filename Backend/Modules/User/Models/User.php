@@ -14,6 +14,7 @@ use Modules\Categories\Models\Category;
 use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\User\Notifications\CustomVerifyEmail;
 use Modules\User\Database\Factories\UserFactory;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 /**
  * @property int $id
@@ -26,9 +27,21 @@ use Modules\User\Database\Factories\UserFactory;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    // 🔑 JWT: id nel subject del token
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    // 🔐 Nessun custom claim extra (puoi aggiungerne se serve)
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 
     protected $fillable = [
         'name',

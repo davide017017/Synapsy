@@ -1,135 +1,95 @@
-// app/api/auth/[...nextauth]/route.ts
-import NextAuth, { type NextAuthOptions, type SessionStrategy } from "next-auth";
+// ╔══════════════════════════════════════════════════════╗
+// ║              NextAuth Configuration                ║
+// ╚══════════════════════════════════════════════════════╝
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-import type { JWT } from "next-auth/jwt";
-import type { Session, DefaultUser } from "next-auth";
-
-/* ╔══════════════════════════════════════════════════════╗
- * ║  Config & guard (env)                                ║
- * ╚══════════════════════════════════════════════════════╝ */
+// ────────────── API URL da env ──────────────
 if (!process.env.NEXT_PUBLIC_API_URL) {
-    throw new Error("NEXT_PUBLIC_API_URL non definita in .env.local");
+    throw new Error("NEXT_PUBLIC_API_URL non definita");
 }
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-/* ╔══════════════════════════════════════════════════════╗
- * ║  Tipi ampliati (AppUser, Session, JWT)               ║
- * ╚══════════════════════════════════════════════════════╝ */
-interface AppUser extends DefaultUser {
-    token: string; // accessToken (15 min)
-}
-
+// ╔══════════════════════════════════════════════════════╗
+// ║        Estensione tipi per accessToken              ║
+// ╚══════════════════════════════════════════════════════╝
 declare module "next-auth" {
     interface Session {
         accessToken?: string;
-        error?: string;
-        user?: AppUser;
     }
-    interface User extends AppUser {}
 }
 declare module "next-auth/jwt" {
     interface JWT {
         accessToken?: string;
-        accessTokenExpires?: number;
-        error?: string;
     }
 }
 
-/* ╔══════════════════════════════════════════════════════╗
- * ║  Helper: refresh access-token con cookie Http-Only    ║
- * ╚══════════════════════════════════════════════════════╝ */
-async function refreshAccessToken(token: JWT): Promise<JWT> {
-    try {
-        const res = await fetch(`${API}/refresh`, {
-            method: "POST",
-            credentials: "include", // ⇒ manda refreshToken
-        });
-        if (!res.ok) throw new Error("refresh failed");
-
-        const { accessToken } = (await res.json()) as { accessToken: string };
-        return {
-            ...token,
-            accessToken,
-            accessTokenExpires: Date.now() + 15 * 60 * 1_000, // +15 min
-        };
-    } catch {
-        return { ...token, error: "RefreshFailed" };
-    }
-}
-
-/* ╔══════════════════════════════════════════════════════╗
- * ║  NEXTAUTH OPTIONS                                    ║
- * ╚══════════════════════════════════════════════════════╝ */
+// ╔══════════════════════════════════════════════════════╗
+// ║              Opzioni NextAuth                       ║
+// ╚══════════════════════════════════════════════════════╝
 export const authOptions: NextAuthOptions = {
-    /* ───── PROVIDER CREDENTIALS ────────────────────────── */
+    // ───── Provider: Credentials (Bearer JWT) ─────
     providers: [
         Credentials({
             name: "Credentials",
             credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
+                email: { type: "email" },
+                password: { type: "password" },
             },
-            async authorize(creds) {
-                const res = await fetch(`${API}/login`, {
+            async authorize(credentials) {
+                const res = await fetch(`${API}/v1/login`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(creds),
+                    body: JSON.stringify(credentials),
                 });
-                if (!res.ok) return null; // KO
-                return (await res.json()) as AppUser; // { token, user… }
+                if (!res.ok) return null;
+                const data = await res.json();
+                if (!data.token || !data.user) return null;
+                return {
+                    id: data.user.id.toString(),
+                    name: data.user.name ?? undefined,
+                    email: data.user.email ?? undefined,
+                    access_token: data.token,
+                };
             },
         }),
     ],
 
-    /* ───── SESSION / JWT ───────────────────────────────── */
+    // ───── Session & JWT settings ─────
     session: {
-        strategy: "jwt" as SessionStrategy,
-        maxAge: 60 * 60 * 24 * 30, // cookie 30 gg
-        updateAge: 60 * 5, // rinnovo cookie ogni 5 min
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60, // 30 giorni
     },
-    jwt: { maxAge: 60 * 15 }, // access 15 min
+    jwt: {
+        maxAge: 15 * 60, // 15 minuti
+    },
 
-    /* ───── CALLBACKS ───────────────────────────────────── */
+    // ───── Callbacks: Propaga accessToken ─────
     callbacks: {
-        /** ① ogni (re)generazione JWT */
         async jwt({ token, user }) {
-            // primo login
             if (user) {
-                return {
-                    accessToken: (user as AppUser).token,
-                    accessTokenExpires: Date.now() + 15 * 60 * 1_000,
-                } as JWT;
+                token.accessToken = (user as any).access_token;
             }
-
-            // access ancora valido (>1 min)
-            if (token.accessTokenExpires && Date.now() < token.accessTokenExpires - 60_000) {
-                return token;
-            }
-
-            // access in scadenza → refresh
-            return refreshAccessToken(token);
+            return token;
         },
-
-        /** ② sessione consegnata a client / RSC */
-        session({ session, token }: { session: Session; token: JWT }) {
+        async session({ session, token }) {
             session.accessToken = token.accessToken;
-            session.error = token.error;
             return session;
         },
     },
 
-    /* ───── PAGINE CUSTOM ───────────────────────────────── */
+    // ───── Custom pages ─────
     pages: {
         signIn: "/login",
         error: "/login?error=true",
     },
 
+    // ───── Debug mode solo in sviluppo ─────
     debug: process.env.NODE_ENV === "development",
 };
 
-/* ╔══════════════════════════════════════════════════════╗
- * ║  API Route handler (GET / POST)                      ║
- * ╚══════════════════════════════════════════════════════╝ */
+// ╔══════════════════════════════════════════════════════╗
+// ║        Handler NextAuth GET/POST                    ║
+// ╚══════════════════════════════════════════════════════╝
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
