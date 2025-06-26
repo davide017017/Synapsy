@@ -1,39 +1,60 @@
 "use client";
 
-// ╔════════════════════════════════════════════════════╗
-// ║  Import principali                               ║
-// ╚════════════════════════════════════════════════════╝
+// =============================
+// Import principali
+// =============================
 import React, { useMemo } from "react";
 import { useReactTable, getCoreRowModel, flexRender, ColumnResizeMode, Row } from "@tanstack/react-table";
 import { Transaction } from "@/types/types/transaction";
 import { addMonthGroup } from "./table/utils";
-import { columns } from "./table/columns";
+import { getColumnsWithSelection } from "./table/columns";
 import { TransactionWithGroup } from "./table/types";
 import TableRow from "./table/TableRow";
 import MonthDividerRow from "./table/MonthDividerRow";
 import YearDividerRow from "./table/YearDividerRow";
+import { useSelection } from "@/context/contexts/SelectionContext";
 
-// ╔════════════════════════════════════════════════════╗
-// ║  Tipi props                                      ║
-// ╚════════════════════════════════════════════════════╝
+// =============================
+// Tipi props
+// =============================
 type Props = {
     data: Transaction[];
     onRowClick?: (t: Transaction) => void;
     selectedId?: number | null;
 };
 
-// ╔════════════════════════════════════════════════════╗
-// ║  Componente principale - TransactionTable         ║
-// ╚════════════════════════════════════════════════════╝
-export default function TransactionTable({ data, onRowClick }: Props) {
-    // ────────────────────────────────
-    // Prepara dati con gruppi mese
-    // ────────────────────────────────
-    const dataWithGroups = useMemo(() => addMonthGroup(data), [data]);
+// =============================
+// Componente principale - TransactionTable
+// =============================
+export default function TransactionTable({ data, onRowClick, selectedId }: Props) {
+    const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
 
-    // ────────────────────────────────
+    const handleCheckToggle = (id: number) => {
+        setSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
+    };
+
+    // --- Funzione per toggle "Seleziona tutto" ---
+    const handleCheckAllToggle = (checked: boolean) => {
+        if (checked) {
+            // Seleziona TUTTI gli id visibili
+            setSelectedIds(allIds);
+        } else {
+            // Deseleziona tutti quelli visibili
+            setSelectedIds((ids) => ids.filter((id) => !allIds.includes(id)));
+        }
+    };
+
+    // --- Calcola tutti gli id delle righe visibili ---
+    const dataWithGroups = useMemo(() => addMonthGroup(data), [data]);
+    const allIds = useMemo(() => dataWithGroups.map((tx) => tx.id), [dataWithGroups]);
+
+    // --- Colonne dinamiche ---
+    const columns = useMemo(
+        () => getColumnsWithSelection(isSelectionMode, selectedIds, handleCheckToggle, handleCheckAllToggle, allIds),
+        [isSelectionMode, selectedIds, allIds]
+    );
+
     // Setup TanStack Table
-    // ────────────────────────────────
     const table = useReactTable({
         data: dataWithGroups,
         columns,
@@ -42,9 +63,7 @@ export default function TransactionTable({ data, onRowClick }: Props) {
         debugTable: false,
     });
 
-    // ────────────────────────────────
     // Raggruppa righe per "YYYY-MM"
-    // ────────────────────────────────
     const groupedRows: Record<string, Row<TransactionWithGroup>[]> = {};
     for (const row of table.getRowModel().rows) {
         const key = row.original.monthGroup;
@@ -52,9 +71,7 @@ export default function TransactionTable({ data, onRowClick }: Props) {
         groupedRows[key].push(row);
     }
 
-    // ────────────────────────────────
-    // Calcola totali annuali (entrate/spese)
-    // ────────────────────────────────
+    // Calcola totali annuali
     const yearTotals: { [year: string]: { entrate: number; spese: number } } = {};
     Object.entries(groupedRows).forEach(([monthKey, rows]) => {
         const [year] = monthKey.split("-");
@@ -65,13 +82,13 @@ export default function TransactionTable({ data, onRowClick }: Props) {
         });
     });
 
-    // ╔════════════════════════════════════════════════════╗
-    // ║  Render tabella                                   ║
-    // ╚════════════════════════════════════════════════════╝
+    // =========================
+    // Render tabella
+    // =========================
     return (
         <div className="table-container overflow-x-auto">
             <table className="table-base min-w-full">
-                {/* ═════ Intestazione tabella ═════ */}
+                {/* === Intestazione tabella === */}
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id} className="table-header-row">
@@ -90,7 +107,7 @@ export default function TransactionTable({ data, onRowClick }: Props) {
                         </tr>
                     ))}
                 </thead>
-                {/* ═════ Corpo tabella, divider anno/mese e righe dati ═════ */}
+                {/* === Corpo tabella === */}
                 <tbody>
                     {(() => {
                         let lastYear = "";

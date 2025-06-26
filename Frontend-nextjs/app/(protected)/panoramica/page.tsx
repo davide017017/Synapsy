@@ -14,6 +14,8 @@ import CalendarGridSkeleton from "./components/skeleton/CalendarGridSkeleton";
 import TransactionsListSkeleton from "./components/skeleton/TransactionsListSkeleton";
 import TransactionDetailModal from "./components/modal/TransactionDetailModal";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
+import { useSelection } from "@/context/contexts/SelectionContext";
+import SelectionToolbar from "./components/SelectionToolbar";
 
 import { Transaction } from "@/types";
 
@@ -113,6 +115,17 @@ export default function PanoramicaPage() {
     function handleRowClick(tx: Transaction) {
         setSelected(tx); // apre la modale con i dettagli
     }
+    const { isSelectionMode, setIsSelectionMode, setSelectedIds } = useSelection();
+
+    async function handleDeleteSelectedTransactions(ids: number[]) {
+        // Puoi chiamare la tua API di delete massiva qui (es: Promise.all)
+        for (const id of ids) {
+            const t = transactions.find((tx) => tx.id === id);
+            if (t) await remove(t);
+        }
+        setTransactions((prev) => prev.filter((tx) => !ids.includes(tx.id)));
+    }
+
     // ============================== //
     //            RENDER              //
     // ============================== //
@@ -132,12 +145,16 @@ export default function PanoramicaPage() {
             {loading ? (
                 <TransactionsListSkeleton />
             ) : (
-                <TransactionsList
-                    transactions={transactions}
-                    onSelect={setSelected}
-                    categories={categories}
-                    selectedId={selected?.id} // <-- AGGIUNGI QUESTA PROP
-                />
+                <>
+                    <SelectionToolbar onDeleteSelected={handleDeleteSelectedTransactions} />
+
+                    <TransactionsList
+                        transactions={transactions}
+                        onSelect={setSelected}
+                        categories={categories}
+                        selectedId={selected?.id}
+                    />
+                </>
             )}
 
             {/* ─── ERRORI API ─── */}

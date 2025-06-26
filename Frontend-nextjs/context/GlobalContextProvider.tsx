@@ -7,6 +7,7 @@ import { DarkModeProvider } from "./contexts/DarkModeContext";
 import { CategoriesProvider } from "./contexts/CategoriesContext";
 import { NewTransactionProvider } from "./contexts/NewTransactionContext";
 import { SidebarProvider, useSidebar } from "./contexts/SidebarContext";
+import { SelectionProvider } from "./contexts/SelectionContext";
 
 export default function GlobalContextProvider({ children }: { children: ReactNode }) {
     return (
@@ -14,7 +15,9 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
             <DarkModeProvider>
                 <CategoriesProvider>
                     <NewTransactionProvider>
-                        <SidebarProvider>{children}</SidebarProvider>
+                        <SelectionProvider>
+                            <SidebarProvider>{children}</SidebarProvider>
+                        </SelectionProvider>
                     </NewTransactionProvider>
                 </CategoriesProvider>
             </DarkModeProvider>
