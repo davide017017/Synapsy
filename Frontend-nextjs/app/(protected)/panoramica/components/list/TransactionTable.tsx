@@ -19,6 +19,7 @@ import YearDividerRow from "./table/YearDividerRow";
 type Props = {
     data: Transaction[];
     onRowClick?: (t: Transaction) => void;
+    selectedId?: number | null;
 };
 
 // ╔════════════════════════════════════════════════════╗

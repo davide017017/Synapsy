@@ -11,10 +11,16 @@ import TransactionTable from "./list/TransactionTable"; // TanStack Table, vedi 
 type Props = {
     transactions: Transaction[];
     onSelect: (t: Transaction) => void;
-    categories?: { name: string; id: number; type: string }[]; // per il filtro
+    categories?: { name: string; id: number; type: string }[];
+    selectedId?: number | null; // <-- AGGIUNGI QUESTA RIGA
 };
 
-export default function TransactionsList({ transactions, onSelect, categories = [] }: Props) {
+export default function TransactionsList({
+    transactions,
+    onSelect,
+    categories = [],
+    selectedId, // <-- DESTRUTTURA
+}: Props) {
     // ============================
     // Stato filtro frontend
     // ============================
@@ -48,6 +54,7 @@ export default function TransactionsList({ transactions, onSelect, categories = 
                 <TransactionTable
                     data={filtered}
                     onRowClick={onSelect} // chiama direttamente il prop
+                    selectedId={selectedId}
                 />
             </div>
             {/* ====================== */}

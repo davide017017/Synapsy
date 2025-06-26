@@ -48,27 +48,48 @@ export default function PanoramicaPage() {
     // ───────────── STATO: Transazione selezionata ─────────────
     const [selected, setSelected] = useState<Transaction | null>(null);
 
-    // ───────────── HANDLER: Modifica ─────────────
+    // ───────────── HANDLER: Modifica ───────────── Pattern ottimistico
     async function handleEdit(t: Transaction) {
-        const updated = await update(t);
-        if (updated) {
-            setTransactions((trs) => trs.map((tx) => (tx.id === updated.id ? updated : tx)));
-            setSelected(updated);
-        } else {
-            alert("Errore nel salvataggio");
+        // 1. Salva lo stato precedente
+        const prevTransactions = [...transactions];
+
+        // 2. Aggiorna SUBITO la lista locale (optimistic update)
+        setTransactions((trs) => trs.map((tx) => (tx.id === t.id ? t : tx)));
+        setSelected(t);
+
+        try {
+            // 3. Manda la richiesta di update
+            const updated = await update(t);
+            if (!updated) throw new Error();
+
+            // 4. (opzionale) Refetch per massima coerenza
+            // refetch?.();
+        } catch {
+            // 5. Se l’API fallisce, rollback e avvisa l’utente
+            alert("Errore nel salvataggio, annullo la modifica.");
+            setTransactions(prevTransactions);
+            setSelected(prevTransactions.find((tx) => tx.id === t.id) || null);
         }
     }
 
-    // ───────────── HANDLER: Cancella ─────────────
+    // ───────────── HANDLER: Cancella ───────────── Pattern ottimistico
     async function handleDelete(t: Transaction) {
-        if (confirm("Vuoi davvero eliminare questa transazione?")) {
+        // 1. Salva la lista precedente
+        const prevTransactions = [...transactions];
+        // 2. Aggiorna subito la lista locale (optimistic)
+        setTransactions((trs) => trs.filter((tx) => tx.id !== t.id));
+        setSelected(null);
+
+        try {
+            // 3. Lancia la delete in background
             const ok = await remove(t);
-            if (ok) {
-                setTransactions((trs) => trs.filter((tx) => tx.id !== t.id));
-                setSelected(null);
-            } else {
-                alert("Errore nella cancellazione");
-            }
+            if (!ok) throw new Error();
+            // 4. (opzionale) refetch per sincronizzare lo stato dopo delete
+            // refetch?.();
+        } catch {
+            // 5. Se la delete fallisce, mostra errore e ripristina lista locale
+            alert("Errore nella cancellazione");
+            setTransactions(prevTransactions);
         }
     }
 
@@ -88,6 +109,10 @@ export default function PanoramicaPage() {
         [categories /*, refetch*/]
     );
 
+    // Handler per click sulla riga
+    function handleRowClick(tx: Transaction) {
+        setSelected(tx); // apre la modale con i dettagli
+    }
     // ============================== //
     //            RENDER              //
     // ============================== //
@@ -107,7 +132,12 @@ export default function PanoramicaPage() {
             {loading ? (
                 <TransactionsListSkeleton />
             ) : (
-                <TransactionsList transactions={transactions} onSelect={setSelected} categories={categories} />
+                <TransactionsList
+                    transactions={transactions}
+                    onSelect={setSelected}
+                    categories={categories}
+                    selectedId={selected?.id} // <-- AGGIUNGI QUESTA PROP
+                />
             )}
 
             {/* ─── ERRORI API ─── */}

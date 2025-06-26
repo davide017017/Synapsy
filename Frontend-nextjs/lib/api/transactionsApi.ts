@@ -105,11 +105,12 @@ export async function deleteTransaction(token: string, transaction: Transaction)
     const res = await fetch(`${API_URL}${endpoint}`, {
         method: "DELETE",
         headers: {
-            Authorization: `Bearer ${token},
-            "Accept": "application/json",  
-        `,
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
         },
     });
     if (!res.ok) throw new Error("Errore eliminazione transazione");
+    console.log("[DELETE]", `${API_URL}${endpoint}`);
+
     return true;
 }
