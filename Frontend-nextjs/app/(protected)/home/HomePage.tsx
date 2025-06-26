@@ -1,8 +1,11 @@
 "use client";
 
+import { useNewTransaction } from "@/context/contexts/NewTransactionContext";
 import { BarChart2, CalendarCheck, Repeat, FolderOpen } from "lucide-react";
+import NewTransactionButton from "../newTransaction/NewTransactionButton";
 
 export default function HomePage() {
+    const { open } = useNewTransaction();
     // Dati fittizi da sostituire con query API / hooks
     const stats = [
         { label: "Transazioni", value: 42, icon: <BarChart2 size={24} /> },
@@ -21,6 +24,7 @@ export default function HomePage() {
 
             {/* Griglia di statistiche */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <NewTransactionButton />
                 {stats.map(({ label, value, icon }) => (
                     <div
                         key={label}

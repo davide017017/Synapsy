@@ -29,25 +29,49 @@ export async function fetchTransactions(token: string): Promise<Transaction[]> {
 // ==============================
 // Create: Nuova transazione
 // ==============================
+
 export async function createTransaction(
     token: string,
     transaction: Omit<Transaction, "id">,
     type: "entrata" | "spesa"
 ): Promise<Transaction> {
     const endpoint = type === "entrata" ? "/v1/entrate" : "/v1/spese";
-    const payload = { ...transaction, category_id: transaction.category?.id };
-    delete (payload as any).category;
+    const url = `${API_URL}${endpoint}`;
 
-    const res = await fetch(`${API_URL}${endpoint}`, {
+    // prendo direttamente category_id dal transactionBase
+    const payload = {
+        description: transaction.description,
+        amount: transaction.amount,
+        date: transaction.date,
+        type: transaction.type,
+        category_id: (transaction as any).category_id, // qui va sempre il numero scelto
+        notes: (transaction as any).notes,
+    };
+
+    console.log("🔗 Endpoint finale:", `${API_URL}${endpoint}`, "payload:", payload);
+
+    const res = await fetch(url, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(transaction),
     });
-    if (!res.ok) throw new Error("Errore creazione transazione");
-    return await res.json();
+
+    // ⬇️ nuovo blocco
+    if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        console.error("💥 Payload non valido:", errJson); // <— guarda la console
+        throw new Error(
+            res.status === 422
+                ? "Validazione fallita" // potrai mostrarlo in UI
+                : "Errore creazione transazione"
+        );
+    }
+
+    return res.json();
 }
 
 // ==============================
@@ -64,6 +88,7 @@ export async function updateTransaction(token: string, transaction: Transaction)
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            Accept: "application/json",
         },
         body: JSON.stringify(payload),
     });
@@ -79,7 +104,11 @@ export async function deleteTransaction(token: string, transaction: Transaction)
     const endpoint = type === "entrata" ? `/v1/entrate/${transaction.id}` : `/v1/spese/${transaction.id}`;
     const res = await fetch(`${API_URL}${endpoint}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+            Authorization: `Bearer ${token},
+            "Accept": "application/json",  
+        `,
+        },
     });
     if (!res.ok) throw new Error("Errore eliminazione transazione");
     return true;

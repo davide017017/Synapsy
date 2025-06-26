@@ -8,7 +8,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 // ==============================
 // Fetch: Lista categorie
 // ==============================
-export async function fetchCategories(token: string): Promise<Category[]> {
+export async function getAllCategories(token: string): Promise<Category[]> {
     const res = await fetch(`${API_URL}/v1/categories`, {
         headers: {
             "Content-Type": "application/json",

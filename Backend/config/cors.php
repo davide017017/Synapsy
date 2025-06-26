@@ -6,7 +6,7 @@ return [
         'api/*',
         'v1/*',
         'v1/jwt/*',
-        // altri path se servono
+        'sanctum/csrf-cookie',
     ],
 
     'allowed_methods' => ['*'],
