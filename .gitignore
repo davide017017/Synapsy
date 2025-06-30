@@ -84,3 +84,5 @@ Backend/public/hot
 
 # Log applicazione
 Backend/storage/logs/*.log
+
+TODO-Roadmap.md
