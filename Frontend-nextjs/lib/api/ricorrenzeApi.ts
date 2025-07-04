@@ -13,23 +13,22 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 // Funzione di mapping frequenza IT → EN per backend
 // ==============================
 function frequencyToBackend(freq: string): string {
-    switch (freq) {
-        case "Giornaliero":
+    switch (freq.toLowerCase()) {
+        case "giornaliero":
+        case "daily":
             return "daily";
-        case "Settimanale":
+        case "settimanale":
+        case "weekly":
             return "weekly";
-        case "Mensile":
+        case "mensile":
+        case "monthly":
             return "monthly";
-        case "Annuale":
-            return "yearly";
-        // SOLO se il backend li supporta:
-        case "Bimestrale":
-            return "bimonthly";
-        case "Trimestrale":
-            return "quarterly";
-        case "Semestrale":
-            return "halfyearly";
+        case "annuale":
+        case "annually":
+        case "yearly":
+            return "annually";
         default:
+            console.warn("Valore frequenza sconosciuto! Uso 'monthly'. Ricevuto:", freq);
             return "monthly";
     }
 }

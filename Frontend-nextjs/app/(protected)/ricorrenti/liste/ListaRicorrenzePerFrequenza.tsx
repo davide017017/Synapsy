@@ -2,30 +2,28 @@
 
 // =======================================================
 // ListaRicorrenzePerFrequenza.tsx
-// Lista ricorrenze raggruppate per frequenza (ordine fisso inglese, label ITA)
+// Lista ricorrenze raggruppate per frequenza (ordine fisso inglese normalizzato, label ITA)
 // =======================================================
 
 import { Ricorrenza } from "@/types/types/ricorrenza";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { normalizzaFrequenza } from "../utils/ricorrenza-utils";
 
-// --------- ORDINE FISSO DELLE FREQUENZE (valori inglesi) ---------
-const FREQUENZE_ORDER = ["daily", "weekly", "monthly", "bimonthly", "quarterly", "halfyearly", "yearly"];
-
-// --------- LABEL ITA per ogni frequenza ---------
+// ============================
+// COSTANTI FREQUENZE E LABEL
+// ============================
+const FREQUENZE_ORDER = ["daily", "weekly", "monthly", "annually"] as const;
 const FREQUENZE_LABEL: Record<string, string> = {
     daily: "Giornaliero",
     weekly: "Settimanale",
     monthly: "Mensile",
-    bimonthly: "Bimestrale",
-    quarterly: "Trimestrale",
-    halfyearly: "Semestrale",
-    yearly: "Annuale",
+    annually: "Annuale",
 };
 
-// =======================================================
+// ============================
 // Props tipizzate
-// =======================================================
+// ============================
 type Props = {
     ricorrenze: Ricorrenza[];
     onEdit?: (r: Ricorrenza) => void;
@@ -33,7 +31,7 @@ type Props = {
 };
 
 // =======================================================
-// Dialog Conferma Eliminazione
+// Dialog di Conferma Eliminazione
 // =======================================================
 function ConfirmDialog({
     open,
@@ -73,19 +71,20 @@ function ConfirmDialog({
         </div>
     );
 }
-// --------- Utility per stile e simbolo ---------
+
+// =======================================================
+// Utility per stile e simbolo importo
+// =======================================================
 function getTypeStyle(type: "entrata" | "spesa") {
     if (type === "entrata") {
         return {
             symbol: "+",
-            // Testo e bordo basati su semantic "success"
             valueClass: "text-success",
             bgClass: "bg-success/10 border-success",
         };
     } else {
         return {
             symbol: "–",
-            // Testo e bordo basati su semantic "danger"
             valueClass: "text-danger",
             bgClass: "bg-danger/10 border-danger",
         };
@@ -93,19 +92,20 @@ function getTypeStyle(type: "entrata" | "spesa") {
 }
 
 // =======================================================
-// COMPONENTE PRINCIPALE
+// COMPONENTE PRINCIPALE - Lista ricorrenze per frequenza
 // =======================================================
 export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDelete }: Props) {
-    // Stato per dialog conferma cancellazione
     const [toDelete, setToDelete] = useState<Ricorrenza | null>(null);
 
-    // --------- Raggruppa ricorrenze per frequenza inglese ---------
+    // --------- Raggruppa ricorrenze per frequenza normalizzata ---------
     const gruppi = ricorrenze.reduce<Record<string, Ricorrenza[]>>((acc, r) => {
-        const freq = (r.frequenza || "").toLowerCase();
+        const freq = normalizzaFrequenza(r.frequenza); // SEMPRE normalizza!
         if (!acc[freq]) acc[freq] = [];
         acc[freq].push(r);
         return acc;
     }, {});
+    // Debug:
+    // console.log("Gruppi dopo normalizzazione:", gruppi);
 
     // --------- Ordina ogni gruppo per importo decrescente ---------
     FREQUENZE_ORDER.forEach((freq) => {
@@ -114,10 +114,12 @@ export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDele
         }
     });
 
-    // --------- Filtra solo le frequenze che hanno almeno una ricorrenza ---------
+    // --------- Frequenze effettivamente presenti ---------
     const gruppiPresenti = FREQUENZE_ORDER.filter((freq) => gruppi[freq]?.length);
 
-    // ============================ RENDER ============================
+    // =======================================================
+    // RENDER
+    // =======================================================
     return (
         <div>
             {/* ---------- Titolo Card ---------- */}
@@ -125,7 +127,7 @@ export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDele
                 📆 Ricorrenze per frequenza
             </h2>
 
-            {/* ---------- Lista ricorrenze per gruppi (ordine fisso) ---------- */}
+            {/* ---------- Lista raggruppata ---------- */}
             <ul>
                 {gruppiPresenti.length === 0 ? (
                     <li key="empty" className="text-zinc-400 italic px-3 py-8 text-center">
@@ -133,11 +135,11 @@ export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDele
                     </li>
                 ) : (
                     gruppiPresenti.map((freq, idx) => (
-                        <div key={freq}>
-                            {/* ------ Separatore visivo tra gruppi ------ */}
+                        <li key={freq} className="mb-2">
+                            {/* --------- Separatore visivo tra gruppi --------- */}
                             {idx > 0 && <div className="my-2 border-t border-dashed border-zinc-400/30" />}
 
-                            {/* ------ Intestazione gruppo ------ */}
+                            {/* --------- Intestazione gruppo --------- */}
                             <div className="flex items-center gap-2 mt-3 mb-1">
                                 <span className="px-2 py-1 bg-bg-elevate/90 rounded text-xs font-semibold text-zinc-600 dark:text-zinc-300 tracking-wider border border-zinc-300/40">
                                     {FREQUENZE_LABEL[freq] || freq}
@@ -147,47 +149,49 @@ export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDele
                                 </span>
                             </div>
 
-                            {/* ------ Lista delle ricorrenze del gruppo ------ */}
-
-                            {gruppi[freq].map((r) => {
-                                const { symbol, valueClass, bgClass } = getTypeStyle(r.type);
-                                return (
-                                    <li
-                                        key={r.id}
-                                        className={`flex items-center justify-between rounded-lg border p-2 shadow-sm text-xs hover:shadow transition mb-1 ${bgClass}`}
-                                    >
-                                        {/* --- Info ricorrenza --- */}
-                                        <div>
-                                            <div className="font-semibold">{r.nome}</div>
-                                            <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                {r.categoria} • {FREQUENZE_LABEL[r.frequenza] || r.frequenza}
+                            {/* --------- Lista delle ricorrenze del gruppo --------- */}
+                            <ul>
+                                {gruppi[freq].map((r) => {
+                                    const { symbol, valueClass, bgClass } = getTypeStyle(r.type);
+                                    return (
+                                        <li
+                                            key={r.id}
+                                            className={`flex items-center justify-between rounded-lg border p-2 shadow-sm text-xs hover:shadow transition mb-1 ${bgClass}`}
+                                        >
+                                            {/* --- Info ricorrenza --- */}
+                                            <div>
+                                                <div className="font-semibold">{r.nome}</div>
+                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                                                    {r.categoria} •{" "}
+                                                    {FREQUENZE_LABEL[normalizzaFrequenza(r.frequenza)] || r.frequenza}
+                                                </div>
+                                                {r.note && <div className="text-[11px] text-zinc-400">{r.note}</div>}
                                             </div>
-                                            {r.note && <div className="text-[11px] text-zinc-400">{r.note}</div>}
-                                        </div>
-                                        {/* --- Importo + Azioni --- */}
-                                        <div className="flex items-center gap-2 ml-2">
-                                            <span className={`font-mono text-sm ${valueClass}`}>
-                                                {symbol}€{(r.importo ?? 0).toFixed(2)}
-                                            </span>
-                                            <button
-                                                className="p-1 rounded hover:bg-primary/10 text-primary transition"
-                                                title="Modifica"
-                                                onClick={() => onEdit?.(r)}
-                                            >
-                                                <Pencil className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                className="p-1 rounded hover:bg-red-100 text-red-600 transition"
-                                                title="Elimina"
-                                                onClick={() => setToDelete(r)}
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </li>
-                                );
-                            })}
-                        </div>
+                                            {/* --- Importo + Azioni --- */}
+                                            <div className="flex items-center gap-2 ml-2">
+                                                <span className={`font-mono text-sm ${valueClass}`}>
+                                                    {symbol}€{(r.importo ?? 0).toFixed(2)}
+                                                </span>
+                                                <button
+                                                    className="p-1 rounded hover:bg-primary/10 text-primary transition"
+                                                    title="Modifica"
+                                                    onClick={() => onEdit?.(r)}
+                                                >
+                                                    <Pencil className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    className="p-1 rounded hover:bg-red-100 text-red-600 transition"
+                                                    title="Elimina"
+                                                    onClick={() => setToDelete(r)}
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </li>
                     ))
                 )}
             </ul>
@@ -206,6 +210,6 @@ export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDele
     );
 }
 
-// =======================================================
+// ============================
 // END ListaRicorrenzePerFrequenza.tsx
-// =======================================================
+// ============================

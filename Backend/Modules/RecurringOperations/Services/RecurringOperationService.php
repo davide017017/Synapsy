@@ -7,6 +7,9 @@ use Carbon\Carbon;
 use Modules\User\Models\User;
 use Modules\RecurringOperations\Models\RecurringOperation;
 
+use Illuminate\Support\Facades\Log;
+
+
 /**
  * Servizio per la gestione delle operazioni ricorrenti utente.
  */

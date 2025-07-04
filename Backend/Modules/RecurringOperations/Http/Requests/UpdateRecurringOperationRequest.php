@@ -40,9 +40,10 @@ class UpdateRecurringOperationRequest extends FormRequest
             'category_id' => [
                 'nullable',
                 Rule::exists('categories', 'id')
-                    ->where(fn ($q) => $q
-                        ->where('user_id', $userId)
-                        ->whereIn('type', ['entrata', 'spesa']) // oppure usare $this->input('type')
+                    ->where(
+                        fn($q) => $q
+                            ->where('user_id', $userId)
+                            ->whereIn('type', ['entrata', 'spesa']) // oppure usare $this->input('type')
                     ),
             ],
         ];

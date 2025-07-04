@@ -36,9 +36,51 @@ export const freqMapEngToIta: Record<string, string> = {
     monthly: "Mensile",
     bimonthly: "Bimestrale",
     quarterly: "Trimestrale",
-    halfyearly: "Semestrale",
+    halfannually: "Semestrale",
     annually: "Annuale",
 };
+
+// ╔══════════════════════════════════════════════════════╗
+// ║ NORMALIZZAZIONE FREQUENZE (ENG/ITA → standard ENG)  ║
+// ╚══════════════════════════════════════════════════════╝
+
+/**
+ * Converte qualsiasi valore frequenza ricevuto dal backend
+ * nei 4 standard: daily, weekly, monthly, annually.
+ * Usa SEMPRE questa funzione in tutte le liste/filtri!
+ */
+export function normalizzaFrequenza(freq: string): "daily" | "weekly" | "monthly" | "annually" {
+    const map: Record<string, "daily" | "weekly" | "monthly" | "annually"> = {
+        // Giornaliero
+        Giornaliero: "daily",
+        giornaliero: "daily",
+        daily: "daily",
+        DAILY: "daily",
+
+        // Settimanale
+        Settimanale: "weekly",
+        settimanale: "weekly",
+        weekly: "weekly",
+        Weekly: "weekly",
+
+        // Mensile
+        Mensile: "monthly",
+        mensile: "monthly",
+        monthly: "monthly",
+        Monthly: "monthly",
+
+        // Annuale
+        annually: "annually",
+        Annually: "annually",
+        Annuale: "annually",
+        annuale: "annually",
+        yearly: "annually", // <-- accetta anche yearly per sicurezza
+        Yearly: "annually",
+        annual: "annually",
+        Annual: "annually",
+    };
+    return map[freq] ?? "monthly"; // fallback
+}
 
 // ╔══════════════════════════════════════════════════════╗
 // ║ 2. ORDINAMENTI E CALCOLI DI BASE                    ║
@@ -228,6 +270,34 @@ export function aggregaRicorrenzePerTipoEFrequenza(ricorrenze: Ricorrenza[]) {
 export function sommaTotaleAnnua(aggregato: Record<string, { totaleAnnuale: number }>) {
     return Object.values(aggregato).reduce((sum, v) => sum + v.totaleAnnuale, 0);
 }
+// ╔══════════════════════════════════════════════════════╗
+// ║ 5. UTILITY FREQUENZA (label IT, pill, giorni)       ║
+// ╚══════════════════════════════════════════════════════╝
+
+export const freqToIt: Record<"daily" | "weekly" | "monthly" | "annually", string> = {
+    daily: "Giornaliera",
+    weekly: "Settimanale",
+    monthly: "Mensile",
+    annually: "Annuale",
+};
+
+export const freqPillUtility: Record<string, string> = {
+    Giornaliera:
+        "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/60 dark:text-green-100 dark:border-green-700",
+    Settimanale:
+        "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/60 dark:text-blue-100 dark:border-blue-700",
+    Mensile:
+        "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/60 dark:text-amber-100 dark:border-amber-700",
+    Annuale:
+        "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/60 dark:text-orange-100 dark:border-orange-700",
+};
+
+export const freqToDays: Record<"daily" | "weekly" | "monthly" | "annually", number> = {
+    daily: 1,
+    weekly: 7,
+    monthly: 30,
+    annually: 365,
+};
 
 // ============================
 // END ricorrenza-utils.ts

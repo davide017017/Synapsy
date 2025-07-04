@@ -21,6 +21,9 @@ class StoreRecurringOperationRequest extends FormRequest
     // ============================
     public function rules(): array
     {
+        /** @var \Illuminate\Http\Request $this */
+
+
         $userId = Auth::id();
         $type   = $this->input('type');
 
@@ -37,9 +40,10 @@ class StoreRecurringOperationRequest extends FormRequest
             'category_id' => [
                 'nullable',
                 Rule::exists('categories', 'id')
-                    ->where(fn ($q) => $q
-                        ->where('user_id', $userId)
-                        ->where('type', $type)
+                    ->where(
+                        fn($q) => $q
+                            ->where('user_id', $userId)
+                            ->where('type', $type)
                     ),
             ],
             'generate_past_now' => 'boolean',

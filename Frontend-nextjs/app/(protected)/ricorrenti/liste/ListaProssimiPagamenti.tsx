@@ -3,84 +3,21 @@
 // =======================================================
 // ListaProssimiPagamenti.tsx
 // Planner avanzato: tutte le occorrenze future entro 7/30 giorni
-// (Colori utility Tailwind, pill frequenza a destra, lista compatta e leggibile!)
+// (Colori utility Tailwind, frequenza normalizzata, lista compatta)
 // =======================================================
 
 import { Ricorrenza } from "@/types/types/ricorrenza";
+import { normalizzaFrequenza, freqToIt, freqPillUtility, freqToDays } from "../utils/ricorrenza-utils";
 
 // ===================== TIPI & COSTANTI =====================
 type Props = { pagamenti: Ricorrenza[] };
-
-const freqToDays: Record<string, number> = {
-    Giornaliero: 1,
-    giornaliero: 1,
-    daily: 1,
-    DAILY: 1,
-    Settimanale: 7,
-    settimanale: 7,
-    weekly: 7,
-    Weekly: 7,
-    Mensile: 30,
-    mensile: 30,
-    monthly: 30,
-    Monthly: 30,
-    Bimestrale: 61,
-    bimestrale: 61,
-    Trimestrale: 92,
-    trimestrale: 92,
-    Semestrale: 183,
-    semestrale: 183,
-    Annuale: 365,
-    annuale: 365,
-    annually: 365,
-    Annually: 365,
-};
-
-const freqToIt: Record<string, string> = {
-    Giornaliero: "Giornaliera",
-    giornaliero: "Giornaliera",
-    daily: "Giornaliera",
-    DAILY: "Giornaliera",
-    Settimanale: "Settimanale",
-    settimanale: "Settimanale",
-    weekly: "Settimanale",
-    Weekly: "Settimanale",
-    Mensile: "Mensile",
-    mensile: "Mensile",
-    monthly: "Mensile",
-    Monthly: "Mensile",
-    Bimestrale: "Bimestrale",
-    bimestrale: "Bimestrale",
-    Trimestrale: "Trimestrale",
-    trimestrale: "Trimestrale",
-    Semestrale: "Semestrale",
-    semestrale: "Semestrale",
-    Annuale: "Annuale",
-    annuale: "Annuale",
-    annually: "Annuale",
-    Annually: "Annuale",
-};
-
-const freqPillUtility: Record<string, string> = {
-    Giornaliera:
-        "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/60 dark:text-green-100 dark:border-green-700",
-    Settimanale:
-        "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/60 dark:text-blue-100 dark:border-blue-700",
-    Mensile:
-        "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/60 dark:text-amber-100 dark:border-amber-700",
-    Bimestrale: "bg-cyan-100 text-cyan-700 border-cyan-300 dark:bg-cyan-900/60 dark:text-cyan-100 dark:border-cyan-700",
-    Trimestrale:
-        "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-900/60 dark:text-violet-100 dark:border-violet-700",
-    Semestrale: "bg-pink-100 text-pink-700 border-pink-300 dark:bg-pink-900/60 dark:text-pink-100 dark:border-pink-700",
-    Annuale:
-        "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/60 dark:text-orange-100 dark:border-orange-700",
-};
 
 // ========================= UTILS =========================
 
 // --------- Espande occorrenze tra due date ---------
 function expandOccurrences(r: Ricorrenza, from: Date, to: Date) {
-    const step = freqToDays[r.frequenza] ?? 30;
+    const freqNorm = normalizzaFrequenza(r.frequenza);
+    const step = freqToDays[freqNorm] ?? 30;
     const occs: { ricorrenza: Ricorrenza; data: string }[] = [];
     let current = new Date(r.prossima);
 
@@ -122,11 +59,12 @@ function getRowUtility(type: string) {
 
 // --------- Prende label IT e colore pill ---------
 function getFreqPill(frequenza: string) {
-    const freqIt = freqToIt[frequenza] ?? frequenza;
+    const freqNorm = normalizzaFrequenza(frequenza);
+    const freqItLabel = freqToIt[freqNorm] ?? frequenza;
     const pillClass =
-        freqPillUtility[freqIt] ??
+        freqPillUtility[freqItLabel] ??
         "bg-gray-100 text-gray-500 border-gray-300 dark:bg-gray-700/50 dark:text-gray-100 dark:border-gray-600";
-    return { label: freqIt, className: pillClass };
+    return { label: freqItLabel, className: pillClass };
 }
 
 // ==================== COMPONENTE PRINCIPALE ====================
@@ -135,7 +73,7 @@ export default function ListaProssimiPagamenti({ pagamenti }: Props) {
     today.setHours(0, 0, 0, 0);
     const weekTo = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000);
     const monthTo = new Date(today.getTime() + 29 * 24 * 60 * 60 * 1000);
-
+    console.log("PAGAMENTI IN INGRESSO", pagamenti);
     let occorrenze7: { ricorrenza: Ricorrenza; data: string }[] = [];
     let occorrenze30: { ricorrenza: Ricorrenza; data: string }[] = [];
     for (const ric of pagamenti) {

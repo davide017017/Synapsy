@@ -1,15 +1,16 @@
 "use client";
 
-// ============================
+// =======================================================
 // NewRicorrenzaModal.tsx
 // Modale riusabile per create/edit
-// ============================
+// =======================================================
 
 import NewRicorrenzaForm from "./NewRicorrenzaForm";
 import { Ricorrenza, RicorrenzaBase } from "@/types/types/ricorrenza";
 // Sostituisci con il tuo Dialog preferito!
 import Dialog from "@/app/components/ui/Dialog";
 
+// --------- Props tipizzate ---------
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -17,6 +18,9 @@ type Props = {
     onSave: (data: RicorrenzaBase) => Promise<void>;
 };
 
+// =======================================================
+// COMPONENTE PRINCIPALE
+// =======================================================
 export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, onSave }: Props) {
     return (
         <Dialog open={open} onClose={onClose}>
@@ -30,6 +34,6 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
     );
 }
 
-// ============================
+// =======================================================
 // END NewRicorrenzaModal.tsx
-// ============================
+// =======================================================

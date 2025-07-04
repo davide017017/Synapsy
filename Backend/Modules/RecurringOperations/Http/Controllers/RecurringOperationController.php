@@ -10,8 +10,9 @@ use Illuminate\View\View;
 use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\RecurringOperations\Services\RecurringOperationService;
 use Modules\RecurringOperations\Jobs\ProcessRecurringOperation;
-use Illuminate\Validation\Rule;
 use ApiResponse;
+use Modules\RecurringOperations\Http\Requests\StoreRecurringOperationRequest;
+use Modules\RecurringOperations\Http\Requests\UpdateRecurringOperationRequest;
 
 class RecurringOperationController extends Controller
 {
@@ -44,7 +45,12 @@ class RecurringOperationController extends Controller
         ];
 
         $sortBy = in_array($request->query('sort_by'), [
-            'description', 'amount', 'type', 'start_date', 'next_occurrence_date', 'is_active'
+            'description',
+            'amount',
+            'type',
+            'start_date',
+            'next_occurrence_date',
+            'is_active'
         ]) ? $request->query('sort_by') : 'next_occurrence_date';
 
         $sortDirection = in_array($request->query('sort_direction'), ['asc', 'desc'])
@@ -100,28 +106,13 @@ class RecurringOperationController extends Controller
     // ============================
     // Store - Salva nuova regola
     // ============================
-    public function store(Request $request): JsonResponse|RedirectResponse
-    {
-        $user = $request->user();
 
-        $validated = $request->validate([
-            'description' => 'required|string|max:255',
-            'amount' => 'required|numeric|between:0.01,999999.99',
-            'type' => ['required', Rule::in(['entrata', 'spesa'])],
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'frequency' => ['required', Rule::in(['daily', 'weekly', 'monthly', 'annually'])],
-            'interval' => 'required|integer|min:1',
-            'is_active' => 'required|boolean',
-            'notes' => 'nullable|string',
-            'category_id' => [
-                'nullable',
-                Rule::exists('categories', 'id')->where(function ($q) use ($user, $request) {
-                    $q->where('user_id', $user->id)->where('type', $request->input('type'));
-                }),
-            ],
-            'generate_past_now' => 'boolean',
-        ]);
+    public function store(StoreRecurringOperationRequest $request): JsonResponse|RedirectResponse
+    {
+        /** @var \Illuminate\Http\Request $request */
+        $user = $request->user();
+        // Prendi i dati già validati
+        $validated = $request->validated();
 
         $operation = $this->service->createOperation($validated, $user);
 
@@ -159,27 +150,10 @@ class RecurringOperationController extends Controller
     // ============================
     // Update - Aggiorna record
     // ============================
-    public function update(Request $request, RecurringOperation $recurringOperation): JsonResponse|RedirectResponse
+    public function update(UpdateRecurringOperationRequest $request, RecurringOperation $recurringOperation): JsonResponse|RedirectResponse
     {
-        $user = $request->user();
-
-        $validated = $request->validate([
-            'description' => 'required|string|max:255',
-            'amount' => 'required|numeric|between:0.01,999999.99',
-            'type' => ['required', Rule::in(['entrata', 'spesa'])],
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'frequency' => ['required', Rule::in(['daily', 'weekly', 'monthly', 'annually'])],
-            'interval' => 'required|integer|min:1',
-            'is_active' => 'required|boolean',
-            'notes' => 'nullable|string',
-            'category_id' => [
-                'nullable',
-                Rule::exists('categories', 'id')->where(function ($q) use ($user, $request) {
-                    $q->where('user_id', $user->id)->where('type', $request->input('type'));
-                }),
-            ],
-        ]);
+        /** @var \Illuminate\Http\Request $request */
+        $validated = $request->validated();
 
         $this->service->updateOperation($recurringOperation, $validated);
 

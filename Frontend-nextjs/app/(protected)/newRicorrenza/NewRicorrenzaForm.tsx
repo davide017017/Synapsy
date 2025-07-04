@@ -1,9 +1,9 @@
 "use client";
 
-// ============================
+// =======================================================
 // NewRicorrenzaForm.tsx
-// Form riusabile per create/edit
-// ============================
+// Form riusabile per create/edit (con debug avanzato frequenza!)
+// =======================================================
 
 import { useState, useMemo, useEffect } from "react";
 import { Ricorrenza, RicorrenzaBase } from "@/types/types/ricorrenza";
@@ -12,26 +12,29 @@ import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import { Button } from "@/app/components/ui/Button";
 
-// --------- Helper: formatta sempre la data per l’input type="date"
+// =======================================================
+// Helper: formatta sempre la data per input type="date"
+// =======================================================
 function toDateInputValue(dateString?: string) {
     if (!dateString) return new Date().toISOString().split("T")[0];
     const d = new Date(dateString);
-    // Pad month/day to 2 cifre
     const month = (d.getMonth() + 1).toString().padStart(2, "0");
     const day = d.getDate().toString().padStart(2, "0");
     return `${d.getFullYear()}-${month}-${day}`;
 }
 
-// --------- Props tipizzate ---------
+// =======================================================
+// Props tipizzate
+// =======================================================
 type Props = {
     onSave: (data: RicorrenzaBase) => Promise<void>;
     onCancel: () => void;
     initialValues?: Partial<RicorrenzaBase>;
 };
 
-// ============================
+// =======================================================
 // COMPONENTE PRINCIPALE
-// ============================
+// =======================================================
 export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: Props) {
     const { categories, loading: loadingCategories } = useCategories();
 
@@ -39,7 +42,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
     const [formData, setFormData] = useState<RicorrenzaBase>({
         nome: initialValues?.nome || "",
         importo: initialValues?.importo || 0,
-        frequenza: initialValues?.frequenza || "Mensile",
+        frequenza: initialValues?.frequenza || "monthly", // ⚠️ Usa sempre la chiave accettata dal backend!
         prossima: toDateInputValue(initialValues?.prossima),
         category_id: initialValues?.category_id || 0,
         note: initialValues?.note || "",
@@ -47,10 +50,18 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
         is_active: initialValues?.is_active ?? 1,
         interval: initialValues?.interval || 1,
     });
+
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
 
-    // --- Sincronizza il form se cambiano i valori iniziali (es. cambia record da editare) ---
+    // ===========================
+    // Debug: cosa arriva come initialValues?
+    useEffect(() => {
+        console.log("[Form INIT] initialValues:", initialValues);
+    }, [initialValues]);
+
+    // ===========================
+    // Sincronizza il form se cambia initialValues
     useEffect(() => {
         if (initialValues) {
             setFormData((prev) => ({
@@ -64,13 +75,21 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
         }
     }, [initialValues]);
 
-    // --- Filtra categorie per tipo dinamicamente ---
+    // --------- Filtra categorie per tipo dinamicamente ---------
     const filteredCategories = useMemo(
         () => categories.filter((cat) => cat.type === formData.type),
         [categories, formData.type]
     );
 
-    // --- Gestione submit ---
+    // ===========================
+    // Debug: ogni volta che cambia la frequenza nel form
+    useEffect(() => {
+        console.log("[FormData] Cambiata frequenza nel form:", formData.frequenza);
+    }, [formData.frequenza]);
+
+    // ===========================
+    // Handle submit
+    // ===========================
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const errs: Record<string, string> = {};
@@ -81,7 +100,12 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
         if (!formData.category_id) errs.category_id = "Seleziona una categoria";
         setErrors(errs);
         if (Object.keys(errs).length) return;
+
         setLoading(true);
+
+        // Debug: payload che stai per inviare
+        console.log("[SUBMIT] Payload inviato:", formData);
+
         try {
             await onSave(formData);
         } finally {
@@ -89,9 +113,9 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
         }
     };
 
-    // ============================
-    // Render form
-    // ============================
+    // =======================================================
+    // Render
+    // =======================================================
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             {/* --------- Tipo ricorrenza (entrata/spesa) --------- */}
@@ -101,7 +125,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
                     setFormData({
                         ...formData,
                         type: e.target.value as "entrata" | "spesa",
-                        category_id: 0, // reset categoria se cambi tipo
+                        category_id: 0,
                     })
                 }
                 className="w-full px-3 py-2 rounded-xl border bg-bg text-text text-sm focus:ring-2 focus:ring-primary focus:outline-none"
@@ -151,20 +175,16 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
             />
             {errors.importo && <p className="text-danger text-xs -mt-2">{errors.importo}</p>}
 
-            {/* --------- Frequenza --------- */}
+            {/* --------- Frequenza (SOLO valori accettati dal backend!) --------- */}
             <select
                 value={formData.frequenza}
                 onChange={(e) => setFormData({ ...formData, frequenza: e.target.value })}
                 className="w-full px-3 py-2 rounded-xl border bg-bg text-text text-sm focus:ring-2 focus:ring-primary focus:outline-none"
             >
-                <option value="Giornaliero">Giornaliero</option>
-                <option value="Settimanale">Settimanale</option>
-                <option value="Mensile">Mensile</option>
-                <option value="Annuale">Annuale</option>
-                {/* SOLO se il backend li accetta */}
-                {/* <option value="Bimestrale">Bimestrale</option> */}
-                {/* <option value="Trimestrale">Trimestrale</option> */}
-                {/* <option value="Semestrale">Semestrale</option> */}
+                <option value="daily">Giornaliera</option>
+                <option value="weekly">Settimanale</option>
+                <option value="monthly">Mensile</option>
+                <option value="annually">Annuale</option>
             </select>
 
             {/* --------- Data prossima --------- */}
@@ -201,6 +221,6 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
     );
 }
 
-// ============================
+// =======================================================
 // END NewRicorrenzaForm.tsx
-// ============================
+// =======================================================
