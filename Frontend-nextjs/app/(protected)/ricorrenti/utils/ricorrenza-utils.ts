@@ -1,24 +1,26 @@
 // ============================
 // ricorrenza-utils.ts
-// Utility e costanti per la sezione ricorrenze ricorrenti
+// Utility principali per ricorrenze (ordinamento, calcoli, chart, aggregazioni)
 // ============================
 
-import { Ricorrenza } from "@/types";
-import { mockRicorrenze } from "../mockRicorrenze";
+import { Ricorrenza } from "@/types/types/ricorrenza";
 
-// ============================
-// 1. COSTANTI ORDINAMENTO & MOLTIPLICATORI
-// ============================
+// ╔══════════════════════════════════════════════════════╗
+// ║ 1. COSTANTI: ORDINE FREQUENZA E MOLTIPLICATORI      ║
+// ╚══════════════════════════════════════════════════════╝
+
 export const frequenzaOrder = {
-    Settimanale: 0,
-    Mensile: 1,
-    Bimestrale: 2,
-    Trimestrale: 3,
-    Semestrale: 4,
-    Annuale: 5,
+    Giornaliero: 0,
+    Settimanale: 1,
+    Mensile: 2,
+    Bimestrale: 3,
+    Trimestrale: 4,
+    Semestrale: 5,
+    Annuale: 6,
 } as const;
 
 export const frequencyAnnualMultiplier = {
+    Giornaliero: 365,
     Settimanale: 52,
     Mensile: 12,
     Bimestrale: 6,
@@ -27,19 +29,30 @@ export const frequencyAnnualMultiplier = {
     Annuale: 1,
 } as const;
 
-// ============================
-// 2. FUNZIONI DI ORDINAMENTO E CALCOLO
-// ============================
+// --------- Mappa ENG → ITA ---------
+export const freqMapEngToIta: Record<string, string> = {
+    daily: "Giornaliero",
+    weekly: "Settimanale",
+    monthly: "Mensile",
+    bimonthly: "Bimestrale",
+    quarterly: "Trimestrale",
+    halfyearly: "Semestrale",
+    annually: "Annuale",
+};
+
+// ╔══════════════════════════════════════════════════════╗
+// ║ 2. ORDINAMENTI E CALCOLI DI BASE                    ║
+// ╚══════════════════════════════════════════════════════╝
 
 /**
- * Ordina le ricorrenze per importo decrescente.
+ * Ordina ricorrenze dal prezzo più alto al più basso.
  */
 export function ordinaPerPrezzo(arr: Ricorrenza[]): Ricorrenza[] {
     return [...arr].sort((a, b) => b.importo - a.importo);
 }
 
 /**
- * Ordina le ricorrenze per frequenza (ordine logico: Settimanale, Mensile, ...)
+ * Ordina ricorrenze secondo la frequenza (ordine logico).
  */
 export function ordinaPerFrequenza(arr: Ricorrenza[]): Ricorrenza[] {
     return [...arr].sort(
@@ -50,20 +63,20 @@ export function ordinaPerFrequenza(arr: Ricorrenza[]): Ricorrenza[] {
 }
 
 /**
- * Calcola il totale annuo stimato per ciascuna frequenza.
+ * Calcola il totale importo per ciascuna frequenza (SOMMA SEMPLICE, NON annuo!).
  */
-export function calcolaTotaliAnnuiPerFrequenza(arr: Ricorrenza[]): Record<string, number> {
-    const annuali: Record<string, number> = {};
-    arr.forEach((r) => {
-        const freq = r.frequenza;
-        const mult = frequencyAnnualMultiplier[freq as keyof typeof frequencyAnnualMultiplier] ?? 1;
-        annuali[freq] = (annuali[freq] ?? 0) + r.importo * mult;
+export function calcolaTotaliAnnuiPerFrequenza(ricorrenze: Ricorrenza[]): Record<string, number> {
+    const totali: Record<string, number> = {};
+    ricorrenze.forEach((r) => {
+        if (!r.frequenza || typeof r.importo !== "number" || isNaN(r.importo)) return;
+        if (!totali[r.frequenza]) totali[r.frequenza] = 0;
+        totali[r.frequenza] += r.importo;
     });
-    return annuali;
+    return totali;
 }
 
 /**
- * Filtra i pagamenti che scadono entro un certo numero di giorni.
+ * Filtra ricorrenze con scadenza entro X giorni da oggi.
  */
 export function filtraPagamentiEntro(arr: Ricorrenza[], giorni: number = 7): Ricorrenza[] {
     const oggi = new Date();
@@ -73,18 +86,18 @@ export function filtraPagamentiEntro(arr: Ricorrenza[], giorni: number = 7): Ric
 }
 
 /**
- * Somma totale degli importi delle ricorrenze.
+ * Calcola il totale importo di un array di ricorrenze.
  */
 export function totalePagamenti(arr: Ricorrenza[]): number {
     return arr.reduce((sum, r) => sum + r.importo, 0);
 }
 
-// ============================
-// 3. GESTIONE GIORNI & GRAFICI (Chart.js)
-// ============================
+// ╔══════════════════════════════════════════════════════╗
+// ║ 3. GESTIONE GIORNI & SUPPORTO CHART.JS              ║
+// ╚══════════════════════════════════════════════════════╝
 
 /**
- * Ritorna un array di oggetti Date a partire da oggi per N giorni.
+ * Restituisce un array di Date per i prossimi N giorni.
  */
 export function getDaysRangeArray(days: number): Date[] {
     const res: Date[] = [];
@@ -98,79 +111,124 @@ export function getDaysRangeArray(days: number): Date[] {
 }
 
 /**
- * Chiave data "YYYY-MM-DD" per confronto veloce.
+ * Ottieni chiave 'YYYY-MM-DD' per una data (utile per mapping/grafici).
  */
 export function dateKey(date: Date): string {
+    if (!date || isNaN(date.getTime())) return "";
     return date.toISOString().slice(0, 10);
 }
 
-// --- Giorni da mostrare nel grafico ---
 export const daysToShow = 7;
 export const daysArr = getDaysRangeArray(daysToShow);
 
-// --- Mappa: data => ricorrenze in quella data (per grafico) ---
-export const ricorrenzePerData: Record<string, Ricorrenza[]> = Object.fromEntries(
-    daysArr.map((day) => {
-        const key = dateKey(day);
-        const ric = mockRicorrenze.filter((r) => dateKey(new Date(r.prossima)) === key);
-        return [key, ric];
-    })
-);
+/**
+ * Crea i dati per un grafico Chart.js (bar) sulle ricorrenze nei prossimi giorni.
+ */
+export function buildBarChartData(ricorrenze: Ricorrenza[]) {
+    // Mappa data → ricorrenze in quella data
+    const ricorrenzePerData: Record<string, Ricorrenza[]> = Object.fromEntries(
+        daysArr.map((day) => {
+            const key = dateKey(day);
+            const ric = ricorrenze.filter((r) => dateKey(new Date(r.prossima)) === key);
+            return [key, ric];
+        })
+    );
 
-// --- Dati per grafico Chart.js ---
-export const barChartData = {
-    labels: daysArr.map((d) => d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" })),
-    datasets: [
-        {
-            label: "Importo",
-            data: daysArr.map((d) => {
-                const key = dateKey(d);
-                const tot = ricorrenzePerData[key]?.reduce((sum, r) => sum + r.importo, 0) || 0;
-                return tot;
-            }),
-            backgroundColor: "rgba(60,179,113,0.75)",
-            borderRadius: 8,
-        },
-    ],
-};
+    return {
+        labels: daysArr.map((d) => d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" })),
+        datasets: [
+            {
+                label: "Importo",
+                data: daysArr.map((d) => {
+                    const key = dateKey(d);
+                    const tot = ricorrenzePerData[key]?.reduce((sum, r) => sum + r.importo, 0) || 0;
+                    return tot;
+                }),
+                backgroundColor: "rgba(60,179,113,0.75)",
+                borderRadius: 8,
+            },
+        ],
+    };
+}
 
 /**
- * Opzioni per grafico Chart.js (tooltip, assi, ecc)
+ * Opzioni per Chart.js (tooltip, assi, responsive...)
  */
-export const barChartOptions = {
-    plugins: {
-        legend: { display: false },
-        tooltip: {
-            callbacks: {
-                label: function (ctx: any) {
-                    const idx = ctx.dataIndex;
-                    const key = dateKey(daysArr[idx]);
-                    const ric = ricorrenzePerData[key] || [];
-                    if (ric.length === 0) return "Nessuna ricorrenza";
-                    return ric.map((r) => `${r.nome}: €${r.importo.toFixed(2)}`);
-                },
-                title: function (items: any) {
-                    const idx = items[0].dataIndex;
-                    return daysArr[idx].toLocaleDateString("it-IT", {
-                        weekday: "short",
-                        day: "2-digit",
-                        month: "2-digit",
-                    });
+export function buildBarChartOptions() {
+    return {
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function (ctx: any) {
+                        const idx = ctx.dataIndex;
+                        return `Totale: €${ctx.dataset.data[idx].toFixed(2)}`;
+                    },
+                    title: function (items: any) {
+                        const idx = items[0].dataIndex;
+                        return daysArr[idx].toLocaleDateString("it-IT", {
+                            weekday: "short",
+                            day: "2-digit",
+                            month: "2-digit",
+                        });
+                    },
                 },
             },
         },
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-        x: {
-            grid: { display: false },
-            ticks: { font: { size: 11 } },
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                grid: { display: false },
+                ticks: { font: { size: 11 } },
+            },
+            y: { grid: { display: false } },
         },
-        y: { grid: { display: false } },
-    },
-};
+    };
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║ 4. AGGREGAZIONI PER CARD ANNUA: SPESE/ENTRATE       ║
+// ╚══════════════════════════════════════════════════════╝
+
+/**
+ * Raggruppa ricorrenze per tipo ("spesa"/"entrata") e frequenza,
+ * calcolando totale e totale annuo per ogni gruppo.
+ * Esempio risultato:
+ * {
+ *   spesa: { Mensile: { totale: 10, totaleAnnuale: 120 }, ... },
+ *   entrata: { Mensile: { totale: 20, totaleAnnuale: 240 }, ... }
+ * }
+ */
+export function aggregaRicorrenzePerTipoEFrequenza(ricorrenze: Ricorrenza[]) {
+    const result: Record<"spesa" | "entrata", Record<string, { totale: number; totaleAnnuale: number }>> = {
+        spesa: {},
+        entrata: {},
+    };
+
+    ricorrenze.forEach((r) => {
+        const tipo = r.type === "entrata" ? "entrata" : "spesa";
+
+        // ------ Conversione ENG → ITA se serve ------
+        let freq = r.frequenza;
+        if (freqMapEngToIta[freq]) freq = freqMapEngToIta[freq];
+
+        const mult = frequencyAnnualMultiplier[freq as keyof typeof frequencyAnnualMultiplier] ?? 1;
+        if (!result[tipo][freq]) result[tipo][freq] = { totale: 0, totaleAnnuale: 0 };
+        result[tipo][freq].totale += r.importo ?? 0;
+        result[tipo][freq].totaleAnnuale += (r.importo ?? 0) * mult;
+    });
+
+    return result;
+}
+
+/**
+ * Somma il totale annuo di tutti i gruppi (usa per spese/entrate)
+ */
+export function sommaTotaleAnnua(aggregato: Record<string, { totaleAnnuale: number }>) {
+    return Object.values(aggregato).reduce((sum, v) => sum + v.totaleAnnuale, 0);
+}
 
 // ============================
-// END UTILS RICORRENZE
+// END ricorrenza-utils.ts
 // ============================

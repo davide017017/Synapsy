@@ -1,15 +1,13 @@
 "use client";
 
-// ============================
+// =======================================================
 // ListaProssimiPagamenti.tsx
-// Lista filtrabile dei prossimi pagamenti in scadenza
-// ============================
+// Lista pagamenti ricorrenti in scadenza (ordinati per data)
+// =======================================================
 
 import { Ricorrenza } from "@/types";
 
-// --------------------
-// Props tipizzate
-// --------------------
+// --------- Props tipizzate ---------
 type Props = {
     pagamenti: Ricorrenza[];
     filtro: "tutti" | "settimana" | "mese";
@@ -18,89 +16,75 @@ type Props = {
     totaleMese: number;
 };
 
-// --------------------
-// Componente principale
-// --------------------
+// =======================================================
+// COMPONENTE PRINCIPALE
+// =======================================================
 export default function ListaProssimiPagamenti({ pagamenti, filtro, setFiltro, totaleSettimana, totaleMese }: Props) {
+    // Ordina i pagamenti per data di scadenza (crescente)
+    const pagamentiOrdinati = [...pagamenti].sort(
+        (a, b) => new Date(a.prossima).getTime() - new Date(b.prossima).getTime()
+    );
+
     return (
         <div>
-            {/* ====== Header e filtri ====== */}
+            {/* ================= Header e Filtri ================= */}
             <div className="flex items-center justify-between mb-2">
                 <h2 className="font-semibold text-lg text-primary border-b border-primary/30 pb-1">
                     📅 Prossimi pagamenti
                 </h2>
                 <div className="flex gap-1">
-                    <button
-                        className={`px-2 py-1 rounded text-xs font-semibold transition ${
-                            filtro === "tutti"
-                                ? "bg-primary text-white"
-                                : "bg-bg-elevate text-primary border border-primary"
-                        }`}
-                        onClick={() => setFiltro("tutti")}
-                    >
-                        Tutti
-                    </button>
-                    <button
-                        className={`px-2 py-1 rounded text-xs font-semibold transition ${
-                            filtro === "settimana"
-                                ? "bg-primary text-white"
-                                : "bg-bg-elevate text-primary border border-primary"
-                        }`}
-                        onClick={() => setFiltro("settimana")}
-                    >
-                        Settimana
-                    </button>
-                    <button
-                        className={`px-2 py-1 rounded text-xs font-semibold transition ${
-                            filtro === "mese"
-                                ? "bg-primary text-white"
-                                : "bg-bg-elevate text-primary border border-primary"
-                        }`}
-                        onClick={() => setFiltro("mese")}
-                    >
-                        Mese
-                    </button>
+                    {["tutti", "settimana", "mese"].map((tipo) => (
+                        <button
+                            key={tipo}
+                            className={`px-2 py-1 rounded text-xs font-semibold transition ${
+                                filtro === tipo
+                                    ? "bg-primary text-white"
+                                    : "bg-bg-elevate text-primary border border-primary"
+                            }`}
+                            onClick={() => setFiltro(tipo as "tutti" | "settimana" | "mese")}
+                        >
+                            {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* ====== Lista pagamenti o messaggio vuoto ====== */}
+            {/* ================= Lista pagamenti ================= */}
             <ul className="space-y-2">
-                {pagamenti.length === 0 ? (
-                    <li className="text-zinc-400 italic px-3 py-8">Nessun pagamento in scadenza.</li>
+                {pagamentiOrdinati.length === 0 ? (
+                    <li key="empty" className="text-zinc-400 italic px-3 py-8">
+                        Nessun pagamento in scadenza.
+                    </li>
                 ) : (
-                    pagamenti
-                        .sort((a, b) => new Date(a.prossima).getTime() - new Date(b.prossima).getTime())
-                        .map((r) => (
-                            <li
-                                key={r.id}
-                                className="flex items-center justify-between rounded-xl border border-bg-elevate bg-bg-elevate/70 p-3 shadow-sm hover:shadow transition"
-                            >
-                                {/* Info pagamento */}
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-mono text-xs text-zinc-400 w-20">
-                                            {new Date(r.prossima).toLocaleDateString("it-IT", {
-                                                day: "2-digit",
-                                                month: "2-digit",
-                                                year: "2-digit",
-                                            })}
-                                        </span>
-                                        <span className="font-semibold">{r.nome}</span>
-                                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                                            ({r.frequenza})
-                                        </span>
-                                    </div>
+                    pagamentiOrdinati.map((r) => (
+                        <li
+                            key={r.id}
+                            className="flex items-center justify-between rounded-xl border border-bg-elevate bg-bg-elevate/70 p-3 shadow-sm hover:shadow transition"
+                        >
+                            {/* --- Info pagamento --- */}
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-mono text-xs text-zinc-400 w-20">
+                                        {new Date(r.prossima).toLocaleDateString("it-IT", {
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "2-digit",
+                                        })}
+                                    </span>
+                                    <span className="font-semibold">{r.nome}</span>
+                                    <span className="text-xs text-zinc-500 dark:text-zinc-400">({r.frequenza})</span>
                                 </div>
-                                {/* Importo */}
-                                <span className="font-mono text-base text-green-700 dark:text-green-400">
-                                    € {r.importo.toFixed(2)}
-                                </span>
-                            </li>
-                        ))
+                            </div>
+                            {/* --- Importo --- */}
+                            <span className="font-mono text-base text-green-700 dark:text-green-400">
+                                € {(r.importo ?? 0).toFixed(2)}
+                            </span>
+                        </li>
+                    ))
                 )}
             </ul>
 
-            {/* ====== Badge totali scadenze ====== */}
+            {/* ================= Badge Totali ================= */}
             <div className="mt-4 flex flex-col gap-1 items-end">
                 <span className="inline-block px-3 py-1 rounded-xl bg-primary/10 text-primary font-semibold text-sm">
                     Scadenze settimana:&nbsp;
@@ -116,5 +100,5 @@ export default function ListaProssimiPagamenti({ pagamenti, filtro, setFiltro, t
 }
 
 // ============================
-// END LISTA PROSSIMI PAGAMENTI
+// END ListaProssimiPagamenti.tsx
 // ============================

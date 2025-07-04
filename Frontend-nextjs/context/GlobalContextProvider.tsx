@@ -8,6 +8,7 @@ import { CategoriesProvider } from "./contexts/CategoriesContext";
 import { NewTransactionProvider } from "./contexts/NewTransactionContext";
 import { SidebarProvider, useSidebar } from "./contexts/SidebarContext";
 import { SelectionProvider } from "./contexts/SelectionContext";
+import { RicorrenzeProvider } from "./contexts/RicorrenzeContext";
 
 export default function GlobalContextProvider({ children }: { children: ReactNode }) {
     return (
@@ -15,9 +16,11 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
             <DarkModeProvider>
                 <CategoriesProvider>
                     <NewTransactionProvider>
-                        <SelectionProvider>
-                            <SidebarProvider>{children}</SidebarProvider>
-                        </SelectionProvider>
+                        <RicorrenzeProvider>
+                            <SelectionProvider>
+                                <SidebarProvider>{children}</SidebarProvider>
+                            </SelectionProvider>
+                        </RicorrenzeProvider>
                     </NewTransactionProvider>
                 </CategoriesProvider>
             </DarkModeProvider>
