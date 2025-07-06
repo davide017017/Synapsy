@@ -115,6 +115,27 @@ class EntrateController extends Controller
         return response()->json(['success' => true], 204);
     }
 
+    // PATCH /api/v1/entrate/move-category
+    /**
+     * Move entries from one category to another.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+
+    public function moveCategory(Request $request): JsonResponse
+    {
+        $request->validate([
+            'oldCategoryId' => 'required|integer',
+            'newCategoryId' => 'required|integer',
+        ]);
+
+        \Modules\Entrate\Models\Entrata::where('category_id', $request->oldCategoryId)
+            ->update(['category_id' => $request->newCategoryId]);
+
+        return response()->json(['status' => 'ok']);
+    }
+
     // =========================
     // ───── WEB: SALVATAGGI (Redirect) ─────
     // =========================

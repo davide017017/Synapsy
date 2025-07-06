@@ -1,8 +1,9 @@
 // ╔══════════════════════════════════════════════════════╗
 // ║               API: CRUD Categorie                   ║
+// ║   + Move entrate/spese/ricorrenze su altra categoria║
 // ╚══════════════════════════════════════════════════════╝
 
-import { Category } from "@/types/types/category";
+import { Category, CategoryBase } from "@/types/types/category";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // ==============================
@@ -18,14 +19,13 @@ export async function getAllCategories(token: string): Promise<Category[]> {
     });
     if (!res.ok) throw new Error("Errore nel caricamento categorie");
     const data = await res.json();
-    // backend può restituire { data: [...] } oppure direttamente [...]
     return Array.isArray(data) ? data : data.data || [];
 }
 
 // ==============================
 // Create: Nuova categoria
 // ==============================
-export async function createCategory(token: string, payload: Omit<Category, "id">): Promise<Category> {
+export async function createCategory(token: string, payload: CategoryBase): Promise<Category> {
     const res = await fetch(`${API_URL}/v1/categories`, {
         method: "POST",
         headers: {
@@ -41,14 +41,14 @@ export async function createCategory(token: string, payload: Omit<Category, "id"
 // ==============================
 // Update: Modifica categoria
 // ==============================
-export async function updateCategory(token: string, category: Category): Promise<Category> {
-    const res = await fetch(`${API_URL}/v1/categories/${category.id}`, {
+export async function updateCategory(token: string, id: number, data: CategoryBase): Promise<Category> {
+    const res = await fetch(`${API_URL}/v1/categories/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(category),
+        body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error("Errore modifica categoria");
     return await res.json();
@@ -67,3 +67,61 @@ export async function deleteCategory(token: string, categoryId: number): Promise
     if (!res.ok) throw new Error("Errore eliminazione categoria");
     return true;
 }
+
+// ==============================
+// Move: Sposta tutte le ENTRATE a un'altra categoria
+// ==============================
+export async function moveEntrateToCategory(token: string, oldCategoryId: number, newCategoryId: number) {
+    const res = await fetch(`${API_URL}/v1/entrate/move-category`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ oldCategoryId, newCategoryId }),
+    });
+    if (!res.ok) throw new Error("Errore nello spostamento entrate");
+    return true;
+}
+
+// ==============================
+// Move: Sposta tutte le SPESE a un'altra categoria
+// ==============================
+export async function moveSpeseToCategory(token: string, oldCategoryId: number, newCategoryId: number) {
+    const res = await fetch(`${API_URL}/v1/spese/move-category`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ oldCategoryId, newCategoryId }),
+    });
+    if (!res.ok) throw new Error("Errore nello spostamento spese");
+    return true;
+}
+
+// ==============================
+// Move: Sposta tutte le RICORRENZE a un'altra categoria
+// ==============================
+export async function moveRecurringToCategory(token: string, oldCategoryId: number, newCategoryId: number) {
+    const res = await fetch(`${API_URL}/v1/recurring-operations/move-category`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ oldCategoryId, newCategoryId }),
+    });
+    if (!res.ok) throw new Error("Errore nello spostamento ricorrenze");
+    return true;
+}
+
+// ===========================================
+// Sposta TUTTO: Entrate, Spese, Ricorrenze
+// ===========================================
+
+/**
+ * Sposta tutte le Entrate, Spese e Ricorrenze dalla categoria oldCategoryId a newCategoryId.
+ * Lancia eccezione se almeno una delle tre chiamate fallisce.
+ */
+export async function moveAllToCategory(token: string, oldCategoryId: number, newCategoryId: number) {
+    await Promise.all([
+        moveEntrateToCategory(token, oldCategoryId, newCategoryId),
+        moveSpeseToCategory(token, oldCategoryId, newCategoryId),
+        moveRecurringToCategory(token, oldCategoryId, newCategoryId),
+    ]);
+    // Se almeno una fallisce, viene lanciata un'eccezione
+}
+
+// ════════════════════════════════════════════════════════

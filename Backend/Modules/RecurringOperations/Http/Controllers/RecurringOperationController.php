@@ -173,4 +173,24 @@ class RecurringOperationController extends Controller
             ? ApiResponse::success('Operazione eliminata.', null, 204)
             : redirect()->route('recurring-operations.index')->with('status', 'Operazione ricorrente eliminata con successo!');
     }
+    // PATCH /api/v1/recurring-operations/move-category
+    /**
+     * Move recurring operations from one category to another.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+
+    public function moveCategory(Request $request): JsonResponse
+    {
+        $request->validate([
+            'oldCategoryId' => 'required|integer',
+            'newCategoryId' => 'required|integer',
+        ]);
+
+        \Modules\RecurringOperations\Models\RecurringOperation::where('category_id', $request->oldCategoryId)
+            ->update(['category_id' => $request->newCategoryId]);
+
+        return response()->json(['status' => 'ok']);
+    }
 }

@@ -137,4 +137,24 @@ class SpeseController extends Controller
         $this->service->delete($spesa);
         return response()->json(['success' => true], 204);
     }
+
+    // PATCH /api/v1/spese/move-category
+    /**
+     * Move all expenses from one category to another.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function moveCategory(Request $request): JsonResponse
+    {
+        $request->validate([
+            'oldCategoryId' => 'required|integer',
+            'newCategoryId' => 'required|integer',
+        ]);
+
+        \Modules\Spese\Models\Spesa::where('category_id', $request->oldCategoryId)
+            ->update(['category_id' => $request->newCategoryId]);
+
+        return response()->json(['status' => 'ok']);
+    }
 }

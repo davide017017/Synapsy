@@ -11,4 +11,6 @@ Route::middleware(['auth:sanctum'])
         Route::post('spese', [SpeseController::class, 'storeApi']);
         Route::put('spese/{spesa}', [SpeseController::class, 'updateApi']);
         Route::delete('spese/{spesa}', [SpeseController::class, 'destroyApi']);
+        Route::patch('/spese/move-category', [SpeseController::class, 'moveCategory']);
+        Route::get('spese/next-occurrences', [SpeseController::class, 'getNextOccurrences']);
     });
