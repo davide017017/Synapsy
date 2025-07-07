@@ -1,16 +1,20 @@
 "use client";
 
+/* ╔═══════════════════════════════════════════════════════╗
+ * ║      SidebarContext — Stato apertura/chiusura        ║
+ * ╚═══════════════════════════════════════════════════════╝ */
+
 import { createContext, useContext, useState, ReactNode } from "react";
 import type { SidebarContextType } from "@/types";
 
-// ─────────────────────────────────────────────
-// Context per gestire apertura/chiusura sidebar
-// ─────────────────────────────────────────────
-
+// ════════════════════════════════════════════════════════
 // 1. Creazione del context
+// ════════════════════════════════════════════════════════
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
-// 2. Provider che gestisce lo stato della sidebar
+// ════════════════════════════════════════════════════════
+// 2. Provider — gestisce stato sidebar
+// ════════════════════════════════════════════════════════
 export function SidebarProvider({ children }: { children: ReactNode }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -19,7 +23,9 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
     return <SidebarContext.Provider value={{ isCollapsed, toggleSidebar }}>{children}</SidebarContext.Provider>;
 }
 
-// 3. Hook personalizzato per accedere al context
+// ════════════════════════════════════════════════════════
+// 3. Hook custom per usare il context
+// ════════════════════════════════════════════════════════
 export function useSidebar() {
     const context = useContext(SidebarContext);
     if (!context) {
@@ -27,3 +33,5 @@ export function useSidebar() {
     }
     return context;
 }
+
+// ════════════════════════════════════════════════════════

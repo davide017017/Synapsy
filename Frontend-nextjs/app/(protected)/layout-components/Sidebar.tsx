@@ -1,5 +1,9 @@
 "use client";
 
+// ╔══════════════════════════════════════════════╗
+// ║            Sidebar Component                ║
+// ╚══════════════════════════════════════════════╝
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -19,9 +23,9 @@ import { useSidebar } from "@/context/contexts/SidebarContext";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 
-/* ────────────────────────────────
-    Voci di navigazione
-──────────────────────────────── */
+// ────────────────────────────────
+// Configurazione navigazione
+// ────────────────────────────────
 const navItems = [
     { href: "/", label: "Home", icon: <Home size={18} /> },
     { href: "/panoramica", label: "Panoramica", icon: <BarChart size={18} /> },
@@ -30,31 +34,33 @@ const navItems = [
     { href: "/profilo", label: "Profilo", icon: <User size={18} /> },
 ];
 
-/* ────────────────────────────────
-    Temi extra
-──────────────────────────────── */
+// ────────────────────────────────
+// Temi custom opzionali
+// ────────────────────────────────
 const extraThemes = ["emerald", "solarized"];
 
-/* ╔══════════════════════════════╗
- * ║  Sidebar Component          ║
- * ╚══════════════════════════════╝ */
+// ╔══════════════════════════════════════════════╗
+// ║             Sidebar principale              ║
+// ╚══════════════════════════════════════════════╝
 export default function Sidebar() {
+    // ========== Stato sidebar ==========
     const { isCollapsed, toggleSidebar } = useSidebar();
     const [isOpenMobile, setIsOpenMobile] = useState(false);
     const pathname = usePathname();
 
-    /* next-themes */
+    // ========== Gestione temi ==========
     const { resolvedTheme, theme, setTheme } = useTheme();
     const isDark = resolvedTheme === "dark";
 
-    /* ── Helpers ───────────────────────────────────────── */
+    // ========== Helper ==========
     const toggleMobile = () => setIsOpenMobile((p) => !p);
-    const toggleDark = () => setTheme(isDark ? "light" : "dark");
-    const pickTheme = (t: string) => () => setTheme(t);
 
+    // ────────────────────────────────
+    //           RENDER
+    // ────────────────────────────────
     return (
         <>
-            {/* ─── Mobile burger ─── */}
+            {/* ========== Burger mobile ========== */}
             <button
                 className="fixed top-4 left-4 z-30 md:hidden p-2 rounded-full bg-primary text-white shadow-lg"
                 onClick={toggleMobile}
@@ -62,7 +68,7 @@ export default function Sidebar() {
                 {isOpenMobile ? <X size={20} /> : <Menu size={20} />}
             </button>
 
-            {/* ─── Desktop collapse ─── */}
+            {/* ========== Collapse desktop ========== */}
             <button
                 onClick={toggleSidebar}
                 className={`hidden md:flex fixed top-4 z-30 p-1.5 rounded-full bg-primary text-white shadow-md hover:bg-primary/80 transition ${
@@ -72,14 +78,16 @@ export default function Sidebar() {
                 {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
             </button>
 
-            {/* ─── Sidebar panel ─── */}
+            {/* ════════════════════════════════════
+                Pannello Sidebar principale
+            ════════════════════════════════════ */}
             <aside
                 className={`fixed top-0 left-0 h-full z-20 w-56 bg-black/60 backdrop-blur-md border-r border-white/10 text-white
                     transform transition-transform duration-300
                     ${isOpenMobile ? "block" : "hidden"} md:block
                     ${isCollapsed ? "-translate-x-full md:-translate-x-56" : "translate-x-0"}`}
             >
-                {/* Logo */}
+                {/* ----------- Logo ----------- */}
                 <Link
                     href="/"
                     className="flex items-center justify-center p-4 border-b border-white/10 hover:opacity-90"
@@ -88,7 +96,7 @@ export default function Sidebar() {
                     <span className="ml-2 text-xl font-bold text-primary">Synapsi</span>
                 </Link>
 
-                {/* Navigazione */}
+                {/* ----------- Navigazione ----------- */}
                 <nav className="p-2 space-y-1">
                     {navItems.map(({ href, label, icon }) => {
                         const active = pathname === href;
@@ -110,7 +118,9 @@ export default function Sidebar() {
                     })}
                 </nav>
 
-                {/* ────────── Theme Controls ────────── */}
+                {/* ════════════════════════════════════
+                    Selettore temi (light/dark/custom)
+                ════════════════════════════════════ */}
                 <div className="p-4 border-t border-white/10 grid grid-cols-2 gap-2">
                     {["light", "dark", ...extraThemes].map((t) => {
                         const isActive = theme === t;
@@ -120,11 +130,7 @@ export default function Sidebar() {
                         return (
                             <button
                                 key={t}
-                                onClick={() => {
-                                    console.log("setTheme(", t, ")");
-                                    setTheme(t);
-                                    console.log("html attr:", document.documentElement.getAttribute("data-theme"));
-                                }}
+                                onClick={() => setTheme(t)}
                                 className={`flex items-center justify-center gap-2 py-2 rounded font-medium transition
                                     ${isActive ? "bg-primary text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
                             >

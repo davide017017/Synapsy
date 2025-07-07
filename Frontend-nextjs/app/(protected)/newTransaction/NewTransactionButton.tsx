@@ -1,27 +1,39 @@
 "use client";
 
-// =========================================
-// NewTransactionButton.tsx
-// Bottone globale per creare una nuova transazione
-// =========================================
+/* ╔═════════════════════════════════════════════════════════╗
+ * ║   NewTransactionButton — Bottone aggiunta transazione  ║
+ * ╚═════════════════════════════════════════════════════════╝ */
 
 import { PlusCircle } from "lucide-react";
-import { useNewTransaction } from "@/context/contexts/NewTransactionContext";
-import { Transaction } from "@/types";
+import { useTransactions } from "@/context/contexts/TransactionsContext";
 
+// ============================
+// Tipi Props
+// ============================
 type Props = {
     label?: string;
-    onSuccess?: (newTx: Transaction) => void;
 };
 
-export default function NewTransactionButton({ label = "Nuova Transazione", onSuccess }: Props) {
-    const { open } = useNewTransaction();
+// ============================
+// Bottone per aprire la modale
+// ============================
+export default function NewTransactionButton({ label = "Nuova Transazione" }: Props) {
+    const { openModal } = useTransactions();
 
     return (
         <button
             type="button"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary-dark text-bg hover:opacity-90 text-sm font-medium transition shadow-lg active:scale-95"
-            onClick={() => open(onSuccess)}
+            className="
+                inline-flex items-center gap-2
+                px-3 py-1.5 rounded-xl
+                bg-primary-dark text-bg
+                hover:opacity-90
+                text-sm font-medium
+                transition shadow-lg
+                active:scale-95
+            "
+            // Apri la modale per nuova transazione
+            onClick={() => openModal()}
         >
             <PlusCircle size={16} />
             {label}

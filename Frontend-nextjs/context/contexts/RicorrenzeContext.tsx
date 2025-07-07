@@ -1,8 +1,8 @@
 "use client";
 
-// ============================
-// RicorrenzeContext.tsx — Context globale ricorrenze + modale create/edit
-// ============================
+/* ╔══════════════════════════════════════════════════════════╗
+ * ║        RicorrenzeContext — Ricorrenze: CRUD + Modale    ║
+ * ╚══════════════════════════════════════════════════════════╝ */
 
 import { createContext, useContext, useState, useEffect } from "react";
 import NewRicorrenzaModal from "@/app/(protected)/newRicorrenza/NewRicorrenzaModal";
@@ -13,39 +13,47 @@ import { normalizeRicorrenza } from "@/utils/normalizeRicorrenza";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-// --------------------
-// Tipi del context
-// --------------------
+// ═══════════════════════════════════════════════════════════
+// Tipizzazione context
+// ═══════════════════════════════════════════════════════════
+
 type RicorrenzeContextType = {
     ricorrenze: Ricorrenza[];
     loading: boolean;
     refresh: () => void;
+
     openModal: (ricorrenzaToEdit?: Ricorrenza | null, onSuccess?: (ricorrenzaSalvata: Ricorrenza) => void) => void;
     closeModal: () => void;
     isOpen: boolean;
 };
 
-// --------------------
-// Export context
-// --------------------
+// ═══════════════════════════════════════════════════════════
+// Creazione e export del context
+// ═══════════════════════════════════════════════════════════
+
 export const RicorrenzeContext = createContext<RicorrenzeContextType | undefined>(undefined);
 
-// --------------------
-// Provider
-// --------------------
+// ═══════════════════════════════════════════════════════════
+// Provider — logica e stato del context
+// ═══════════════════════════════════════════════════════════
+
 export function RicorrenzeProvider({ children }: { children: React.ReactNode }) {
+    // ─── State base ───
     const [ricorrenze, setRicorrenze] = useState<Ricorrenza[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // --- Stato per modale unica create/edit ---
+    // ─── State modale ───
     const [isOpen, setIsOpen] = useState(false);
     const [ricorrenzaToEdit, setRicorrenzaToEdit] = useState<Ricorrenza | null>(null);
     const [onSuccessCallback, setOnSuccessCallback] = useState<((r: Ricorrenza) => void) | null>(null);
 
+    // ─── Auth token ───
     const { data: session } = useSession();
     const token = session?.accessToken as string;
 
-    // --- Carica ricorrenze dal backend ---
+    // ─────────────────────────────────────────────
+    // Fetch ricorrenze da API
+    // ─────────────────────────────────────────────
     const loadRicorrenze = async () => {
         if (!token) {
             setRicorrenze([]);
@@ -63,26 +71,28 @@ export function RicorrenzeProvider({ children }: { children: React.ReactNode }) 
         }
     };
 
-    // --- Effetto su token ---
     useEffect(() => {
         if (token) loadRicorrenze();
     }, [token]);
 
-    // --- Apertura modale create/edit ---
+    // ─────────────────────────────────────────────
+    // Gestione modale create/edit
+    // ─────────────────────────────────────────────
     const openModal = (ricorrenza?: Ricorrenza | null, onSuccess?: (r: Ricorrenza) => void) => {
         setRicorrenzaToEdit(ricorrenza || null);
         setOnSuccessCallback(() => onSuccess || null);
         setIsOpen(true);
     };
 
-    // --- Chiusura modale ---
     const closeModal = () => {
         setIsOpen(false);
         setRicorrenzaToEdit(null);
         setOnSuccessCallback(null);
     };
 
-    // --- Create Ricorrenza ---
+    // ─────────────────────────────────────────────
+    // Create Ricorrenza
+    // ─────────────────────────────────────────────
     const handleCreate = async (data: RicorrenzaBase) => {
         if (!token) {
             toast.error("Utente non autenticato");
@@ -92,28 +102,32 @@ export function RicorrenzeProvider({ children }: { children: React.ReactNode }) 
             const nuova = await createRicorrenza(token, data);
             toast.success("Ricorrenza creata!");
             await loadRicorrenze();
-            onSuccessCallback?.(nuova); // <--- Passa la nuova ricorrenza
+            onSuccessCallback?.(nuova); // Callback esterna
             closeModal();
         } catch (e) {
             toast.error("Errore creazione ricorrenza");
         }
     };
 
-    // --- Edit Ricorrenza ---
+    // ─────────────────────────────────────────────
+    // Edit Ricorrenza
+    // ─────────────────────────────────────────────
     const handleUpdate = async (data: RicorrenzaBase) => {
         if (!token || !ricorrenzaToEdit) return;
         try {
             const aggiornata = await updateRicorrenza(token, ricorrenzaToEdit.id, data);
             toast.success("Ricorrenza aggiornata!");
             await loadRicorrenze();
-            onSuccessCallback?.(aggiornata); // <--- Passa la ricorrenza aggiornata
+            onSuccessCallback?.(aggiornata);
             closeModal();
         } catch (e) {
             toast.error("Errore aggiornamento ricorrenza");
         }
     };
 
-    // --- Render provider ---
+    // ─────────────────────────────────────────────
+    // Provider render
+    // ─────────────────────────────────────────────
     return (
         <RicorrenzeContext.Provider
             value={{
@@ -126,7 +140,7 @@ export function RicorrenzeProvider({ children }: { children: React.ReactNode }) 
             }}
         >
             {children}
-            {/* --- Modale unica per creazione/modifica --- */}
+            {/* Modale globale per creazione/modifica */}
             <NewRicorrenzaModal
                 open={isOpen}
                 onClose={closeModal}
@@ -137,15 +151,14 @@ export function RicorrenzeProvider({ children }: { children: React.ReactNode }) 
     );
 }
 
-// --------------------
+// ═══════════════════════════════════════════════════════════
 // Hook custom per usare il context
-// --------------------
+// ═══════════════════════════════════════════════════════════
+
 export function useRicorrenze() {
     const context = useContext(RicorrenzeContext);
     if (!context) throw new Error("useRicorrenze deve essere usato dentro <RicorrenzeProvider>");
     return context;
 }
 
-// =======================================================
-// END RicorrenzeContext.tsx
-// =======================================================
+// ═══════════════════════════════════════════════════════════

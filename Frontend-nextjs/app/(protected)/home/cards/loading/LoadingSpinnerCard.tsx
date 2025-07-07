@@ -1,34 +1,26 @@
-// ============================
-// LoadingSpinnerCard.tsx
-// Card dashboard con spinner di caricamento
-// ============================
+"use client";
+
+// ╔══════════════════════════════════════╗
+// ║  LoadingSpinnerCard con react-spinners  ║
+// ╚══════════════════════════════════════╝
+
 import { ReactNode } from "react";
 import DashboardCard from "../DashboardCard";
+import { ClipLoader } from "react-spinners";
 
 type Props = {
     icon: ReactNode;
     title: string;
     message?: string;
-    value?: ReactNode;
 };
 
-export default function LoadingSpinnerCard({ icon, title, message = "Caricamento dati...", value = "..." }: Props) {
+export default function LoadingSpinnerCard({ icon, title, message = "Caricamento dati..." }: Props) {
     return (
-        <DashboardCard icon={icon} title={title} value={value}>
-            <div className="flex items-center gap-2 justify-center py-2">
-                <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
-                    <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                    />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-                <span className="text-xs text-gray-400">{message}</span>
+        <DashboardCard icon={<span className="opacity-60 animate-pulse">{icon}</span>} title={title}>
+            <div className="flex flex-col items-center gap-2 py-4">
+                {/* Spinner react-spinners */}
+                <ClipLoader color="hsl(var(--c-primary))" size={32} speedMultiplier={0.9} />
+                <span className="text-sm text-primary font-medium flex items-center gap-1">{message}</span>
             </div>
         </DashboardCard>
     );

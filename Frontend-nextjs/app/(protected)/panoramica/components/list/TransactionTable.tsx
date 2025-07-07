@@ -1,8 +1,9 @@
 "use client";
 
-// =============================
-// Import principali
-// =============================
+// ╔═════════════════════════════════════════════════════════╗
+// ║         TransactionTable.tsx — Tabella transazioni     ║
+// ╚═════════════════════════════════════════════════════════╝
+
 import React, { useMemo } from "react";
 import { useReactTable, getCoreRowModel, flexRender, ColumnResizeMode, Row } from "@tanstack/react-table";
 import { Transaction } from "@/types/types/transaction";
@@ -15,7 +16,7 @@ import YearDividerRow from "./table/YearDividerRow";
 import { useSelection } from "@/context/contexts/SelectionContext";
 
 // =============================
-// Tipi props
+// Props
 // =============================
 type Props = {
     data: Transaction[];
@@ -24,37 +25,30 @@ type Props = {
 };
 
 // =============================
-// Componente principale - TransactionTable
+// TransactionTable principale
 // =============================
 export default function TransactionTable({ data, onRowClick, selectedId }: Props) {
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
 
+    // ------ Toggle selezione singola ------
     const handleCheckToggle = (id: number) => {
         setSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
     };
 
-    // --- Funzione per toggle "Seleziona tutto" ---
-    const handleCheckAllToggle = (checked: boolean) => {
-        if (checked) {
-            // Seleziona TUTTI gli id visibili
-            setSelectedIds(allIds);
-        } else {
-            // Deseleziona tutti quelli visibili
-            setSelectedIds((ids) => ids.filter((id) => !allIds.includes(id)));
-        }
-    };
-
-    // --- Calcola tutti gli id delle righe visibili ---
+    // ------ Toggle selezione tutti ------
     const dataWithGroups = useMemo(() => addMonthGroup(data), [data]);
     const allIds = useMemo(() => dataWithGroups.map((tx) => tx.id), [dataWithGroups]);
+    const handleCheckAllToggle = (checked: boolean) => {
+        setSelectedIds((ids) => (checked ? allIds : ids.filter((id) => !allIds.includes(id))));
+    };
 
-    // --- Colonne dinamiche ---
+    // ------ Colonne ------
     const columns = useMemo(
         () => getColumnsWithSelection(isSelectionMode, selectedIds, handleCheckToggle, handleCheckAllToggle, allIds),
         [isSelectionMode, selectedIds, allIds]
     );
 
-    // Setup TanStack Table
+    // ------ Setup TanStack Table ------
     const table = useReactTable({
         data: dataWithGroups,
         columns,
@@ -63,7 +57,7 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
         debugTable: false,
     });
 
-    // Raggruppa righe per "YYYY-MM"
+    // ------ Raggruppa righe per "YYYY-MM" ------
     const groupedRows: Record<string, Row<TransactionWithGroup>[]> = {};
     for (const row of table.getRowModel().rows) {
         const key = row.original.monthGroup;
@@ -71,8 +65,8 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
         groupedRows[key].push(row);
     }
 
-    // Calcola totali annuali
-    const yearTotals: { [year: string]: { entrate: number; spese: number } } = {};
+    // ------ Totali per anno ------
+    const yearTotals: Record<string, { entrate: number; spese: number }> = {};
     Object.entries(groupedRows).forEach(([monthKey, rows]) => {
         const [year] = monthKey.split("-");
         if (!yearTotals[year]) yearTotals[year] = { entrate: 0, spese: 0 };
@@ -88,12 +82,12 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
     return (
         <div className="table-container overflow-x-auto">
             <table className="table-base min-w-full">
-                {/* === Intestazione tabella === */}
+                {/* Intestazione */}
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id} className="table-header-row">
                             {headerGroup.headers.map((header) => (
-                                <th key={header.id}>
+                                <th key={header.id} className="relative">
                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                     {header.column.getCanResize() && (
                                         <div
@@ -107,8 +101,9 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                         </tr>
                     ))}
                 </thead>
-                {/* === Corpo tabella === */}
+                {/* Corpo */}
                 <tbody>
+                    {/* Blocchi raggruppati per mese/anno */}
                     {(() => {
                         let lastYear = "";
                         const blocks = Object.entries(groupedRows).sort(([a], [b]) => b.localeCompare(a));
@@ -117,7 +112,7 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                             const [year] = monthKey.split("-");
                             const blocco: React.ReactNode[] = [];
 
-                            // Divider ANNO
+                            // --- Divider ANNO ---
                             if (year !== lastYear) {
                                 lastYear = year;
                                 blocco.push(
@@ -133,7 +128,7 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                                 );
                             }
 
-                            // Divider MESE
+                            // --- Divider MESE ---
                             blocco.push(
                                 <MonthDividerRow
                                     key={`mese-${monthKey}`}
@@ -167,7 +162,7 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                                 />
                             );
 
-                            // Righe transazioni normali
+                            // --- Righe normali ---
                             rows.forEach((row, idx) => {
                                 const isLast = idx === rows.length - 1;
                                 blocco.push(
@@ -176,6 +171,7 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                                         row={row}
                                         onClick={onRowClick}
                                         className={isLast ? "rounded-bottom" : ""}
+                                        selected={row.original.id === selectedId}
                                     />
                                 );
                             });

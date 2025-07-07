@@ -2,30 +2,33 @@
 "use client";
 
 import { ReactNode } from "react";
+import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
-import { DarkModeProvider } from "./contexts/DarkModeContext";
 import { CategoriesProvider } from "./contexts/CategoriesContext";
-import { NewTransactionProvider } from "./contexts/NewTransactionContext";
-import { SidebarProvider, useSidebar } from "./contexts/SidebarContext";
+import { TransactionsProvider } from "./contexts/TransactionsContext";
+import { SidebarProvider } from "./contexts/SidebarContext";
 import { SelectionProvider } from "./contexts/SelectionContext";
 import { RicorrenzeProvider } from "./contexts/RicorrenzeContext";
 
 export default function GlobalContextProvider({ children }: { children: ReactNode }) {
     return (
         <SessionProvider>
-            <DarkModeProvider>
+            <ThemeProvider
+                attribute="class" // <--- Usa la classe "dark" su <html>
+                defaultTheme="system" // system = usa impostazione sistema
+                enableSystem
+                storageKey="theme" // key in localStorage
+            >
                 <CategoriesProvider>
-                    <NewTransactionProvider>
+                    <TransactionsProvider>
                         <RicorrenzeProvider>
                             <SelectionProvider>
                                 <SidebarProvider>{children}</SidebarProvider>
                             </SelectionProvider>
                         </RicorrenzeProvider>
-                    </NewTransactionProvider>
+                    </TransactionsProvider>
                 </CategoriesProvider>
-            </DarkModeProvider>
+            </ThemeProvider>
         </SessionProvider>
     );
 }
-
-export { useSidebar };

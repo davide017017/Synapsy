@@ -1,7 +1,7 @@
 "use client";
 
 /* ╔═════════════════════════════════════════════════════════════╗
- * ║   Context globale categorie: fetch/cache + CRUD + modale   ║
+ * ║        CategoriesContext — Categorie: CRUD + Modale        ║
  * ╚═════════════════════════════════════════════════════════════╝ */
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -15,7 +15,11 @@ import {
 } from "@/lib/api/categoriesApi";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import NewCategoryModal from "@/app/(protected)/newCategory/NewCategoryModal"; // Path da adattare se serve
+import NewCategoryModal from "@/app/(protected)/newCategory/NewCategoryModal";
+
+// ═══════════════════════════════════════════════════════════════
+// Tipizzazione context
+// ═══════════════════════════════════════════════════════════════
 
 type CategoriesContextType = {
     categories: Category[];
@@ -38,21 +42,33 @@ type CategoriesContextType = {
     categoryToEdit: Category | null;
 };
 
+// ═══════════════════════════════════════════════════════════════
+// Creazione e export del context
+// ═══════════════════════════════════════════════════════════════
+
 const CategoriesContext = createContext<CategoriesContextType | undefined>(undefined);
 
+// ═══════════════════════════════════════════════════════════════
+// Provider — logica e stato del context
+// ═══════════════════════════════════════════════════════════════
+
 export function CategoriesProvider({ children }: { children: React.ReactNode }) {
+    // ─── State base ───
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // --- Gestione modale ---
+    // ─── State modale ───
     const [isOpen, setIsOpen] = useState(false);
     const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
 
+    // ─── Auth token ───
     const { data: session } = useSession();
     const token = session?.accessToken as string;
 
-    // ===== Carica categorie =====
+    // ─────────────────────────────────────────────
+    // Fetch categorie da API
+    // ─────────────────────────────────────────────
     const loadCategories = async () => {
         if (!token) return;
         setLoading(true);
@@ -72,7 +88,9 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
         if (token) loadCategories();
     }, [token]);
 
-    // ===== CRUD =====
+    // ─────────────────────────────────────────────
+    // CRUD operations
+    // ─────────────────────────────────────────────
 
     const create = async (data: CategoryBase, onSuccess?: () => void) => {
         if (!token) return;
@@ -112,12 +130,10 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
         }
     };
 
-    // ===== Spostamento massivo + eliminazione =====
+    // ─────────────────────────────────────────────
+    // Spostamento massivo + eliminazione categoria
+    // ─────────────────────────────────────────────
 
-    /**
-     * Sposta tutte le transazioni/ricorrenze sulla nuova categoria,
-     * poi elimina la vecchia categoria.
-     */
     const moveAndDelete = async (categoryId: number, targetCategoryId: number, onSuccess?: () => void) => {
         if (!token) return;
         try {
@@ -131,7 +147,9 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
         }
     };
 
-    // ===== Modale globale =====
+    // ─────────────────────────────────────────────
+    // Gestione modale (create/edit)
+    // ─────────────────────────────────────────────
 
     const openModal = (cat?: Category | null) => {
         setCategoryToEdit(cat || null);
@@ -143,7 +161,9 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
         setIsOpen(false);
     };
 
-    // ===== Provider =====
+    // ─────────────────────────────────────────────
+    // Provider render
+    // ─────────────────────────────────────────────
 
     return (
         <CategoriesContext.Provider
@@ -174,11 +194,14 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
     );
 }
 
-// Hook custom
+// ═══════════════════════════════════════════════════════════════
+// Hook custom per usare il context
+// ═══════════════════════════════════════════════════════════════
+
 export function useCategories() {
     const context = useContext(CategoriesContext);
     if (!context) throw new Error("useCategories deve essere usato dentro <CategoriesProvider>");
     return context;
 }
 
-/* ════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════

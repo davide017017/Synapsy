@@ -1,39 +1,37 @@
 "use client";
-// ============================
-// NewTransactionForm.tsx
-// Form di inserimento nuova transazione (uniformato)
-// ============================
 
-import { useState, useMemo } from "react";
-import { TransactionBase } from "@/types";
+/* ╔══════════════════════════════════════════════════════╗
+ * ║   NewTransactionForm — Form creazione/modifica Tx   ║
+ * ╚══════════════════════════════════════════════════════╝ */
+
+import { useState, useMemo, useEffect } from "react";
+import { Transaction, TransactionBase } from "@/types";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import { Button } from "@/app/components/ui/Button";
 import { toast } from "sonner";
 
-// --------------------
+// ============================
 // Utility classnames
-// --------------------
+// ============================
 function cn(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
-// --------------------
-// Props tipizzate
-// --------------------
+// ============================
+// Tipi Props
+// ============================
 type Props = {
     onSave?: (data: TransactionBase) => void;
+    transaction?: Transaction; // Se presente → Edit, se assente → Nuova
 };
 
-// ============================
-// COMPONENTE PRINCIPALE
-// ============================
-export default function NewTransactionForm({ onSave }: Props) {
-    // ----- Context categorie -----
-    const { categories, loading: loadingCategories } = useCategories();
-
-    // ----- Stato form -----
+// ╔═══════════════════════════════╗
+// ║      COMPONENTE PRINCIPALE    ║
+// ╚═══════════════════════════════╝
+export default function NewTransactionForm({ onSave, transaction }: Props) {
+    // Stato form iniziale
     const [formData, setFormData] = useState<TransactionBase>({
         description: "",
         amount: "" as any,
@@ -45,20 +43,36 @@ export default function NewTransactionForm({ onSave }: Props) {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
 
-    // ----- Categorie filtrate dinamicamente per tipo -----
+    // Context categorie
+    const { categories, loading: loadingCategories } = useCategories();
+
+    // Inizializza campi in edit
+    useEffect(() => {
+        if (transaction) {
+            setFormData({
+                description: transaction.description,
+                amount: transaction.amount,
+                date: transaction.date.split("T")[0],
+                category_id: transaction.category_id,
+                notes: transaction.notes || "",
+                type: transaction.type,
+            });
+        }
+    }, [transaction]);
+
+    // Filtra categorie per tipo
     const filteredCategories = useMemo(
         () => categories.filter((cat) => cat.type === formData.type),
         [categories, formData.type]
     );
 
-    // ============================
-    // Handle submit (validazione + salvataggio)
-    // ============================
+    // ╔═══════════════════════════════╗
+    // ║  Submit + Validazione         ║
+    // ╚═══════════════════════════════╝
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const errs: Record<string, string> = {};
-
         if (!formData.description.trim()) errs.description = "La descrizione è obbligatoria";
         if (!formData.category_id) errs.category_id = "Seleziona una categoria";
         if (!formData.amount || isNaN(formData.amount) || Number(formData.amount) <= 0)
@@ -81,27 +95,28 @@ export default function NewTransactionForm({ onSave }: Props) {
         }
     };
 
-    // ============================
-    // Render form
-    // ============================
+    // ╔═══════════════════════════════╗
+    // ║          RENDER FORM          ║
+    // ╚═══════════════════════════════╝
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            {/* --------- Tipo transazione --------- */}
+            {/* Tipo transazione */}
             <select
                 value={formData.type}
                 onChange={(e) =>
                     setFormData({
                         ...formData,
                         type: e.target.value as "entrata" | "spesa",
-                        category_id: 0, // reset categoria se cambi tipo
+                        category_id: 0, // reset se cambio tipo
                     })
                 }
                 className="w-full px-3 py-2 rounded-xl border bg-bg text-text text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                disabled={!!transaction}
             >
                 <option value="entrata">Entrata</option>
                 <option value="spesa">Spesa</option>
             </select>
-            {/* --------- Categoria dinamica --------- */}
+            {/* Categoria dinamica */}
             <select
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: Number(e.target.value) })}
@@ -123,7 +138,7 @@ export default function NewTransactionForm({ onSave }: Props) {
             </select>
             {errors.category_id && <p className="text-danger text-xs -mt-2">{errors.category_id}</p>}
 
-            {/* --------- Descrizione --------- */}
+            {/* Descrizione */}
             <Input
                 type="text"
                 placeholder="Descrizione"
@@ -133,7 +148,7 @@ export default function NewTransactionForm({ onSave }: Props) {
             />
             {errors.description && <p className="text-danger text-xs -mt-2">{errors.description}</p>}
 
-            {/* --------- Importo --------- */}
+            {/* Importo */}
             <Input
                 type="number"
                 step="0.01"
@@ -149,23 +164,23 @@ export default function NewTransactionForm({ onSave }: Props) {
             />
             {errors.amount && <p className="text-danger text-xs -mt-2">{errors.amount}</p>}
 
-            {/* --------- Data --------- */}
+            {/* Data */}
             <Input
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
             />
 
-            {/* --------- Note --------- */}
+            {/* Note */}
             <Textarea
                 placeholder="Note (opzionale)"
                 value={formData.notes || ""}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
 
-            {/* --------- Azioni --------- */}
+            {/* Azioni */}
             <Button type="submit" className="w-full mt-2" disabled={loading}>
-                {loading ? "Salvataggio..." : "Salva"}
+                {loading ? "Salvataggio..." : transaction ? "Salva modifiche" : "Salva"}
             </Button>
         </form>
     );
