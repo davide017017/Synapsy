@@ -2,21 +2,30 @@
 
 // =========================================
 // NewCategoryButton.tsx
-// Bottone globale per creare categoria
+// Bottone globale per creare una nuova categoria
 // =========================================
 
-import { Plus } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 
-export default function NewCategoryButton() {
+// Nessuna tipizzazione extra necessaria
+export default function NewCategoryButton({
+    label = "Nuova Categoria",
+    onSuccess,
+}: {
+    label?: string;
+    onSuccess?: () => void;
+}) {
     const { openModal } = useCategories();
 
     return (
         <button
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-semibold shadow transition hover:bg-primary/90"
+            type="button"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary-dark text-bg hover:opacity-90 text-sm font-medium transition shadow-lg active:scale-95"
             onClick={() => openModal()}
         >
-            <Plus size={18} /> Nuova categoria
+            <PlusCircle size={16} />
+            {label}
         </button>
     );
 }
