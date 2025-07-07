@@ -1,19 +1,20 @@
 "use client";
 
 // ============================================
-// DeleteCategoryModal.tsx
-// Modale di conferma eliminazione categoria
+// DeleteCategoryModal.tsx migliorato
 // ============================================
 
 import { X, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { Category } from "@/types";
 import { useCategories } from "@/context/contexts/CategoriesContext";
+import { getIconComponent } from "@/utils/iconMap";
 
 type Props = {
     category: Category | null;
     onClose: () => void;
     categories: Category[];
+    onDelete: (mode: "deleteAll" | "move", targetCategoryId?: number) => void | Promise<void>;
 };
 
 export default function DeleteCategoryModal({ category, onClose, categories }: Props) {
@@ -21,28 +22,25 @@ export default function DeleteCategoryModal({ category, onClose, categories }: P
     const [targetCategoryId, setTargetCategoryId] = useState<number | undefined>();
     const [loading, setLoading] = useState(false);
 
-    // Hook context CRUD + moveAndDelete
     const { moveAndDelete, remove, refresh } = useCategories();
 
     // Solo categorie compatibili per spostamento (stesso tipo e non la corrente)
     const availableCategories = categories.filter((c) => c.id !== category?.id && c.type === category?.type);
 
-    // ========================
-    // Gestione conferma eliminazione
-    // ========================
+    const typeLabel = category?.type === "entrata" ? "Entrata" : "Spesa";
+
+    // === Conferma eliminazione ===
     const handleDelete = async () => {
         if (!category) return;
         setLoading(true);
 
         try {
             if (mode === "move" && targetCategoryId) {
-                // Sposta tutto e poi elimina categoria
                 await moveAndDelete(category.id, targetCategoryId, () => {
                     onClose();
                     refresh();
                 });
             } else if (mode === "deleteAll") {
-                // Solo elimina categoria (servirebbe anche un endpoint backend per cancellare tutte le transazioni/ricorrenze collegate)
                 await remove(category.id, () => {
                     onClose();
                     refresh();
@@ -53,12 +51,10 @@ export default function DeleteCategoryModal({ category, onClose, categories }: P
         }
     };
 
-    // ========================
-    // Render modale
-    // ========================
+    // === Render ===
     return category ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-2xl min-w-[350px] relative">
+            <div className="bg-bg dark:bg-bg rounded-2xl p-6 shadow-2xl min-w-[350px] relative">
                 {/* Chiudi */}
                 <button
                     className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
@@ -101,19 +97,36 @@ export default function DeleteCategoryModal({ category, onClose, categories }: P
                             disabled={loading}
                         />
                         <span>
-                            Sposta TUTTE su un’altra categoria:
+                            {/* Etichetta chiara */}
+                            Sposta TUTTE su un’altra categoria di tipo <b>{typeLabel}</b>:
                             <select
-                                className="ml-2 px-2 py-1 rounded border"
+                                className="ml-2 px-2 py-1 rounded border text-sm"
                                 value={targetCategoryId ?? ""}
                                 onChange={(e) => setTargetCategoryId(Number(e.target.value))}
                                 disabled={mode !== "move" || loading}
+                                style={{
+                                    minWidth: 160,
+                                    background: "var(--c-bg)", // Palette globale
+                                    color: "var(--c-text)",
+                                }}
                             >
                                 <option value="">Seleziona…</option>
-                                {availableCategories.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.name}
-                                    </option>
-                                ))}
+                                {availableCategories.map((c) => {
+                                    const Icon = getIconComponent(c.icon);
+                                    return (
+                                        <option
+                                            key={c.id}
+                                            value={c.id}
+                                            style={{
+                                                background: c.color ? c.color + "22" : undefined,
+                                                color: c.color ? c.color : undefined,
+                                            }}
+                                        >
+                                            {/* NB: Icon non visibile nativamente, solo testo */}
+                                            {c.name}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </span>
                     </label>

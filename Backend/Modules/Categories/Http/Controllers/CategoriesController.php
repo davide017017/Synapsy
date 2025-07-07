@@ -12,32 +12,29 @@ use Modules\Categories\Services\CategoryService;
 use Modules\Categories\Http\Requests\StoreCategoryRequest;
 use Modules\Categories\Http\Requests\UpdateCategoryRequest;
 
-// ─────────────────────────────────────────────
-// Controller unico per Web (Blade) + API (JSON)
-// ─────────────────────────────────────────────
+// ╔════════════════════════════════════════════════════════════════════════════╗
+// ║         CategoriesController — CRUD + API (ora con color & icon)         ║
+// ╚════════════════════════════════════════════════════════════════════════════╝
 class CategoriesController extends Controller
 {
     protected CategoryService $service;
 
-    // =========================
-    // COSTRUTTORE
-    // =========================
+    // Costruttore
     public function __construct(CategoryService $service)
     {
         $this->service = $service;
     }
 
-    // =========================
+    // ============================
     // ─── ROTTE WEB (BLADE) ───
-    // =========================
+    // ============================
 
     // Index (Blade)
     public function indexWeb(Request $request): View
     {
-        $sortBy = in_array($request->query('sort_by'), ['name', 'type']) ? $request->query('sort_by') : 'type';
+        $sortBy        = in_array($request->query('sort_by'), ['name', 'type']) ? $request->query('sort_by') : 'type';
         $sortDirection = in_array($request->query('sort_direction'), ['asc', 'desc']) ? $request->query('sort_direction') : 'asc';
-
-        $categories = $this->service->getAllForUser($sortBy, $sortDirection);
+        $categories    = $this->service->getAllForUser($sortBy, $sortDirection);
 
         return view('categories::index', [
             'categories'    => $categories,
@@ -67,14 +64,16 @@ class CategoriesController extends Controller
     // Store (Web)
     public function storeWeb(StoreCategoryRequest $request): RedirectResponse
     {
-        $this->service->createForUser($request->validated());
+        $data = $request->validated(); // Contiene anche color e icon
+        $this->service->createForUser($data);
         return redirect()->route('categories.web.index')->with('status', 'Categoria aggiunta!');
     }
 
     // Update (Web)
     public function updateWeb(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
-        $this->service->update($category, $request->validated());
+        $data = $request->validated();
+        $this->service->update($category, $data);
         return redirect()->route('categories.web.index')->with('status', 'Categoria aggiornata!');
     }
 
@@ -85,17 +84,16 @@ class CategoriesController extends Controller
         return redirect()->route('categories.web.index')->with('status', 'Categoria eliminata!');
     }
 
-    // =========================
+    // ============================
     // ─── ROTTE API (JSON) ───
-    // =========================
+    // ============================
 
     // Index (API)
     public function indexApi(Request $request): JsonResponse
     {
-        $sortBy = in_array($request->query('sort_by'), ['name', 'type']) ? $request->query('sort_by') : 'type';
+        $sortBy        = in_array($request->query('sort_by'), ['name', 'type']) ? $request->query('sort_by') : 'type';
         $sortDirection = in_array($request->query('sort_direction'), ['asc', 'desc']) ? $request->query('sort_direction') : 'asc';
-
-        $categories = $this->service->getAllForUser($sortBy, $sortDirection);
+        $categories    = $this->service->getAllForUser($sortBy, $sortDirection);
         return response()->json($categories);
     }
 
@@ -108,14 +106,16 @@ class CategoriesController extends Controller
     // Store (API)
     public function storeApi(StoreCategoryRequest $request): JsonResponse
     {
-        $category = $this->service->createForUser($request->validated());
+        $data = $request->validated();
+        $category = $this->service->createForUser($data);
         return response()->json($category, 201);
     }
 
     // Update (API)
     public function updateApi(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
-        $this->service->update($category, $request->validated());
+        $data = $request->validated();
+        $this->service->update($category, $data);
         return response()->json($category);
     }
 

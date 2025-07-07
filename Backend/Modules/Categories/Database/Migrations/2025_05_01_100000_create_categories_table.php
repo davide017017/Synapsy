@@ -32,6 +32,9 @@ return new class extends Migration
             $table->string('name');
             $table->enum('type', ['entrata', 'spesa'])->default('spesa');
 
+            $table->string('color', 32)->nullable();
+            $table->string('icon', 64)->nullable();
+
             // =========================================================================
             // TIMESTAMPS E INDICI
             // =========================================================================

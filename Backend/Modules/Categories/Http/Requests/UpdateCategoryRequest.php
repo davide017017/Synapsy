@@ -31,7 +31,7 @@ class UpdateCategoryRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique('categories')
-                    ->where(fn ($q) => $q->where('user_id', $userId))
+                    ->where(fn($q) => $q->where('user_id', $userId))
                     ->ignore($categoryId),
             ],
             'type' => [
@@ -39,6 +39,8 @@ class UpdateCategoryRequest extends FormRequest
                 'string',
                 Rule::in(['entrata', 'spesa']),
             ],
+            'color' => ['nullable', 'string', 'max:32'],
+            'icon'  => ['nullable', 'string', 'max:64'],
         ];
     }
 
@@ -52,6 +54,8 @@ class UpdateCategoryRequest extends FormRequest
             'name.unique'   => 'Hai già una categoria con questo nome.',
             'type.required' => 'Il tipo della categoria è obbligatorio.',
             'type.in'       => 'Il tipo deve essere "entrata" o "spesa".',
+            'color.string'  => 'Il colore deve essere una stringa valida.',
+            'icon.string'   => "L'icona deve essere una stringa valida.",
         ];
     }
 }

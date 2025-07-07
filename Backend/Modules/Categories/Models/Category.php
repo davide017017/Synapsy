@@ -45,10 +45,14 @@ class Category extends Model
         'user_id',
         'name',
         'type',
+        'color',
+        'icon',
     ];
 
     protected $casts = [
         'type' => 'string',
+        'color',
+        'icon',
     ];
 
     // ============================
