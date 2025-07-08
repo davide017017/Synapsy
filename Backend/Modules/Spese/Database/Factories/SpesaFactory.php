@@ -9,15 +9,15 @@ use Modules\User\Models\User;
 use Illuminate\Support\Carbon;
 
 /**
- * Factory per il modello Spesa.
+ * Factory per il modello Spesa — preset demo realistici.
  */
 class SpesaFactory extends Factory
 {
     protected $model = Spesa::class;
 
-    // =========================================================================
-    // DEFINIZIONE DATI DI DEFAULT
-    // =========================================================================
+    // ===============================================================
+    // DEFAULT: dati casuali
+    // ===============================================================
     public function definition(): array
     {
         return [
@@ -28,9 +28,84 @@ class SpesaFactory extends Factory
         ];
     }
 
-    // =========================================================================
-    // CONFIGURAZIONE POST-CREAZIONE
-    // =========================================================================
+    // ===============================================================
+    // PRESET DEMO — tipi di spesa realistici
+    // ===============================================================
+    public function affitto(): static
+    {
+        return $this->state(fn() => [
+            'description' => 'Affitto appartamento',
+            'amount'      => $this->faker->numberBetween(500, 900),
+            'notes'       => 'Pagamento mensile affitto',
+        ]);
+    }
+
+    public function spesaAlimentare(): static
+    {
+        return $this->state(fn() => [
+            'description' => 'Spesa alimentare',
+            'amount'      => $this->faker->numberBetween(40, 120),
+            'notes'       => 'Supermercato o mercato',
+        ]);
+    }
+
+    public function bolletta(): static
+    {
+        return $this->state(fn() => [
+            'description' => 'Bollette utenze',
+            'amount'      => $this->faker->numberBetween(60, 180),
+            'notes'       => 'Luce/gas/acqua',
+        ]);
+    }
+
+    public function streaming(): static
+    {
+        return $this->state(fn() => [
+            'description' => 'Abbonamento streaming',
+            'amount'      => $this->faker->numberBetween(8, 18),
+            'notes'       => 'Netflix, Spotify ecc.',
+        ]);
+    }
+
+    public function carburante(): static
+    {
+        return $this->state(fn() => [
+            'description' => 'Carburante auto',
+            'amount'      => $this->faker->numberBetween(35, 100),
+            'notes'       => 'Rifornimento benzina/diesel',
+        ]);
+    }
+
+    // ===============================================================
+    // ALTRI METODI STANDARD
+    // ===============================================================
+    public function forUser(User|int $user): static
+    {
+        return $this->state(fn() => [
+            'user_id' => $user instanceof User ? $user->id : $user,
+        ]);
+    }
+
+    public function forCategory(Category|int $category): static
+    {
+        return $this->state(fn() => [
+            'category_id' => $category instanceof Category ? $category->id : $category,
+        ]);
+    }
+
+    public function withAmount(float $amount): static
+    {
+        return $this->state(fn() => ['amount' => $amount]);
+    }
+
+    public function onDate(string|Carbon $date): static
+    {
+        return $this->state(fn() => ['date' => $date]);
+    }
+
+    // ===============================================================
+    // CONFIGURAZIONE POST-CREAZIONE (category_id obbligatoria)
+    // ===============================================================
     public function configure(): static
     {
         return $this->afterCreating(function (Spesa $spesa) {
@@ -38,38 +113,9 @@ class SpesaFactory extends Factory
                 $category = Category::factory()
                     ->expense()
                     ->create(['user_id' => $spesa->user_id]);
-
                 $spesa->category_id = $category->id;
                 $spesa->save();
             }
         });
-    }
-
-    // =========================================================================
-    // STATI PERSONALIZZATI
-    // =========================================================================
-
-    public function forUser(User|int $user): static
-    {
-        return $this->state(fn () => [
-            'user_id' => $user instanceof User ? $user->id : $user,
-        ]);
-    }
-
-    public function forCategory(Category|int $category): static
-    {
-        return $this->state(fn () => [
-            'category_id' => $category instanceof Category ? $category->id : $category,
-        ]);
-    }
-
-    public function withAmount(float $amount): static
-    {
-        return $this->state(fn () => ['amount' => $amount]);
-    }
-
-    public function onDate(string|Carbon $date): static
-    {
-        return $this->state(fn () => ['date' => $date]);
     }
 }
