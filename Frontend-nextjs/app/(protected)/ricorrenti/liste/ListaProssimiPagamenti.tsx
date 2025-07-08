@@ -73,7 +73,7 @@ export default function ListaProssimiPagamenti({ pagamenti }: Props) {
     today.setHours(0, 0, 0, 0);
     const weekTo = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000);
     const monthTo = new Date(today.getTime() + 29 * 24 * 60 * 60 * 1000);
-    console.log("PAGAMENTI IN INGRESSO", pagamenti);
+
     let occorrenze7: { ricorrenza: Ricorrenza; data: string }[] = [];
     let occorrenze30: { ricorrenza: Ricorrenza; data: string }[] = [];
     for (const ric of pagamenti) {

@@ -55,12 +55,6 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
     const [loading, setLoading] = useState(false);
 
     // ===========================
-    // Debug: cosa arriva come initialValues?
-    useEffect(() => {
-        console.log("[Form INIT] initialValues:", initialValues);
-    }, [initialValues]);
-
-    // ===========================
     // Sincronizza il form se cambia initialValues
     useEffect(() => {
         if (initialValues) {
@@ -82,12 +76,6 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
     );
 
     // ===========================
-    // Debug: ogni volta che cambia la frequenza nel form
-    useEffect(() => {
-        console.log("[FormData] Cambiata frequenza nel form:", formData.frequenza);
-    }, [formData.frequenza]);
-
-    // ===========================
     // Handle submit
     // ===========================
     const handleSubmit = async (e: React.FormEvent) => {
@@ -102,9 +90,6 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
         if (Object.keys(errs).length) return;
 
         setLoading(true);
-
-        // Debug: payload che stai per inviare
-        console.log("[SUBMIT] Payload inviato:", formData);
 
         try {
             await onSave(formData);

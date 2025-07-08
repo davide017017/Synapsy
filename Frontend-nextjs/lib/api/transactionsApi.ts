@@ -48,8 +48,6 @@ export async function createTransaction(
         notes: (transaction as any).notes,
     };
 
-    console.log("🔗 Endpoint finale:", `${API_URL}${endpoint}`, "payload:", payload);
-
     const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -110,7 +108,6 @@ export async function deleteTransaction(token: string, transaction: Transaction)
         },
     });
     if (!res.ok) throw new Error("Errore eliminazione transazione");
-    console.log("[DELETE]", `${API_URL}${endpoint}`);
 
     return true;
 }
