@@ -20,7 +20,7 @@ class RecurringOperationFactory extends Factory
     // =========================================================================
     public function definition(): array
     {
-        // Non viene usato nei preset! Puoi anche lasciarlo o rimuoverlo.
+        // Solo per test casuali — non usato nei preset!
         $frequency = $this->faker->randomElement(['daily', 'weekly', 'monthly', 'annually']);
         $interval = match ($frequency) {
             'daily'    => $this->faker->numberBetween(1, 7),
@@ -29,7 +29,7 @@ class RecurringOperationFactory extends Factory
             'annually' => $this->faker->numberBetween(1, 5),
         };
 
-        $startDate = Carbon::parse($this->faker->dateTimeBetween('-1 year', 'now'));
+        $startDate = Carbon::parse($this->faker->dateTimeBetween('-2 years', 'now'));
         $endDate   = $this->faker->optional(0.3)->dateTimeBetween($startDate->copy()->addMonth(), '+2 years');
         $nextOccurrence = $this->calculateNextOccurrence($startDate, $interval, $frequency, $endDate);
 
@@ -51,213 +51,247 @@ class RecurringOperationFactory extends Factory
     }
 
     // =========================================================================
-    // ENTRATE REALISTICHE
+    // ENTRATE REALISTICHE (start_date sempre nel passato)
     // =========================================================================
 
     public function stipendio(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'entrata',
             'description' => 'Stipendio mensile',
             'amount'      => $this->faker->numberBetween(1300, 1700),
             'frequency'   => 'monthly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Stipendio ricorrente da azienda',
         ]);
     }
 
     public function bonusAnnuale(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'entrata',
             'description' => 'Bonus annuale',
             'amount'      => $this->faker->numberBetween(500, 2500),
             'frequency'   => 'annually',
             'interval'    => 1,
-            'notes'       => 'Bonus una volta all\'anno',
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
+            'notes'       => "Bonus una volta all'anno",
         ]);
     }
 
     public function interesseDeposito(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'entrata',
             'description' => 'Interesse conto deposito',
             'amount'      => $this->faker->numberBetween(20, 200),
             'frequency'   => 'annually',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Interesse bancario',
         ]);
     }
 
     public function affittoPercepito(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'entrata',
             'description' => 'Affitto percepito',
             'amount'      => $this->faker->numberBetween(400, 900),
             'frequency'   => 'monthly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Affitto da inquilino',
         ]);
     }
 
     public function regaloMensile(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'entrata',
             'description' => 'Regalo mensile',
             'amount'      => $this->faker->numberBetween(40, 120),
             'frequency'   => 'monthly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Regalo ricevuto periodicamente',
         ]);
     }
 
     public function rimborsoAnnuale(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'entrata',
             'description' => 'Rimborso spese annuale',
             'amount'      => $this->faker->numberBetween(80, 300),
             'frequency'   => 'annually',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Rimborso su spese sostenute',
         ]);
     }
 
     // =========================================================================
-    // SPESE REALISTICHE
+    // SPESE REALISTICHE (start_date sempre nel passato)
     // =========================================================================
 
     public function affitto(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Affitto mensile',
             'amount'      => $this->faker->numberBetween(500, 900),
             'frequency'   => 'monthly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Pagamento affitto appartamento',
         ]);
     }
 
     public function bolletta(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Bolletta utenze',
             'amount'      => $this->faker->numberBetween(70, 180),
             'frequency'   => 'monthly',
-            'interval'    => 2, // ogni due mesi
+            'interval'    => 2,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Luce, gas, acqua',
         ]);
     }
 
     public function assicurazioneAuto(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Assicurazione auto',
             'amount'      => $this->faker->numberBetween(250, 500),
             'frequency'   => 'annually',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Polizza assicurativa auto',
         ]);
     }
 
     public function tassaRifiuti(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Tassa rifiuti',
             'amount'      => $this->faker->numberBetween(100, 300),
             'frequency'   => 'annually',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'TARI annuale',
         ]);
     }
 
     public function manutenzioneAuto(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Manutenzione auto',
             'amount'      => $this->faker->numberBetween(120, 400),
             'frequency'   => 'annually',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Tagliando/revisione',
         ]);
     }
 
     public function streaming(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Abbonamento streaming',
             'amount'      => $this->faker->numberBetween(8, 18),
             'frequency'   => 'monthly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Netflix, Spotify ecc.',
         ]);
     }
 
     public function palestraMensile(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Abbonamento palestra',
             'amount'      => $this->faker->numberBetween(25, 55),
             'frequency'   => 'monthly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Palestra in città',
         ]);
     }
 
     public function palestraSettimanale(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Lezione personal trainer',
             'amount'      => $this->faker->numberBetween(10, 20),
             'frequency'   => 'weekly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Lezione ogni settimana',
         ]);
     }
 
     public function babysitterSettimanale(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Babysitter',
             'amount'      => $this->faker->numberBetween(30, 70),
             'frequency'   => 'weekly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Baby-sitting regolare',
         ]);
     }
 
     public function colfMensile(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Colf/aiuto domestico',
             'amount'      => $this->faker->numberBetween(50, 150),
             'frequency'   => 'monthly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Pulizie domestiche',
         ]);
     }
 
     public function donazioneMensile(): static
     {
+        $startDate = $this->faker->dateTimeBetween('-2 years', 'now');
         return $this->state(fn() => [
             'type'        => 'spesa',
             'description' => 'Donazione a ONLUS',
             'amount'      => $this->faker->numberBetween(5, 30),
             'frequency'   => 'monthly',
             'interval'    => 1,
+            'start_date'  => Carbon::parse($startDate)->format('Y-m-d'),
             'notes'       => 'Sostegno solidale mensile',
         ]);
     }
@@ -291,12 +325,11 @@ class RecurringOperationFactory extends Factory
     }
 
     // =========================================================================
-    // CALCOLO OCCORRENZA
+    // CALCOLO OCCORRENZA (puoi lasciarla così)
     // =========================================================================
     protected function calculateNextOccurrence(Carbon $start, int $interval, string $frequency, ?\DateTimeInterface $end): Carbon
     {
         $next = $start->copy();
-
         match ($frequency) {
             'daily'    => $next->addDays($interval),
             'weekly'   => $next->addWeeks($interval),

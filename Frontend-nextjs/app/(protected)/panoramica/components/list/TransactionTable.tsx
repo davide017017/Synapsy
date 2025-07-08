@@ -162,9 +162,15 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                                 />
                             );
 
-                            // --- Righe normali ---
-                            rows.forEach((row, idx) => {
-                                const isLast = idx === rows.length - 1;
+                            // === Ecco la modifica: ordina per data discendente ===
+                            const rowsOrdinati = [...rows].sort(
+                                (a, b) =>
+                                    // Descending (più recente in cima)
+                                    new Date(b.original.date).getTime() - new Date(a.original.date).getTime()
+                            );
+
+                            rowsOrdinati.forEach((row, idx) => {
+                                const isLast = idx === rowsOrdinati.length - 1;
                                 blocco.push(
                                     <TableRow
                                         key={row.id}

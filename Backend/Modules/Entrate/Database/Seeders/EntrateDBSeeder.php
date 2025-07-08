@@ -9,9 +9,6 @@ use Modules\Entrate\Models\Entrata;
 use App\Traits\TruncatesTable;
 use App\Traits\LogsSeederOutput;
 
-/**
- * Seeder DEMO — genera entrate realistiche per utenti demo.
- */
 class EntrateDBSeeder extends Seeder
 {
     use TruncatesTable, LogsSeederOutput;
@@ -21,88 +18,127 @@ class EntrateDBSeeder extends Seeder
         $this->initOutput();
 
         Model::withoutEvents(function () {
-            // ===============================================================
-            // Pulizia tabella
-            // ===============================================================
             $this->logInfo('Entrate', 'Pulizia tabella `entrate`...', '🧹');
             $this->clearTable(Entrata::class);
 
-            // ===============================================================
-            // Recupero utenti
-            // ===============================================================
             $users = User::all();
             if ($users->isEmpty()) {
                 $this->logSkip('Entrate', 'Nessun utente trovato. Seeder ignorato.');
                 return;
             }
 
-            // ===============================================================
-            // Loop utenti e inserimento demo
-            // ===============================================================
             $totali = 0;
-            foreach ($users as $user) {
-                // Mappa tutte le categorie entrata per nome
-                $categories = $user->categories()->where('type', 'entrata')->get()->keyBy('name');
+            $now = now();
+            $currentMonth = $now->month;
+            $currentDay   = $now->day;
 
-                // -------- Stipendio: 12 mensilità --------
-                for ($i = 1; $i <= 12; $i++) {
+            foreach ($users as $user) {
+                $categories = $user->categories()->where('type', 'entrata')->get()->keyBy('name');
+                $usedDates = [];
+
+                // Stipendio
+                for ($i = 1; $i <= $currentMonth; $i++) {
+                    $descrizione = "Stipendio mensile";
+                    $date = ($i == $currentMonth)
+                        ? $now->copy()->startOfMonth()->addDays($currentDay - 1)
+                        : $now->copy()->startOfYear()->addMonths($i - 1)->endOfMonth();
+                    $key = $date->format('Y-m-d') . '-' . $descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $usedDates[$key] = true;
                     Entrata::factory()
                         ->stipendio()
                         ->forUser($user)
                         ->forCategory($categories['Stipendio'] ?? null)
-                        ->onDate(now()->startOfYear()->addMonths($i - 1)->endOfMonth())
+                        ->onDate($date)
+                        ->state(['description' => $descrizione])
                         ->create();
                     $totali++;
                 }
 
-                // -------- Regalo: 3 eventi --------
+                // Regalo
                 foreach ([2, 7, 12] as $month) {
+                    if ($month > $currentMonth) continue;
+                    $descrizione = "Regalo di compleanno";
+                    $maxDay = ($month == $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($month - 1)->daysInMonth;
+                    $day = rand(1, $maxDay);
+                    $date = $now->copy()->startOfYear()->addMonths($month - 1)->startOfMonth()->addDays($day - 1);
+                    $key = $date->format('Y-m-d') . '-' . $descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $usedDates[$key] = true;
                     Entrata::factory()
                         ->regalo()
                         ->forUser($user)
                         ->forCategory($categories['Regalo'] ?? null)
-                        ->onDate(now()->startOfYear()->addMonths($month - 1)->addDays(rand(0, 5)))
+                        ->onDate($date)
+                        ->state(['description' => $descrizione])
                         ->create();
                     $totali++;
                 }
 
-                // -------- Investimenti: 4 "vinted" simulate come investimenti --------
+                // Investimenti/Vinted
                 foreach ([3, 6, 9, 11] as $month) {
+                    if ($month > $currentMonth) continue;
+                    $descrizione = "Vendita Vinted";
+                    $maxDay = ($month == $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($month - 1)->daysInMonth;
+                    $day = rand(5, $maxDay);
+                    $day = min($day, $maxDay);
+                    $date = $now->copy()->startOfYear()->addMonths($month - 1)->startOfMonth()->addDays($day - 1);
+                    $key = $date->format('Y-m-d') . '-' . $descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $usedDates[$key] = true;
                     Entrata::factory()
                         ->vinted()
                         ->forUser($user)
                         ->forCategory($categories['Investimenti'] ?? null)
-                        ->onDate(now()->startOfYear()->addMonths($month - 1)->addDays(rand(5, 25)))
+                        ->onDate($date)
+                        ->state(['description' => $descrizione])
                         ->create();
                     $totali++;
                 }
 
-                // -------- Rimborso: 2 casi su "Altro (Entrata)" --------
+                // Rimborso
                 foreach ([4, 10] as $month) {
+                    if ($month > $currentMonth) continue;
+                    $descrizione = "Rimborso spese";
+                    $maxDay = ($month == $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($month - 1)->daysInMonth;
+                    $day = rand(10, $maxDay);
+                    $day = min($day, $maxDay);
+                    $date = $now->copy()->startOfYear()->addMonths($month - 1)->startOfMonth()->addDays($day - 1);
+                    $key = $date->format('Y-m-d') . '-' . $descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $usedDates[$key] = true;
                     Entrata::factory()
                         ->rimborso()
                         ->forUser($user)
                         ->forCategory($categories['Altro (Entrata)'] ?? null)
-                        ->onDate(now()->startOfYear()->addMonths($month - 1)->addDays(rand(10, 20)))
+                        ->onDate($date)
+                        ->state(['description' => $descrizione])
                         ->create();
                     $totali++;
                 }
 
-                // -------- Gratta e Vinci: 1 vincita su "Altro (Entrata)" --------
-                Entrata::factory()
-                    ->grattaEVinci()
-                    ->forUser($user)
-                    ->forCategory($categories['Altro (Entrata)'] ?? null)
-                    ->onDate(now()->startOfYear()->addMonths(rand(0, 11))->addDays(rand(0, 27)))
-                    ->create();
-                $totali++;
+                // Gratta e Vinci
+                $grattaMonth = rand(1, $currentMonth);
+                $descrizione = "Vincita Gratta e Vinci";
+                $maxDay = ($grattaMonth == $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($grattaMonth - 1)->daysInMonth;
+                $day = rand(1, $maxDay);
+                $date = $now->copy()->startOfYear()->addMonths($grattaMonth - 1)->startOfMonth()->addDays($day - 1);
+                $key = $date->format('Y-m-d') . '-' . $descrizione;
+                if (!$date->isFuture() && !isset($usedDates[$key])) {
+                    $usedDates[$key] = true;
+                    Entrata::factory()
+                        ->grattaEVinci()
+                        ->forUser($user)
+                        ->forCategory($categories['Altro (Entrata)'] ?? null)
+                        ->onDate($date)
+                        ->state(['description' => $descrizione])
+                        ->create();
+                    $totali++;
+                }
 
                 $this->logInfo('Entrate', "Entrate demo generate per {$user->name} (ID: {$user->id})");
             }
 
-            // ===============================================================
-            // Fine seeding
-            // ===============================================================
             $this->logSuccess('Entrate', "{$totali} entrate demo generate in totale.");
             $this->logNewLine();
         });

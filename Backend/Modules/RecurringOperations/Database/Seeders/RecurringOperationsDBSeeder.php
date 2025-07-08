@@ -10,7 +10,7 @@ use App\Traits\TruncatesTable;
 use App\Traits\LogsSeederOutput;
 
 /**
- * Seeder DEMO — genera ricorrenze credibili, mensili, annuali e settimanali per utenti demo.
+ * Seeder DEMO — genera ricorrenze credibili per utenti demo (tutte già partite).
  */
 class RecurringOperationsDBSeeder extends Seeder
 {
@@ -37,148 +37,160 @@ class RecurringOperationsDBSeeder extends Seeder
             }
 
             // ===============================================================
-            // Loop utenti e inserimento demo (categorie mappate per nome)
+            // Loop utenti e inserimento demo
             // ===============================================================
             $totali = 0;
+            $now = now();
+            $currentMonth = $now->month;
+            $currentDay = $now->day;
+
             foreach ($users as $user) {
                 // ---- Categorie mappate per nome ----
                 $categorieUtente = $user->categories()->get()->keyBy('name');
 
+                // Funzione di utility per generare una start_date realistica già passata
+                $makeStartDate = function () use ($now, $currentMonth, $currentDay) {
+                    $randomMonth = rand(1, $currentMonth);
+                    $maxDay = ($randomMonth === $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($randomMonth - 1)->daysInMonth;
+                    $randomDay = rand(1, $maxDay);
+                    return $now->copy()->startOfYear()->addMonths($randomMonth - 1)->startOfMonth()->addDays($randomDay - 1)->format('Y-m-d');
+                };
+
                 // ==================== ENTRATE ====================
-                RecurringOperation::factory()
-                    ->stipendio()
+                RecurringOperation::factory()->stipendio()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Stipendio'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->bonusAnnuale()
+                RecurringOperation::factory()->bonusAnnuale()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Investimenti'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->interesseDeposito()
+                RecurringOperation::factory()->interesseDeposito()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Investimenti'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->affittoPercepito()
+                RecurringOperation::factory()->affittoPercepito()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Altro (Entrata)'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->regaloMensile()
+                RecurringOperation::factory()->regaloMensile()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Regalo'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->rimborsoAnnuale()
+                RecurringOperation::factory()->rimborsoAnnuale()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Altro (Entrata)'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
                 // ==================== SPESE ====================
-                RecurringOperation::factory()
-                    ->affitto()
+                RecurringOperation::factory()->affitto()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Casa'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->bolletta()
+                RecurringOperation::factory()->bolletta()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Utenze'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->assicurazioneAuto()
+                RecurringOperation::factory()->assicurazioneAuto()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Trasporti'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->tassaRifiuti()
+                RecurringOperation::factory()->tassaRifiuti()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Casa'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->manutenzioneAuto()
+                RecurringOperation::factory()->manutenzioneAuto()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Trasporti'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->streaming()
+                RecurringOperation::factory()->streaming()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Svago'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->palestraMensile()
+                RecurringOperation::factory()->palestraMensile()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Salute'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->palestraSettimanale()
+                RecurringOperation::factory()->palestraSettimanale()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Salute'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->babysitterSettimanale()
+                RecurringOperation::factory()->babysitterSettimanale()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Altro (Spesa)'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->donazioneMensile()
+                RecurringOperation::factory()->donazioneMensile()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Altro (Spesa)'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
-                RecurringOperation::factory()
-                    ->colfMensile()
+                RecurringOperation::factory()->colfMensile()
                     ->forUser($user)
                     ->forCategory($categorieUtente['Altro (Spesa)'] ?? null)
                     ->active()
+                    ->state(['start_date' => $makeStartDate()])
                     ->create();
                 $totali++;
 
