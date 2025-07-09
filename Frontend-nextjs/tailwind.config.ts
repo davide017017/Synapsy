@@ -70,6 +70,11 @@ const config: Config = {
                 sm: "var(--shadow-sm)",
                 md: "var(--shadow-md)",
             },
+            backgroundImage: {
+                "gradient-radial": "radial-gradient(circle at center, var(--tw-gradient-stops))",
+                "gradient-conic": "conic-gradient(from 180deg at center, var(--tw-gradient-stops))",
+                // il linear-to è già builtin: bg-gradient-to-br, -to-tr, ecc.
+            },
         },
     },
     plugins: [require("@tailwindcss/forms")],

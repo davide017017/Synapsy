@@ -1,7 +1,7 @@
 "use client";
 
 // ╔═══════════════════════════════════════════════════════════════╗
-// ║ CalendarGrid.tsx — Calendario avanzato Google-style          ║
+// ║ CalendarGrid.tsx — Calendario avanzato stile Google Calendar ║
 // ╚═══════════════════════════════════════════════════════════════╝
 
 import { useState } from "react";
@@ -42,15 +42,16 @@ const yearOptions = Array.from({ length: 15 }, (_, i) => currentYear - 7 + i);
 type Props = { transactions: Transaction[] };
 
 // ============================
-// Componente principale
+// CalendarGrid principale
 // ============================
 export default function CalendarGrid({ transactions }: Props) {
+    // Stato visualizzazione mese/anno
     const isLg = useMediaQuery("(min-width: 1024px)");
     const [viewYear, setViewYear] = useState(currentYear);
     const [viewMonth, setViewMonth] = useState(currentMonth);
     const [direction, setDirection] = useState<1 | -1>(1);
 
-    // ===== Cambio mese animato =====
+    // --- Cambia mese con animazione ---
     const prevMonth = () => {
         setDirection(-1);
         if (viewMonth === 0) {
@@ -70,7 +71,7 @@ export default function CalendarGrid({ transactions }: Props) {
         }
     };
 
-    // ===== Torna a oggi =====
+    // --- Torna al mese corrente ---
     const goToToday = () => {
         setViewYear(currentYear);
         setViewMonth(currentMonth);
@@ -78,24 +79,33 @@ export default function CalendarGrid({ transactions }: Props) {
     };
     const isCurrentMonth = viewYear === currentYear && viewMonth === currentMonth;
 
-    // ===== Celle calendario =====
+    // --- Genera celle e settimane ---
     const { cells, weeks } = getCalendarGrid(viewYear, viewMonth, { withWeekNumbers: true });
 
-    // ===== Calcola massimo importo mese (tra tutte le tx di questo mese) =====
-    // 1. Filtra transazioni di questo mese (anche se ci sono giorni da altri mesi in cells!)
-    const visibleMonthTx = transactions.filter((tx) => {
+    // ==========================
+    // Calcolo massimo importo su TUTTA la griglia visibile
+    // (inclusi giorni di mese precedente/successivo mostrati nella griglia)
+    // ==========================
+    const allDates = cells.map((c) => c.date);
+    const minDate = new Date(Math.min(...allDates.map((d) => d.getTime())));
+    const maxDate = new Date(Math.max(...allDates.map((d) => d.getTime())));
+
+    // Prendi tutte le transazioni tra minDate e maxDate (inclusi giorni "fuori mese")
+    const visibleGridTx = transactions.filter((tx) => {
         const txDate = typeof tx.date === "string" ? new Date(tx.date) : tx.date;
-        return txDate.getFullYear() === viewYear && txDate.getMonth() === viewMonth;
+        return txDate >= minDate && txDate <= maxDate;
     });
-    // 2. Massimi
+
     const maxEntrata = Math.max(
         0,
-        ...visibleMonthTx.filter((t) => t.category?.type === "entrata").map((t) => +t.amount)
+        ...visibleGridTx.filter((t) => t.category?.type === "entrata").map((t) => +t.amount)
     );
-    const maxSpesa = Math.max(0, ...visibleMonthTx.filter((t) => t.category?.type === "spesa").map((t) => +t.amount));
-    const maxImportoMese = Math.max(maxEntrata, maxSpesa, 1);
+    const maxSpesa = Math.max(0, ...visibleGridTx.filter((t) => t.category?.type === "spesa").map((t) => +t.amount));
+    const maxImportoGriglia = Math.max(maxEntrata, maxSpesa, 1);
 
-    // ===== Varianti animazione =====
+    // ==========================
+    // Varianti animazione mese
+    // ==========================
     const variants = {
         enter: (dir: 1 | -1) => ({
             x: dir * 50,
@@ -110,20 +120,19 @@ export default function CalendarGrid({ transactions }: Props) {
         }),
     };
 
-    // ============================
-    // Render
-    // ============================
+    // ==========================
+    // Render UI
+    // ==========================
     return (
         <div>
-            {/* ===== Header calendario ===== */}
+            {/* Header calendario */}
             <div className="flex items-center justify-center gap-2 mb-4">
-                {/* ... bottoni header come prima ... */}
-                <button type="button" onClick={prevMonth} aria-label="Mese precedente" /* ...stile... */>
+                <button type="button" onClick={prevMonth} aria-label="Mese precedente">
                     <ChevronLeft size={22} />
                 </button>
                 <span className="text-xl font-bold select-none px-2 text-primary">{monthNames[viewMonth]}</span>
                 <YearDropdown value={viewYear} options={yearOptions} onChange={setViewYear} />
-                <button type="button" onClick={nextMonth} aria-label="Mese successivo" /* ...stile... */>
+                <button type="button" onClick={nextMonth} aria-label="Mese successivo">
                     <ChevronRight size={22} />
                 </button>
                 <button
@@ -144,7 +153,7 @@ export default function CalendarGrid({ transactions }: Props) {
                 </button>
             </div>
 
-            {/* ===== Intestazione giorni settimana (desktop) ===== */}
+            {/* Intestazione giorni settimana (desktop) */}
             {isLg && (
                 <div className="grid grid-cols-[auto_repeat(7,_1fr)] mb-2">
                     <div className="flex items-center justify-center text-xs font-bold text-primary select-none px-1.5 py-1">
@@ -158,7 +167,7 @@ export default function CalendarGrid({ transactions }: Props) {
                 </div>
             )}
 
-            {/* ===== Griglia animata ===== */}
+            {/* Griglia calendario animata */}
             <div className="relative min-h-[370px]">
                 <AnimatePresence custom={direction} mode="wait">
                     <motion.div
@@ -175,7 +184,7 @@ export default function CalendarGrid({ transactions }: Props) {
                     >
                         {isLg
                             ? weeks!.map((week) => {
-                                  // Desktop: filtra transazioni della settimana
+                                  // Desktop: tutte le tx della settimana
                                   const weekStart = week.days[0].date;
                                   const weekEnd = week.days[6].date;
                                   const weekTx = transactions.filter((tx) => {
@@ -188,12 +197,12 @@ export default function CalendarGrid({ transactions }: Props) {
                                           key={week.weekNumber}
                                           week={week}
                                           transactions={weekTx}
-                                          maxImporto={maxImportoMese} // <<< PASSA QUI
+                                          maxImporto={maxImportoGriglia}
                                       />
                                   );
                               })
                             : cells.map((cell) => {
-                                  // Mobile: filtra transazioni del giorno
+                                  // Mobile: tutte le tx del giorno
                                   const dayTx = transactions.filter((tx) => {
                                       const txDate = typeof tx.date === "string" ? new Date(tx.date) : tx.date;
                                       return (
@@ -210,7 +219,7 @@ export default function CalendarGrid({ transactions }: Props) {
                                           monthDelta={cell.monthDelta}
                                           transactions={dayTx}
                                           showWeekDay={false}
-                                          maxImporto={maxImportoMese} // <<< PASSA QUI
+                                          maxImporto={maxImportoGriglia}
                                       />
                                   );
                               })}

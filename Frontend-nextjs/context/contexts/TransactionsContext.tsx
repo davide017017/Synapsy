@@ -4,7 +4,7 @@
  * ║   TransactionsContext — CRUD + lista + modale unica     ║
  * ╚══════════════════════════════════════════════════════════╝ */
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { Transaction, TransactionBase } from "@/types";
 import { fetchTransactions, createTransaction, updateTransaction, deleteTransaction } from "@/lib/api/transactionsApi";
 import { useSession } from "next-auth/react";
@@ -31,6 +31,10 @@ type TransactionsContextType = {
     transactionToEdit: Transaction | null;
     openModal: (txToEdit?: Transaction | null, onSuccess?: (t: Transaction) => void) => void;
     closeModal: () => void;
+
+    // Nuovi saldi calcolati
+    monthBalance: number;
+    yearBalance: number;
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -57,6 +61,37 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // ─── Auth token ───
     const { data: session } = useSession();
     const token = session?.accessToken;
+
+    // ─────────────────────────────────────────────────
+    // Nuovo: calcolo saldi
+    // ─────────────────────────────────────────────────
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    // ── Calcolo saldo del mese corrente (guardando se category esiste e type in lowercase) ──
+    const monthBalance = useMemo(() => {
+        return transactions.reduce((sum, tx) => {
+            const d = new Date(tx.date);
+            if (d.getFullYear() !== currentYear || d.getMonth() !== currentMonth) {
+                return sum;
+            }
+            // se non ho category, salto
+            if (!tx.category) return sum;
+            // type è "entrata" o "spesa"
+            return tx.category.type === "entrata" ? sum + tx.amount : sum - tx.amount;
+        }, 0);
+    }, [transactions, currentMonth, currentYear]);
+
+    // ── Calcolo saldo dell'anno corrente ──
+    const yearBalance = useMemo(() => {
+        return transactions.reduce((sum, tx) => {
+            const d = new Date(tx.date);
+            if (d.getFullYear() !== currentYear) return sum;
+            if (!tx.category) return sum;
+            return tx.category.type === "entrata" ? sum + tx.amount : sum - tx.amount;
+        }, 0);
+    }, [transactions, currentYear]);
 
     // ─────────────────────────────────────────────
     // Fetch transazioni da API
@@ -114,7 +149,12 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     const remove = async (id: number, onSuccess?: () => void) => {
         if (!token) return;
         try {
-            await deleteTransaction(token, { id } as Transaction);
+            const tx = transactions.find((t) => t.id === id);
+            if (!tx) {
+                toast.error("Transazione non trovata in memoria");
+                return;
+            }
+            await deleteTransaction(token, tx);
             toast.success("Transazione eliminata!");
             await loadTransactions();
             onSuccess?.();
@@ -155,6 +195,8 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 transactionToEdit,
                 openModal,
                 closeModal,
+                monthBalance,
+                yearBalance,
             }}
         >
             {children}

@@ -1,9 +1,9 @@
 // app/(protected)/panoramica/page.tsx
 "use client";
 
-// ============================
-// PanoramicaPage.tsx — Uniformata, tutto da context
-// ============================
+/* ╔══════════════════════════════════════════════════════════╗
+ * ║   PanoramicaPage.tsx — Riepilogo con calendario e lista  ║
+ * ╚══════════════════════════════════════════════════════════╝ */
 
 import { useState } from "react";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
@@ -19,50 +19,41 @@ import NewTransactionButton from "../newTransaction/NewTransactionButton";
 import SelectionToolbar from "./components/SelectionToolbar";
 
 export default function PanoramicaPage() {
-    // --- Context transazioni ---
-    const {
-        transactions,
-        loading,
-        error,
-        update,
-        remove,
-        openModal, // modale globale (per edit/crea)
-    } = useTransactions();
+    // ─── Context transazioni ──────────────────────────────────
+    const { transactions, loading, error, update, remove } = useTransactions();
 
-    // --- Context categorie ---
+    // ─── Context categorie ────────────────────────────────────
     const { categories, loading: catLoading, error: catError } = useCategories();
 
-    // --- Stato: transazione selezionata per modal dettaglio ---
+    // ─── Stato selezione dettaglio ────────────────────────────
     const [selected, setSelected] = useState<number | null>(null);
 
-    // --- Selection toolbar ---
+    // ─── Selection toolbar ────────────────────────────────────
     const { isSelectionMode } = useSelection();
 
-    // Handler: Click riga → apri dettaglio
-    function handleRowClick(txId: number) {
-        setSelected(txId);
-    }
+    // ─── Computed: solo primo loading (quando non ho ancora dati) ─
+    const initialLoading = loading && transactions.length === 0;
 
-    // Handler: Modifica transazione da dettaglio modal
-    async function handleEdit(tx: any) {
+    // ─── Handlers ──────────────────────────────────────────────
+    const handleRowClick = (txId: number) => setSelected(txId);
+
+    const handleEdit = async (tx: any) => {
         await update(tx.id, tx);
         setSelected(null);
-    }
+    };
 
-    // Handler: Cancella transazione da dettaglio modal
-    async function handleDelete(tx: any) {
+    const handleDelete = async (tx: any) => {
         await remove(tx.id);
         setSelected(null);
-    }
+    };
 
-    // Handler: Cancellazione massiva
-    async function handleDeleteSelectedTransactions(ids: number[]) {
+    const handleDeleteSelectedTransactions = async (ids: number[]) => {
         for (const id of ids) {
             await remove(id);
         }
-    }
+    };
 
-    // --- Ricava la transazione selezionata (per modale dettaglio) ---
+    // ─── Transazione corrente per il dettaglio ────────────────
     const selectedTx = transactions.find((tx) => tx.id === selected);
 
     return (
@@ -70,20 +61,18 @@ export default function PanoramicaPage() {
             {/* HEADER */}
             <div className="flex items-center justify-between rounded-2xl bg-bg-elevate px-5 py-4 shadow-md border border-border">
                 <h1 className="text-2xl font-bold">📅 Riepilogo con Calendario</h1>
-                {/* Callback su onSuccess, qui aggiorni eventuale lista locale */}
                 <NewTransactionButton />
             </div>
 
             {/* CALENDARIO */}
-            {loading ? <CalendarGridSkeleton /> : <CalendarGrid transactions={transactions} />}
+            {initialLoading ? <CalendarGridSkeleton /> : <CalendarGrid transactions={transactions} />}
 
             {/* LISTA TRANSAZIONI */}
-            {loading ? (
+            {initialLoading ? (
                 <TransactionsListSkeleton />
             ) : (
                 <>
                     <SelectionToolbar onDeleteSelected={handleDeleteSelectedTransactions} />
-
                     <TransactionsList
                         transactions={transactions}
                         onSelect={(tx) => setSelected(tx.id)}
@@ -92,7 +81,7 @@ export default function PanoramicaPage() {
                 </>
             )}
 
-            {/* ERRORI API */}
+            {/* ERRORI API TRANSIZIONI */}
             {error && <div className="p-4 text-danger text-sm">{error}</div>}
 
             {/* MODALE DETTAGLIO */}
@@ -106,7 +95,7 @@ export default function PanoramicaPage() {
                 />
             )}
 
-            {/* CARICAMENTO/ERRORI CATEGORIE */}
+            {/* CARICAMENTO / ERRORI CATEGORIE */}
             {(catLoading || catError) && (
                 <div className="p-2 text-sm">
                     {catLoading ? "Categorie in caricamento..." : <span className="text-danger">{catError}</span>}
@@ -115,6 +104,3 @@ export default function PanoramicaPage() {
         </div>
     );
 }
-// Questo file rappresenta la pagina principale della panoramica, con calendario e lista transazioni.
-// Utilizza i context per gestire transazioni e categorie.
-// Include modale per dettaglio transazione e pulsante per aggiungere nuove transazioni.
