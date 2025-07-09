@@ -78,7 +78,7 @@
 
 Per la dashboard e l’interfaccia utente consulta la README del frontend:
 
--   [🌈 Synapsi Finance — Frontend Web (Next.js)](../Frontend/README.md)
+-   [🌈 Synapsi Finance — Frontend Web (Next.js)](../Frontend-nextjs/README.md)
 
 ## 📝 Licenza
 
