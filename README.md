@@ -36,7 +36,7 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 2. **Setup Backend**
 
-    Vedi la guida dettagliata: [`backend/README.md`](backend/README.md)
+    Vedi la guida dettagliata: [`Backend/README.md`](Backend/README.md)
 
 3. **Setup Frontend**
 
@@ -52,7 +52,8 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 ## 📸 Screenshot
 
-![Screenshot di Synapsi Finance](docs/Synapsi-Screen.png)
+F:\_MIEI LAVORI\SYNAPSY\Synapsi\Frontend-nextjs\public\images\ScreenS.png
+![Screenshot di Synapsi Finance](\Frontend-nextjs\public\images\ScreenS.png)
 
 ---
 
@@ -65,9 +66,9 @@ Vedi il file [LICENSE](LICENSE) per i dettagli.
 
 ## 📚 Risorse aggiuntive
 
--   [Documentazione tecnica (backend)](docs/README-dev.md)
--   [Esport API (rotte)](docs/routes_api_export.md)
--   [Checklist deploy](docs/deploy-checklist.md)
+-   [Documentazione tecnica (backend)](Backend/docs/README-dev.md)
+-   [Esport API (rotte)](Backend/docs/routes_api_export.md)
+-   [Checklist deploy](Backend/docs/deploy-checklist.md)
 
 ---
 
