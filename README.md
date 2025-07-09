@@ -52,8 +52,7 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 ## 📸 Screenshot
 
-F:\_MIEI LAVORI\SYNAPSY\Synapsi\Frontend-nextjs\public\images\ScreenS.png
-![Screenshot di Synapsi Finance](\Frontend-nextjs\public\images\ScreenS.png)
+[Screenshot di Synapsi Finance](\Frontend-nextjs\public\images\ScreenS.png)
 
 ---
 
