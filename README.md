@@ -1,32 +1,52 @@
-# 💼 Synapsi Finance
+# 🚀 Synapsi Finance — Fullstack Monorepo
 
-> Gestione avanzata di entrate, spese e operazioni ricorrenti modulari in Laravel.
-
-[![Laravel](https://img.shields.io/badge/Laravel-12.x-red?style=flat-square&logo=laravel)](https://laravel.com/)
-[![PHP](https://img.shields.io/badge/PHP-8.4-blue?style=flat-square&logo=php)](https://www.php.net/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://www.google.com/search?q=LICENSE)
+**Gestione avanzata di entrate, spese e operazioni ricorrenti**  
+Monorepo con **Laravel API backend** + **Next.js frontend**
 
 ---
 
-## 📖 Descrizione
+## 📂 Struttura del progetto
 
-**Synapsi Finance** è un'applicazione Laravel modulare progettata per semplificare la gestione finanziaria personale e professionale, con supporto completo per:
-
--   Entrate e spese
--   Operazioni ricorrenti (cron, regole, intervalli)
--   Categorie personalizzate
--   Filtri avanzati e report
--   Test automatizzati su SQLite
+/
+├── backend/ # API RESTful Laravel 12.x (gestione dati e logica di business)
+├── frontend/ # Web app Next.js 15 (dashboard, UI, autenticazione)
+├── docs/ # Documentazione tecnica e guide
+├── LICENSE
+├── README.md # (questo file)
 
 ---
 
-## 🚀 Funzionalità principali
+## 🌐 Tecnologie principali
 
--   ✅ Architettura modulare (`Modules/`)
--   🔁 Operazioni ricorrenti con logica personalizzabile
--   🔎 Filtro completo su data, categoria, tipo, stato
--   📊 Vista riepilogativa entrate/spese
--   🧪 Suite test completa e performante
+-   **Backend:** [Laravel 12.x](https://laravel.com/) (PHP 8.2+)
+-   **Frontend:** [Next.js 15](https://nextjs.org/) (React, TypeScript, Tailwind CSS)
+-   **Database:** MySQL / SQLite (testing)
+-   **Autenticazione:** Laravel Sanctum (API Token)
+
+---
+
+## ⚡ Come iniziare
+
+1. **Clona il repository**
+
+    ```bash
+    git clone https://github.com/davide017017/Synapsy.git
+    cd Synapsy
+    ```
+
+2. **Setup Backend**
+
+    Vedi la guida dettagliata: [`backend/README.md`](backend/README.md)
+
+3. **Setup Frontend**
+
+    ```bash
+    cd frontend
+    npm install
+    cp .env.example .env
+    # Configura API_URL e variabili necessarie
+    npm run dev
+    ```
 
 ---
 
@@ -36,61 +56,24 @@
 
 ---
 
-## 🛠️ Requisiti
-
--   PHP 8.2+
--   Laravel 12.x
--   Composer
--   Node.js + npm (per asset frontend)
--   SQLite (per testing)
-
----
-
-## 📦 Installazione
-
-```bash
-git clone https://github.com/davide017017/Synapsy.git
-cd Synapsy
-
-composer install
-npm install && npm run dev
-
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-php artisan serve
-```
-
----
-
-## 🧪 Esecuzione test
-
-```bash
-php artisan test
-```
-
-Per copertura:
-
-```bash
-php artisan test --coverage
-```
-
----
-
 ## 📄 Licenza
 
-Questo progetto è distribuito sotto licenza **MIT**. Vedi il file [LICENSE](LICENSE).
+Distribuito sotto licenza MIT.  
+Vedi il file [LICENSE](LICENSE) per i dettagli.
 
 ---
 
-## 🤝 Contribuire
+## 📚 Risorse aggiuntive
 
-Le PR sono benvenute! Per bug o suggerimenti, apri una issue.
+-   [Documentazione tecnica (backend)](docs/README-dev.md)
+-   [Esport API (rotte)](docs/routes_api_export.md)
+-   [Checklist deploy](docs/deploy-checklist.md)
 
-## 📚 Documentazione
+---
 
-Approfondisci il progetto con la nostra documentazione dedicata:
+## 🤝 Contributi
 
--   [Guida tecnica sviluppatori (README-dev)](docs/README-dev.md)
--   [API Routes](docs/routes_api_export.md)
--   [Checklist Deploy](docs/deploy-checklist.md)
+Pull Request e segnalazioni sono benvenute!  
+Apri una issue per bug, domande o suggerimenti.
+
+---
