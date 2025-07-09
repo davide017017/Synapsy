@@ -64,7 +64,7 @@
 ## 📄 Note & Risorse
 
 -   Personalizza temi e colori modificando `tailwind.config.js` e le variabili globali.
--   Consulta la [documentazione backend](../backend/README.md) per dettagli sulle API disponibili.
+-   Consulta la [documentazione backend](../Backend/README.md) per dettagli sulle API disponibili.
 
 ---
 
