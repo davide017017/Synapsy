@@ -2,19 +2,17 @@
 
 // =======================================================
 // NewRicorrenzaForm.tsx
-// Form riusabile per create/edit (con debug avanzato frequenza!)
+// Form riusabile per create/edit (con callback onChangeForm)
 // =======================================================
 
 import { useState, useMemo, useEffect } from "react";
-import { Ricorrenza, RicorrenzaBase } from "@/types/types/ricorrenza";
+import { RicorrenzaBase } from "@/types/types/ricorrenza";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import { Button } from "@/app/components/ui/Button";
 
-// =======================================================
-// Helper: formatta sempre la data per input type="date"
-// =======================================================
+// ===== Helper: formatta data per input type="date" =====
 function toDateInputValue(dateString?: string) {
     if (!dateString) return new Date().toISOString().split("T")[0];
     const d = new Date(dateString);
@@ -23,26 +21,25 @@ function toDateInputValue(dateString?: string) {
     return `${d.getFullYear()}-${month}-${day}`;
 }
 
-// =======================================================
-// Props tipizzate
-// =======================================================
+// ===== Props tipizzate =====
 type Props = {
     onSave: (data: RicorrenzaBase) => Promise<void>;
     onCancel: () => void;
     initialValues?: Partial<RicorrenzaBase>;
+    onChangeForm?: (data: Partial<RicorrenzaBase>) => void; // <-- callback opzionale!
 };
 
 // =======================================================
 // COMPONENTE PRINCIPALE
 // =======================================================
-export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: Props) {
+export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onChangeForm }: Props) {
     const { categories, loading: loadingCategories } = useCategories();
 
     // --------- Stato dati form (con valori iniziali se edit) ---------
     const [formData, setFormData] = useState<RicorrenzaBase>({
         nome: initialValues?.nome || "",
         importo: initialValues?.importo || 0,
-        frequenza: initialValues?.frequenza || "monthly", // ⚠️ Usa sempre la chiave accettata dal backend!
+        frequenza: initialValues?.frequenza || "monthly",
         prossima: toDateInputValue(initialValues?.prossima),
         category_id: initialValues?.category_id || 0,
         note: initialValues?.note || "",
@@ -54,8 +51,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
 
-    // ===========================
-    // Sincronizza il form se cambia initialValues
+    // ===== Sincronizza il form se cambia initialValues =====
     useEffect(() => {
         if (initialValues) {
             setFormData((prev) => ({
@@ -69,15 +65,18 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
         }
     }, [initialValues]);
 
-    // --------- Filtra categorie per tipo dinamicamente ---------
+    // ===== Notifica cambiamenti al parent =====
+    useEffect(() => {
+        if (onChangeForm) onChangeForm(formData);
+    }, [formData]);
+
+    // ===== Filtra categorie per tipo =====
     const filteredCategories = useMemo(
         () => categories.filter((cat) => cat.type === formData.type),
         [categories, formData.type]
     );
 
-    // ===========================
-    // Handle submit
-    // ===========================
+    // ===== Handle submit =====
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const errs: Record<string, string> = {};
@@ -90,7 +89,6 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
         if (Object.keys(errs).length) return;
 
         setLoading(true);
-
         try {
             await onSave(formData);
         } finally {
@@ -160,7 +158,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues }: P
             />
             {errors.importo && <p className="text-danger text-xs -mt-2">{errors.importo}</p>}
 
-            {/* --------- Frequenza (SOLO valori accettati dal backend!) --------- */}
+            {/* --------- Frequenza --------- */}
             <select
                 value={formData.frequenza}
                 onChange={(e) => setFormData({ ...formData, frequenza: e.target.value })}

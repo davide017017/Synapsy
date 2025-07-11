@@ -12,26 +12,23 @@ import { Textarea } from "@/app/components/ui/Textarea";
 import { Button } from "@/app/components/ui/Button";
 import { toast } from "sonner";
 
-// ============================
 // Utility classnames
-// ============================
 function cn(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
-// ============================
 // Tipi Props
-// ============================
 type Props = {
     onSave?: (data: TransactionBase) => void;
-    transaction?: Transaction; // Se presente → Edit, se assente → Nuova
+    transaction?: Transaction;
     disabled?: boolean;
+    onChangeForm?: (data: Partial<TransactionBase>) => void; // <-- AGGIUNTO!
 };
 
 // ╔═══════════════════════════════╗
 // ║      COMPONENTE PRINCIPALE    ║
 // ╚═══════════════════════════════╝
-export default function NewTransactionForm({ onSave, transaction, disabled }: Props) {
+export default function NewTransactionForm({ onSave, transaction, disabled, onChangeForm }: Props) {
     // Stato form iniziale
     const [formData, setFormData] = useState<TransactionBase>({
         description: "",
@@ -61,15 +58,19 @@ export default function NewTransactionForm({ onSave, transaction, disabled }: Pr
         }
     }, [transaction]);
 
+    // Comunica i dati aggiornati al parent (overlay)
+    useEffect(() => {
+        onChangeForm && onChangeForm(formData);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formData]);
+
     // Filtra categorie per tipo
     const filteredCategories = useMemo(
         () => categories.filter((cat) => cat.type === formData.type),
         [categories, formData.type]
     );
 
-    // ╔═══════════════════════════════╗
-    // ║  Submit + Validazione         ║
-    // ╚═══════════════════════════════╝
+    // Submit + Validazione
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -108,7 +109,7 @@ export default function NewTransactionForm({ onSave, transaction, disabled }: Pr
                     setFormData({
                         ...formData,
                         type: e.target.value as "entrata" | "spesa",
-                        category_id: 0, // reset se cambio tipo
+                        category_id: 0,
                     })
                 }
                 className="w-full px-3 py-2 rounded-xl border bg-bg text-text text-sm focus:ring-2 focus:ring-primary focus:outline-none"

@@ -1,7 +1,7 @@
 "use client";
 
 // ======================================================
-// NewCategoryModal.tsx — Crea/modifica categoria (contrasto, UX, tooltip, layout largo, scroll lock)
+// NewCategoryModal.tsx — Modale categoria uniforme
 // ======================================================
 
 import { useEffect, useState } from "react";
@@ -9,28 +9,29 @@ import { X } from "lucide-react";
 import { Category, CategoryBase } from "@/types";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/utils/categoryOptions";
 import { getIconComponent } from "@/utils/iconMap";
+import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 
 // ============================
-// Tipi props principali
+// Props
 // ============================
 type Props = {
     open: boolean;
     onClose: () => void;
     categoryToEdit?: Category | null;
-    onSave: (data: CategoryBase) => void;
+    onSave: (data: CategoryBase) => Promise<void>;
 };
 
-// ============================
-// Componente principale
-// ============================
 export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave }: Props) {
-    // ===== STATE =====
+    // ===== State =====
     const [name, setName] = useState("");
     const [type, setType] = useState<"entrata" | "spesa">("entrata");
     const [color, setColor] = useState<string>(CATEGORY_COLORS[0].value);
     const [icon, setIcon] = useState<string>(CATEGORY_ICONS[0].value);
+    const [loading, setLoading] = useState(false);
+    const getColorName = (value: string) => CATEGORY_COLORS.find((c) => c.value === value)?.name || value;
+    const getIconName = (value: string) => CATEGORY_ICONS.find((i) => i.value === value)?.name || value;
 
-    // ===== POPOLA FORM SE EDIT =====
+    // ===== Popola form se edit =====
     useEffect(() => {
         if (categoryToEdit) {
             setName(categoryToEdit.name);
@@ -45,39 +46,54 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
         }
     }, [categoryToEdit, open]);
 
-    // ===== BLOCCA SCROLL PAGINA SOTTO =====
+    // ===== Blocca scroll pagina sotto =====
     useEffect(() => {
-        if (open) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
+        if (open) document.body.style.overflow = "hidden";
+        else document.body.style.overflow = "";
         return () => {
             document.body.style.overflow = "";
         };
     }, [open]);
 
-    // ===== NON RENDERE SE NON APERTA =====
+    // ===== Non rendere se non aperta =====
     if (!open) return null;
 
-    // ===== SUBMIT =====
-    const handleSubmit = (e: React.FormEvent) => {
+    // ===== Submit con loading =====
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSave({ name, type, color, icon });
+        setLoading(true);
+        try {
+            await onSave({ name, type, color, icon });
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // ============================ //
-    //           RENDER             //
-    // ============================ //
+    // ============================
+    // Render
+    // ============================
     return (
         <div className="fixed inset-0 z-40 bg-black/30 flex items-center justify-center">
-            <div
-                className="
-                    bg-bg rounded-2xl p-6 shadow-2xl relative border border-bg-elevate
-                    w-full max-w-2xl
-                "
-            >
-                {/* ---------- CHIUDI ---------- */}
+            <div className="relative bg-bg rounded-2xl p-6 shadow-2xl border border-bg-elevate w-full max-w-2xl">
+                {/* ===== Overlay loading ===== */}
+                <LoadingOverlay
+                    show={loading}
+                    icon="🏷️"
+                    message={categoryToEdit ? "Salvataggio categoria…" : "Creazione categoria…"}
+                    subMessage={
+                        <>
+                            {`• Nome: "${name}"`}
+                            <br />
+                            {`• Tipo: ${type === "entrata" ? "Entrata" : "Spesa"}`}
+                            <br />
+                            {`• Colore: ${getColorName(color)}`}
+                            <br />
+                            {`• Icona: ${getIconName(icon)}`}
+                        </>
+                    }
+                />
+
+                {/* ===== Chiudi ===== */}
                 <button
                     className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                     onClick={onClose}
@@ -88,10 +104,12 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                     <X size={22} />
                 </button>
 
+                {/* ===== Titolo ===== */}
                 <h2 className="text-lg font-bold mb-3">{categoryToEdit ? "Modifica categoria" : "Nuova categoria"}</h2>
 
+                {/* ===== Form ===== */}
                 <form className="space-y-4" onSubmit={handleSubmit} autoComplete="off">
-                    {/* ===== Nome ===== */}
+                    {/* Nome */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Nome</label>
                         <input
@@ -104,8 +122,7 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             placeholder="Nome categoria..."
                         />
                     </div>
-
-                    {/* ===== Tipo ===== */}
+                    {/* Tipo */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Tipo</label>
                         <select
@@ -117,15 +134,11 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             <option value="spesa">Spesa</option>
                         </select>
                     </div>
-
-                    {/* ===== Colore (scroll orizzontale, tooltip con nome) ===== */}
+                    {/* Colore */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Colore</label>
                         <div
-                            className="
-                                flex gap-2 overflow-x-auto py-1
-                                scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600
-                            "
+                            className="flex gap-2 overflow-x-auto py-1 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600"
                             style={{ WebkitOverflowScrolling: "touch" }}
                         >
                             {CATEGORY_COLORS.map((col) => (
@@ -150,8 +163,7 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             ))}
                         </div>
                     </div>
-
-                    {/* ===== Icona (a capo se troppe, tooltip con nome) ===== */}
+                    {/* Icona */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Icona</label>
                         <div className="flex flex-wrap gap-2 py-1">
@@ -181,8 +193,7 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             })}
                         </div>
                     </div>
-
-                    {/* ===== Preview ===== */}
+                    {/* Preview */}
                     <div className="flex items-center gap-3 mt-2">
                         <span
                             className="rounded-full p-2 border"
@@ -193,7 +204,6 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                                 fontSize: 32,
                             }}
                         >
-                            {/* Render corretto dell'icona */}
                             {(() => {
                                 const PreviewIcon = getIconComponent(icon);
                                 return <PreviewIcon size={28} />;
@@ -212,11 +222,11 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             {type === "entrata" ? "Entrata" : "Spesa"}
                         </span>
                     </div>
-
-                    {/* ===== Submit ===== */}
+                    {/* Submit */}
                     <button
                         type="submit"
                         className="w-full bg-primary text-white rounded-xl py-2 font-semibold mt-2 shadow focus:ring-2 focus:ring-primary/40 transition"
+                        disabled={loading}
                     >
                         {categoryToEdit ? "Salva modifiche" : "Crea categoria"}
                     </button>
