@@ -3,7 +3,8 @@
 namespace Modules\RecurringOperations\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Blade;
+use Modules\RecurringOperations\Models\RecurringOperation;
+use Modules\RecurringOperations\Observers\RecurringOperationObserver;
 use Modules\RecurringOperations\Console\Commands\GenerateRecurringOperationsCommand;
 
 class RecurringOperationsServiceProvider extends ServiceProvider
@@ -35,6 +36,11 @@ class RecurringOperationsServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(
             module_path($this->moduleName, 'Database/Migrations')
         );
+
+        // ==========================
+        // Observer: ricorrenze
+        // ==========================
+        RecurringOperation::observe(RecurringOperationObserver::class);
     }
 
     // =========================================================================
@@ -97,24 +103,17 @@ class RecurringOperationsServiceProvider extends ServiceProvider
             array_merge($this->getPublishableViewPaths(), [$sourcePath]),
             $this->moduleNameLower
         );
-
-        Blade::componentNamespace("Modules\\{$this->moduleName}\\View\\Components", $this->moduleNameLower);
     }
 
-    // =========================================================================
-    // PERCORSI VISUALIZZAZIONE PUBBLICATI
-    // =========================================================================
     protected function getPublishableViewPaths(): array
     {
         $paths = [];
-
         foreach (config('view.paths') as $path) {
             $fullPath = "{$path}/modules/{$this->moduleNameLower}";
             if (is_dir($fullPath)) {
                 $paths[] = $fullPath;
             }
         }
-
         return $paths;
     }
 

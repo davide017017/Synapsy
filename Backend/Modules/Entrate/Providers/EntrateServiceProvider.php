@@ -5,6 +5,8 @@ namespace Modules\Entrate\Providers;
 use Illuminate\Support\ServiceProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Modules\Entrate\Models\Entrata;
+use Modules\Entrate\Observers\EntrataObserver;
 
 class EntrateServiceProvider extends ServiceProvider
 {
@@ -35,6 +37,8 @@ class EntrateServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(
             module_path($this->moduleName, 'Database/Migrations')
         );
+        // Register observers
+        Entrata::observe(EntrataObserver::class);
     }
 
     // =========================================================================

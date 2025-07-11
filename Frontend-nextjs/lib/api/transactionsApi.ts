@@ -117,3 +117,67 @@ export async function deleteTransaction(token: string, transaction: Transaction)
 }
 
 // ════════════════════════════════════════════════════════
+// ==============================================
+// Soft move: cambia tipo di transazione (da entrata a spesa o viceversa)
+// ==============================================
+
+/**
+ * Sposta una transazione da un tipo all'altro in modo "soft":
+ * - Crea una nuova transazione nel nuovo tipo
+ * - Cancella l'originale
+ * - Ritorna la nuova transazione
+ */
+export async function softMoveTransaction(
+    token: string,
+    original: Transaction,
+    formData: Transaction,
+    newType: "entrata" | "spesa"
+) {
+    // 1. Elimina la vecchia
+    const typeOld = original.category?.type || original.type;
+    const deleteEndpoint = typeOld === "entrata" ? `/v1/entrate/${original.id}` : `/v1/spese/${original.id}`;
+
+    // Elimina la transazione originale
+    const resDelete = await fetch(`${API_URL}${deleteEndpoint}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+        },
+    });
+    if (!resDelete.ok) {
+        const err = await resDelete.json().catch(() => ({}));
+        console.error("💥 Errore softMove DELETE:", err);
+        throw new Error("Errore eliminazione vecchia transazione");
+    }
+
+    // 2. Crea la nuova col nuovo tipo
+    const createEndpoint = newType === "entrata" ? "/v1/entrate" : "/v1/spese";
+    const payload = {
+        description: formData.description,
+        amount: formData.amount,
+        date: formData.date,
+        type: newType,
+        category_id: formData.category_id,
+        notes: formData.notes,
+    };
+
+    const resCreate = await fetch(`${API_URL}${createEndpoint}`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!resCreate.ok) {
+        const err = await resCreate.json().catch(() => ({}));
+        console.error("💥 Errore softMove CREATE:", err);
+        throw new Error("Errore creazione nuova transazione");
+    }
+
+    return resCreate.json();
+}
+// ════════════════════════════════════════════════════════

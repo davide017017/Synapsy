@@ -14,7 +14,6 @@ type Props = {
     transactions: Transaction[];
     onSelect: (t: Transaction) => void;
     selectedId?: number | null;
-    // Niente più prop categories: si usano dal context
 };
 
 export default function TransactionsList({ transactions, onSelect, selectedId }: Props) {

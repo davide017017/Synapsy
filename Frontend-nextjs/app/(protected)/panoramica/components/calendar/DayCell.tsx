@@ -110,7 +110,7 @@ export default function DayCell({ day, date, monthDelta, transactions, showWeekD
             <div className="flex h-full items-end justify-center gap-1 pr-0.5">
                 {/* Entrate */}
                 {entrate.length > 0 && (
-                    <div className="flex flex-col items-center justify-end h-full w-9">
+                    <div className="flex flex-col items-center justify-end h-full w-8">
                         <div
                             className="w-full rounded-t-lg bg-primary flex items-end justify-center relative"
                             style={{ height: `${barEntrate}px`, minHeight: `${minHeight}px` }}

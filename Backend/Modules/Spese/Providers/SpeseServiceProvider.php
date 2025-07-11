@@ -2,109 +2,100 @@
 
 namespace Modules\Spese\Providers;
 
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Modules\Spese\Models\Spesa;
+use Modules\Spese\Observers\SpesaObserver;
 
 class SpeseServiceProvider extends ServiceProvider
 {
-    use PathNamespace;
-
-    protected string $name = 'Spese';
+    protected string $moduleName = 'Spese';
     protected string $moduleNameLower = 'spese';
 
-    // ============================
-    // BOOTSTRAPPING
-    // ============================
-    public function boot(): void
-    {
-        $this->registerCommands();
-        $this->registerCommandSchedules();
-        $this->registerTranslations();
-        $this->registerConfig();
-        $this->registerViews();
-        $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
-    }
-
-    // ============================
-    // REGISTRAZIONE DI PROVIDER
-    // ============================
+    // =========================================================================
+    // Register internal providers
+    // =========================================================================
     public function register(): void
     {
-        $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
+        $this->app->register(EventServiceProvider::class);
         $this->app->register(AuthServiceProvider::class);
     }
 
-    // ============================
-    // COMANDI E SCHEDULE
-    // ============================
-    protected function registerCommands(): void
+    // =========================================================================
+    // Bootstrap module services
+    // =========================================================================
+    public function boot(): void
     {
-        // $this->commands([]);
+        $this->registerTranslations();
+        $this->registerConfig();
+        $this->registerViews();
+        $this->registerCommands();
+        $this->registerCommandSchedules();
+
+        $this->loadMigrationsFrom(
+            module_path($this->moduleName, 'Database/Migrations')
+        );
+        // === Observer: log tutte le modifiche sulle Spese ===
+        Spesa::observe(SpesaObserver::class);
     }
 
-    protected function registerCommandSchedules(): void
+    // =========================================================================
+    // Config registration
+    // =========================================================================
+    protected function registerConfig(): void
     {
-        // $this->app->booted(function () {
-        //     $schedule = $this->app->make(Schedule::class);
-        //     $schedule->command('inspire')->hourly();
-        // });
+        $relativePath = config('modules.paths.generator.config.path');
+        $configPath = module_path($this->moduleName, $relativePath);
+
+        if (!is_dir($configPath)) return;
+
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
+        foreach ($iterator as $file) {
+            if (!$file->isFile() || $file->getExtension() !== 'php') continue;
+
+            $relative = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $key = ($relative === 'config.php')
+                ? $this->moduleNameLower
+                : $this->moduleNameLower . '.' . str_replace(['/', '\\', '.php'], ['.', '.', ''], $relative);
+
+            $this->publishes([
+                $file->getPathname() => config_path($relative)
+            ], 'config');
+
+            $this->mergeConfigFrom($file->getPathname(), $key);
+        }
     }
 
-    // ============================
-    // TRADUZIONI
-    // ============================
+    // =========================================================================
+    // Translation registration
+    // =========================================================================
     protected function registerTranslations(): void
     {
-        $langPath = resource_path('lang/modules/'.$this->moduleNameLower);
+        $langPath = resource_path("lang/modules/{$this->moduleNameLower}");
+        $fallbackPath = module_path($this->moduleName, 'Resources/lang');
 
         if (is_dir($langPath)) {
             $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
             $this->loadJsonTranslationsFrom($langPath);
         } else {
-            $this->loadTranslationsFrom(module_path($this->name, 'lang'), $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->name, 'lang'));
+            $this->loadTranslationsFrom($fallbackPath, $this->moduleNameLower);
+            $this->loadJsonTranslationsFrom($fallbackPath);
         }
     }
 
-    // ============================
-    // CONFIG
-    // ============================
-    protected function registerConfig(): void
-    {
-        $relativeConfigPath = config('modules.paths.generator.config.path');
-        $configPath = module_path($this->name, $relativeConfigPath);
-
-        if (is_dir($configPath)) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
-
-            foreach ($iterator as $file) {
-                if ($file->isFile() && $file->getExtension() === 'php') {
-                    $relativePath = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
-                    $configKey = $this->moduleNameLower . '.' . str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $relativePath);
-                    $key = ($relativePath === 'config.php') ? $this->moduleNameLower : $configKey;
-
-                    $this->publishes([$file->getPathname() => config_path($relativePath)], 'config');
-                    $this->mergeConfigFrom($file->getPathname(), $key);
-                }
-            }
-        }
-    }
-
-    // ============================
-    // VIEWS
-    // ============================
+    // =========================================================================
+    // Views registration
+    // =========================================================================
     protected function registerViews(): void
     {
-        $viewPath   = resource_path('views/modules/'.$this->moduleNameLower);
-        $sourcePath = module_path($this->name, 'resources/views');
+        $viewPath = resource_path("views/modules/{$this->moduleNameLower}");
+        $sourcePath = module_path($this->moduleName, 'Resources/views');
 
         $this->publishes([
-            $sourcePath => $viewPath,
-        ], ['views', $this->moduleNameLower.'-module-views']);
+            $sourcePath => $viewPath
+        ], ['views', "{$this->moduleNameLower}-views"]);
 
         $this->loadViewsFrom(
             array_merge($this->getPublishableViewPaths(), [$sourcePath]),
@@ -120,17 +111,35 @@ class SpeseServiceProvider extends ServiceProvider
         $paths = [];
 
         foreach (config('view.paths') as $path) {
-            if (is_dir($path.'/modules/'.$this->moduleNameLower)) {
-                $paths[] = $path.'/modules/'.$this->moduleNameLower;
+            $fullPath = "{$path}/modules/{$this->moduleNameLower}";
+            if (is_dir($fullPath)) {
+                $paths[] = $fullPath;
             }
         }
 
         return $paths;
     }
 
-    // ============================
-    // PROVIDES (vuoto)
-    // ============================
+    // =========================================================================
+    // COMANDI & SCHEDULE
+    // =========================================================================
+    protected function registerCommands(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                // Esempio: \Modules\Spese\Console\MyCommand::class,
+            ]);
+        }
+    }
+
+    protected function registerCommandSchedules(): void
+    {
+        // Lo scheduling va nel Kernel principale dell’app.
+    }
+
+    // =========================================================================
+    // BINDINGS (opzionale)
+    // =========================================================================
     public function provides(): array
     {
         return [];

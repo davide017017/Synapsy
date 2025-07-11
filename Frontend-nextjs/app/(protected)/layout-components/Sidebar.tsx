@@ -18,6 +18,7 @@ import {
     ChevronRight,
     Sun,
     Moon,
+    ListOrdered,
 } from "lucide-react";
 import { useSidebar } from "@/context/contexts/SidebarContext";
 import { useTheme } from "next-themes";
@@ -29,6 +30,7 @@ import { useState } from "react";
 const navItems = [
     { href: "/", label: "Home", icon: <Home size={18} /> },
     { href: "/panoramica", label: "Panoramica", icon: <BarChart size={18} /> },
+    { href: "/transazioni", label: "Transazioni", icon: <ListOrdered size={18} /> },
     { href: "/ricorrenti", label: "Ricorrenti", icon: <CalendarCheck size={18} /> },
     { href: "/categorie", label: "Categorie", icon: <Folder size={18} /> },
     { href: "/profilo", label: "Profilo", icon: <User size={18} /> },

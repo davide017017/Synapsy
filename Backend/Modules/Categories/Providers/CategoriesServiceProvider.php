@@ -5,15 +5,17 @@ namespace Modules\Categories\Providers;
 use Illuminate\Support\ServiceProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Modules\Categories\Models\Category;
+use Modules\Categories\Observers\CategoryObserver;
 
 class CategoriesServiceProvider extends ServiceProvider
 {
     protected string $moduleName = 'Categories';
     protected string $moduleNameLower = 'categories';
 
-    // ============================
+    // =========================================================================
     // Register internal providers
-    // ============================
+    // =========================================================================
     public function register(): void
     {
         $this->app->register(RouteServiceProvider::class);
@@ -21,9 +23,9 @@ class CategoriesServiceProvider extends ServiceProvider
         $this->app->register(AuthServiceProvider::class);
     }
 
-    // ============================
+    // =========================================================================
     // Bootstrap module services
-    // ============================
+    // =========================================================================
     public function boot(): void
     {
         $this->registerTranslations();
@@ -35,11 +37,14 @@ class CategoriesServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(
             module_path($this->moduleName, 'Database/Migrations')
         );
+
+        // === Observer: traccia modifiche alle categorie ===
+        Category::observe(CategoryObserver::class);
     }
 
-    // ============================
+    // =========================================================================
     // Config registration
-    // ============================
+    // =========================================================================
     protected function registerConfig(): void
     {
         $relativePath = config('modules.paths.generator.config.path');
@@ -48,7 +53,6 @@ class CategoriesServiceProvider extends ServiceProvider
         if (!is_dir($configPath)) return;
 
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
-
         foreach ($iterator as $file) {
             if (!$file->isFile() || $file->getExtension() !== 'php') continue;
 
@@ -65,9 +69,9 @@ class CategoriesServiceProvider extends ServiceProvider
         }
     }
 
-    // ============================
+    // =========================================================================
     // Translation registration
-    // ============================
+    // =========================================================================
     protected function registerTranslations(): void
     {
         $langPath     = resource_path("lang/modules/{$this->moduleNameLower}");
@@ -82,9 +86,9 @@ class CategoriesServiceProvider extends ServiceProvider
         }
     }
 
-    // ============================
+    // =========================================================================
     // Views registration
-    // ============================
+    // =========================================================================
     protected function registerViews(): void
     {
         $viewPath   = resource_path("views/modules/{$this->moduleNameLower}");
@@ -103,20 +107,18 @@ class CategoriesServiceProvider extends ServiceProvider
     protected function getPublishableViewPaths(): array
     {
         $paths = [];
-
         foreach (config('view.paths') as $path) {
             $fullPath = "{$path}/modules/{$this->moduleNameLower}";
             if (is_dir($fullPath)) {
                 $paths[] = $fullPath;
             }
         }
-
         return $paths;
     }
 
-    // ============================
+    // =========================================================================
     // Commands & schedule registration
-    // ============================
+    // =========================================================================
     protected function registerCommands(): void
     {
         if ($this->app->runningInConsole()) {
@@ -128,9 +130,12 @@ class CategoriesServiceProvider extends ServiceProvider
 
     protected function registerCommandSchedules(): void
     {
-        // Define scheduled commands if needed
+        // Lo scheduling va nel Kernel principale dell’app.
     }
 
+    // =========================================================================
+    // PROVIDES (opzionale)
+    // =========================================================================
     public function provides(): array
     {
         return [];

@@ -25,12 +25,13 @@ function cn(...classes: string[]) {
 type Props = {
     onSave?: (data: TransactionBase) => void;
     transaction?: Transaction; // Se presente → Edit, se assente → Nuova
+    disabled?: boolean;
 };
 
 // ╔═══════════════════════════════╗
 // ║      COMPONENTE PRINCIPALE    ║
 // ╚═══════════════════════════════╝
-export default function NewTransactionForm({ onSave, transaction }: Props) {
+export default function NewTransactionForm({ onSave, transaction, disabled }: Props) {
     // Stato form iniziale
     const [formData, setFormData] = useState<TransactionBase>({
         description: "",
@@ -125,7 +126,7 @@ export default function NewTransactionForm({ onSave, transaction }: Props) {
                     errors.category_id ? "border-danger" : "border-border",
                     "bg-bg text-text"
                 )}
-                disabled={loadingCategories}
+                disabled={loadingCategories || disabled}
             >
                 <option value={0} disabled>
                     {loadingCategories ? "Caricamento..." : "Seleziona categoria"}
