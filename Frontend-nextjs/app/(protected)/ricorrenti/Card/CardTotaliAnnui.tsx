@@ -1,8 +1,5 @@
-"use client";
-
 // ============================
-// CardTotaliAnnui.tsx
-// Card: riepilogo entrate/spese ricorrenti per frequenza (tabellare)
+// CardTotaliAnnui.tsx — Tabella riepilogo ricorrenze annue
 // ============================
 
 import { Repeat, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
@@ -14,12 +11,19 @@ type Props = {
     ricorrenze: Ricorrenza[];
 };
 
-// --------- Funzione per ordinare frequenze ---------
+// --------- Ordina frequenze ---------
 function ordinaFrequenza(a: string, b: string) {
     return (
         (frequenzaOrder[a as keyof typeof frequenzaOrder] ?? 99) -
         (frequenzaOrder[b as keyof typeof frequenzaOrder] ?? 99)
     );
+}
+
+// --------- Utility colore bilancio ---------
+function getBilancioColor(val: number) {
+    if (val > 0) return "text-[hsl(var(--c-total-positive-text))] bg-[hsl(var(--c-total-positive-bg))]/80";
+    if (val < 0) return "text-[hsl(var(--c-total-negative-text))] bg-[hsl(var(--c-total-negative-bg))]/80";
+    return "text-[hsl(var(--c-total-neutral-text))] bg-[hsl(var(--c-total-neutral-bg))]/80";
 }
 
 // --------- Componente principale ---------
@@ -32,19 +36,15 @@ export default function CardTotaliAnnui({ ricorrenze }: Props) {
         .filter((x, i, arr) => arr.indexOf(x) === i)
         .sort(ordinaFrequenza);
 
-    // Totali generali (colonne "importo" e "annuo")
-    const totaleSpese = frequenze.reduce((sum, f) => sum + (aggregato.spesa[f]?.totale ?? 0), 0);
+    // Totali annui
     const totaleSpeseAnnue = sommaTotaleAnnua(aggregato.spesa);
-
-    const totaleEntrate = frequenze.reduce((sum, f) => sum + (aggregato.entrata[f]?.totale ?? 0), 0);
     const totaleEntrateAnnue = sommaTotaleAnnua(aggregato.entrata);
-
     const bilancioRicorrenti = totaleEntrateAnnue - totaleSpeseAnnue;
 
     // ====== Render ======
     return (
         <div className="rounded-2xl border border-bg-elevate bg-bg-elevate/70 p-4 flex flex-col gap-3 shadow-md min-h-[180px]">
-            {/* ---------- Titolo Card ---------- */}
+            {/* ---------- Titolo ---------- */}
             <div className="flex items-center gap-2 text-2xl font-bold mb-2">
                 <Repeat className="w-7 h-7 text-primary" />
                 Riepilogo Ricorrenze Annue
@@ -89,27 +89,38 @@ export default function CardTotaliAnnui({ ricorrenze }: Props) {
                         ))}
                     </tbody>
                     <tfoot>
+                        {/* --------- Totali: solo colonna Annue --------- */}
                         <tr>
                             <td className="px-2 py-1 font-bold" colSpan={2}>
                                 Totale
                             </td>
-                            <td className="px-2 py-1 font-bold text-red-700 font-mono">€{totaleSpese.toFixed(2)}</td>
+                            <td className="px-2 py-1 font-bold text-red-700 font-mono"></td>
                             <td className="px-2 py-1 font-bold text-red-700 font-mono">
                                 €{totaleSpeseAnnue.toFixed(2)}
                             </td>
-                            <td className="px-2 py-1 font-bold text-green-700 font-mono">
-                                €{totaleEntrate.toFixed(2)}
-                            </td>
+                            <td className="px-2 py-1 font-bold text-green-700 font-mono"></td>
                             <td className="px-2 py-1 font-bold text-green-700 font-mono">
                                 €{totaleEntrateAnnue.toFixed(2)}
                             </td>
                         </tr>
+                        {/* --------- Bilancio Annui: centrale e colore utility --------- */}
                         <tr>
-                            <td className="px-2 py-1 font-bold" colSpan={2}>
-                                Bilancio Ricorrenti Annui
-                            </td>
-                            <td className="px-2 py-1 font-bold text-primary font-mono" colSpan={4}>
-                                €{bilancioRicorrenti.toFixed(2)}
+                            <td className="px-2 py-2 font-bold text-center" colSpan={6}>
+                                <span
+                                    className={`text-lg font-bold px-4 py-1 rounded-xl border shadow-sm ${getBilancioColor(
+                                        bilancioRicorrenti
+                                    )}`}
+                                    style={{
+                                        minWidth: 140,
+                                        display: "inline-block",
+                                        borderWidth: 1,
+                                        borderStyle: "solid",
+                                        borderColor: "hsl(var(--c-total-positive-border))",
+                                    }}
+                                >
+                                    Bilancio Ricorrenti Annui: {bilancioRicorrenti >= 0 ? "+" : "–"}€
+                                    {Math.abs(bilancioRicorrenti).toFixed(2)}
+                                </span>
                             </td>
                         </tr>
                     </tfoot>

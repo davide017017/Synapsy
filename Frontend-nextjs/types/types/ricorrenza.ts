@@ -6,6 +6,7 @@
 // Ricorrenza "completa" (risposta backend)
 // ============================
 export type Ricorrenza = {
+    category_color: any;
     id: number;
     nome: string;
     importo: number;

@@ -51,6 +51,7 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
         e.preventDefault();
         setLoading(true);
         try {
+            console.log({ name, type, color, icon });
             await onSave({ name, type, color, icon });
         } finally {
             setLoading(false);

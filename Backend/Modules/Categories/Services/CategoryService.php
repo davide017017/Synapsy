@@ -50,10 +50,13 @@ class CategoryService
         return Auth::user()
             ->categories()
             ->create([
-                'name' => $data['name'],
-                'type' => $data['type'],
+                'name'  => $data['name'],
+                'type'  => $data['type'],
+                'color' => $data['color'] ?? null,
+                'icon'  => $data['icon'] ?? null,
             ]);
     }
+
 
     /**
      * Aggiorna e ritorna la categoria aggiornata.

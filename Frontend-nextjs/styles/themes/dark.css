@@ -67,4 +67,54 @@
     --modal-warning: hsl(var(--c-warning));
     --modal-success: hsl(var(--c-success));
     --modal-info: hsl(var(--c-primary-light, 159 89% 60%));
+
+    /* ╔══════════════════════════════════════════════════════╗
+* ║      PALETTE FREQUENZE — RICORRENZE (PILLS)         ║
+* ╚══════════════════════════════════════════════════════╝ */
+
+    /* Giornaliera (blu pastello) */
+    --c-freq-daily-bg: 210 52% 23%; /* Blu pastello */
+    --c-freq-daily-text: 220 50% 96%; /* Quasi bianco */
+    --c-freq-daily-border: 210 52% 33%; /* Blu accento più chiaro */
+
+    /* Settimanale (azzurro/verde acqua soft) */
+    --c-freq-weekly-bg: 184 40% 30%; /* Verde acqua spento */
+    --c-freq-weekly-text: 220 30% 95%; /* Quasi bianco */
+    --c-freq-weekly-border: 184 42% 38%; /* Verde acqua accento */
+
+    /* Mensile (verde menta desaturato) */
+    --c-freq-monthly-bg: 159 32% 27%; /* Verde menta soft */
+    --c-freq-monthly-text: 150 20% 92%; /* Bianco sporco */
+    --c-freq-monthly-border: 159 38% 40%; /* Verde menta bordo */
+
+    /* Annuale (giallo beige) */
+    --c-freq-annually-bg: 44 35% 34%; /* Giallo senape soft */
+    --c-freq-annually-text: 44 20% 90%; /* Bianco/beige chiaro */
+    --c-freq-annually-border: 44 36% 44%; /* Giallo/beige bordo */
+
+    /* Biennale (viola/lilla tenue) */
+    --c-freq-biennial-bg: 285 20% 32%; /* Lilla soft */
+    --c-freq-biennial-text: 285 15% 92%; /* Bianco lilla */
+    --c-freq-biennial-border: 285 22% 40%; /* Lilla bordo */
+
+    /* Personalizzata/altro (grigio pastello) */
+    --c-freq-custom-bg: 220 10% 32%; /* Grigio pastello */
+    --c-freq-custom-text: 220 10% 92%; /* Bianco grigio */
+    --c-freq-custom-border: 220 12% 45%; /* Grigio bordo */
+
+    /* ===================== */
+    /* ===== SALDO / TOTALI ===== */
+    /* ===================== */
+
+    --c-total-positive-bg: 148 22% 22%; /* Verde scuro desaturo */
+    --c-total-positive-border: 148 29% 42%; /* Verde più chiaro per bordo */
+    --c-total-positive-text: 145 70% 84%; /* Verde/grigio chiaro */
+
+    --c-total-negative-bg: 358 19% 22%; /* Rosso scuro spento */
+    --c-total-negative-border: 358 36% 42%; /* Rosso scuro per bordo */
+    --c-total-negative-text: 0 0% 100%; /* Bianco per testo */
+
+    --c-total-neutral-bg: 220 6% 21%; /* Grigio neutro */
+    --c-total-neutral-border: 220 10% 40%; /* Grigio per bordo */
+    --c-total-neutral-text: 220 15% 72%; /* Grigio chiaro */
 }

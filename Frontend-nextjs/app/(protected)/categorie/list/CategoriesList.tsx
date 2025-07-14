@@ -10,11 +10,14 @@ import DeleteCategoryModal from "../deleteModal/DeleteCategoryModal";
 import { Category } from "@/types";
 import CardCategories from "./cardCategories/CardCategories";
 
+// ============================
+// Componente principale
+// ============================
 export default function CategoriesList() {
     const { categories, loading, error, openModal, moveAndDelete, remove, refresh } = useCategories();
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
-    // Dividi per tipo
+    // Dividi categorie per tipo
     const entrate = categories.filter((c) => c.type === "entrata");
     const spese = categories.filter((c) => c.type === "spesa");
 
@@ -22,6 +25,7 @@ export default function CategoriesList() {
     entrate.sort((a, b) => a.name.localeCompare(b.name));
     spese.sort((a, b) => a.name.localeCompare(b.name));
 
+    // Gestione eliminazione categoria
     async function handleDeleteCategory(
         category: Category | null,
         mode: "deleteAll" | "move",
@@ -35,13 +39,14 @@ export default function CategoriesList() {
         }
     }
 
+    // Loading/error state
     if (loading) return <div className="text-center p-4">Caricamento categorie...</div>;
     if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
 
     return (
         <div className="w-full px-2 md:px-6">
             <div className="flex flex-col xl:flex-row gap-8">
-                {/* Entrate */}
+                {/* ================== Entrate ================== */}
                 <section className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                         <span className="inline-block w-1 h-6 rounded bg-green-500" />
@@ -56,7 +61,7 @@ export default function CategoriesList() {
                         )}
                     </div>
                 </section>
-                {/* Spese */}
+                {/* ================== Spese ================== */}
                 <section className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                         <span className="inline-block w-1 h-6 rounded bg-red-500" />
@@ -72,7 +77,7 @@ export default function CategoriesList() {
                     </div>
                 </section>
             </div>
-            {/* ===== Modale eliminazione ===== */}
+            {/* ========== Modale eliminazione ========== */}
             <DeleteCategoryModal
                 category={categoryToDelete}
                 onClose={() => setCategoryToDelete(null)}
@@ -82,3 +87,5 @@ export default function CategoriesList() {
         </div>
     );
 }
+
+// ===================== END CategoriesList =====================
