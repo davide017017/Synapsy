@@ -16,6 +16,7 @@ import {
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import NewTransactionModal from "@/app/(protected)/newTransaction/NewTransactionModal";
+import { useMemo } from "react";
 
 // ==================
 // Tipi context
@@ -35,6 +36,8 @@ type TransactionsContextType = {
     transactionToEdit: Transaction | null;
     openModal: (txToEdit?: Transaction | null) => void;
     closeModal: () => void;
+    monthBalance: number;
+    yearBalance: number;
 };
 
 // ==================
@@ -57,6 +60,25 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // Auth
     const { data: session } = useSession();
     const token = session?.accessToken;
+
+    // Calcolo saldo mese
+    const monthBalance = useMemo(() => {
+        const now = new Date();
+        return transactions
+            .filter((t) => {
+                const d = new Date(t.date);
+                return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+            })
+            .reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
+    }, [transactions]);
+
+    // Calcolo saldo anno
+    const yearBalance = useMemo(() => {
+        const now = new Date();
+        return transactions
+            .filter((t) => new Date(t.date).getFullYear() === now.getFullYear())
+            .reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
+    }, [transactions]);
 
     // =============== Fetch ALL ==================
     const fetchAll = async () => {
@@ -165,6 +187,8 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 transactionToEdit,
                 openModal,
                 closeModal,
+                monthBalance,
+                yearBalance,
             }}
         >
             {children}

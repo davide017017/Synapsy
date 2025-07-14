@@ -12,24 +12,25 @@ import { Textarea } from "@/app/components/ui/Textarea";
 import { Button } from "@/app/components/ui/Button";
 import { toast } from "sonner";
 
-// Utility classnames
+// ===== Helper per classi dinamiche =====
 function cn(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
-// Tipi Props
+// ===== Props tipizzate =====
 type Props = {
     onSave?: (data: TransactionBase) => void;
     transaction?: Transaction;
     disabled?: boolean;
-    onChangeForm?: (data: Partial<TransactionBase>) => void; // <-- AGGIUNTO!
+    onChangeForm?: (data: Partial<TransactionBase>) => void;
+    onCancel?: () => void; // aggiungi questa per uniformare UX
 };
 
 // ╔═══════════════════════════════╗
 // ║      COMPONENTE PRINCIPALE    ║
 // ╚═══════════════════════════════╝
-export default function NewTransactionForm({ onSave, transaction, disabled, onChangeForm }: Props) {
-    // Stato form iniziale
+export default function NewTransactionForm({ onSave, transaction, disabled, onChangeForm, onCancel }: Props) {
+    // ----- Stato form -----
     const [formData, setFormData] = useState<TransactionBase>({
         description: "",
         amount: "" as any,
@@ -41,10 +42,10 @@ export default function NewTransactionForm({ onSave, transaction, disabled, onCh
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
 
-    // Context categorie
+    // ----- Context categorie -----
     const { categories, loading: loadingCategories } = useCategories();
 
-    // Inizializza campi in edit
+    // ----- Inizializza in edit -----
     useEffect(() => {
         if (transaction) {
             setFormData({
@@ -58,19 +59,19 @@ export default function NewTransactionForm({ onSave, transaction, disabled, onCh
         }
     }, [transaction]);
 
-    // Comunica i dati aggiornati al parent (overlay)
+    // ----- Comunica dati aggiornati -----
     useEffect(() => {
         onChangeForm && onChangeForm(formData);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData]);
 
-    // Filtra categorie per tipo
+    // ----- Filtra categorie per tipo -----
     const filteredCategories = useMemo(
         () => categories.filter((cat) => cat.type === formData.type),
         [categories, formData.type]
     );
 
-    // Submit + Validazione
+    // ======= Submit + Validazione =======
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -101,89 +102,140 @@ export default function NewTransactionForm({ onSave, transaction, disabled, onCh
     // ║          RENDER FORM          ║
     // ╚═══════════════════════════════╝
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Tipo transazione */}
-            <select
-                value={formData.type}
-                onChange={(e) =>
-                    setFormData({
-                        ...formData,
-                        type: e.target.value as "entrata" | "spesa",
-                        category_id: 0,
-                    })
-                }
-                className="w-full px-3 py-2 rounded-xl border bg-bg text-text text-sm focus:ring-2 focus:ring-primary focus:outline-none"
-                disabled={!!transaction}
-            >
-                <option value="entrata">Entrata</option>
-                <option value="spesa">Spesa</option>
-            </select>
-            {/* Categoria dinamica */}
-            <select
-                value={formData.category_id}
-                onChange={(e) => setFormData({ ...formData, category_id: Number(e.target.value) })}
-                className={cn(
-                    "w-full px-3 py-2 rounded-xl border text-sm focus:ring-2 focus:ring-primary focus:outline-none",
-                    errors.category_id ? "border-danger" : "border-border",
-                    "bg-bg text-text"
-                )}
-                disabled={loadingCategories || disabled}
-            >
-                <option value={0} disabled>
-                    {loadingCategories ? "Caricamento..." : "Seleziona categoria"}
-                </option>
-                {filteredCategories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                        {cat.name}
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+            {/* ===== Tipo transazione ===== */}
+            <div>
+                <label htmlFor="transaction-type" className="block text-sm font-medium mb-1">
+                    Tipo
+                </label>
+                <select
+                    id="transaction-type"
+                    name="type"
+                    value={formData.type}
+                    onChange={(e) =>
+                        setFormData({
+                            ...formData,
+                            type: e.target.value as "entrata" | "spesa",
+                            category_id: 0,
+                        })
+                    }
+                    className="w-full px-3 py-2 rounded-xl border bg-bg text-text text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+                    disabled={!!transaction}
+                >
+                    <option value="entrata">Entrata</option>
+                    <option value="spesa">Spesa</option>
+                </select>
+            </div>
+            {/* ===== Categoria dinamica ===== */}
+            <div>
+                <label htmlFor="transaction-category" className="block text-sm font-medium mb-1">
+                    Categoria
+                </label>
+                <select
+                    id="transaction-category"
+                    name="category_id"
+                    value={formData.category_id}
+                    onChange={(e) => setFormData({ ...formData, category_id: Number(e.target.value) })}
+                    className={cn(
+                        "w-full px-3 py-2 rounded-xl border text-sm focus:ring-2 focus:ring-primary focus:outline-none",
+                        errors.category_id ? "border-danger" : "border-border",
+                        "bg-bg text-text"
+                    )}
+                    disabled={loadingCategories || disabled}
+                >
+                    <option value={0} disabled>
+                        {loadingCategories ? "Caricamento..." : "Seleziona categoria"}
                     </option>
-                ))}
-            </select>
-            {errors.category_id && <p className="text-danger text-xs -mt-2">{errors.category_id}</p>}
-
-            {/* Descrizione */}
-            <Input
-                type="text"
-                placeholder="Descrizione"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className={cn(errors.description ? "border-danger" : "")}
-            />
-            {errors.description && <p className="text-danger text-xs -mt-2">{errors.description}</p>}
-
-            {/* Importo */}
-            <Input
-                type="number"
-                step="0.01"
-                placeholder="Importo"
-                value={formData.amount === 0 ? "" : formData.amount}
-                onChange={(e) =>
-                    setFormData({
-                        ...formData,
-                        amount: parseFloat(e.target.value) || 0,
-                    })
-                }
-                className={cn(errors.amount ? "border-danger" : "")}
-            />
-            {errors.amount && <p className="text-danger text-xs -mt-2">{errors.amount}</p>}
-
-            {/* Data */}
-            <Input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-            />
-
-            {/* Note */}
-            <Textarea
-                placeholder="Note (opzionale)"
-                value={formData.notes || ""}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            />
-
-            {/* Azioni */}
-            <Button type="submit" className="w-full mt-2" disabled={loading}>
-                {loading ? "Salvataggio..." : transaction ? "Salva modifiche" : "Salva"}
-            </Button>
+                    {filteredCategories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                        </option>
+                    ))}
+                </select>
+                {errors.category_id && <p className="text-danger text-xs -mt-2">{errors.category_id}</p>}
+            </div>
+            {/* ===== Descrizione ===== */}
+            <div>
+                <label htmlFor="transaction-description" className="block text-sm font-medium mb-1">
+                    Descrizione
+                </label>
+                <Input
+                    id="transaction-description"
+                    name="description"
+                    type="text"
+                    placeholder="Descrizione"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className={cn(errors.description ? "border-danger" : "")}
+                />
+                {errors.description && <p className="text-danger text-xs -mt-2">{errors.description}</p>}
+            </div>
+            {/* ===== Importo ===== */}
+            <div>
+                <label htmlFor="transaction-amount" className="block text-sm font-medium mb-1">
+                    Importo
+                </label>
+                <Input
+                    id="transaction-amount"
+                    name="amount"
+                    type="number"
+                    step="0.01"
+                    placeholder="Importo"
+                    value={formData.amount === 0 ? "" : formData.amount}
+                    onChange={(e) =>
+                        setFormData({
+                            ...formData,
+                            amount: parseFloat(e.target.value) || 0,
+                        })
+                    }
+                    className={cn(errors.amount ? "border-danger" : "")}
+                />
+                {errors.amount && <p className="text-danger text-xs -mt-2">{errors.amount}</p>}
+            </div>
+            {/* ===== Data ===== */}
+            <div>
+                <label htmlFor="transaction-date" className="block text-sm font-medium mb-1">
+                    Data
+                </label>
+                <Input
+                    id="transaction-date"
+                    name="date"
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                />
+            </div>
+            {/* ===== Note ===== */}
+            <div>
+                <label htmlFor="transaction-notes" className="block text-sm font-medium mb-1">
+                    Note (opzionale)
+                </label>
+                <Textarea
+                    id="transaction-notes"
+                    name="notes"
+                    placeholder="Note (opzionale)"
+                    value={formData.notes || ""}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                />
+            </div>
+            {/* ===== Azioni ===== */}
+            <div className="flex gap-2 w-full mt-6">
+                <button
+                    type="button"
+                    className="w-1/2 bg-bg-elevate text-text border border-bg-soft rounded-xl py-2 font-semibold shadow focus:ring-2 focus:ring-primary/40 transition"
+                    onClick={onCancel}
+                    disabled={loading || disabled}
+                >
+                    Annulla
+                </button>
+                <button
+                    type="submit"
+                    className="w-1/2 bg-primary text-white rounded-xl py-2 font-semibold shadow focus:ring-2 focus:ring-primary/40 transition"
+                    disabled={loading || disabled}
+                >
+                    {loading ? "Salvataggio..." : transaction ? "Salva modifiche" : "Crea transazione"}
+                </button>
+            </div>
         </form>
     );
 }

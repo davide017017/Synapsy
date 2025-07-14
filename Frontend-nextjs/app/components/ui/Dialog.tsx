@@ -1,11 +1,15 @@
 "use client";
 
+// ========================================================
+// Dialog.tsx — Overlay & contenitore modale (Headless UI)
+// ========================================================
+
 import { Dialog as HDialog, Transition } from "@headlessui/react";
 import { Fragment, ReactNode } from "react";
 
-// ==============================
-// Tipi Props
-// ==============================
+// -----------------------------
+// Props tipizzate
+// -----------------------------
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -13,14 +17,14 @@ type Props = {
     children: ReactNode;
 };
 
-// ╔══════════════════════════════════════════════════════╗
-// ║            Dialog — Modale riutilizzabile            ║
-// ╚══════════════════════════════════════════════════════╝
+// ╔══════════════════════════════════════════════════╗
+// ║        Dialog — Overlay e contenitore            ║
+// ╚══════════════════════════════════════════════════╝
 export default function Dialog({ open, onClose, title, children }: Props) {
     return (
         <Transition appear show={open} as={Fragment}>
             <HDialog as="div" className="relative z-50" onClose={onClose}>
-                {/* ─── Overlay sfocato ─── */}
+                {/* ===== Overlay sfocato ===== */}
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-200"
@@ -30,10 +34,10 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
+                    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm" />
                 </Transition.Child>
 
-                {/* ─── Box modale centrato ─── */}
+                {/* ===== Box modale centrato ===== */}
                 <div className="fixed inset-0 overflow-y-auto flex items-center justify-center p-4">
                     <Transition.Child
                         as={Fragment}
@@ -48,13 +52,19 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                             className="
                                 w-full max-w-lg
                                 rounded-2xl
-                                border border-bg-elevate
-                                bg-bg text-text
-                                shadow-2xl
-                                p-6 space-y-4
+                                border border-modal
+                                shadow-2xl shadow-black/90
+                                bg-modal-bg bg-opacity-60
+                                backdrop-blur-md
+                                text-modal-text
+                                relative
                             "
                         >
-                            {title && <HDialog.Title className="text-lg font-bold text-primary">{title}</HDialog.Title>}
+                            {/* Titolo opzionale */}
+                            {title && (
+                                <HDialog.Title className="text-lg font-bold text-primary mb-2">{title}</HDialog.Title>
+                            )}
+                            {/* Corpo */}
                             {children}
                         </HDialog.Panel>
                     </Transition.Child>

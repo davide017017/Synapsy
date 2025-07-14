@@ -1,16 +1,19 @@
 "use client";
 
 // =====================================================
-// NewRicorrenzaModal.tsx — Modale ricorrenza (con nome categoria nell’overlay)
+// NewRicorrenzaModal.tsx — Modale uniforme, utility/semantic
 // =====================================================
 
 import { useState, useMemo } from "react";
 import Dialog from "@/app/components/ui/Dialog";
-import NewRicorrenzaForm from "./NewRicorrenzaForm";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
+import NewRicorrenzaForm from "./NewRicorrenzaForm";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Ricorrenza, RicorrenzaBase } from "@/types/types/ricorrenza";
 
+// ============================
+// Props tipizzate
+// ============================
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -18,24 +21,28 @@ type Props = {
     onSave: (data: RicorrenzaBase) => Promise<void>;
 };
 
+// ============================
+// Componente principale
+// ============================
 export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, onSave }: Props) {
     const [loading, setLoading] = useState(false);
     const [formValues, setFormValues] = useState<Partial<RicorrenzaBase>>({});
     const { categories } = useCategories();
 
-    // Trova nome categoria in edit (già presente in ricorrenzaToEdit se la mappi dal backend, sennò via id)
-    const editCategoryName = useMemo(() => {
-        if (!ricorrenzaToEdit?.category_id) return undefined;
-        return categories.find((cat) => cat.id === ricorrenzaToEdit.category_id)?.name || ricorrenzaToEdit.categoria; // fallback a campo join se c'è
-    }, [ricorrenzaToEdit, categories]);
+    // Nome categoria per overlay info
+    const editCategoryName = useMemo(
+        () =>
+            ricorrenzaToEdit?.category_id
+                ? categories.find((cat) => cat.id === ricorrenzaToEdit.category_id)?.name || ricorrenzaToEdit.categoria
+                : undefined,
+        [ricorrenzaToEdit, categories]
+    );
+    const formCategoryName = useMemo(
+        () => (formValues.category_id ? categories.find((cat) => cat.id === formValues.category_id)?.name : undefined),
+        [formValues.category_id, categories]
+    );
 
-    // Trova nome categoria mentre compili il form
-    const formCategoryName = useMemo(() => {
-        if (!formValues.category_id) return undefined;
-        return categories.find((cat) => cat.id === formValues.category_id)?.name;
-    }, [formValues.category_id, categories]);
-
-    // Salva (crea o aggiorna)
+    // Salva handler
     const handleSave = async (data: RicorrenzaBase) => {
         setLoading(true);
         try {
@@ -45,12 +52,18 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
         }
     };
 
-    // =====================================================
+    // ============================
     // Render
-    // =====================================================
+    // ============================
     return (
         <Dialog open={open} onClose={onClose}>
-            <div className="relative p-6 min-w-[320px] max-w-[430px]">
+            <div
+                className="
+                    relative w-full max-w-lg min-w-[320px]
+                    text-text rounded-2xl shadow-2xl shadow-black/30 border border-bg-elevate
+                    p-6
+                "
+            >
                 {/* Overlay loading */}
                 <LoadingOverlay
                     show={loading}
@@ -84,7 +97,7 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
                 />
 
                 {/* Titolo */}
-                <h2 className="text-xl font-bold mb-4">
+                <h2 className="text-xl font-bold mb-4 text-primary">
                     {ricorrenzaToEdit ? "Modifica ricorrenza" : "Nuova ricorrenza"}
                 </h2>
                 {/* Form */}

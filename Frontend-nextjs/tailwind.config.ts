@@ -56,9 +56,20 @@ const config: Config = {
                 "table-danger-2": c("c-table-danger-2"),
                 "table-success": c("c-table-success"),
                 "table-success-2": c("c-table-success-2"),
+
+                /* Modal/Overlay */
+                "modal-bg": c("modal-bg"),
+                "modal-border": c("modal-border"),
+                "modal-text": c("modal-text"),
+                "modal-title": c("modal-title"),
+                "modal-danger": c("modal-danger"),
+                "modal-warning": c("modal-warning"),
+                "modal-success": c("modal-success"),
+                "modal-info": c("modal-info"),
             },
             borderColor: {
                 DEFAULT: c("c-table-divider"),
+                modal: c("modal-border"),
             },
             fontFamily: {
                 sans: ["var(--font-sans)", "sans-serif"],

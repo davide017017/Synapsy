@@ -5,15 +5,13 @@
 // ======================================================
 
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import Dialog from "@/app/components/ui/Dialog";
+import ModalLayout from "@/app/components/ui/ModalLayout";
+import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import { Category, CategoryBase } from "@/types";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/utils/categoryOptions";
 import { getIconComponent } from "@/utils/iconMap";
-import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 
-// ============================
-// Props
-// ============================
 type Props = {
     open: boolean;
     onClose: () => void;
@@ -22,16 +20,18 @@ type Props = {
 };
 
 export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave }: Props) {
-    // ===== State =====
+    // Stato form
     const [name, setName] = useState("");
     const [type, setType] = useState<"entrata" | "spesa">("entrata");
     const [color, setColor] = useState<string>(CATEGORY_COLORS[0].value);
     const [icon, setIcon] = useState<string>(CATEGORY_ICONS[0].value);
     const [loading, setLoading] = useState(false);
+
+    // Helpers
     const getColorName = (value: string) => CATEGORY_COLORS.find((c) => c.value === value)?.name || value;
     const getIconName = (value: string) => CATEGORY_ICONS.find((i) => i.value === value)?.name || value;
 
-    // ===== Popola form se edit =====
+    // Popola form se edit
     useEffect(() => {
         if (categoryToEdit) {
             setName(categoryToEdit.name);
@@ -46,19 +46,7 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
         }
     }, [categoryToEdit, open]);
 
-    // ===== Blocca scroll pagina sotto =====
-    useEffect(() => {
-        if (open) document.body.style.overflow = "hidden";
-        else document.body.style.overflow = "";
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, [open]);
-
-    // ===== Non rendere se non aperta =====
-    if (!open) return null;
-
-    // ===== Submit con loading =====
+    // Submit
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -69,47 +57,73 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
         }
     };
 
-    // ============================
+    // =========================
     // Render
-    // ============================
+    // =========================
     return (
-        <div className="fixed inset-0 z-40 bg-black/30 flex items-center justify-center">
-            <div className="relative bg-bg rounded-2xl p-6 shadow-2xl border border-bg-elevate w-full max-w-2xl">
-                {/* ===== Overlay loading ===== */}
-                <LoadingOverlay
-                    show={loading}
-                    icon="🏷️"
-                    message={categoryToEdit ? "Salvataggio categoria…" : "Creazione categoria…"}
-                    subMessage={
-                        <>
-                            {`• Nome: "${name}"`}
-                            <br />
-                            {`• Tipo: ${type === "entrata" ? "Entrata" : "Spesa"}`}
-                            <br />
-                            {`• Colore: ${getColorName(color)}`}
-                            <br />
-                            {`• Icona: ${getIconName(icon)}`}
-                        </>
-                    }
-                />
+        <Dialog open={open} onClose={onClose}>
+            <ModalLayout
+                title={
+                    <span className="text-primary text-xl font-bold">
+                        {categoryToEdit ? "Modifica categoria" : "Nuova categoria"}
+                    </span>
+                }
+                onClose={onClose}
+                footer={
+                    <div className="flex gap-2 w-full">
+                        {/* Bottone Annulla */}
+                        <button
+                            type="button"
+                            className="
+                                w-1/2
+                                bg-bg-elevate
+                                text-text
+                                border border-bg-soft
+                                rounded-xl py-2 font-semibold
+                                shadow focus:ring-2 focus:ring-primary/40 transition
+                            "
+                            onClick={onClose}
+                            disabled={loading}
+                        >
+                            Annulla
+                        </button>
+                        {/* Bottone Salva/Crea */}
+                        <button
+                            type="submit"
+                            form="category-form"
+                            className="
+                                w-1/2
+                                bg-primary text-white
+                                rounded-xl py-2 font-semibold
+                                shadow focus:ring-2 focus:ring-primary/40 transition
+                            "
+                            disabled={loading}
+                        >
+                            {categoryToEdit ? "Salva modifiche" : "Crea categoria"}
+                        </button>
+                    </div>
+                }
+            >
+                <form id="category-form" className="space-y-4" onSubmit={handleSubmit} autoComplete="off">
+                    {/* ===== Overlay loading ===== */}
+                    <LoadingOverlay
+                        show={loading}
+                        icon="🏷️"
+                        message={categoryToEdit ? "Salvataggio categoria…" : "Creazione categoria…"}
+                        subMessage={
+                            <>
+                                {`• Nome: "${name}"`}
+                                <br />
+                                {`• Tipo: ${type === "entrata" ? "Entrata" : "Spesa"}`}
+                                <br />
+                                {`• Colore: ${getColorName(color)}`}
+                                <br />
+                                {`• Icona: ${getIconName(icon)}`}
+                            </>
+                        }
+                    />
 
-                {/* ===== Chiudi ===== */}
-                <button
-                    className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-                    onClick={onClose}
-                    title="Chiudi"
-                    tabIndex={0}
-                    type="button"
-                >
-                    <X size={22} />
-                </button>
-
-                {/* ===== Titolo ===== */}
-                <h2 className="text-lg font-bold mb-3">{categoryToEdit ? "Modifica categoria" : "Nuova categoria"}</h2>
-
-                {/* ===== Form ===== */}
-                <form className="space-y-4" onSubmit={handleSubmit} autoComplete="off">
-                    {/* Nome */}
+                    {/* ===== Nome ===== */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Nome</label>
                         <input
@@ -122,7 +136,7 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             placeholder="Nome categoria..."
                         />
                     </div>
-                    {/* Tipo */}
+                    {/* ===== Tipo ===== */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Tipo</label>
                         <select
@@ -134,11 +148,11 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             <option value="spesa">Spesa</option>
                         </select>
                     </div>
-                    {/* Colore */}
+                    {/* ===== Colore ===== */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Colore</label>
                         <div
-                            className="flex gap-2 overflow-x-auto py-1 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600"
+                            className="flex gap-2 overflow-x-auto p-2 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600"
                             style={{ WebkitOverflowScrolling: "touch" }}
                         >
                             {CATEGORY_COLORS.map((col) => (
@@ -163,7 +177,7 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             ))}
                         </div>
                     </div>
-                    {/* Icona */}
+                    {/* ===== Icona ===== */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Icona</label>
                         <div className="flex flex-wrap gap-2 py-1">
@@ -193,7 +207,7 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             })}
                         </div>
                     </div>
-                    {/* Preview */}
+                    {/* ===== Preview ===== */}
                     <div className="flex items-center gap-3 mt-2">
                         <span
                             className="rounded-full p-2 border"
@@ -222,16 +236,8 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             {type === "entrata" ? "Entrata" : "Spesa"}
                         </span>
                     </div>
-                    {/* Submit */}
-                    <button
-                        type="submit"
-                        className="w-full bg-primary text-white rounded-xl py-2 font-semibold mt-2 shadow focus:ring-2 focus:ring-primary/40 transition"
-                        disabled={loading}
-                    >
-                        {categoryToEdit ? "Salva modifiche" : "Crea categoria"}
-                    </button>
                 </form>
-            </div>
-        </div>
+            </ModalLayout>
+        </Dialog>
     );
 }
