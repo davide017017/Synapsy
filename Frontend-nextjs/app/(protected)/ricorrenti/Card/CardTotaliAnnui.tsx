@@ -1,17 +1,24 @@
-// ============================
-// CardTotaliAnnui.tsx — Tabella riepilogo ricorrenze annue
-// ============================
+"use client";
 
-import { Repeat, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+// ╔══════════════════════════════════════════════════════════════╗
+// ║ CardTotaliAnnui.tsx — Tabella riepilogo ricorrenze annue   ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+import { Repeat, ArrowDown, ArrowUp } from "lucide-react";
 import { aggregaRicorrenzePerTipoEFrequenza, frequenzaOrder, sommaTotaleAnnua } from "../utils/ricorrenza-utils";
 import { Ricorrenza } from "@/types/types/ricorrenza";
+import NewRicorrenzaButton from "@/app/(protected)/newRicorrenza/NewRicorrenzaButton";
 
-// --------- Props tipizzate ---------
+// ============================
+// Props tipizzate
+// ============================
 type Props = {
     ricorrenze: Ricorrenza[];
 };
 
-// --------- Ordina frequenze ---------
+// ============================
+// Ordina frequenze
+// ============================
 function ordinaFrequenza(a: string, b: string) {
     return (
         (frequenzaOrder[a as keyof typeof frequenzaOrder] ?? 99) -
@@ -19,16 +26,33 @@ function ordinaFrequenza(a: string, b: string) {
     );
 }
 
-// --------- Utility colore bilancio ---------
+// ============================
+// Utility colore bilancio
+// ============================
 function getBilancioColor(val: number) {
     if (val > 0) return "text-[hsl(var(--c-total-positive-text))] bg-[hsl(var(--c-total-positive-bg))]/80";
     if (val < 0) return "text-[hsl(var(--c-total-negative-text))] bg-[hsl(var(--c-total-negative-bg))]/80";
     return "text-[hsl(var(--c-total-neutral-text))] bg-[hsl(var(--c-total-neutral-bg))]/80";
 }
 
-// --------- Componente principale ---------
+// ============================
+// Utility pill frequenza
+// ============================
+function getFreqStyle(freq: string) {
+    const base = freq.toLowerCase();
+    return {
+        background: `hsl(var(--c-freq-${base}-bg, var(--c-freq-custom-bg)))`,
+        color: `hsl(var(--c-freq-${base}-text, var(--c-freq-custom-text)))`,
+        border: `1px solid hsl(var(--c-freq-${base}-border, var(--c-freq-custom-border)))`,
+    };
+}
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║ COMPONENTE PRINCIPALE                                      ║
+// ╚══════════════════════════════════════════════════════════════╝
+
 export default function CardTotaliAnnui({ ricorrenze }: Props) {
-    // ====== Raggruppa dati ======
+    // ===== Raggruppa dati =====
     const aggregato = aggregaRicorrenzePerTipoEFrequenza(ricorrenze);
 
     // Trova tutte le frequenze usate, ordinate
@@ -41,95 +65,144 @@ export default function CardTotaliAnnui({ ricorrenze }: Props) {
     const totaleEntrateAnnue = sommaTotaleAnnua(aggregato.entrata);
     const bilancioRicorrenti = totaleEntrateAnnue - totaleSpeseAnnue;
 
-    // ====== Render ======
+    // ===== Render =====
     return (
-        <div className="rounded-2xl border border-bg-elevate bg-bg-elevate/70 p-4 flex flex-col gap-3 shadow-md min-h-[180px]">
-            {/* ---------- Titolo ---------- */}
-            <div className="flex items-center gap-2 text-2xl font-bold mb-2">
-                <Repeat className="w-7 h-7 text-primary" />
-                Riepilogo Ricorrenze Annue
-            </div>
-            {/* ---------- TABELLA ---------- */}
-            <div className="overflow-x-auto">
-                <table className="min-w-full text-xs md:text-sm text-left">
-                    <thead>
-                        <tr>
-                            <th className="px-2 py-1 font-semibold text-zinc-400"></th>
-                            <th className="px-2 py-1 font-semibold text-zinc-500">Frequenza</th>
-                            <th className="px-2 py-1 font-semibold text-red-700">
-                                <ArrowDownCircle className="inline w-4 h-4 mr-1" />
-                                Spese
-                            </th>
-                            <th className="px-2 py-1 font-semibold text-red-700">Annue</th>
-                            <th className="px-2 py-1 font-semibold text-green-700">
-                                <ArrowUpCircle className="inline w-4 h-4 mr-1" />
-                                Entrate
-                            </th>
-                            <th className="px-2 py-1 font-semibold text-green-700">Annue</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {frequenze.map((freq) => (
-                            <tr key={freq}>
-                                <td className="px-2 py-1 text-zinc-400 font-mono"></td>
-                                <td className="px-2 py-1">{freq}</td>
-                                <td className="px-2 py-1 text-red-700 font-mono">
-                                    €{(aggregato.spesa[freq]?.totale ?? 0).toFixed(2)}
+        <>
+            <div className="rounded-2xl border border-bg-elevate bg-bg-elevate/70 p-4 flex flex-col gap-3 shadow-md min-h-[180px]">
+                <div>
+                    <NewRicorrenzaButton />
+                </div>
+                {/* ---------- Titolo ---------- */}
+                {/* ======================================================== */}
+                {/* Intestazione Hero centrata */}
+                <div className="relative flex flex-col items-center justify-center mb-4">
+                    {/* Icona grande sfumata come background */}
+                    <Repeat
+                        className="absolute -top-4 left-1/2 -translate-x-1/2 opacity-15 w-20 h-20 pointer-events-none"
+                        style={{ filter: "blur(1px)", color: "hsl(var(--c-secondary))" }}
+                        aria-hidden
+                    />
+                    {/* Titolo */}
+                    <div className="relative z-10 flex items-center gap-3">
+                        <Repeat className="w-8 h-8 text-primary drop-shadow" />
+                        <span className="text-2xl md:text-3xl font-extrabold font-serif tracking-tight text-center text-[hsl(var(--c-primary-dark))]">
+                            Riepilogo Ricorrenze Annue
+                        </span>
+                    </div>
+                </div>
+                {/* ======================================================== */}
+
+                {/* ---------- TABELLA ---------- */}
+                <div className="overflow-x-auto">
+                    <table className="min-w-full text-xs md:text-sm text-center">
+                        {/* ================= THEAD ================= */}
+                        <thead>
+                            <tr className="bg-[hsl(var(--c-table-header-bg))] border-b-2 border-[hsl(var(--c-table-divider))]">
+                                <th className="px-2 py-2 font-medium text-[hsl(var(--c-table-header-text))]"></th>
+                                <th className="px-2 py-2 font-medium text-[hsl(var(--c-table-header-text))]">
+                                    Frequenza
+                                </th>
+                                <th className="px-2 py-2 font-medium text-[hsl(var(--c-table-danger-2))] flex flex-col items-center justify-center gap-1">
+                                    <ArrowDown
+                                        className="mx-auto w-5 h-5"
+                                        style={{
+                                            color: "hsl(var(--c-table-danger-2))",
+                                            opacity: 0.7,
+                                        }}
+                                    />
+                                    <span>Spese</span>
+                                </th>
+                                <th className="px-2 py-2 font-medium text-[hsl(var(--c-table-danger-2))]">Annue</th>
+                                <th className="px-2 py-2 font-medium text-[hsl(var(--c-table-success-2))] flex flex-col items-center justify-center gap-1">
+                                    <ArrowUp
+                                        className="mx-auto w-5 h-5"
+                                        style={{
+                                            color: "hsl(var(--c-table-success-2))",
+                                            opacity: 0.7,
+                                        }}
+                                    />
+                                    <span>Entrate</span>
+                                </th>
+                                <th className="px-2 py-2 font-medium text-[hsl(var(--c-table-success-2))]">Annue</th>
+                            </tr>
+                        </thead>
+                        {/* ================= TBODY ================= */}
+                        <tbody>
+                            {frequenze.map((freq) => (
+                                <tr
+                                    key={freq}
+                                    className="border-b border-[hsl(var(--c-table-divider))] transition hover:bg-[hsl(var(--c-table-row-hover))]/50"
+                                >
+                                    {/* Empty, per eventuali future icone */}
+                                    <td className="px-2 py-1"></td>
+                                    {/* Pill frequenza */}
+                                    <td className="px-2 py-1">
+                                        <span
+                                            className="px-2 py-0.5 rounded-full text-xs font-bold"
+                                            style={getFreqStyle(freq)}
+                                        >
+                                            {freq}
+                                        </span>
+                                    </td>
+                                    {/* Valori Spese */}
+                                    <td className="px-2 py-1 font-mono text-[hsl(var(--c-table-danger-2))]">
+                                        €{(aggregato.spesa[freq]?.totale ?? 0).toFixed(2)}
+                                    </td>
+                                    <td className="px-2 py-1 font-mono text-[hsl(var(--c-table-danger-2))]">
+                                        €{(aggregato.spesa[freq]?.totaleAnnuale ?? 0).toFixed(2)}
+                                    </td>
+                                    {/* Valori Entrate */}
+                                    <td className="px-2 py-1 font-mono text-[hsl(var(--c-table-success-2))]">
+                                        €{(aggregato.entrata[freq]?.totale ?? 0).toFixed(2)}
+                                    </td>
+                                    <td className="px-2 py-1 font-mono text-[hsl(var(--c-table-success-2))]">
+                                        €{(aggregato.entrata[freq]?.totaleAnnuale ?? 0).toFixed(2)}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                        {/* ================= TFOOT ================= */}
+                        <tfoot>
+                            <tr className="border-t-2 border-[hsl(var(--c-table-divider))]">
+                                <td className="px-2 py-1 font-bold" colSpan={2}>
+                                    Totale
                                 </td>
-                                <td className="px-2 py-1 text-red-700 font-mono">
-                                    €{(aggregato.spesa[freq]?.totaleAnnuale ?? 0).toFixed(2)}
+                                <td className="px-2 py-1 font-bold font-mono text-[hsl(var(--c-table-danger-2))]"></td>
+                                <td className="px-2 py-1 font-bold font-mono text-[hsl(var(--c-table-danger-2))]">
+                                    €{totaleSpeseAnnue.toFixed(2)}
                                 </td>
-                                <td className="px-2 py-1 text-green-700 font-mono">
-                                    €{(aggregato.entrata[freq]?.totale ?? 0).toFixed(2)}
-                                </td>
-                                <td className="px-2 py-1 text-green-700 font-mono">
-                                    €{(aggregato.entrata[freq]?.totaleAnnuale ?? 0).toFixed(2)}
+                                <td className="px-2 py-1 font-bold font-mono text-[hsl(var(--c-table-success-2))]"></td>
+                                <td className="px-2 py-1 font-bold font-mono text-[hsl(var(--c-table-success-2))]">
+                                    €{totaleEntrateAnnue.toFixed(2)}
                                 </td>
                             </tr>
-                        ))}
-                    </tbody>
-                    <tfoot>
-                        {/* --------- Totali: solo colonna Annue --------- */}
-                        <tr>
-                            <td className="px-2 py-1 font-bold" colSpan={2}>
-                                Totale
-                            </td>
-                            <td className="px-2 py-1 font-bold text-red-700 font-mono"></td>
-                            <td className="px-2 py-1 font-bold text-red-700 font-mono">
-                                €{totaleSpeseAnnue.toFixed(2)}
-                            </td>
-                            <td className="px-2 py-1 font-bold text-green-700 font-mono"></td>
-                            <td className="px-2 py-1 font-bold text-green-700 font-mono">
-                                €{totaleEntrateAnnue.toFixed(2)}
-                            </td>
-                        </tr>
-                        {/* --------- Bilancio Annui: centrale e colore utility --------- */}
-                        <tr>
-                            <td className="px-2 py-2 font-bold text-center" colSpan={6}>
-                                <span
-                                    className={`text-lg font-bold px-4 py-1 rounded-xl border shadow-sm ${getBilancioColor(
-                                        bilancioRicorrenti
-                                    )}`}
-                                    style={{
-                                        minWidth: 140,
-                                        display: "inline-block",
-                                        borderWidth: 1,
-                                        borderStyle: "solid",
-                                        borderColor: "hsl(var(--c-total-positive-border))",
-                                    }}
-                                >
-                                    Bilancio Ricorrenti Annui: {bilancioRicorrenti >= 0 ? "+" : "–"}€
-                                    {Math.abs(bilancioRicorrenti).toFixed(2)}
-                                </span>
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
+                            <tr>
+                                <td className="px-2 py-2 font-bold text-center" colSpan={6}>
+                                    <span
+                                        className={`text-lg font-bold px-4 py-1 rounded-xl border shadow-sm ${getBilancioColor(
+                                            bilancioRicorrenti
+                                        )}`}
+                                        style={{
+                                            minWidth: 140,
+                                            display: "inline-block",
+                                            borderWidth: 1,
+                                            borderStyle: "solid",
+                                            borderColor: "hsl(var(--c-total-positive-border))",
+                                        }}
+                                    >
+                                        Bilancio Ricorrenti Annui: {bilancioRicorrenti >= 0 ? "+" : "–"}€
+                                        {Math.abs(bilancioRicorrenti).toFixed(2)}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 
-// ============================
-// END CardTotaliAnnui.tsx
-// ============================
+// ╔══════════════════════════════════════════════════════════════╗
+// ║ END CardTotaliAnnui.tsx                                    ║
+// ╚══════════════════════════════════════════════════════════════╝

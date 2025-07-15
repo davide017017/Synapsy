@@ -1,13 +1,9 @@
 "use client";
-
 // ==========================================================
-// DeleteCategoryModal.tsx — Modale uniforme, semantic utility
+// DeleteCategoryModal.tsx — Modale uniforme stile alert
 // ==========================================================
-
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
-import Dialog from "@/app/components/ui/Dialog";
-import ModalLayout from "@/app/components/ui/ModalLayout";
 import { Category } from "@/types";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 
@@ -24,7 +20,7 @@ type Props = {
 // ============================
 // Componente principale
 // ============================
-export default function DeleteCategoryModal({ category, onClose, categories }: Props) {
+export default function DeleteCategoryModal({ category, onClose, categories, onDelete }: Props) {
     // --- Stato ---
     const [mode, setMode] = useState<"deleteAll" | "move">("move");
     const [targetCategoryId, setTargetCategoryId] = useState<number | undefined>();
@@ -36,83 +32,60 @@ export default function DeleteCategoryModal({ category, onClose, categories }: P
     const availableCategories = categories.filter((c) => c.id !== category?.id && c.type === category?.type);
     const typeLabel = category?.type === "entrata" ? "Entrata" : "Spesa";
 
-    // ============================
-    // Funzione elimina/muovi
-    // ============================
+    // --- Funzione elimina/muovi ---
     const handleDelete = async () => {
         if (!category) return;
         setLoading(true);
         try {
             if (mode === "move" && targetCategoryId) {
-                await moveAndDelete(category.id, targetCategoryId, () => {
-                    onClose();
-                    refresh();
-                });
+                await onDelete("move", targetCategoryId);
             } else if (mode === "deleteAll") {
-                await remove(category.id, () => {
-                    onClose();
-                    refresh();
-                });
+                await onDelete("deleteAll");
             }
+            onClose();
         } finally {
             setLoading(false);
         }
     };
 
-    // ============================
-    // Render
-    // ============================
+    // --- Render ---
     if (!category) return null;
     return (
-        <Dialog open={!!category} onClose={onClose}>
-            <ModalLayout
-                // ---------- Titolo ----------
-                title={
-                    <span className="flex items-center gap-2 text-yellow-900 dark:text-yellow-400">
-                        <AlertTriangle size={22} />
-                        Elimina categoria
-                    </span>
-                }
-                onClose={onClose}
-                // ---------- Footer ----------
-                footer={
-                    <>
-                        <button
-                            className="px-3 py-2 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-100 font-semibold"
-                            onClick={onClose}
-                            disabled={loading}
-                        >
-                            Annulla
-                        </button>
-                        <button
-                            className={`px-3 py-2 rounded font-semibold text-white 
-                                ${
-                                    loading || (mode === "move" && !targetCategoryId)
-                                        ? "bg-red-400 cursor-not-allowed"
-                                        : "bg-red-600 hover:bg-red-700 transition"
-                                }`}
-                            disabled={loading || (mode === "move" && !targetCategoryId)}
-                            onClick={handleDelete}
-                        >
-                            {loading ? "Eliminazione..." : "Conferma"}
-                        </button>
-                    </>
-                }
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+            <div
+                className={`
+                    relative overflow-hidden rounded-3xl shadow-2xl
+                    p-8 max-w-xs w-full flex flex-col items-center
+                    bg-[rgb(239,68,68)] border-red-700 border-2
+                    transition-all
+                `}
+                style={{
+                    boxShadow: "0 12px 48px 0 rgba(220,60,80,0.27), 0 2px 20px 0 rgba(40,40,60,0.13)",
+                }}
             >
-                {/* ------------------------------------
-                    Messaggio principale
-                ------------------------------------ */}
-                <p className="mb-4">
-                    Vuoi eliminare la categoria <b>{category.name}</b>?<br />
-                    <span className="text-sm text-zinc-500">
+                {/* Icona watermark */}
+                <AlertTriangle
+                    size={190}
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20 pointer-events-none select-none"
+                    style={{ color: "#fff", filter: "blur(1.5px)" }}
+                    aria-hidden
+                />
+                {/* Icona in primo piano */}
+                <div className="z-10 mb-2">
+                    <AlertTriangle className="text-white drop-shadow" size={48} />
+                </div>
+                {/* Titolo */}
+                <div className="text-xl font-bold text-center z-10 mb-2 text-white drop-shadow">Elimina categoria</div>
+                {/* Messaggio principale */}
+                <p className="mb-3 z-10 text-base text-center text-white">
+                    Vuoi eliminare la categoria <span className="font-bold">{category.name}</span>?
+                    <br />
+                    <span className="text-sm text-white/80 font-normal">
                         Scegli cosa fare delle transazioni e ricorrenze collegate:
                     </span>
                 </p>
-
-                {/* ------------------------------------
-                    Opzioni di eliminazione/spostamento
-                ------------------------------------ */}
-                <div className="space-y-3 mb-4">
+                {/* Opzioni */}
+                <div className="z-10 space-y-3 mb-3 w-full">
                     {/* Elimina tutto */}
                     <label className="flex items-center gap-2">
                         <input
@@ -122,9 +95,9 @@ export default function DeleteCategoryModal({ category, onClose, categories }: P
                             disabled={loading}
                             className="accent-red-600"
                         />
-                        <span>
+                        <span className="text-white">
                             Elimina <b>TUTTE</b> le transazioni/ricorrenze collegate{" "}
-                            <span className="text-red-600 font-bold">(sconsigliato)</span>
+                            <span className="text-red-300 font-bold">(sconsigliato)</span>
                         </span>
                     </label>
                     {/* Sposta su altra categoria */}
@@ -134,12 +107,12 @@ export default function DeleteCategoryModal({ category, onClose, categories }: P
                             checked={mode === "move"}
                             onChange={() => setMode("move")}
                             disabled={loading}
-                            className="accent-primary"
+                            className="accent-white"
                         />
-                        <span>
-                            Sposta TUTTE su un’altra categoria di tipo <b>{typeLabel}</b>:
+                        <span className="text-white">
+                            Sposta tutte su un’altra categoria di tipo <b>{typeLabel}</b>:
                             <select
-                                className="ml-2 px-2 py-1 rounded border border-bg-elevate text-sm min-w-[140px] bg-bg text-text focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
+                                className="ml-2 px-2 py-1 rounded border min-w-[120px] bg-white text-zinc-800 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition"
                                 value={targetCategoryId ?? ""}
                                 onChange={(e) => setTargetCategoryId(Number(e.target.value))}
                                 disabled={mode !== "move" || loading}
@@ -154,16 +127,30 @@ export default function DeleteCategoryModal({ category, onClose, categories }: P
                         </span>
                     </label>
                 </div>
-
-                {/* ------------------------------------
-                    Messaggio warning extra
-                ------------------------------------ */}
+                {/* Messaggio warning extra */}
                 {mode === "deleteAll" && (
-                    <div className="text-xs text-red-600 font-semibold mb-2">
+                    <div className="text-xs text-yellow-200 font-semibold mb-2 z-10 text-center">
                         Attenzione: questa azione non è reversibile!
                     </div>
                 )}
-            </ModalLayout>
-        </Dialog>
+                {/* Footer: Pulsanti */}
+                <div className="z-10 flex gap-4 mt-4 w-full justify-center">
+                    <button
+                        className="px-6 py-2 rounded-xl font-semibold shadow bg-white text-red-700 hover:bg-red-50 transition disabled:opacity-70"
+                        onClick={handleDelete}
+                        disabled={loading || (mode === "move" && !targetCategoryId)}
+                    >
+                        {loading ? "Eliminazione..." : "Conferma"}
+                    </button>
+                    <button
+                        className="px-6 py-2 rounded-xl font-semibold shadow bg-red-100 text-red-900 hover:bg-red-200 transition"
+                        onClick={onClose}
+                        disabled={loading}
+                    >
+                        Annulla
+                    </button>
+                </div>
+            </div>
+        </div>
     );
 }

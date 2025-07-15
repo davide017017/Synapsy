@@ -10,7 +10,7 @@ import { Transaction } from "@/types/types/transaction";
 import TransactionTypeSwitch from "./components/TransactionTypeSwitch";
 import TransactionDetailForm from "./components/TransactionDetailForm";
 import TransactionActionButtons from "./components/TransactionActionButtons";
-import TransactionDeleteConfirmModal from "./components/TransactionDeleteConfirmModal";
+import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
 
 type Category = { id: number; name: string; type: "entrata" | "spesa" };
@@ -72,13 +72,6 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
         if (isSaveDisabled) return;
         onEdit?.({ ...formData, type: selectedType });
         onClose(); // Chiudi subito!
-    };
-
-    // --- DELETE: chiudi subito, gestisci async sopra ---
-    const handleDelete = () => {
-        onDelete?.(transaction);
-        setShowDeleteModal(false);
-        onClose();
     };
 
     // --- RESET FORM ---
@@ -174,14 +167,28 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
                 />
 
                 {/* MODALE DELETE */}
-                {showDeleteModal && (
-                    <TransactionDeleteConfirmModal
-                        onConfirm={handleDelete}
-                        onCancel={() => setShowDeleteModal(false)}
-                        loading={false}
-                    />
-                )}
+                <ConfirmDialog
+                    open={showDeleteModal}
+                    type="delete"
+                    title="Confermi di voler eliminare la transazione?"
+                    highlight={
+                        <div className="flex flex-col items-center">
+                            <span className="italic">{transaction.description}</span>
+                            {transaction.amount && <span>{transaction.amount.toFixed(2)}€</span>}
+                            {transaction.category?.name && <span>{transaction.category.name}</span>}
+                        </div>
+                    }
+                    onConfirm={() => {
+                        onDelete?.(transaction);
+                        setShowDeleteModal(false);
+                        onClose();
+                    }}
+                    onCancel={() => setShowDeleteModal(false)}
+                    loading={loading === "delete"}
+                />
             </div>
         </div>
     );
 }
+// ==========================================
+// END TransactionDetailModal.tsx

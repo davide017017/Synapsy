@@ -13,7 +13,6 @@ import CardGraficoPagamenti from "./card/CardGraficoPagamenti";
 import ListaRicorrenzePerFrequenza from "./liste/ListaRicorrenzePerFrequenza";
 import ListaProssimiPagamenti from "./liste/ListaProssimiPagamenti";
 import AreaGraficiRicorrenze from "./grafici/AreaGraficiRicorrenze";
-import NewRicorrenzaButton from "@/app/(protected)/newRicorrenza/NewRicorrenzaButton";
 import {
     ordinaPerPrezzo,
     calcolaTotaliAnnuiPerFrequenza,
@@ -58,8 +57,11 @@ export default function RicorrentiPage() {
     // =======================================================
     // CALLBACK AZIONI
     // =======================================================
-    const handleDelete = async (ricorrenza: Ricorrenza) => {
-        if (!token) return toast.error("Utente non autenticato");
+    const handleDelete = async (ricorrenza: Ricorrenza): Promise<void> => {
+        if (!token) {
+            toast.error("Utente non autenticato");
+            return;
+        }
         try {
             await deleteRicorrenza(token, ricorrenza);
             toast.success("Ricorrenza eliminata");
@@ -67,6 +69,7 @@ export default function RicorrentiPage() {
         } catch {
             toast.error("Errore durante l'eliminazione");
         }
+        // Non restituire nulla (void)
     };
 
     const handleEdit = (ricorrenza: Ricorrenza) => {
@@ -78,11 +81,6 @@ export default function RicorrentiPage() {
     // =======================================================
     return (
         <div className="space-y-8">
-            {/* === Azioni rapide === */}
-            <div className="flex justify-end">
-                <NewRicorrenzaButton />
-            </div>
-
             {/* === Cards principali === */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CardTotaliAnnui ricorrenze={ricorrenze} />
@@ -107,7 +105,7 @@ export default function RicorrentiPage() {
             </div>
             {/* --------------------------------------------------- */}
 
-            {/* === Area grafici avanzati (se vuoi lasciarla) === */}
+            {/* === Area grafici avanzati (opzionale) === */}
             <AreaGraficiRicorrenze />
 
             {/* === Loading/errore === */}
