@@ -78,7 +78,7 @@ export default function CardGraficoPagamenti({ ricorrenze, customDaysArr }: Prop
         ],
     };
 
-    const chartOptions = buildBarChartOptions();
+    const chartOptions = buildBarChartOptions(saldoPerGiorno);
     const hasData = saldoPerGiorno.some((v) => Math.abs(v) > 0);
 
     // ===== Render =====

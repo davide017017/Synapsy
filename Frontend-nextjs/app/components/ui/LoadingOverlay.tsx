@@ -1,18 +1,20 @@
 "use client";
 
 // =========================================
-// LoadingOverlay.tsx — Overlay caricamento per modali
+// LoadingOverlay.tsx — Overlay caricamento per modali/section/fullscreen
 // =========================================
 
 import { ReactNode } from "react";
 
-// Props tipizzate: messaggio, icona, visibilità
+// Tipi Props
 type Props = {
     show: boolean;
-    icon?: ReactNode; // icona custom (es: 💸, 🔄, 🏷️)
-    message?: string; // messaggio principale
-    subMessage?: React.ReactNode; // messaggio secondario
-    colorClass?: string; // colore opzionale per icona
+    icon?: ReactNode; // Icona custom (es: <Loader2 />, "🔄", ecc)
+    message?: string; // Messaggio principale
+    subMessage?: React.ReactNode; // Messaggio secondario opzionale
+    colorClass?: string; // Classe per icona principale
+    fixed?: boolean; // Se true: overlay su tutto lo schermo
+    rounded?: boolean; // Se true: overlay ha rounded (per modali)
 };
 
 export default function LoadingOverlay({
@@ -20,13 +22,23 @@ export default function LoadingOverlay({
     icon = "🔄",
     message = "Caricamento in corso…",
     subMessage = "Attendi un istante!",
-    colorClass = "text-4xl",
+    colorClass = "text-4xl text-primary",
+    fixed = false,
+    rounded = true,
 }: Props) {
     if (!show) return null;
 
     return (
-        <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center z-50 rounded-2xl">
-            <span className={`${colorClass} animate-bounce mb-3`}>{icon}</span>
+        <div
+            className={`
+                ${fixed ? "fixed" : "absolute"}
+                inset-0 z-50 flex flex-col items-center justify-center
+                bg-black/70
+                ${rounded ? "rounded-2xl" : ""}
+                backdrop-blur-[2.5px]
+            `}
+        >
+            <span className={`${colorClass} mb-3`}>{icon}</span>
             <span className="text-white font-semibold text-lg text-center">
                 {message}
                 <br />
@@ -38,32 +50,30 @@ export default function LoadingOverlay({
                         <span className="dot-pulse bg-zinc-300 rounded-full w-2 h-2 inline-block"></span>
                     </span>
                 </span>
-                <style jsx>{`
-                    .dot-pulse {
-                        animation: dotPulse 1.2s infinite;
-                    }
-                    .dot-pulse:nth-child(2) {
-                        animation-delay: 0.2s;
-                    }
-                    .dot-pulse:nth-child(3) {
-                        animation-delay: 0.4s;
-                    }
-                    @keyframes dotPulse {
-                        0%,
-                        80%,
-                        100% {
-                            opacity: 0.2;
-                            transform: scale(1);
-                        }
-                        40% {
-                            opacity: 1;
-                            transform: scale(1.2);
-                        }
-                    }
-                `}</style>
             </span>
+            <style jsx>{`
+                .dot-pulse {
+                    animation: dotPulse 1.2s infinite;
+                }
+                .dot-pulse:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+                .dot-pulse:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+                @keyframes dotPulse {
+                    0%,
+                    80%,
+                    100% {
+                        opacity: 0.2;
+                        transform: scale(1);
+                    }
+                    40% {
+                        opacity: 1;
+                        transform: scale(1.2);
+                    }
+                }
+            `}</style>
         </div>
     );
 }
-
-// =========================================

@@ -1,23 +1,27 @@
-// \types\types\transaction.ts
-
+// =======================================================
 // types/types/transaction.ts
+// Tipi per le transazioni finanziarie (con categoria)
+// =======================================================
+
+import { Category } from "./category";
+
+/**
+ * Transazione completa (con possibile categoria popolata)
+ */
 export type Transaction = {
     id: number;
     type: "entrata" | "spesa";
     description: string;
     amount: number;
     date: string;
-    category_id?: number;
+    category_id?: number; // Solo se necessario (legacy/db)
     notes?: string | null;
-    // Aggiungi questo campo
-    category?: {
-        id: number;
-        name: string;
-        type: "entrata" | "spesa";
-    };
+    category?: Category; // Oggetto categoria completo, con color e icon
 };
 
-// transazione senza ID (usata per creazione)
+/**
+ * Dati base per creazione/modifica transazione
+ */
 export type TransactionBase = {
     description: string;
     amount: number;
@@ -26,3 +30,5 @@ export type TransactionBase = {
     category_id?: number;
     notes?: string | null;
 };
+
+// =======================================================

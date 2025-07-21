@@ -1,8 +1,8 @@
-"use client";
+// ========================================
+// TransactionTable.tsx
+// ========================================
 
-// ╔═════════════════════════════════════════════════════════╗
-// ║         TransactionTable.tsx — Tabella transazioni     ║
-// ╚═════════════════════════════════════════════════════════╝
+"use client";
 
 import React, { useMemo } from "react";
 import { useReactTable, getCoreRowModel, flexRender, ColumnResizeMode, Row } from "@tanstack/react-table";
@@ -20,32 +20,55 @@ import { useSelection } from "@/context/contexts/SelectionContext";
 // =============================
 type Props = {
     data: Transaction[];
-    onRowClick?: (t: Transaction) => void;
+    onRowClick: (t: Transaction) => void;
     selectedId?: number | null;
+    isSelectionMode?: boolean;
+    selectedIds?: number[];
+    setSelectedIds?: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 // =============================
 // TransactionTable principale
 // =============================
-export default function TransactionTable({ data, onRowClick, selectedId }: Props) {
+export default function TransactionTable({
+    data,
+    onRowClick,
+    selectedId,
+    isSelectionMode: propIsSelectionMode,
+    selectedIds: propSelectedIds,
+    setSelectedIds: propSetSelectedIds,
+}: Props) {
+    // Context selection come fallback
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
+
+    // Priority alle prop
+    const actualIsSelectionMode = propIsSelectionMode ?? isSelectionMode;
+    const actualSelectedIds = propSelectedIds ?? selectedIds;
+    const actualSetSelectedIds = propSetSelectedIds ?? setSelectedIds;
 
     // ------ Toggle selezione singola ------
     const handleCheckToggle = (id: number) => {
-        setSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
+        actualSetSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
     };
 
     // ------ Toggle selezione tutti ------
     const dataWithGroups = useMemo(() => addMonthGroup(data), [data]);
     const allIds = useMemo(() => dataWithGroups.map((tx) => tx.id), [dataWithGroups]);
     const handleCheckAllToggle = (checked: boolean) => {
-        setSelectedIds((ids) => (checked ? allIds : ids.filter((id) => !allIds.includes(id))));
+        actualSetSelectedIds((ids) => (checked ? allIds : ids.filter((id) => !allIds.includes(id))));
     };
 
     // ------ Colonne ------
     const columns = useMemo(
-        () => getColumnsWithSelection(isSelectionMode, selectedIds, handleCheckToggle, handleCheckAllToggle, allIds),
-        [isSelectionMode, selectedIds, allIds]
+        () =>
+            getColumnsWithSelection(
+                actualIsSelectionMode,
+                actualSelectedIds,
+                handleCheckToggle,
+                handleCheckAllToggle,
+                allIds
+            ),
+        [actualIsSelectionMode, actualSelectedIds, allIds]
     );
 
     // ------ Setup TanStack Table ------
@@ -80,14 +103,17 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
     // Render tabella
     // =========================
     return (
-        <div className="table-container overflow-x-auto">
+        <div className="table-container overflow-x-auto bg-[hsl(var(--c-table-bg))] rounded-2xl border border-[hsl(var(--c-table-divider))] shadow">
             <table className="table-base min-w-full">
                 {/* Intestazione */}
-                <thead>
+                <thead className="bg-[hsl(var(--c-table-header-bg))] text-[hsl(var(--c-table-header-text))]">
                     {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id} className="table-header-row">
+                        <tr
+                            key={headerGroup.id}
+                            className="table-header-row border-b border-[hsl(var(--c-table-divider))]"
+                        >
                             {headerGroup.headers.map((header) => (
-                                <th key={header.id} className="relative">
+                                <th key={header.id} className="relative font-semibold text-sm px-4 py-2 text-left">
                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                     {header.column.getCanResize() && (
                                         <div
@@ -102,12 +128,11 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                     ))}
                 </thead>
                 {/* Corpo */}
-                <tbody>
+                <tbody className="text-[hsl(var(--c-table-text))]">
                     {/* Blocchi raggruppati per mese/anno */}
                     {(() => {
                         let lastYear = "";
                         const blocks = Object.entries(groupedRows).sort(([a], [b]) => b.localeCompare(a));
-
                         return blocks.flatMap(([monthKey, rows]) => {
                             const [year] = monthKey.split("-");
                             const blocco: React.ReactNode[] = [];
@@ -123,7 +148,7 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                                         entrate={yearTotals[year].entrate}
                                         spese={yearTotals[year].spese}
                                         saldo={yearTotals[year].entrate - yearTotals[year].spese}
-                                        className="rounded-top"
+                                        className="rounded-top bg-[hsl(var(--c-table-divider-year-bg))] text-[hsl(var(--c-table-header-text))]"
                                     />
                                 );
                             }
@@ -158,15 +183,13 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                                             0
                                         )
                                     }
-                                    className="rounded-top"
+                                    className="rounded-top bg-[hsl(var(--c-table-divider-month-bg))] text-[hsl(var(--c-table-header-text))]"
                                 />
                             );
 
-                            // === Ecco la modifica: ordina per data discendente ===
+                            // === Ordina per data discendente ===
                             const rowsOrdinati = [...rows].sort(
-                                (a, b) =>
-                                    // Descending (più recente in cima)
-                                    new Date(b.original.date).getTime() - new Date(a.original.date).getTime()
+                                (a, b) => new Date(b.original.date).getTime() - new Date(a.original.date).getTime()
                             );
 
                             rowsOrdinati.forEach((row, idx) => {
@@ -176,7 +199,15 @@ export default function TransactionTable({ data, onRowClick, selectedId }: Props
                                         key={row.id}
                                         row={row}
                                         onClick={onRowClick}
-                                        className={isLast ? "rounded-bottom" : ""}
+                                        className={`
+                                            ${isLast ? "rounded-b-xl" : ""}
+                                            ${
+                                                row.original.id === selectedId
+                                                    ? "bg-[hsl(var(--c-table-row-selected))] border-l-4 border-[hsl(var(--c-primary))] shadow-inner"
+                                                    : "hover:bg-[hsl(var(--c-table-row-hover))]"
+                                            }
+                                            border-b border-[hsl(var(--c-table-divider))] transition-colors
+                                        `}
                                         selected={row.original.id === selectedId}
                                     />
                                 );

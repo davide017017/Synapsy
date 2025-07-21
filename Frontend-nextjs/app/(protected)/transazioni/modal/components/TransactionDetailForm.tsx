@@ -7,9 +7,7 @@ import DescriptionField from "./field/DescriptionField";
 import CategoryField from "./field/CategoryField";
 import NotesField from "./field/NotesField";
 import { Transaction } from "@/types/types/transaction";
-
-// Tipi
-type Category = { id: number; name: string; type: "entrata" | "spesa" };
+import { Category } from "@/types/types/category";
 
 type Props = {
     formData: Transaction;
@@ -37,20 +35,20 @@ export default function TransactionDetailForm({
                 <AmountField
                     value={formData.amount}
                     onChange={(v) => setFormData({ ...formData, amount: v })}
-                    isModified={formData.amount !== transaction.amount}
+                    original={transaction.amount}
                     showError={showErrors && (!formData.amount || formData.amount <= 0)}
                 />
                 <DateField
                     value={formData.date}
                     onChange={(v) => setFormData({ ...formData, date: v })}
-                    isModified={formData.date !== transaction.date}
+                    original={transaction.date}
                 />
             </div>
             <div className="w-full flex flex-col items-center">
                 <DescriptionField
                     value={formData.description}
                     onChange={(v) => setFormData({ ...formData, description: v })}
-                    isModified={formData.description !== transaction.description}
+                    original={transaction.description}
                     showError={showErrors && !formData.description?.trim()}
                 />
             </div>
@@ -59,7 +57,7 @@ export default function TransactionDetailForm({
                     value={formData.category_id}
                     categories={filteredCategories}
                     onChange={(id, cat) => setFormData({ ...formData, category_id: id, category: cat })}
-                    isModified={formData.category_id !== transaction.category_id}
+                    original={transaction.category_id}
                     showError={showErrors && !formData.category_id}
                 />
             </div>
@@ -67,7 +65,7 @@ export default function TransactionDetailForm({
                 <NotesField
                     value={formData.notes ?? undefined}
                     onChange={(v) => setFormData({ ...formData, notes: v })}
-                    isModified={formData.notes !== transaction.notes}
+                    original={transaction.notes ?? ""}
                 />
             </div>
         </form>

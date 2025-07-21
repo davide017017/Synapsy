@@ -130,9 +130,15 @@ export function dateKey(date: Date): string {
 export const daysToShow = 7;
 export const daysArr = getDaysRangeArray(daysToShow);
 
-// --- Ora NON servono più funzioni per Chart.js colors, usi il componente ---
+// ╔══════════════════════════════════════════════════════╗
+// ║ 3B. CHART.JS: OPZIONI BAR CON LINEA E LABEL "0"     ║
+// ╚══════════════════════════════════════════════════════╝
 
-export function buildBarChartOptions() {
+export function buildBarChartOptions(saldoPerGiorno: number[] = []) {
+    // Calcola min/max per visualizzare bene lo zero (baseline)
+    const minY = saldoPerGiorno.length && Math.min(...saldoPerGiorno) < 0 ? Math.min(...saldoPerGiorno, 0) : 0;
+    const maxY = saldoPerGiorno.length ? Math.max(...saldoPerGiorno, 0) : 100;
+
     return {
         plugins: {
             legend: { display: false },
@@ -142,14 +148,6 @@ export function buildBarChartOptions() {
                         const idx = ctx.dataIndex;
                         return `Saldo: €${ctx.dataset.data[idx].toFixed(2)}`;
                     },
-                    title: function (items: any) {
-                        const idx = items[0].dataIndex;
-                        return daysArr[idx].toLocaleDateString("it-IT", {
-                            weekday: "short",
-                            day: "2-digit",
-                            month: "2-digit",
-                        });
-                    },
                 },
             },
         },
@@ -158,9 +156,33 @@ export function buildBarChartOptions() {
         scales: {
             x: {
                 grid: { display: false },
-                ticks: { font: { size: 12 } },
+                ticks: {
+                    font: { size: 12 },
+                    color: "#B5BAC7", // Grigio chiaro
+                },
             },
-            y: { grid: { display: false } },
+            y: {
+                grid: {
+                    // Linea zero nera, le altre grigio molto chiaro
+                    color: (ctx: { tick: { value: number } }) => (ctx.tick.value === 0 ? "#2e2e2e" : "#23252a"), // zero nera, altre grigio antracite
+                    lineWidth: (ctx: { tick: { value: number } }) => (ctx.tick.value === 0 ? 2.2 : 1),
+                },
+                beginAtZero: true,
+                min: minY,
+                max: maxY,
+                ticks: {
+                    color: "#B5BAC7", // Grigio chiaro (come sotto il grafico)
+                    font: {
+                        size: 13,
+                        weight: (ctx: any) => (ctx?.tick?.value === 0 ? "bold" : "normal"),
+                    },
+                    // Mostra solo "0" in grassetto
+                    callback: function (value: string | number) {
+                        if (Number(value) === 0) return "0";
+                        return value;
+                    },
+                },
+            },
         },
     };
 }
@@ -219,13 +241,11 @@ export const freqToDays: Record<"daily" | "weekly" | "monthly" | "annually", num
     annually: 365,
 };
 
-// ============================
-// Utility: genera pill freq (coerente con il tema CSS HSL)
-// ============================
+// ======== Pill frequenza (palette CSS/HSL coerente tema) ========
 export function getFreqPill(frequenza: string) {
     const freqNorm = normalizzaFrequenza(frequenza);
 
-    // Definisci le variabili CSS da usare per ogni freq
+    // Palette CSS var
     const freqVars: Record<string, { bg: string; text: string; border: string }> = {
         daily: { bg: "var(--c-freq-daily-bg)", text: "var(--c-freq-daily-text)", border: "var(--c-freq-daily-border)" },
         weekly: {

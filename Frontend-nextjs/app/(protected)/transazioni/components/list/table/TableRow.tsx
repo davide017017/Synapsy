@@ -1,3 +1,7 @@
+// ╔══════════════════════════════════════════════════════╗
+// ║   TableRow.tsx — Riga singola tabella transazioni   ║
+// ╚══════════════════════════════════════════════════════╝
+
 import { Row, flexRender } from "@tanstack/react-table";
 import { TransactionWithGroup } from "./types";
 import clsx from "clsx";
@@ -17,20 +21,20 @@ export default function TableRow({ row, onClick, className }: Props) {
     return (
         <tr
             key={row.id}
-            // Aggiungi classi per selezione e hover
             className={clsx(
                 className,
+                // Riga selezionata: verde soft traslucido, bordo menta
                 isChecked
-                    ? "bg-primary/10 dark:bg-primary/20 border-l-4 border-primary" // Riga selezionata
-                    : "hover:bg-bg-alt cursor-pointer transition" // Riga normale hover
+                    ? "bg-[hsl(var(--c-table-row-selected))] border-l-4 border-[hsl(var(--c-primary))] shadow-inner"
+                    : "hover:bg-[hsl(var(--c-table-row-hover))] cursor-pointer transition-colors",
+                "border-b border-[hsl(var(--c-table-divider))]"
             )}
             // Clic solo se non in modalità selezione multipla
             onClick={() => !isSelectionMode && onClick?.(row.original)}
             tabIndex={0}
         >
-            {/* NON aggiungere qui td per la checkbox! */}
             {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-1 py-1 border-b align-middle">
+                <td key={cell.id} className="px-2 py-2 align-middle text-[hsl(var(--c-table-text))]">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
             ))}

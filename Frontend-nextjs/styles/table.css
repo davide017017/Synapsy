@@ -1,88 +1,99 @@
-/* ============================== */
-/*        Shape e stile Tabella   */
-/* ============================== */
+/* ╔═════════════════════════════════════════════════════╗
+   ║            Table — Shape & Style (dark ready)      ║
+   ╚═════════════════════════════════════════════════════╝ */
 
+/* =========================
+    Container Tabella
+========================= */
 .table-container {
-    border-radius: 1rem;
-    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 0.07);
-    overflow: hidden;
+    border-radius: 1.1rem;
+    box-shadow: 0 3px 16px 0 rgb(0 0 0 / 0.1), 0 0.5px 1.5px rgb(0 0 0 / 0.08);
+    overflow-x: auto;
+    overflow-y: visible;
     background: transparent;
+    margin-bottom: 1.5rem;
 }
 
-/* ────────────── Tabella base ────────────── */
+/* =========================
+    Tabella base
+========================= */
 .table-base {
-    color: hsl(var(--c-table-text)); /* Colore di base del testo tabella */
     width: 100%;
+    color: hsl(var(--c-table-text));
     border-collapse: separate;
     border-spacing: 0;
-    font-size: 0.95rem;
+    font-size: 0.97rem;
+    background: transparent;
 }
 
-/* ────────────── Intestazione ────────────── */
-.table-header-row {
-    background: hsl(var(--c-table-header-bg));
-}
-.table-base th {
+/* =========================
+    Intestazione
+========================= */
+.table-base th,
+.table-header-row th {
     padding: 0.65rem 1rem;
     font-weight: 700;
-    background: inherit;
+    background: hsl(var(--c-table-header-bg));
     color: hsl(var(--c-table-header-text));
     border-bottom: 1.5px solid hsl(var(--c-table-divider));
+    position: sticky;
+    top: 0; /* Sticky header */
+    z-index: 2;
+    transition: background 0.18s;
 }
 
-/* ────────────── Corpo tabella ────────────── */
-.table-base td {
-    padding: 0.62rem 0.8rem;
-    border-bottom: 1px solid hsl(var(--c-table-divider));
-    background: transparent;
-    color: hsl(var(--c-table-text));
-}
-
-/* Hover riga corpo */
-.table-base tr:hover td {
-    background: hsl(var(--c-table-row-hover));
-    transition: background 0.16s;
-}
-
-/* Arrotondamenti blocchi header/corpo */
 .table-base thead tr:first-child th:first-child {
-    border-top-left-radius: 1rem;
+    border-top-left-radius: 1.1rem;
 }
 .table-base thead tr:first-child th:last-child {
-    border-top-right-radius: 1rem;
+    border-top-right-radius: 1.1rem;
 }
-.table-base thead tr:last-child th:first-child {
-    border-bottom-left-radius: 1rem;
+
+/* =========================
+    Corpo tabella
+========================= */
+.table-base td {
+    padding: 0.61rem 0.85rem;
+    background: transparent;
+    color: hsl(var(--c-table-text));
+    border-bottom: 1px solid hsl(var(--c-table-divider));
+    transition: background 0.18s, color 0.18s;
 }
-.table-base thead tr:last-child th:last-child {
-    border-bottom-right-radius: 1rem;
+
+.table-base tr {
+    transition: background 0.15s;
+}
+
+.table-base tr:hover td {
+    background: hsl(var(--c-table-row-hover));
 }
 
 tr.rounded-top > td,
 tr.rounded-top > th {
-    border-top-left-radius: 1rem !important;
-    border-top-right-radius: 1rem !important;
+    border-top-left-radius: 1.1rem !important;
+    border-top-right-radius: 1.1rem !important;
 }
 tr.rounded-bottom > td:first-child {
-    border-bottom-left-radius: 1rem !important;
+    border-bottom-left-radius: 1.1rem !important;
 }
 tr.rounded-bottom > td:last-child {
-    border-bottom-right-radius: 1rem !important;
+    border-bottom-right-radius: 1.1rem !important;
 }
 
-/* ============================== */
-/*        Divider Speciali        */
-/* ============================== */
-
+/* =========================
+    Divider Speciali
+========================= */
 /* Divider ANNO */
 td.table-divider-year {
     background: hsl(var(--c-table-divider-year-bg));
     color: hsl(var(--c-table-header-text));
     font-weight: 600;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    border-top: 5px solid hsl(var(--c-table-divider));
-    border-bottom: 0;
+    border-top-left-radius: 1.1rem;
+    border-top-right-radius: 1.1rem;
+    border-top: 4px solid hsl(var(--c-table-divider));
+    border-bottom: none;
+    font-size: 1.09rem;
+    letter-spacing: 0.02em;
 }
 
 /* Divider MESE */
@@ -90,23 +101,71 @@ td.table-divider-month {
     background: hsl(var(--c-table-divider-month-bg));
     color: hsl(var(--c-table-header-text));
     font-weight: 600;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+    border-top-left-radius: 1.1rem;
+    border-top-right-radius: 1.1rem;
     border-top: 2px solid hsl(var(--c-table-divider));
-    border-bottom: 4px solid hsl(var(--c-table-divider-year-bg));
+    border-bottom: 3px solid hsl(var(--c-table-divider-year-bg));
+    font-size: 1.01rem;
+    letter-spacing: 0.01em;
 }
 
-/* ============================== */
-/*         Pillole stato          */
-/* ============================== */
-
+/* =========================
+    Pillole stato (es. saldo)
+========================= */
 .pill-success {
-    background: hsl(var(--c-table-success));
+    background: hsl(var(--c-table-success-2));
     color: hsl(var(--c-bg));
-    border: 1px solid hsl(var(--c-table-success));
+    border: 1.5px solid hsl(var(--c-table-success-2));
+    border-radius: 0.7rem;
+    font-weight: 600;
+    font-size: 0.93em;
+    padding: 0.11em 0.83em;
 }
 .pill-danger {
-    background: hsl(var(--c-table-danger));
+    background: hsl(var(--c-table-danger-2));
     color: hsl(var(--c-bg));
-    border: 1px solid hsl(var(--c-table-danger));
+    border: 1.5px solid hsl(var(--c-table-danger-2));
+    border-radius: 0.7rem;
+    font-weight: 600;
+    font-size: 0.93em;
+    padding: 0.11em 0.83em;
+}
+
+/* =========================
+    Responsive (Mobile scroll)
+========================= */
+@media (max-width: 700px) {
+    .table-base th,
+    .table-base td {
+        padding-left: 0.45rem;
+        padding-right: 0.45rem;
+        font-size: 0.93rem;
+    }
+    .table-container {
+        border-radius: 0.75rem;
+    }
+}
+
+/* =========================
+    Extra UX details
+========================= */
+/* Bordo sinistro evidenza su row selezionata (opzionale) */
+tr.selected-row > td {
+    border-left: 4px solid hsl(var(--c-primary));
+    background: hsl(var(--c-table-row-selected));
+}
+
+.category-pill {
+    display: inline-block;
+    background: var(--cat-bg, hsl(220 15% 97% / 0.16));
+    border: 1.5px solid var(--cat-border, hsl(220 14% 60%));
+    color: var(--cat-text, hsl(220 17% 46%));
+    font-weight: 600;
+    font-size: 0.95em;
+    border-radius: 999px;
+    padding: 0.18em 0.82em;
+    letter-spacing: 0.01em;
+    user-select: none;
+    box-shadow: 0 1px 5px 0 rgb(0 0 0 / 0.06);
+    transition: background 0.18s, border 0.18s, color 0.18s;
 }

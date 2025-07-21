@@ -1,32 +1,25 @@
-// ============================
-// columns.tsx
-// Definizione colonne per TanStack Table (con factory per checkbox)
-// ============================
+// ╔══════════════════════════════════════════════════════╗
+// ║ columns.tsx — Definizione colonne Tabella           ║
+// ╚══════════════════════════════════════════════════════╝
 
 import { ArrowDown, ArrowUp } from "lucide-react";
 import clsx from "clsx";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { TransactionWithGroup } from "./types";
+import { hexToHSL } from "./utils"; // Importa la funzione dal tuo utils
 
 // ============================
 // Factory: colonne con selezione multipla
 // ============================
-
-/**
- * Restituisce le colonne per la tabella transazioni.
- * Accetta stato selezione multipla per collegare la checkbox alla UI.
- */
 export function getColumnsWithSelection(
     isSelectionMode: boolean,
     selectedIds: number[],
     onCheckToggle: (id: number) => void,
-    onCheckAllToggle?: (checked: boolean) => void, // funzione opzionale per "seleziona tutto"
-    allIds: number[] = [] // array con tutti gli id delle righe visibili
+    onCheckAllToggle?: (checked: boolean) => void,
+    allIds: number[] = []
 ): ColumnDef<TransactionWithGroup, any>[] {
     return [
-        // ════════════════════════════════════════
-        // Colonna: Checkbox selezione multipla
-        // ════════════════════════════════════════
+        // Checkbox selezione multipla
         {
             id: "select",
             header: isSelectionMode
@@ -37,7 +30,6 @@ export function getColumnsWithSelection(
                               checked={allIds.length > 0 && allIds.every((id) => selectedIds.includes(id))}
                               ref={(input) => {
                                   if (input) {
-                                      // Imposta indeterminate solo quando almeno uno ma non tutti sono selezionati
                                       input.indeterminate =
                                           allIds.length > 0 &&
                                           selectedIds.length > 0 &&
@@ -65,9 +57,7 @@ export function getColumnsWithSelection(
             enableResizing: false,
         },
 
-        // ════════════════════════════════════════
-        // Colonna: Data
-        // ════════════════════════════════════════
+        // Data
         {
             accessorKey: "date",
             header: "Data",
@@ -75,15 +65,13 @@ export function getColumnsWithSelection(
             minSize: 48,
             maxSize: 72,
             cell: ({ getValue }) => (
-                <span className="text-xs text-table-text-secondary">
+                <span className="text-xs text-[hsl(var(--c-table-text-secondary))]">
                     {new Date(getValue() as string).toLocaleDateString("it-IT")}
                 </span>
             ),
         },
 
-        // ════════════════════════════════════════
-        // Colonna: Icona tipo (entrata/uscita)
-        // ════════════════════════════════════════
+        // Icona tipo (entrata/spesa)
         {
             id: "icon",
             header: "",
@@ -94,16 +82,14 @@ export function getColumnsWithSelection(
             cell: ({ row }: { row: Row<TransactionWithGroup> }) => {
                 const type = row.original?.category?.type;
                 return type === "entrata" ? (
-                    <ArrowDown className="text-table-success" size={16} />
+                    <ArrowDown className="text-[hsl(var(--c-table-success-2))]" size={16} />
                 ) : (
-                    <ArrowUp className="text-table-danger" size={16} />
+                    <ArrowUp className="text-[hsl(var(--c-table-danger-2))]" size={16} />
                 );
             },
         },
 
-        // ════════════════════════════════════════
-        // Colonna: Importo
-        // ════════════════════════════════════════
+        // Importo
         {
             accessorKey: "amount",
             header: "Importo",
@@ -117,7 +103,9 @@ export function getColumnsWithSelection(
                     <span
                         className={clsx(
                             "font-mono font-semibold",
-                            type === "entrata" ? "text-table-success" : "text-table-danger"
+                            type === "entrata"
+                                ? "text-[hsl(var(--c-table-success-2))]"
+                                : "text-[hsl(var(--c-table-danger-2))]"
                         )}
                     >
                         {type === "entrata" ? "+" : "-"}
@@ -127,48 +115,60 @@ export function getColumnsWithSelection(
             },
         },
 
-        // ════════════════════════════════════════
-        // Colonna: Descrizione
-        // ════════════════════════════════════════
+        // Descrizione
         {
             accessorKey: "description",
             header: "Descrizione",
             size: 320,
             minSize: 160,
-            cell: ({ getValue }) => <span className="truncate text-table-text">{getValue() as string}</span>,
+            cell: ({ getValue }) => (
+                <span className="truncate text-[hsl(var(--c-table-text))]">{getValue() as string}</span>
+            ),
         },
 
-        // ════════════════════════════════════════
-        // Colonna: Categoria
-        // ════════════════════════════════════════
+        // Categoria
         {
             id: "category",
             header: "Categoria",
             size: 100,
             minSize: 70,
             maxSize: 140,
-            cell: ({ row }) =>
-                row.original?.category ? (
+            cell: ({ row }) => {
+                const cat = row.original?.category;
+                if (!cat) return null;
+
+                // Usa hexToHSL se è HEX, altrimenti usa già HSL
+                const hsl = cat.color?.startsWith("#") ? hexToHSL(cat.color) : cat.color;
+
+                return (
                     <span
-                        className={clsx(
-                            "text-xs px-2 py-0.5 rounded-full font-medium",
-                            row.original.category.type === "entrata"
-                                ? "text-table-success border-[hsl(var(--c-success)/0.42)]"
-                                : "text-table-danger border-[hsl(var(--c-danger)/0.42)]"
-                        )}
+                        className="
+                            px-2 py-0.5 rounded-full font-semibold text-xs
+                            border shadow-sm
+                            transition
+                        "
                         style={{
-                            background: "hsl(var(--c-primary) / 0.08)",
-                            borderWidth: 1,
+                            background: `hsl(${hsl} / 0.12)`, // Sfondo soft opaco
+                            color: `hsl(${hsl})`, // Testo
+                            borderColor: `hsl(${hsl})`, // Bordo
+                            borderWidth: 1.2,
+                            letterSpacing: "0.01em",
                         }}
                     >
-                        {row.original.category.name}
+                        {cat.icon && (
+                            <span className="mr-1">
+                                <i className={cat.icon}></i>
+                            </span>
+                        )}
+                        {cat.name}
                     </span>
-                ) : null,
+                );
+            },
         },
     ];
 }
 
 // ============================
-// Esporta anche colonne base (senza selezione multipla)
+// Esporta colonne base (senza selezione multipla)
 // ============================
 export const baseColumns: ColumnDef<TransactionWithGroup, any>[] = getColumnsWithSelection(false, [], () => {});

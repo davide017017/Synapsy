@@ -7,13 +7,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { X, Undo2 } from "lucide-react";
 import { Transaction } from "@/types/types/transaction";
+import { Category } from "@/types/types/category";
 import TransactionTypeSwitch from "./components/TransactionTypeSwitch";
 import TransactionDetailForm from "./components/TransactionDetailForm";
 import TransactionActionButtons from "./components/TransactionActionButtons";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
-import { useTransactions } from "@/context/contexts/TransactionsContext";
 
-type Category = { id: number; name: string; type: "entrata" | "spesa" };
+// ========== Props tipizzate ==========
 type Props = {
     transaction: Transaction;
     onClose: () => void;
@@ -23,9 +23,11 @@ type Props = {
 };
 
 export default function TransactionDetailModal({ transaction, onClose, categories, onEdit, onDelete }: Props) {
-    // UI state
+    // Stato UI
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
+
+    // Stato form
     const [formData, setFormData] = useState<Transaction>({ ...transaction });
     const [selectedType, setSelectedType] = useState<"entrata" | "spesa">(
         transaction.category?.type === "entrata" ? "entrata" : "spesa"
@@ -33,6 +35,7 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
     const [showErrors, setShowErrors] = useState(false);
     const [loading, setLoading] = useState<"save" | "delete" | null>(null);
 
+    // Sincronizza form e tipo se cambia transazione o lista categorie
     useEffect(() => {
         const cat = categories.find((c) => c.id === transaction.category_id || c.id === transaction.category?.id);
         setFormData({
@@ -44,6 +47,7 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
         setShowErrors(false);
     }, [transaction, categories]);
 
+    // Chiudi clic fuori
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -54,7 +58,7 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [onClose]);
 
-    // VALIDAZIONE FORM
+    // VALIDAZIONE
     const filteredCategories = categories.filter((c) => c.type === selectedType);
     const categoryError = !formData.category_id
         ? "Seleziona una categoria per poter salvare la transazione."
@@ -66,15 +70,15 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
     const isSaveDisabled = !!descriptionError || !!categoryError || !!amountError;
     const saveTooltipMessage = descriptionError || categoryError || amountError || "";
 
-    // --- SALVA: chiudi la modale SUBITO, passa al parent la logica async ---
+    // --- SALVA ---
     const handleSave = () => {
         setShowErrors(true);
         if (isSaveDisabled) return;
         onEdit?.({ ...formData, type: selectedType });
-        onClose(); // Chiudi subito!
+        onClose();
     };
 
-    // --- RESET FORM ---
+    // --- RESET form: torna ai valori originali ---
     const handleReset = () => {
         const cat = categories.find((c) => c.id === transaction.category_id || c.id === transaction.category?.id);
         setFormData({
@@ -86,7 +90,6 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
         setShowErrors(false);
     };
 
-    // --- RENDER ---
     return (
         <div className="fixed inset-0 bg-bg/80 z-40 flex items-center justify-center">
             <div
@@ -95,6 +98,8 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
                     bg-bg-elevate rounded-3xl shadow-2xl p-8 w-[96vw] max-w-lg relative border-2
                     ${selectedType === "entrata" ? "border-success" : "border-danger"} flex flex-col items-center
                 `}
+                role="dialog"
+                aria-modal="true"
             >
                 {/* RESET & CHIUDI */}
                 <button
@@ -110,6 +115,7 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
                     onClick={onClose}
                     title="Chiudi"
                     type="button"
+                    aria-label="Chiudi"
                 >
                     <X size={22} />
                 </button>
@@ -117,7 +123,6 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
                 {/* TITOLO */}
                 <div className="w-full flex flex-col items-center mb-6">
                     <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-2 shadow-sm">
-                        {/* Icona moderna */}
                         <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-primary">
                             <path
                                 d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.07-6.07-1.41 1.41M7.34 16.66l-1.41 1.41m12.73 0-1.41-1.41M7.34 7.34 5.93 5.93"
@@ -147,7 +152,7 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
                     disabled={false}
                 />
 
-                {/* FORM DETTAGLIO */}
+                {/* FORM */}
                 <TransactionDetailForm
                     formData={formData}
                     setFormData={setFormData}

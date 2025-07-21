@@ -28,13 +28,13 @@ export default function TransactionActionButtons({
             <div className="relative flex-1 flex items-center justify-center">
                 <button
                     className={`flex items-center justify-center gap-2 w-full px-4 py-3 
-        rounded-xl font-bold shadow-lg text-base transition
-        ${
-            isSaveDisabled
-                ? "bg-gray-300 text-gray-400 cursor-not-allowed"
-                : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
-        }
-        focus:outline-none focus:ring-4 focus:ring-green-300`}
+                        rounded-xl font-bold shadow-lg text-base transition
+                        ${
+                            isSaveDisabled
+                                ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+                                : "bg-green-600 text-white hover:bg-green-700 active:scale-95"
+                        }
+                        focus:outline-none focus:ring-4 focus:ring-green-300`}
                     onClick={onSave}
                     disabled={isSaveDisabled || loading === "save"}
                     onMouseEnter={() => isSaveDisabled && setShowSaveTooltip(true)}
@@ -54,8 +54,8 @@ export default function TransactionActionButtons({
             </div>
             <button
                 className="flex items-center justify-center gap-2 flex-1 px-4 py-3 rounded-xl font-bold shadow-lg text-base
-      bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-100 hover:bg-red-100 dark:hover:bg-zinc-900
-      transition focus:outline-none focus:ring-4 focus:ring-red-300 active:scale-95"
+                    bg-gray-200 dark:bg-zinc-800 text-gray-700 dark:text-gray-100 hover:bg-red-100 dark:hover:bg-zinc-900
+                    transition focus:outline-none focus:ring-4 focus:ring-red-300 active:scale-95"
                 onClick={onClose}
                 disabled={loading !== null}
                 aria-label="Esci"
@@ -66,8 +66,8 @@ export default function TransactionActionButtons({
             {onDelete && (
                 <button
                     className="flex items-center justify-center gap-2 flex-1 px-4 py-3 rounded-xl font-bold shadow-lg text-base
-        bg-red-600 text-white hover:bg-red-700 active:scale-95
-        transition focus:outline-none focus:ring-4 focus:ring-red-600"
+                        bg-red-600 text-white hover:bg-red-700 active:scale-95
+                        transition focus:outline-none focus:ring-4 focus:ring-red-600"
                     onClick={onDelete}
                     disabled={loading !== null}
                     aria-label="Elimina"

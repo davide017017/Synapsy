@@ -1,7 +1,7 @@
-// ============================
+// ====================================================
 // TransactionsList.tsx
-// Lista transazioni con filtro e tabella — tutto uniformato
-// ============================
+// Lista transazioni con filtro e tabella — uniformata
+// ====================================================
 
 import { useState, useMemo } from "react";
 import { Transaction } from "@/types/types/transaction";
@@ -9,27 +9,30 @@ import TransactionListFilter from "./list/TransactionListFilter";
 import TransactionTable from "./list/TransactionTable";
 import { useSelection } from "@/context/contexts/SelectionContext";
 import { useCategories } from "@/context/contexts/CategoriesContext";
+import { Funnel, Search, Tag } from "lucide-react"; // icone esempio
 
+// ---------- Props ----------
 type Props = {
     transactions: Transaction[];
     onSelect: (t: Transaction) => void;
     selectedId?: number | null;
 };
 
+// ----------------------------------------------
+// Componente principale lista + filtro + tabella
+// ----------------------------------------------
 export default function TransactionsList({ transactions, onSelect, selectedId }: Props) {
-    // Stato filtro frontend (locale)
+    // ===== Stato filtro frontend =====
     const [filter, setFilter] = useState({
         search: "",
         type: "tutti",
         category: "tutte",
     });
 
-    // ---- Usa il context categorie ----
     const { categories } = useCategories();
-    // ---- Usa il context selezione ----
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
 
-    // Filtro transazioni
+    // ===== Filtro transazioni =====
     const filtered = useMemo(() => {
         return transactions.filter((t) => {
             const matchType = filter.type === "tutti" || t.category?.type === filter.type;
@@ -39,25 +42,42 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
         });
     }, [transactions, filter]);
 
-    // Render
+    // ===== Render Vuoto =====
     if (!transactions.length) {
-        return <p className="text-muted text-sm">Nessuna transazione trovata.</p>;
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[200px] text-muted-foreground text-sm py-8">
+                Nessuna transazione trovata.
+                <br />
+                <span className="opacity-80">Vuoi crearne una?</span>
+            </div>
+        );
     }
 
+    // ===== Render Responsive =====
     return (
-        <div className="flex gap-4 items-start w-full">
-            {/* Tabella transazioni */}
+        <div className="flex flex-col lg:flex-row gap-4 w-full">
+            {/* ====== Filtro (mobile sopra, desktop a lato) ====== */}
+            <div className="lg:w-64 w-full flex-shrink-0 mb-2 lg:mb-0">
+                <TransactionListFilter
+                    filter={filter}
+                    setFilter={setFilter}
+                    categories={categories}
+                    // icone esempio (passa come prop se vuoi customizzare)
+                    iconSearch={<Search size={16} className="text-primary" />}
+                    iconType={<Funnel size={16} className="text-secondary" />}
+                    iconCategory={<Tag size={16} className="text-accent" />}
+                />
+            </div>
+            {/* ====== Tabella ====== */}
             <div className="flex-1 min-w-0">
                 <TransactionTable
                     data={filtered}
                     onRowClick={onSelect}
                     selectedId={selectedId}
-                    // puoi aggiungere isSelectionMode, selectedIds, setSelectedIds se la tabella gestisce la selezione multipla
+                    isSelectionMode={isSelectionMode}
+                    selectedIds={selectedIds}
+                    setSelectedIds={setSelectedIds}
                 />
-            </div>
-            {/* Filtro */}
-            <div className="w-64 flex-shrink-0">
-                <TransactionListFilter filter={filter} setFilter={setFilter} categories={categories} />
             </div>
         </div>
     );
