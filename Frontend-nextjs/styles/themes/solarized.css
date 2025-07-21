@@ -9,12 +9,12 @@
     --c-bg-elevate: 44 36% 88%; /* Box/dialog/overlay */
     --c-bg-glass: 44 36% 88% / 0.8; /* Effetto glass traslucido */
 
-    --c-text: 193 14% 40%; /* Testo primario (blu-grigio Solarized) */
+    --c-text: 193 14% 40%; /* Testo primario */
     --c-text-secondary: 197 13% 45%; /* Testo secondario */
     --c-text-tertiary: 187 10% 55%; /* Testo terziario/disattivato */
     --c-text-invert: 44 81% 94%; /* Su bg scuro */
 
-    /* ===== Brand / Primari ===== */
+    /* ===== Colori brand/primari ===== */
     --c-primary: 205 66% 49%; /* Blu Solarized */
     --c-primary-light: 197 10% 55%; /* Blu-grigio chiaro */
     --c-primary-dark: 192 80% 14%; /* Blu scuro */
@@ -22,33 +22,107 @@
     --c-primary-border: 205 66% 49% / 0.16;
     --c-primary-shadow: 205 66% 49% / 0.09;
 
+    /* ===== Colori secondari ===== */
+    --c-secondary: 220 15% 48%; /* Grigio blu pastello */
+    --c-secondary-light: 220 25% 68%; /* Più chiaro e arioso */
+    --c-secondary-dark: 220 12% 34%; /* Più profondo e contrastato */
+
     /* ===== Semantic ===== */
     --c-success: 82 100% 30%; /* Verde Solarized */
-    --c-success-dark: 197 13% 45%; /* Verde scuro Solarized */
+    --c-success-dark: 82 100% 24%; /* Verde scuro Solarized */
     --c-danger: 2 64% 52%; /* Rosso Solarized */
-    --c-danger-dark: 193 14% 40%; /* Rosso scuro Solarized */
+    --c-danger-dark: 2 64% 36%; /* Rosso scuro Solarized */
     --c-warning: 24 78% 44%; /* Arancione Solarized */
-    --c-warning-dark: 197 13% 45%; /* Arancione scuro Solarized */
+    --c-warning-dark: 24 78% 32%; /* Arancione scuro */
 
     /* ===== Tabella - Palette dedicata ===== */
-    --c-table-bg: 44 81% 94%; /* Sfondo tabella */
-    --c-table-bg-alt: 44 36% 88%; /* Sfondo alternativo */
-    --c-table-header-bg: 44 36% 88%; /* Sfondo header tabella */
-    --c-table-header-text: 205 66% 49%; /* Testo header */
-    --c-table-text: 193 14% 40%; /* Testo celle principali */
-    --c-table-text-secondary: 197 13% 45%; /* Testo celle secondarie */
+    --c-table-bg: var(--c-bg); /* Sfondo tabella */
+    --c-table-bg-alt: var(--c-bg-alt); /* Sfondo alternativo */
+    --c-table-header-bg: var(--c-bg-alt); /* Sfondo header tabella */
+    --c-table-header-text: var(--c-primary); /* Testo header */
+    --c-table-text: var(--c-text); /* Testo celle principali */
+    --c-table-text-secondary: var(--c-text-secondary); /* Testo celle secondarie */
     --c-table-divider: 180 9% 60%; /* Bordo righe e colonne */
     --c-table-row-hover: 52 50% 74%; /* Hover row */
     --c-table-row-selected: 24 78% 44% / 0.1; /* Riga selezionata arancio trasl. */
-    --c-table-accent: 205 66% 49%; /* Accent/blu Solarized */
-    --c-table-danger: 2 64% 52%; /* Rosso soft tabella */
-    --c-table-success: 82 100% 30%; /* Verde soft tabella */
+    --c-table-accent: var(--c-primary); /* Accent/blu Solarized */
+    --c-table-danger: 2 64% 92%; /* Rosso soft tabella (bg, light) */
+    --c-table-danger-2: 2 64% 52%; /* Rosso tabella (accento, testo) */
+    --c-table-success: 82 100% 88%; /* Verde soft tabella (bg, light) */
+    --c-table-success-2: 82 100% 30%; /* Verde tabella (accento, testo) */
 
-    /* Divider mese/anno (tabella) */
+    /* ===== Divider mese/anno (tabella) ===== */
     --c-table-divider-year-bg: 49 60% 85%; /* Divider anno (giallo pallido) */
-    --c-table-divider-month-bg: 44 36% 88%; /* Divider mese (giallo chiaro) */
+    --c-table-divider-month-bg: var(--c-bg-alt); /* Divider mese (giallo chiaro) */
 
-    /* Gradients tabella */
+    /* ===== Gradients tabella ===== */
     --c-table-header-gradient: linear-gradient(90deg, hsl(44 36% 88%) 0%, hsl(44 81% 94%) 100%);
     --c-table-row-gradient: linear-gradient(90deg, hsl(44 36% 88%) 0%, hsl(52 90% 91%) 100%);
+
+    /* ===== Modal/Overlay ===== */
+    --modal-bg: 44 36% 88%;
+    --modal-border: hsl(var(--c-primary-border));
+    --modal-text: hsl(var(--c-text));
+    --modal-title: hsl(var(--c-primary));
+    --modal-danger: hsl(var(--c-danger));
+    --modal-warning: hsl(var(--c-warning));
+    --modal-success: hsl(var(--c-success));
+    --modal-info: hsl(var(--c-primary-light, 197 10% 55%));
+
+    /* ╔══════════════════════════════════════════════════════╗
+     * ║      PALETTE FREQUENZE — RICORRENZE (PILLS)         ║
+     * ╚══════════════════════════════════════════════════════╝ */
+    /* Giornaliera (celeste) */
+    --c-freq-daily-bg: 205 66% 90%;
+    --c-freq-daily-text: 193 14% 40%;
+    --c-freq-daily-border: 205 66% 49%;
+
+    /* Settimanale (verde lime Solarized) */
+    --c-freq-weekly-bg: 82 100% 88%;
+    --c-freq-weekly-text: 193 14% 40%;
+    --c-freq-weekly-border: 82 100% 30%;
+
+    /* Mensile (giallo Solarized) */
+    --c-freq-monthly-bg: 44 81% 85%;
+    --c-freq-monthly-text: 193 14% 40%;
+    --c-freq-monthly-border: 44 81% 64%;
+
+    /* Annuale (arancio Solarized) */
+    --c-freq-annually-bg: 24 78% 85%;
+    --c-freq-annually-text: 193 14% 40%;
+    --c-freq-annually-border: 24 78% 44%;
+
+    /* Biennale (azzurro chiaro) */
+    --c-freq-biennial-bg: 197 13% 92%;
+    --c-freq-biennial-text: 193 14% 40%;
+    --c-freq-biennial-border: 197 13% 45%;
+
+    /* Personalizzata/altro (grigio soft) */
+    --c-freq-custom-bg: 180 12% 92%;
+    --c-freq-custom-text: 193 14% 40%;
+    --c-freq-custom-border: 180 12% 70%;
+
+    /* ===================== */
+    /* ===== SALDO / TOTALI ===== */
+    /* ===================== */
+    --c-total-positive-bg: 82 100% 85%; /* Verde soft */
+    --c-total-positive-border: 82 100% 30%;
+    --c-total-positive-text: 82 100% 24%;
+
+    --c-total-negative-bg: 2 64% 90%; /* Rosso soft */
+    --c-total-negative-border: 2 64% 52%;
+    --c-total-negative-text: 2 64% 32%;
+
+    --c-total-neutral-bg: 44 36% 88%; /* Giallo chiaro soft */
+    --c-total-neutral-border: 197 13% 45%;
+    --c-total-neutral-text: 197 13% 45%;
+
+    /* ===== Colonna saldo zero (grigio divider) ===== */
+    --c-total-zero-bg: 220 9% 27%; /* Grigio divider */
+    --c-total-zero-border: 220 10% 40%; /* Bordo opzionale */
+    --c-total-zero-text: 220 20% 92%; /* Testo opzionale */
+
+    /* ==== Category Colors ==== */
+    --c-category-div-bg: 44 60% 92%; /* Giallo sabbia molto chiaro (#fdf6e3 base Solarized) */
+    --c-category-div-text: 220 19% 27%; /* Blu petrolio Solarized (#586e75 - base) */
 }

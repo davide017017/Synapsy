@@ -24,7 +24,8 @@ export function normalizeRicorrenza(r: any): Ricorrenza {
         prossima: r.prossima || r.next_occurrence_date || r.start_date || "",
         category_id: r.category_id,
         categoria: r.categoria || (r.category?.name ?? ""), // fallback: usa il nome categoria se presente
-        note: r.note ?? r.notes ?? "",
+        category_color: r.category_color || r.category?.color || "", // ← sempre valorizzato
+        notes: r.note ?? r.notes ?? "",
         type: r.type || (r.category?.type ?? "spesa"),
         is_active: typeof r.is_active !== "undefined" ? r.is_active : true, // fallback true
         interval: typeof r.interval !== "undefined" ? Number(r.interval) : 1, // fallback 1

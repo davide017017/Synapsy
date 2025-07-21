@@ -23,6 +23,11 @@
     --c-primary-border: 120 34% 62% / 0.13;
     --c-primary-shadow: 120 34% 62% / 0.08;
 
+    /* ===== Colori secondari ===== */
+    --c-secondary: 220 15% 48%; /* Blu elettrico pastello */
+    --c-secondary-light: 220 25% 72%; /* Blu pastello chiaro */
+    --c-secondary-dark: 220 10% 34%; /* Blu pastello scuro */
+
     /* ===== Semantic ===== */
     --c-success: 134 71% 45%; /* Verde successo */
     --c-success-dark: 134 70% 29%; /* Verde successo scuro */
@@ -32,24 +37,93 @@
     --c-warning-dark: 42 97% 40%; /* Giallo avviso scuro */
 
     /* ===== Tabella - Palette dedicata ===== */
-    --c-table-bg: 0 0% 100%; /* Sfondo tabella (bianco) */
-    --c-table-bg-alt: 220 20% 98%; /* Sfondo alternativo (grigio molto chiaro) */
-    --c-table-header-bg: 220 20% 98%; /* Sfondo header tabella */
-    --c-table-header-text: 240 6% 40%; /* Testo header */
-    --c-table-text: 220 17% 27%; /* Testo celle principali */
-    --c-table-text-secondary: 24 6% 45%; /* Testo celle secondarie */
+    --c-table-bg: var(--c-bg-alt); /* Sfondo tabella */
+    --c-table-bg-alt: var(--c-bg); /* Sfondo alternativo */
+    --c-table-header-bg: var(--c-bg); /* Sfondo header tabella */
+    --c-table-header-text: var(--c-text-secondary); /* Testo header */
+    --c-table-text: var(--c-text); /* Testo celle principali */
+    --c-table-text-secondary: var(--c-text-secondary); /* Testo celle secondarie */
     --c-table-divider: 220 21% 85%; /* Bordo righe e colonne */
     --c-table-row-hover: 220 20% 92%; /* Hover row */
     --c-table-row-selected: 138 63% 92% / 0.13; /* Riga selezionata verde trasl. */
     --c-table-accent: 200 92% 76%; /* Accent/blu badge o icone */
-    --c-table-danger: 0 78% 87%; /* Rosso soft tabella */
-    --c-table-success: 120 34% 82%; /* Verde soft tabella */
+    --c-table-danger: 0 78% 87%; /* Rosso soft tabella (bg, light) */
+    --c-table-danger-2: 0 78% 60%; /* Rosso tabella (accento, testo) */
+    --c-table-success: 120 34% 82%; /* Verde soft tabella (bg, light) */
+    --c-table-success-2: 120 24% 42%; /* Verde tabella (accento, testo) */
 
-    /* Divider mese/anno (tabella) */
+    /* ===== Divider mese/anno (tabella) ===== */
     --c-table-divider-year-bg: 210 81% 97%; /* Divider anno (azzurro pallido) */
-    --c-table-divider-month-bg: 220 20% 98%; /* Divider mese (grigio molto chiaro) */
+    --c-table-divider-month-bg: var(--c-bg); /* Divider mese (grigio molto chiaro) */
 
-    /* Gradients tabella */
+    /* ===== Gradients tabella ===== */
     --c-table-header-gradient: linear-gradient(90deg, hsl(220 20% 98%) 0%, hsl(0 0% 100%) 100%);
     --c-table-row-gradient: linear-gradient(90deg, hsl(220 20% 98%) 0%, hsl(210 60% 99%) 100%);
+
+    /* ===== Modal/Overlay ===== */
+    --modal-bg: 0 0% 100%;
+    --modal-border: hsl(var(--c-primary-border));
+    --modal-text: hsl(var(--c-text));
+    --modal-title: hsl(var(--c-primary));
+    --modal-danger: hsl(var(--c-danger));
+    --modal-warning: hsl(var(--c-warning));
+    --modal-success: hsl(var(--c-success));
+    --modal-info: hsl(var(--c-primary-light, 138 63% 92%));
+
+    /* ╔══════════════════════════════════════════════════════╗
+     * ║      PALETTE FREQUENZE — RICORRENZE (PILLS)         ║
+     * ╚══════════════════════════════════════════════════════╝ */
+    /* Giornaliera (azzurro pastello) */
+    --c-freq-daily-bg: 200 60% 92%;
+    --c-freq-daily-text: 220 17% 27%;
+    --c-freq-daily-border: 200 60% 62%;
+
+    /* Settimanale (verde lime soft) */
+    --c-freq-weekly-bg: 90 34% 92%;
+    --c-freq-weekly-text: 220 17% 27%;
+    --c-freq-weekly-border: 90 34% 62%;
+
+    /* Mensile (verde chiaro soft) */
+    --c-freq-monthly-bg: 120 34% 92%;
+    --c-freq-monthly-text: 220 17% 27%;
+    --c-freq-monthly-border: 120 34% 62%;
+
+    /* Annuale (giallo beige) */
+    --c-freq-annually-bg: 48 100% 88%;
+    --c-freq-annually-text: 220 17% 27%;
+    --c-freq-annually-border: 48 100% 62%;
+
+    /* Biennale (azzurro chiaro) */
+    --c-freq-biennial-bg: 195 60% 90%;
+    --c-freq-biennial-text: 220 17% 27%;
+    --c-freq-biennial-border: 195 60% 62%;
+
+    /* Personalizzata/altro (grigio soft) */
+    --c-freq-custom-bg: 220 10% 94%;
+    --c-freq-custom-text: 220 17% 27%;
+    --c-freq-custom-border: 220 10% 74%;
+
+    /* ===================== */
+    /* ===== SALDO / TOTALI ===== */
+    /* ===================== */
+    --c-total-positive-bg: 120 34% 82%; /* Verde soft */
+    --c-total-positive-border: 120 34% 62%; /* Verde medio per bordo */
+    --c-total-positive-text: 137 38% 34%; /* Verde scuro */
+
+    --c-total-negative-bg: 0 70% 92%; /* Rosso chiaro soft */
+    --c-total-negative-border: 0 78% 60%; /* Rosso per bordo */
+    --c-total-negative-text: 0 78% 40%; /* Rosso intenso */
+
+    --c-total-neutral-bg: 210 10% 92%; /* Grigio-azzurro soft */
+    --c-total-neutral-border: 210 10% 60%; /* Grigio-azzurro per bordo */
+    --c-total-neutral-text: 210 17% 47%; /* Grigio-azzurro medio */
+
+    /* ===== Colonna saldo zero (grigio divider) ===== */
+    --c-total-zero-bg: 220 9% 27%; /* Grigio divider */
+    --c-total-zero-border: 220 10% 40%; /* Bordo opzionale */
+    --c-total-zero-text: 220 20% 92%; /* Testo opzionale */
+
+    /* ==== Category Colors ==== */
+    --c-category-div-bg: 220 30% 98%; /* Azzurro-grigio chiarissimo (sfondo card) */
+    --c-category-div-text: 220 45% 18%; /* Blu-grigio scuro (testo) */
 }

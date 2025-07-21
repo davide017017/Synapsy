@@ -46,21 +46,23 @@ class CategoriesDBSeeder extends Seeder
         // 🎨 Mappa categoria → colore e icona
         // =========================================================================
         $categoryMeta = [
-            'Alimentazione'   => ['color' => '#f5e9da', 'icon' => 'GiKnifeFork'],           // beige pastello, cibo
-            'Trasporti'       => ['color' => '#b3c6f8', 'icon' => 'FaCar'],                 // blu pastello, auto
-            'Casa'            => ['color' => '#d6bfa7', 'icon' => 'FiHome'],                // marroncino/beige, casa
-            'Utenze'          => ['color' => '#b8e0ea', 'icon' => 'MdOutlineLightbulb'],    // ciano pastello, lampadina
-            'Svago'           => ['color' => '#f7c5e0', 'icon' => 'FaGamepad'],             // rosa chiarissimo, joystick
-            'Salute'          => ['color' => '#ffb3b3', 'icon' => 'MdLocalHospital'],       // rosso pastello, croce
-            'Istruzione'      => ['color' => '#8b9dc3', 'icon' => 'PiStudentBold'],         // blu scuro soft, cappello laurea
-            'Viaggi'          => ['color' => '#b3ecf6', 'icon' => 'FaPlane'],               // azzurro cielo, aereo
-            'Regali'          => ['color' => '#cbb4d4', 'icon' => 'FaGift'],                // viola pastello, regalo
-            'Altro (Spesa)'   => ['color' => '#e0d6d1', 'icon' => 'FaEllipsisH'],           // misto rosato/grigio, puntini
-            'Stipendio'       => ['color' => '#89b99b', 'icon' => 'FaMoneyBillWave'],       // verde scuro/grigio, soldi
-            'Investimenti'    => ['color' => '#c3f6e5', 'icon' => 'FaChartLine'],           // verde menta, grafico
-            'Regalo'          => ['color' => '#b7e2d1', 'icon' => 'FaGift'],                // verde menta/viola, regalo
-            'Altro (Entrata)' => ['color' => '#cdd7ce', 'icon' => 'FaEllipsisH'],           // misto verde-grigio, puntini
+            // Spesa
+            'Alimentazione'   => ['color' => '#e17055', 'icon' => 'GiKnifeFork'],
+            'Trasporti'       => ['color' => '#2980b9', 'icon' => 'FaCar'],
+            'Casa'            => ['color' => '#92400e', 'icon' => 'FiHome'],
+            'Utenze'          => ['color' => '#00cec9', 'icon' => 'MdOutlineLightbulb'],
+            'Svago'           => ['color' => '#e84393', 'icon' => 'FaGamepad'],
+            'Salute'          => ['color' => '#8a1022', 'icon' => 'MdLocalHospital'],
+            'Istruzione'      => ['color' => '#262693', 'icon' => 'PiStudentBold'],
+            'Viaggi'          => ['color' => '#f39c12', 'icon' => 'FaPlane'],
+            'Regali'          => ['color' => '#fd79a8', 'icon' => 'FaGift'],
+            'Altro (Spesa)'   => ['color' => '#988282', 'icon' => 'FaEllipsisH'],
 
+            // Entrata
+            'Stipendio'       => ['color' => '#27ae60', 'icon' => 'FaMoneyBillWave'],
+            'Investimenti'    => ['color' => '#1e583b', 'icon' => 'FaChartLine'],
+            'Regalo'          => ['color' => '#888848', 'icon' => 'FaGift'],
+            'Altro (Entrata)' => ['color' => '#4e5a54', 'icon' => 'FaEllipsisH'],
         ];
 
         // =========================================================================

@@ -14,7 +14,8 @@ export type Ricorrenza = {
     prossima: string;
     category_id: number;
     categoria: string; // ← nome categoria (dal join), solo risposta
-    note: string;
+
+    notes: string;
     type: "entrata" | "spesa";
     is_active: number; // <--- puoi aggiungerlo se il backend lo restituisce (opzionale)
     interval: number; // <--- idem, opzionale
@@ -29,7 +30,7 @@ export type RicorrenzaBase = {
     frequenza: string; // Frequenza in IT (es: Mensile)
     prossima: string; // Data prossima scadenza (YYYY-MM-DD)
     category_id: number; // Categoria collegata
-    note: string; // Note opzionali
+    notes: string; // Note opzionali
     type: "entrata" | "spesa"; // Tipo
     is_active: number; // 1=attiva, 0=disattivata (obbligatorio)
     interval: number; // Quanti intervalli tra una ricorrenza e l'altra (es: 1=ogni mese)

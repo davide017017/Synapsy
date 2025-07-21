@@ -41,7 +41,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onC
         frequenza: initialValues?.frequenza || "monthly",
         prossima: toDateInputValue(initialValues?.prossima),
         category_id: initialValues?.category_id || 0,
-        note: initialValues?.note || "",
+        notes: initialValues?.notes || "",
         type: initialValues?.type || "entrata",
         is_active: initialValues?.is_active ?? 1,
         interval: initialValues?.interval || 1,
@@ -220,11 +220,11 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onC
                     Note (opzionale)
                 </label>
                 <Textarea
-                    id="ricorrenza-note"
-                    name="note"
+                    id="ricorrenza-notes"
+                    name="notes"
                     placeholder="Note (opzionale)"
-                    value={formData.note || ""}
-                    onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                    value={formData.notes || ""}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />
             </div>
             {/* ===== Azioni ===== */}

@@ -6,7 +6,7 @@
 
 import { Ricorrenza } from "@/types/types/ricorrenza";
 import { Pencil, Trash2 } from "lucide-react";
-import { FREQUENZE_LABEL } from "./../ListaRicorrenzePerFrequenza";
+import { getFreqPill } from "../../utils/ricorrenza-utils";
 
 // --------- Utility per stile e simbolo importo ---------
 function getTypeStyle(type: "entrata" | "spesa") {
@@ -39,6 +39,7 @@ type Props = {
 // =======================================================
 export default function RicorrenzaItem({ r, onEdit, onDelete }: Props) {
     const { symbol, valueClass, bgClass } = getTypeStyle(r.type);
+    const { label, style } = getFreqPill(r.frequenza); // <--- aggiunto
 
     return (
         <li
@@ -52,20 +53,44 @@ export default function RicorrenzaItem({ r, onEdit, onDelete }: Props) {
             {/* Nome (col-4) */}
             <div className="col-span-4 font-semibold truncate" title={r.nome}>
                 {r.nome}
-                {r.note && (
-                    <span className="ml-1 text-[10px] text-zinc-400 font-normal italic" title={r.note}>
-                        • {r.note}
+                {r.notes && (
+                    <span className="ml-1 text-[10px] text-zinc-400 font-normal italic" title={r.notes}>
+                        • {r.notes}
                     </span>
                 )}
             </div>
 
-            {/* Categoria (col-2) */}
-            <div className="col-span-2 text-zinc-500 dark:text-zinc-400 truncate" title={r.categoria}>
-                {r.categoria}
+            {/* Categoria (col-2, come pill colorata) */}
+            <div className="col-span-2 flex items-center justify-start truncate">
+                {r.categoria && (
+                    <span
+                        title={r.categoria}
+                        className={`
+                            px-2 py-0.5 rounded-full font-medium text-[11px] border border-zinc-200
+                            shadow-sm whitespace-nowrap
+                        `}
+                        style={{
+                            color: r.category_color ? r.category_color : undefined,
+                            borderColor: r.category_color ? r.category_color : undefined,
+                            background: r.category_color
+                                ? `${r.category_color}15` // Aggiunge trasparenza (es: #22c55e15)
+                                : undefined,
+                            maxWidth: "100%",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                        }}
+                    >
+                        {r.categoria}
+                    </span>
+                )}
             </div>
 
-            {/* Frequenza (col-2) */}
-            <div className="col-span-2 text-zinc-400 text-center">{FREQUENZE_LABEL[r.frequenza] ?? r.frequenza}</div>
+            {/* Frequenza come pill (col-2) */}
+            <div className="col-span-2 flex justify-center">
+                <span className="px-2 py-0.5 rounded-full border" style={style}>
+                    {label}
+                </span>
+            </div>
 
             {/* Importo (col-2) */}
             <div className={`col-span-2 font-mono text-sm font-bold text-right ${valueClass}`}>

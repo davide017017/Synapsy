@@ -1,15 +1,14 @@
 "use client";
 
-// ===========================================================
-// CardCategories.tsx — Card visualizzazione categorie
-// ===========================================================
+// ============================
+// CardCategories.tsx — Card visualizzazione categorie (tema custom property)
+// ============================
 
 import { Category } from "@/types";
 import { getIconComponent } from "@/utils/iconMap";
 import { Pencil, Trash2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
-// Props della lista
 type CardCategoriesProps = {
     categories: Category[];
     onEdit: (cat: Category) => void;
@@ -26,9 +25,6 @@ export default function CardCategories({ categories, onEdit, onDelete }: CardCat
     );
 }
 
-// ==========================
-// Card singola categoria
-// ==========================
 type CardProps = {
     cat: Category;
     onEdit: (cat: Category) => void;
@@ -38,7 +34,6 @@ type CardProps = {
 function CategoryCard({ cat, onEdit, onDelete }: CardProps) {
     const Icon = getIconComponent(cat.icon);
 
-    // Tooltip su overflow nome
     const nameRef = useRef<HTMLDivElement>(null);
     const [showTooltip, setShowTooltip] = useState(false);
 
@@ -47,73 +42,74 @@ function CategoryCard({ cat, onEdit, onDelete }: CardProps) {
         if (el) setShowTooltip(el.scrollWidth > el.clientWidth);
     }, [cat.name]);
 
-    // ------ COLORI DINAMICI -------
-    const colorBorder = cat.color || (cat.type === "entrata" ? "#22c55e" : "#ef4444"); // fallback tailwind green/red
-    const colorBg = cat.color ? `${cat.color}18` : "rgba(0,0,0,0.05)"; // leggero bg
-    const colorIconBg = cat.color ? `${cat.color}2e` : "#f4f4f4";
-    const colorIcon = cat.color || (cat.type === "entrata" ? "#22c55e" : "#ef4444");
+    // Colore accent (bordi, glow): resta dinamico, ma bg/text sono da custom property
+    const accent = cat.color || (cat.type === "entrata" ? "#16f5c7" : "#fd518d");
 
     return (
         <li
             className={`
-                rounded-2xl p-3 border-l-8 flex flex-col items-center justify-between
-                min-h-[140px] shadow transition hover:shadow-xl group
+                relative rounded-2xl p-4 min-h-[140px] flex flex-col justify-between
+                shadow-lg hover:shadow-2xl border-l-8 transition-all
             `}
             style={{
-                borderLeft: `8px solid ${colorBorder}`,
-                background: colorBg,
+                borderLeftColor: accent,
+                background: `hsl(var(--c-category-div-bg))`,
+                color: `hsl(var(--c-category-div-text))`,
+                boxShadow: `0 0 6px 0 ${accent}99, 0 4px 16px 0 #0006`,
             }}
         >
-            {/* ----------- Icona + tipo ----------- */}
-            <div className="flex items-center gap-2 mb-2">
-                <span
-                    className="rounded-full p-2 transition-all"
-                    style={{
-                        background: colorIconBg,
-                        color: colorIcon,
-                        fontSize: 32,
-                        border: `1.5px solid ${colorBorder}`,
-                    }}
-                >
-                    <Icon size={28} />
-                </span>
+            {/* Icona di sfondo */}
+            <div className="absolute inset-0 pointer-events-none z-0">
+                <div className="absolute bottom-1 right-1 opacity-20 text-[110px]" style={{ color: accent }}>
+                    <Icon />
+                </div>
+            </div>
+
+            {/* Etichetta tipo */}
+            <div className="flex items-center gap-2 mb-2 z-10">
                 <span
                     className={`
-                        inline-block px-3 py-1 rounded-full text-xs font-medium transition-colors
-                        ${
-                            cat.type === "entrata"
-                                ? "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200"
-                                : "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200"
-                        }
+                        inline-block px-3 py-1 rounded-full text-xs font-semibold border
+                        shadow shadow-black/40 bg-opacity-30
                     `}
+                    style={{
+                        backgroundColor: accent + "22",
+                        color: "hsl(var(--c-category-div-text))",
+                        borderColor: accent,
+                    }}
                 >
                     {cat.type === "entrata" ? "Entrata" : "Spesa"}
                 </span>
             </div>
 
-            {/* ----------- Nome categoria (tooltip su overflow) ----------- */}
-            <div className="w-full flex justify-center mb-1">
+            {/* Nome categoria */}
+            <div className="w-full flex justify-left mb-2 z-10">
                 <div
                     ref={nameRef}
-                    className="font-semibold text-lg text-center truncate max-w-[160px] cursor-help"
-                    title={showTooltip ? cat.name : undefined}
-                    style={{ color: colorBorder }}
+                    className={`
+                        font-semibold text-lg text-left truncate max-w-[170px]
+                        ${showTooltip ? "cursor-help" : ""}
+                    `}
+                    style={{
+                        color: "hsl(var(--c-category-div-text))",
+                    }}
+                    title={showTooltip ? cat.name : ""}
                 >
                     {cat.name}
                 </div>
             </div>
 
-            {/* ----------- Bottoni azione ----------- */}
-            <div className="flex gap-2 justify-center mt-auto">
+            {/* Bottoni */}
+            <div className="flex gap-2 justify-left mt-auto z-10">
                 <button
-                    className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
+                    className="p-2 rounded-full bg-transparent hover:bg-blue-600/80 hover:text-white text-blue-500 transition"
                     onClick={() => onEdit(cat)}
                     title="Modifica"
                 >
                     <Pencil size={18} />
                 </button>
                 <button
-                    className="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-800 text-red-500 transition"
+                    className="p-2 rounded-full bg-transparent hover:bg-red-700/80 hover:text-white text-red-500 transition"
                     onClick={() => onDelete(cat)}
                     title="Elimina"
                 >

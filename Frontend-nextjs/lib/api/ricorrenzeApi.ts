@@ -69,7 +69,7 @@ export async function createRicorrenza(token: string, data: RicorrenzaBase): Pro
         start_date: data.prossima, // "prossima" → "start_date"
         is_active: data.is_active ?? 1, // default 1
         category_id: data.category_id,
-        note: data.note ?? "",
+        notes: data.notes ?? "",
         type: data.type, // opzionale, se richiesto
     };
 
@@ -104,7 +104,7 @@ export async function updateRicorrenza(token: string, id: number, data: Ricorren
         start_date: data.prossima,
         is_active: Number(data.is_active ?? 1),
         category_id: data.category_id,
-        note: data.note ?? "",
+        notes: data.notes ?? "",
         type: data.type,
     };
 

@@ -159,7 +159,7 @@ export default function ListaProssimiPagamenti({
                         `}
                         onClick={() => setFiltro(tab)}
                     >
-                        {tab === "tutti" ? "Tutti" : tab === "settimana" ? "7 giorni" : "30 giorni"}
+                        {tab === "tutti" ? "Tutti" : tab === "settimana" ? "7 giorni" : "dal 7 al 30 giorno"}
                     </button>
                 ))}
             </div>

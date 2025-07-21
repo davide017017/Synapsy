@@ -22,6 +22,11 @@
     --c-primary-border: 159 68% 54% / 0.18; /* Bordo verde menta soft */
     --c-primary-shadow: 159 68% 54% / 0.13; /* Ombra verde menta soft */
 
+    /* ===== Colori secondari ===== */
+    --c-secondary: 220 15% 52%; /* Grigio/blu pastello (base) */
+    --c-secondary-light: 220 20% 72%; /* Grigio blu chiaro */
+    --c-secondary-dark: 220 10% 34%; /* Grigio blu scuro */
+
     /* ===== Semantic ===== */
     --c-success: 148 68% 73%; /* Verde successo pastello */
     --c-success-dark: 148 62% 51%; /* Verde successo scuro */
@@ -117,4 +122,13 @@
     --c-total-neutral-bg: 220 6% 21%; /* Grigio neutro */
     --c-total-neutral-border: 220 10% 40%; /* Grigio per bordo */
     --c-total-neutral-text: 220 15% 72%; /* Grigio chiaro */
+
+    /* ===== Colonna saldo zero (grigio divider) ===== */
+    --c-total-zero-bg: 220 9% 27%; /* Grigio divider */
+    --c-total-zero-border: 220 10% 40%; /* Bordo opzionale */
+    --c-total-zero-text: 220 20% 92%; /* Testo opzionale */
+
+    /* ==== Category Colors ==== */
+    --c-category-div-bg: 220 15% 12%;
+    --c-category-div-text: 220 60% 96%;
 }

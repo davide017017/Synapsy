@@ -1,7 +1,7 @@
 "use client";
 
 // ===========================================================
-// CategoriesList.tsx — Visualizza categorie divise per Entrate/Spese
+// CategoriesList.tsx — Visualizza categorie divise per tipo
 // ===========================================================
 
 import { useCategories } from "@/context/contexts/CategoriesContext";
@@ -17,67 +17,45 @@ export default function CategoriesList() {
     const { categories, loading, error, openModal, moveAndDelete, remove, refresh } = useCategories();
     const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
-    // Dividi categorie per tipo
-    const entrate = categories.filter((c) => c.type === "entrata");
-    const spese = categories.filter((c) => c.type === "spesa");
+    const entrate = categories.filter((c) => c.type === "entrata").sort((a, b) => a.name.localeCompare(b.name));
+    const spese = categories.filter((c) => c.type === "spesa").sort((a, b) => a.name.localeCompare(b.name));
 
-    // Ordina alfabeticamente
-    entrate.sort((a, b) => a.name.localeCompare(b.name));
-    spese.sort((a, b) => a.name.localeCompare(b.name));
-
-    // Gestione eliminazione categoria
-    async function handleDeleteCategory(
+    const handleDeleteCategory = async (
         category: Category | null,
         mode: "deleteAll" | "move",
         targetCategoryId?: number
-    ) {
+    ) => {
         if (!category) return;
         if (mode === "move" && targetCategoryId) {
             await moveAndDelete(category.id, targetCategoryId, () => refresh());
         } else if (mode === "deleteAll") {
             await remove(category.id, () => refresh());
         }
-    }
+    };
 
-    // Loading/error state
     if (loading) return <div className="text-center p-4">Caricamento categorie...</div>;
     if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
 
     return (
         <div className="w-full px-2 md:px-6">
-            <div className="flex flex-col xl:flex-row gap-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 relative">
+                {/* Linea divisoria verticale */}
+                <div className="hidden xl:block absolute left-1/2 top-0 bottom-0 w-px bg-zinc-300 dark:bg-zinc-700" />
+
                 {/* ================== Entrate ================== */}
-                <section className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                        <span className="inline-block w-1 h-6 rounded bg-green-500" />
-                        <h2 className="text-xl font-bold text-green-600 dark:text-green-300 uppercase tracking-wide">
-                            Categorie Entrata
-                        </h2>
-                    </div>
-                    <div className="pl-2 lg:pl-3 border-l-4 border-green-400">
-                        <CardCategories categories={entrate} onEdit={openModal} onDelete={setCategoryToDelete} />
-                        {entrate.length === 0 && (
-                            <div className="text-zinc-500 text-sm my-4">Nessuna categoria di entrata</div>
-                        )}
-                    </div>
+                <section>
+                    <h2 className="text-center text-lg font-bold text-green-500 uppercase mb-2">Categorie Entrata +</h2>
+                    <CardCategories categories={entrate} onEdit={openModal} onDelete={setCategoryToDelete} />
                 </section>
+
                 {/* ================== Spese ================== */}
-                <section className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                        <span className="inline-block w-1 h-6 rounded bg-red-500" />
-                        <h2 className="text-xl font-bold text-red-600 dark:text-red-300 uppercase tracking-wide">
-                            Categorie Spesa
-                        </h2>
-                    </div>
-                    <div className="pl-2 lg:pl-3 border-l-4 border-red-400">
-                        <CardCategories categories={spese} onEdit={openModal} onDelete={setCategoryToDelete} />
-                        {spese.length === 0 && (
-                            <div className="text-zinc-500 text-sm my-4">Nessuna categoria di spesa</div>
-                        )}
-                    </div>
+                <section>
+                    <h2 className="text-center text-lg font-bold text-red-500 uppercase mb-2">Categorie Spesa -</h2>
+                    <CardCategories categories={spese} onEdit={openModal} onDelete={setCategoryToDelete} />
                 </section>
             </div>
-            {/* ========== Modale eliminazione ========== */}
+
+            {/* Modale conferma eliminazione */}
             <DeleteCategoryModal
                 category={categoryToDelete}
                 onClose={() => setCategoryToDelete(null)}
@@ -87,5 +65,3 @@ export default function CategoriesList() {
         </div>
     );
 }
-
-// ===================== END CategoriesList =====================

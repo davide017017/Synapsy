@@ -100,8 +100,10 @@ export default function DeleteCategoryModal({ category, onClose, categories, onD
                             <span className="text-red-300 font-bold">(sconsigliato)</span>
                         </span>
                     </label>
+
                     {/* Sposta su altra categoria */}
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 w-full">
+                        {/* Radio a sinistra */}
                         <input
                             type="radio"
                             checked={mode === "move"}
@@ -109,23 +111,33 @@ export default function DeleteCategoryModal({ category, onClose, categories, onD
                             disabled={loading}
                             className="accent-white"
                         />
-                        <span className="text-white">
-                            Sposta tutte su un’altra categoria di tipo <b>{typeLabel}</b>:
-                            <select
-                                className="ml-2 px-2 py-1 rounded border min-w-[120px] bg-white text-zinc-800 text-sm focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 transition"
-                                value={targetCategoryId ?? ""}
-                                onChange={(e) => setTargetCategoryId(Number(e.target.value))}
-                                disabled={mode !== "move" || loading}
-                            >
-                                <option value="">Seleziona…</option>
-                                {availableCategories.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </span>
+                        {/* Testo principale accanto */}
+                        <span className="text-white">Sposta tutte su un’altra categoria</span>
                     </label>
+
+                    {/* Riga sotto: tipo e select */}
+                    <div className="pl-7 mt-1 w-full flex flex-col sm:flex-row sm:items-center gap-2">
+                        <span className="text-white">
+                            di tipo <b>{typeLabel}</b>:
+                        </span>
+                        <select
+                            className="
+                                px-2 py-1 rounded border min-w-[120px] max-w-full w-auto
+                                bg-white text-zinc-800 text-sm focus:outline-none
+                                focus:border-red-400 focus:ring-1 focus:ring-red-400 transition
+                            "
+                            value={targetCategoryId ?? ""}
+                            onChange={(e) => setTargetCategoryId(Number(e.target.value))}
+                            disabled={mode !== "move" || loading}
+                        >
+                            <option value="">Seleziona…</option>
+                            {availableCategories.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
                 {/* Messaggio warning extra */}
                 {mode === "deleteAll" && (

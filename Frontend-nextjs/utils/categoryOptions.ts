@@ -2,51 +2,87 @@
 // PALETTE COLORI ESTESA (MAXI, con nome)
 // =======================
 export const CATEGORY_COLORS = [
+    // ======================================================
     // Blu & Azzurri
-    { value: "#3b82f6", name: "Blu" },
-    { value: "#2563eb", name: "Blu Scuro" },
-    { value: "#38bdf8", name: "Azzurro" },
-    { value: "#0ea5e9", name: "Light Blue" },
-    { value: "#06b6d4", name: "Cyan" },
-    { value: "#7dd3fc", name: "Azzurro Chiarissimo" },
+    // ======================================================
+    { value: "#1e3a8a", name: "Blu Navy" }, // tailwind blue-800
+    { value: "#2563eb", name: "Blu Scuro" }, // tailwind blue-600
+    { value: "#3b82f6", name: "Blu" }, // tailwind blue-500
+    { value: "#60a5fa", name: "Blu Chiaro" }, // tailwind blue-400
+    { value: "#38bdf8", name: "Azzurro" }, // tailwind sky-400
+    { value: "#0ea5e9", name: "Light Blue" }, // tailwind sky-500
+    { value: "#06b6d4", name: "Cyan" }, // tailwind cyan-500
+    { value: "#0891b2", name: "Petrolio" }, // tailwind cyan-700
+    { value: "#7dd3fc", name: "Azzurro Chiarissimo" }, // tailwind sky-200
 
-    // Verdi
-    { value: "#16a34a", name: "Verde" },
-    { value: "#22c55e", name: "Verde Chiaro" },
-    { value: "#84cc16", name: "Lime" },
-    { value: "#4ade80", name: "Menta" },
-    { value: "#d9f99d", name: "Lime Pastello" },
+    // ======================================================
+    // Verdi / Turchesi
+    // ======================================================
+    { value: "#052e16", name: "Verde Foresta" }, // tailwind green-900
+    { value: "#166534", name: "Verde Scuro" }, // tailwind green-800
+    { value: "#16a34a", name: "Verde" }, // tailwind green-600
+    { value: "#22c55e", name: "Verde Chiaro" }, // tailwind green-500
+    { value: "#4ade80", name: "Menta" }, // tailwind green-300
+    { value: "#2dd4bf", name: "Verde Acqua" }, // tailwind teal-400
+    { value: "#84cc16", name: "Lime" }, // tailwind lime-500
+    { value: "#a3e635", name: "Lime Pastello" }, // tailwind lime-300
+    { value: "#d9f99d", name: "Verde Lime Chiarissimo" }, // tailwind lime-100
 
-    // Gialli/Arancio
-    { value: "#f59e42", name: "Arancio" },
-    { value: "#f97316", name: "Arancio Vivo" },
-    { value: "#eab308", name: "Giallo" },
-    { value: "#fde047", name: "Giallo Chiaro" },
-    { value: "#facc15", name: "Gold" },
+    // ======================================================
+    // Gialli / Oro / Arancio
+    // ======================================================
+    { value: "#b45309", name: "Arancio Scuro" }, // tailwind orange-700
+    { value: "#f59e42", name: "Arancio" }, // tailwind orange-400
+    { value: "#f97316", name: "Arancio Vivo" }, // tailwind orange-500
+    { value: "#fdba74", name: "Arancio Chiaro" }, // tailwind orange-300
+    { value: "#eab308", name: "Giallo" }, // tailwind yellow-500
+    { value: "#fde047", name: "Giallo Chiaro" }, // tailwind yellow-200
+    { value: "#facc15", name: "Gold" }, // tailwind yellow-400
+    { value: "#fbbf24", name: "Oro" }, // tailwind yellow-300
+    { value: "#b95c00", name: "Rame" }, // new - copper
 
-    // Rossi / Rosa / Magenta
-    { value: "#f43f5e", name: "Rosa" },
-    { value: "#be123c", name: "Rosso" },
-    { value: "#dc2626", name: "Rosso Vivo" },
-    { value: "#e11d48", name: "Magenta Scuro" },
+    // ======================================================
+    // Rossi / Rosso Scuro / Rosa / Magenta
+    // ======================================================
+    { value: "#7f1d1d", name: "Rosso Profondo" }, // tailwind red-900
+    { value: "#be123c", name: "Rosso" }, // tailwind rose-700
+    { value: "#dc2626", name: "Rosso Vivo" }, // tailwind red-600
+    { value: "#f43f5e", name: "Rosa" }, // tailwind rose-500
+    { value: "#e11d48", name: "Magenta Scuro" }, // tailwind rose-700
+    { value: "#d946ef", name: "Magenta" }, // tailwind fuchsia-500
+    { value: "#f87171", name: "Rosa Chiaro" }, // tailwind red-400
 
-    // Viola / Indaco / Fucsia
-    { value: "#a21caf", name: "Viola" },
-    { value: "#7c3aed", name: "Indaco" },
-    { value: "#c026d3", name: "Fucsia" },
-    { value: "#a78bfa", name: "Lilla" },
+    // ======================================================
+    // Viola / Indaco / Fucsia / Lilla
+    // ======================================================
+    { value: "#581c87", name: "Viola Scuro" }, // tailwind purple-900
+    { value: "#a21caf", name: "Viola" }, // tailwind purple-700
+    { value: "#7c3aed", name: "Indaco" }, // tailwind indigo-600
+    { value: "#c026d3", name: "Fucsia" }, // tailwind fuchsia-600
+    { value: "#a78bfa", name: "Lilla" }, // tailwind purple-300
+    { value: "#f5d0fe", name: "Lilla Pastello" }, // tailwind fuchsia-100
 
+    // ======================================================
     // Marroni / Taupe / Oro
-    { value: "#92400e", name: "Marrone" },
-    { value: "#fbbf24", name: "Oro" },
-    { value: "#57534e", name: "Taupe" },
+    // ======================================================
+    { value: "#92400e", name: "Marrone" }, // tailwind amber-900
+    { value: "#b45309", name: "Marrone Scuro" }, // tailwind amber-700
+    { value: "#a16207", name: "Bronzo" }, // tailwind yellow-800
+    { value: "#b6ad90", name: "Taupe" }, // custom
+    { value: "#e5e7eb", name: "Grigio Chiaro Sabbia" }, // tailwind gray-200
 
+    // ======================================================
     // Grigi / Bianco / Nero
-    { value: "#64748b", name: "Grigio" },
-    { value: "#94a3b8", name: "Grigio Chiaro" },
-    { value: "#cbd5e1", name: "Silver" },
-    { value: "#fff", name: "Bianco" },
-    { value: "#000", name: "Nero" },
+    // ======================================================
+    { value: "#111827", name: "Grigio Molto Scuro" }, // tailwind gray-900
+    { value: "#1f2937", name: "Grigio Scuro" }, // tailwind gray-800
+    { value: "#334155", name: "Grigio Blu" }, // tailwind slate-800
+    { value: "#475569", name: "Grigio" }, // tailwind slate-700
+    { value: "#64748b", name: "Grigio Medio" }, // tailwind slate-500
+    { value: "#94a3b8", name: "Grigio Chiaro" }, // tailwind slate-300
+    { value: "#cbd5e1", name: "Silver" }, // tailwind slate-100
+    { value: "#fff", name: "Bianco (sconsigliato)" },
+    { value: "#1c1917", name: "Quasi Nero (sconsigliato)" },
 ];
 
 // ===============================
