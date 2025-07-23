@@ -1,7 +1,7 @@
 "use client";
 
 // ╔══════════════════════════════════════════════════╗
-// ║ TransactionsContext — CRUD semplice/sincrono    ║
+// ║ TransactionsContext — CRUD + Undo/Redo Sonner   ║
 // ╚══════════════════════════════════════════════════╝
 
 import { createContext, useContext, useState } from "react";
@@ -18,20 +18,18 @@ import { toast } from "sonner";
 import NewTransactionModal from "@/app/(protected)/newTransaction/NewTransactionModal";
 import { useMemo } from "react";
 
-// ==================
+// ==================================================
 // Tipi context
-// ==================
+// ==================================================
 type TransactionsContextType = {
     transactions: Transaction[];
     loading: boolean;
     error: string | null;
     fetchAll: () => Promise<void>;
-    // CRUD
     create: (data: TransactionBase) => Promise<void>;
     update: (id: number, data: TransactionBase) => Promise<void>;
     remove: (id: number) => Promise<void>;
     softMove: (original: Transaction, formData: Transaction, newType: "entrata" | "spesa") => Promise<void>;
-    // Modale
     isOpen: boolean;
     transactionToEdit: Transaction | null;
     openModal: (txToEdit?: Transaction | null) => void;
@@ -40,14 +38,14 @@ type TransactionsContextType = {
     yearBalance: number;
 };
 
-// ==================
+// ==================================================
 // Context base
-// ==================
+// ==================================================
 const TransactionsContext = createContext<TransactionsContextType | undefined>(undefined);
 
-// ==================
+// ==================================================
 // Provider principale
-// ==================
+// ==================================================
 export function TransactionsProvider({ children }: { children: React.ReactNode }) {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(false);
@@ -57,11 +55,16 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     const [isOpen, setIsOpen] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
 
+    // Per undo temporaneo
+    const [lastDeleted, setLastDeleted] = useState<Transaction | null>(null);
+
     // Auth
     const { data: session } = useSession();
     const token = session?.accessToken;
 
-    // Calcolo saldo mese
+    // ==================================================
+    // Saldi mese/anno
+    // ==================================================
     const monthBalance = useMemo(() => {
         const now = new Date();
         return transactions
@@ -72,7 +75,6 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             .reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
     }, [transactions]);
 
-    // Calcolo saldo anno
     const yearBalance = useMemo(() => {
         const now = new Date();
         return transactions
@@ -80,7 +82,9 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             .reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
     }, [transactions]);
 
-    // =============== Fetch ALL ==================
+    // ==================================================
+    // Fetch ALL
+    // ==================================================
     const fetchAll = async () => {
         if (!token) return;
         setLoading(true);
@@ -96,7 +100,9 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         }
     };
 
-    // =============== CREATE =====================
+    // ==================================================
+    // CREATE
+    // ==================================================
     const create = async (data: TransactionBase) => {
         if (!token) return;
         setLoading(true);
@@ -112,7 +118,9 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         }
     };
 
-    // =============== UPDATE =====================
+    // ==================================================
+    // UPDATE
+    // ==================================================
     const update = async (id: number, data: TransactionBase) => {
         if (!token) return;
         setLoading(true);
@@ -128,16 +136,51 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         }
     };
 
-    // =============== REMOVE =====================
+    // ==================================================
+    // REMOVE + Undo (Sonner)
+    // ==================================================
     const remove = async (id: number) => {
         if (!token) return;
         setLoading(true);
         try {
             const tx = transactions.find((t) => t.id === id);
             if (!tx) return;
+
+            // 1. Cancella
             await deleteTransaction(token, tx);
+            setLastDeleted(tx); // Salva per eventuale undo
             await fetchAll();
-            toast.success("Transazione eliminata!");
+
+            // 2. Toast con undo
+            toast.success("Transazione eliminata!", {
+                description: (
+                    <div>
+                        <span className="font-semibold">{tx.description}</span> rimossa.
+                        <br />
+                        <span className="text-sm text-zinc-500">
+                            Puoi annullare questa operazione con il bottone ...
+                        </span>
+                    </div>
+                ),
+                action: {
+                    label: "Ripristina",
+                    onClick: async () => {
+                        if (!token || !tx) return;
+                        setLoading(true);
+                        try {
+                            // Rimuovi l'id dal payload per ricreare la transazione
+                            const { id, ...txBase } = tx;
+                            await createTransaction(token, txBase, tx.type);
+                            await fetchAll();
+                            toast.success("Eliminazione annullata!");
+                        } catch (e: any) {
+                            toast.error("Errore durante l'annullamento.");
+                        } finally {
+                            setLoading(false);
+                        }
+                    },
+                },
+            });
         } catch (e: any) {
             toast.error(e.message || "Errore eliminazione transazione");
         } finally {
@@ -145,7 +188,9 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         }
     };
 
-    // =============== SOFT MOVE ==================
+    // ==================================================
+    // SOFT MOVE
+    // ==================================================
     const softMove = async (original: Transaction, formData: Transaction, newType: "entrata" | "spesa") => {
         if (!token) return;
         setLoading(true);
@@ -161,7 +206,9 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         }
     };
 
-    // =============== Modale =====================
+    // ==================================================
+    // Gestione Modale
+    // ==================================================
     const openModal = (tx?: Transaction | null) => {
         setTransactionToEdit(tx || null);
         setIsOpen(true);
@@ -171,7 +218,9 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         setIsOpen(false);
     };
 
-    // =============== Provider render =============
+    // ==================================================
+    // Provider render
+    // ==================================================
     return (
         <TransactionsContext.Provider
             value={{
@@ -197,12 +246,12 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     );
 }
 
-// ==================
+// ==================================================
 // Hook custom
-// ==================
+// ==================================================
 export function useTransactions() {
     const context = useContext(TransactionsContext);
     if (!context) throw new Error("useTransactions deve essere usato dentro <TransactionsProvider>");
     return context;
 }
-// ==================
+// ==================================================

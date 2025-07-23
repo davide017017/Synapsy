@@ -23,7 +23,6 @@ import {
 } from "./utils/ricorrenza-utils";
 import { deleteRicorrenza } from "@/lib/api/ricorrenzeApi";
 import { useSession } from "next-auth/react";
-import { toast } from "sonner";
 
 // =======================================================
 // COMPONENTE PRINCIPALE
@@ -33,7 +32,7 @@ export default function RicorrentiPage() {
     const [filtroScadenze, setFiltroScadenze] = useState<"tutti" | "settimana" | "mese">("tutti");
 
     // ----- Dati dal context -----
-    const { ricorrenze, loading, refresh, openModal } = useRicorrenze();
+    const { ricorrenze, loading, refresh, openModal, remove } = useRicorrenze();
     const { data: session } = useSession();
     const token = session?.accessToken as string;
 
@@ -52,20 +51,6 @@ export default function RicorrentiPage() {
     // =======================================================
     // CALLBACK AZIONI
     // =======================================================
-    const handleDelete = async (ricorrenza: Ricorrenza): Promise<void> => {
-        if (!token) {
-            toast.error("Utente non autenticato");
-            return;
-        }
-        try {
-            await deleteRicorrenza(token, ricorrenza);
-            toast.success("Ricorrenza eliminata");
-            refresh();
-        } catch {
-            toast.error("Errore durante l'eliminazione");
-        }
-    };
-
     const handleEdit = (ricorrenza: Ricorrenza) => {
         openModal(ricorrenza, refresh);
     };
@@ -87,7 +72,7 @@ export default function RicorrentiPage() {
                 <ListaRicorrenzePerFrequenza
                     ricorrenze={ricorrenzePerFrequenza}
                     onEdit={handleEdit}
-                    onDelete={handleDelete}
+                    onDelete={(ricorrenza) => remove(ricorrenza.id)}
                 />
                 <ListaProssimiPagamenti
                     pagamenti={pagamentiDaMostrare}

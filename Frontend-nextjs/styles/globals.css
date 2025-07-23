@@ -1,19 +1,37 @@
+/* ===================================================
+TailwindCSS base, components, utilities
+=================================================== */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ===================================================
+Import custom styles (tabelle, temi, ecc.)
+   =================================================== */
 @import "./table.css";
 @import "./themes.css";
 
+/* ===================================================
+Stili base (body, html, transizioni globali)
+=================================================== */
 @layer base {
+    /* ----- Root HTML ----- */
     html {
         transition: background-color 0.3s, color 0.3s;
     }
+
+    /* ----- Body base ----- */
     body {
-        @apply h-full m-0 p-0;
-        /* Qui usi hsl() perché ora le variabili sono in HSL! */
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        /* Usa HSL per uniformità temi */
         background-color: hsl(var(--c-bg));
         color: hsl(var(--c-text));
         font-family: var(--font-sans);
     }
 }
+
+/* ===================================================
+Fine personalizzazioni globali
+=================================================== */

@@ -9,7 +9,6 @@ import { useEffect } from "react";
 import Sidebar from "./layout-components/Sidebar";
 import Header from "./layout-components/Header";
 import { useSidebar } from "@/context/contexts/SidebarContext";
-import { Toaster } from "react-hot-toast";
 
 // ==============================
 // LAYOUT PROTETTO CON SIDEBAR E HEADER
@@ -31,7 +30,6 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
     // ───── Layout principale protetto ─────
     return (
         <div className="flex h-screen">
-            <Toaster />
             {/* ===== SIDEBAR ===== */}
             <Sidebar />
             {/* ===== AREA CONTENUTO ===== */}

@@ -10,7 +10,6 @@ import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import { Button } from "@/app/components/ui/Button";
-import { toast } from "sonner";
 
 // ===== Helper per classi dinamiche =====
 function cn(...classes: string[]) {
@@ -90,9 +89,7 @@ export default function NewTransactionForm({ onSave, transaction, disabled, onCh
                 ...formData,
                 amount: Number(formData.amount),
             });
-            toast.success("Transazione salvata con successo!");
         } catch (err) {
-            toast.error((err as Error).message);
         } finally {
             setLoading(false);
         }

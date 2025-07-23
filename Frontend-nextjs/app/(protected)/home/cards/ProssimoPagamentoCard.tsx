@@ -7,8 +7,10 @@ import { CalendarCheck } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRicorrenze } from "@/context/contexts/RicorrenzeContext";
+import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer"; // Debug per vedere quanto tempo ci mette a rtenderizzare
 
 export default function ProssimoPagamentoCard() {
+    useRenderTimer("TransazioniCard"); // Debug per vedere quanto tempo ci mette a rtenderizzare
     const { ricorrenze, loading } = useRicorrenze();
 
     if (loading)

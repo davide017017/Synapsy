@@ -8,6 +8,7 @@ import { Repeat } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import { useRicorrenze } from "@/context/contexts/RicorrenzeContext";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
+import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer"; // Debug per vedere quanto tempo ci mette a rtenderizzare
 
 // --------- Utility date per settimana/mese ---------
 function isThisWeek(dateStr: string) {
@@ -27,6 +28,7 @@ function isThisMonth(dateStr: string) {
 }
 
 export default function RicorrentiCard() {
+    useRenderTimer("TransazioniCard"); // Debug per vedere quanto tempo ci mette a rtenderizzare
     const { ricorrenze, loading } = useRicorrenze();
 
     const attive = useMemo(() => ricorrenze.filter((r) => !!r.is_active), [ricorrenze]);

@@ -13,8 +13,10 @@ import ProssimoPagamentoCard from "./cards/ProssimoPagamentoCard";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
 import NewRicorrenzaButton from "../newRicorrenza/NewRicorrenzaButton";
 import NewCategoryButton from "../newCategory/NewCategoryButton";
+import { useRenderTimer } from "./utils/useRenderTimer";
 
 export default function HomePage() {
+    useRenderTimer("HomePage");
     return (
         <div className="space-y-8">
             {/* ====================== */}

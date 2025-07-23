@@ -10,6 +10,7 @@ import { fetchTransactions } from "@/lib/api/transactionsApi";
 import { Transaction } from "@/types/types/transaction";
 import { useSession } from "next-auth/react";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
+import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer"; // Debug per vedere quanto tempo ci mette a rtenderizzare
 
 // --------- Utility date per settimana/mese ---------
 function isThisWeek(dateStr: string) {
@@ -30,6 +31,7 @@ function isThisMonth(dateStr: string) {
 
 // --------- Componente principale ---------
 export default function TransazioniCard() {
+    useRenderTimer("TransazioniCard"); // Debug per vedere quanto tempo ci mette a rtenderizzare
     const { data: session } = useSession();
     const token = session?.accessToken;
 
