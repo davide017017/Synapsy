@@ -1,32 +1,25 @@
 /** @type {import('next').NextConfig} */
 
-// Importa il bundle analyzer
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-    enabled: process.env.ANALYZE === "true", // Lo attivi solo quando serve
-});
-
 // =========================
-// Config Next.js principale
+// Configurazione Next.js
 // =========================
 const nextConfig = {
-    reactStrictMode: true,
-
-    // Ottimizzazioni build/dev
+    reactStrictMode: true, // Strict mode React (consigliato)
     swcMinify: true, // Build più veloce
 
     experimental: {
-        scrollRestoration: true, // Migliora UX su SPA
-        // Altri flag qui se ti servono
+        scrollRestoration: true, // Ripristino scroll tra le pagine (UX migliore)
+        // Puoi aggiungere altri flag qui se servono
     },
 
-    productionBrowserSourceMaps: false, // No sourcemap in prod
+    productionBrowserSourceMaps: false, // No sourcemap in produzione (sicurezza)
 
     typescript: {
-        ignoreBuildErrors: false, // Blocca su errori TS
+        ignoreBuildErrors: false, // Blocca build se errori TS
     },
 };
 
-// ==========================
-// Esporta con analyzer (solo se ANALYZE=true)
-// ==========================
-module.exports = withBundleAnalyzer(nextConfig);
+// =========================
+// Esporta la configurazione
+// =========================
+module.exports = nextConfig;

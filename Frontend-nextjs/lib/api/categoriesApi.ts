@@ -26,7 +26,6 @@ export async function getAllCategories(token: string): Promise<Category[]> {
 // Create: Nuova categoria
 // ==============================
 export async function createCategory(token: string, payload: CategoryBase): Promise<Category> {
-    console.log("🚀 [FRONTEND] Payload invio categoria:", payload); // <---- QUI
     const res = await fetch(`${API_URL}/v1/categories`, {
         method: "POST",
         headers: {
