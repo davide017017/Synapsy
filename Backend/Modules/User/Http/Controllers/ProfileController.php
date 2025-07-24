@@ -39,18 +39,20 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $avatarUrl = null;
-        if ($user->avatar) {
-            $avatarUrl = Storage::disk('public')->exists($user->avatar)
-                ? asset('storage/' . $user->avatar)
-                : asset($user->avatar);
+        $avatarPath = $user->avatar;
+        if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
+            $avatarUrl = asset('storage/' . $avatarPath);
         }
 
         return ApiResponse::success('Profilo corrente.', [
             'id' => $user->id,
-            'name' => $user->name,
-            'surname' => $user->surname,
-            'email' => $user->email,
-            'avatar_url' => $avatarUrl,
+            'name'        => $user->name,
+            'surname'     => $user->surname,
+            'username'    => $user->username,
+            'email'       => $user->email,
+            'theme'       => $user->theme,
+            'avatar'      => $avatarPath,
+            'avatar_url'  => $avatarUrl,
         ]);
     }
 
@@ -101,18 +103,21 @@ class ProfileController extends Controller
         $user->save();
 
         $avatarUrl = null;
-        if ($user->avatar) {
-            $avatarUrl = Storage::disk('public')->exists($user->avatar)
-                ? asset('storage/' . $user->avatar)
-                : asset($user->avatar);
+        $avatarPath = $user->avatar;
+        if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
+            $avatarUrl = asset('storage/' . $avatarPath);
         }
 
         return $request->wantsJson()
             ? ApiResponse::success('Profilo aggiornato.', [
-                'id' => $user->id,
-                'name' => $user->name,
-                'surname' => $user->surname,
-                'email' => $user->email,
+
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'surname'    => $user->surname,
+                'username'   => $user->username,
+                'email'      => $user->email,
+                'theme'      => $user->theme,
+                'avatar'     => $avatarPath,
                 'avatar_url' => $avatarUrl,
             ])
             : Redirect::route('profile.edit')->with('status', 'profile-updated');

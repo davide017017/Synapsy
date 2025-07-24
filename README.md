@@ -36,7 +36,17 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 2. **Setup Backend**
 
-    Vedi la guida dettagliata: [`Backend/README.md`](Backend/README.md)
+    ```bash
+    cd Backend
+    composer install
+    cp .env.example .env
+    php artisan key:generate
+    php artisan migrate --seed
+    composer test
+    cd ..
+    ```
+
+    Per maggiori dettagli consulta [`Backend/README.md`](Backend/README.md)
 
 3. **Setup Frontend**
 

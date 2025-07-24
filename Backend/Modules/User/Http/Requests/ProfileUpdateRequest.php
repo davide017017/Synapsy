@@ -40,13 +40,14 @@ class ProfileUpdateRequest extends FormRequest
             // ----------------------------
             // Anagrafica
             // ----------------------------
-            'name'     => ['required', 'string', 'max:255'],
-            'surname'  => ['nullable', 'string', 'max:255'],
+            'name'     => ['sometimes', 'string', 'max:255'],
+            'surname'  => ['sometimes', 'nullable', 'string', 'max:255'],
 
             // ----------------------------
             // Username (univoco)
             // ----------------------------
             'username' => [
+                'sometimes',
                 'nullable',
                 'string',
                 'max:64',
@@ -57,7 +58,7 @@ class ProfileUpdateRequest extends FormRequest
             // Email (univoca)
             // ----------------------------
             'email'    => [
-                'required',
+                'sometimes',
                 'string',
                 'lowercase',
                 'email',
@@ -68,7 +69,8 @@ class ProfileUpdateRequest extends FormRequest
             // ----------------------------
             // Avatar (file o path opzionale)
             // ----------------------------
-            'avatar'   => ['nullable', function ($attribute, $value, $fail) {
+            'avatar'   => ['sometimes', function ($attribute, $value, $fail) {
+              
                 if ($this->hasFile($attribute)) {
                     $validator = Validator::make(
                         $this->all(),
@@ -89,6 +91,7 @@ class ProfileUpdateRequest extends FormRequest
             // Tema preferito
             // ----------------------------
             'theme'    => [
+                'sometimes',
                 'nullable',
                 'string',
                 Rule::in(['system', 'light', 'dark', 'emerald', 'solarized']),
@@ -106,11 +109,10 @@ class ProfileUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'     => 'Il nome è obbligatorio.',
             'username.unique'   => 'Questo username è già in uso.',
             'email.unique'      => 'Questa email è già in uso.',
-            'avatar.image'      => 'L\'avatar deve essere un\'immagine valida.',
-            'avatar.max'        => 'L\'avatar non può superare i 2MB.',
+            'avatar.image'      => "L'avatar deve essere un'immagine valida.",
+            'avatar.max'        => "L'avatar non può superare i 2MB.",
             'theme.in'          => 'Tema selezionato non valido.',
         ];
     }
