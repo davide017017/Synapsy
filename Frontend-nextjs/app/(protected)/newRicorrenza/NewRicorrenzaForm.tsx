@@ -5,7 +5,7 @@
 // ╚═══════════════════════════════════════════════════════╝
 
 import { useState, useMemo, useEffect } from "react";
-import { RicorrenzaBase } from "@/types/types/ricorrenza";
+import { RicorrenzaBase } from "@/types/models/ricorrenza";
 import type { NewRicorrenzaFormProps } from "@/types";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Input } from "@/app/components/ui/Input";

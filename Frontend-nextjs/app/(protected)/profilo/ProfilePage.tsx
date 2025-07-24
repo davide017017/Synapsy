@@ -4,34 +4,43 @@
 // ProfilePage.tsx — Avatar gallery scelta rapida (no upload)
 // ======================================================
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProfileRow from "./components/ProfileRow";
 import AvatarPickerModal from "./components/AvatarPickerModal";
 import { AVATAR_CHOICES } from "./components/constants";
-import { DEFAULT_USER, UserType } from "@/types/types/user";
+import { DEFAULT_USER, UserType } from "@/types/models/user";
+import { useUser } from "@/context/contexts/UserContext";
 
 // ======================================================
 // Componente principale
 // ======================================================
 export default function ProfilePage() {
+    const { user, update } = useUser();
+
     // -----------------------------------
-    // Stato dati utente e UI
+    // Stato UI e form locale
     // -----------------------------------
-    const [user, setUser] = useState<UserType>(DEFAULT_USER);
+    const [form, setForm] = useState<UserType>(DEFAULT_USER);
     const [editing, setEditing] = useState<{ [K in keyof UserType]?: boolean }>({});
     const [showPicker, setShowPicker] = useState(false);
 
+    useEffect(() => {
+        if (user) setForm(user);
+    }, [user]);
+
     // Gestione cambio campi
     const handleEdit = (field: keyof UserType) => setEditing({ ...editing, [field]: true });
-    const handleChange = (field: keyof UserType, value: string) => setUser({ ...user, [field]: value });
-    const handleSave = (field: keyof UserType) => setEditing({ ...editing, [field]: false });
+    const handleChange = (field: keyof UserType, value: string) => setForm({ ...form, [field]: value });
+    const handleSave = async (field: keyof UserType) => {
+        await update({ [field]: form[field] } as Partial<UserType>);
+        setEditing({ ...editing, [field]: false });
+    };
 
     // Gestione scelta avatar
-    const handleAvatarChange = (val: string) => {
-        setUser({ ...user, avatar: val });
+    const handleAvatarChange = async (val: string) => {
+        await update({ avatar: val });
         setShowPicker(false);
-        // Qui: PATCH /api/user { avatar: val } se vuoi salvare lato backend
     };
 
     // -----------------------------------
@@ -49,7 +58,7 @@ export default function ProfilePage() {
                 {/* ---- Avatar attuale (click per cambiare) ---- */}
                 <motion.div whileHover={{ scale: 1.07 }} className="relative group">
                     <img
-                        src={user.avatar}
+                        src={form.avatar}
                         alt="Avatar"
                         className="w-16 h-16 rounded-full object-cover border-2 cursor-pointer shadow transition group-hover:ring-2"
                         style={{
@@ -99,7 +108,7 @@ export default function ProfilePage() {
             >
                 <ProfileRow
                     label="Nome"
-                    value={user.name}
+                    value={form.name}
                     editing={editing.name}
                     onEdit={() => handleEdit("name")}
                     onChange={(v) => handleChange("name", v)}
@@ -107,7 +116,7 @@ export default function ProfilePage() {
                 />
                 <ProfileRow
                     label="Cognome"
-                    value={user.surname ?? ""}
+                    value={form.surname ?? ""}
                     editing={editing.surname}
                     onEdit={() => handleEdit("surname")}
                     onChange={(v) => handleChange("surname", v)}
@@ -115,7 +124,7 @@ export default function ProfilePage() {
                 />
                 <ProfileRow
                     label="Username"
-                    value={user.username}
+                    value={form.username}
                     editing={editing.username}
                     onEdit={() => handleEdit("username")}
                     onChange={(v) => handleChange("username", v)}
@@ -123,7 +132,7 @@ export default function ProfilePage() {
                 />
                 <ProfileRow
                     label="Email"
-                    value={user.email}
+                    value={form.email}
                     editing={editing.email}
                     onEdit={() => handleEdit("email")}
                     onChange={(v) => handleChange("email", v)}
@@ -131,7 +140,7 @@ export default function ProfilePage() {
                 />
                 <ProfileRow
                     label="Tema"
-                    value={user.theme}
+                    value={form.theme}
                     editing={editing.theme}
                     onEdit={() => handleEdit("theme")}
                     onChange={(v) => handleChange("theme", v)}
@@ -154,7 +163,7 @@ export default function ProfilePage() {
                 {showPicker && (
                     <AvatarPickerModal
                         avatarList={AVATAR_CHOICES}
-                        selected={user.avatar}
+                        selected={form.avatar}
                         onSelect={handleAvatarChange}
                         onClose={() => setShowPicker(false)}
                     />

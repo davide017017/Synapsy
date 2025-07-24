@@ -7,7 +7,7 @@ import { useEffect, useState, useMemo } from "react";
 import { BarChart2 } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import { fetchTransactions } from "@/lib/api/transactionsApi";
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 import { useSession } from "next-auth/react";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer"; // Debug per vedere quanto tempo ci mette a rtenderizzare

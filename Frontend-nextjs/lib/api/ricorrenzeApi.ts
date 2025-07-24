@@ -2,7 +2,7 @@
 // ║      ricorrenzeApi.ts — Chiamate CRUD alle Ricorrenze    ║
 // ╚═══════════════════════════════════════════════════════════╝
 
-import { Ricorrenza, RicorrenzaBase } from "@/types/types/ricorrenza";
+import { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
 
 // ==============================
 // URL BASE (usa variabile ENV)

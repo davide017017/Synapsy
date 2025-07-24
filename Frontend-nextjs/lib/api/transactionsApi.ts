@@ -2,7 +2,7 @@
 // ║           API: CRUD Transazioni (Entrate/Spese)     ║
 // ╚══════════════════════════════════════════════════════╝
 
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // ======================================================

@@ -3,7 +3,7 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { useState } from "react";
-import { Category } from "@/types/types/category";
+import { Category } from "@/types/models/category";
 import { createCategory, updateCategory, deleteCategory } from "@/lib/api/categoriesApi";
 
 type Status = "idle" | "loading" | "success" | "error";
