@@ -6,6 +6,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { RicorrenzaBase } from "@/types/types/ricorrenza";
+import type { NewRicorrenzaFormProps } from "@/types";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
@@ -21,17 +22,11 @@ function toDateInputValue(dateString?: string) {
 }
 
 // ===== Tipi Props =====
-type Props = {
-    onSave: (data: RicorrenzaBase) => Promise<void>;
-    onCancel: () => void;
-    initialValues?: Partial<RicorrenzaBase>;
-    onChangeForm?: (data: Partial<RicorrenzaBase>) => void;
-};
 
 // ╔═══════════════════════════════════════════════════════╗
 // ║              COMPONENTE PRINCIPALE                   ║
 // ╚═══════════════════════════════════════════════════════╝
-export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onChangeForm }: Props) {
+export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onChangeForm }: NewRicorrenzaFormProps) {
     const { categories, loading: loadingCategories } = useCategories();
 
     // ==================== STATE ====================

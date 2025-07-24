@@ -1,11 +1,7 @@
 import { X } from "lucide-react";
-type Props = {
-    value?: string;
-    onChange: (v: string) => void;
-    original: string;
-};
+import type { NotesFieldProps } from "@/types/transazioni/modal/components/field";
 
-export default function NotesField({ value, onChange, original }: Props) {
+export default function NotesField({ value, onChange, original }: NotesFieldProps) {
     const isModified = value !== original;
     return (
         <div className="flex flex-col items-center w-full relative">

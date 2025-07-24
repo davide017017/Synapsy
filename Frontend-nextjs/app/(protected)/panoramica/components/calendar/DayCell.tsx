@@ -8,24 +8,15 @@
 // ╚═══════════════════════════════════════════════════════╝
 
 import { Transaction } from "@/types/types/transaction";
+import type { DayCellProps } from "@/types";
 
-// ----------- Props tipizzate ----------- //
-type Props = {
-    day: number;
-    date: Date;
-    monthDelta: -1 | 0 | 1;
-    transactions: Transaction[];
-    showWeekDay?: boolean;
-    onClickDay?: (date: Date, transactions: Transaction[]) => void;
-    maxImporto: number;
-};
 
 // ----------- Funzione somma importi ----------- //
 const somma = (arr: Transaction[]) =>
     arr.reduce((tot, t) => tot + (typeof t.amount === "string" ? parseFloat(t.amount) : t.amount), 0);
 
 // ----------- Componente principale ----------- //
-export default function DayCell({ day, date, monthDelta, transactions, showWeekDay, onClickDay, maxImporto }: Props) {
+export default function DayCell({ day, date, monthDelta, transactions, showWeekDay, onClickDay, maxImporto }: DayCellProps) {
     // Oggi
     const now = new Date();
     const isToday =

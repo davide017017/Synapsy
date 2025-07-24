@@ -4,23 +4,18 @@
 // ==========================================================
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
-import { Category } from "@/types";
+import { Category, DeleteCategoryModalProps } from "@/types";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 
 // ============================
 // Tipi props
 // ============================
-type Props = {
-    category: Category | null;
-    onClose: () => void;
-    categories: Category[];
-    onDelete: (mode: "deleteAll" | "move", targetCategoryId?: number) => void | Promise<void>;
-};
+
 
 // ============================
 // Componente principale
 // ============================
-export default function DeleteCategoryModal({ category, onClose, categories, onDelete }: Props) {
+export default function DeleteCategoryModal({ category, onClose, categories, onDelete }: DeleteCategoryModalProps) {
     // --- Stato ---
     const [mode, setMode] = useState<"deleteAll" | "move">("move");
     const [targetCategoryId, setTargetCategoryId] = useState<number | undefined>();

@@ -6,18 +6,12 @@
 
 import { PlusCircle } from "lucide-react";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
-
-// ============================
-// Tipi Props
-// ============================
-type Props = {
-    label?: string;
-};
+import type { NewTransactionButtonProps } from "@/types";
 
 // ============================
 // Bottone per aprire la modale
 // ============================
-export default function NewTransactionButton({ label = "Nuova Transazione" }: Props) {
+export default function NewTransactionButton({ label = "Nuova Transazione" }: NewTransactionButtonProps) {
     const { openModal } = useTransactions();
 
     return (

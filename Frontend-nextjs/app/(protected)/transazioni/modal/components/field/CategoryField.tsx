@@ -1,15 +1,8 @@
 import { X } from "lucide-react";
 import { Category } from "@/types/types/category";
+import type { CategoryFieldProps } from "@/types/transazioni/modal/components/field";
 
-type Props = {
-    value: number | undefined;
-    categories: Category[];
-    onChange: (id: number, cat: Category | undefined) => void;
-    original: number | undefined;
-    showError?: boolean;
-};
-
-export default function CategoryField({ value, categories, onChange, original, showError }: Props) {
+export default function CategoryField({ value, categories, onChange, original, showError }: CategoryFieldProps) {
     const isModified = value !== original;
     return (
         <div className="flex flex-col items-center w-full relative">

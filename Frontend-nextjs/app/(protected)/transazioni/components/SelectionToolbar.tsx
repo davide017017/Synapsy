@@ -5,14 +5,11 @@
 
 "use client";
 import { useState } from "react";
+import type { SelectionToolbarProps } from "@/types/transazioni/list";
 import { useSelection } from "@/context/contexts/SelectionContext";
 import { MousePointerSquareDashed, XCircle, Trash2, AlertTriangle } from "lucide-react";
 
-type Props = {
-    onDeleteSelected: (ids: number[]) => void;
-};
-
-export default function SelectionToolbar({ onDeleteSelected }: Props) {
+export default function SelectionToolbar({ onDeleteSelected }: SelectionToolbarProps) {
     const { isSelectionMode, setIsSelectionMode, setSelectedIds, selectedIds } = useSelection();
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [loading, setLoading] = useState(false);

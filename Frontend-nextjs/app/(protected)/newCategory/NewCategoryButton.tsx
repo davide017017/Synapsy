@@ -7,15 +7,12 @@
 
 import { PlusCircle } from "lucide-react";
 import { useCategories } from "@/context/contexts/CategoriesContext";
+import type { NewCategoryButtonProps } from "@/types";
 
-// Nessuna tipizzazione extra necessaria
 export default function NewCategoryButton({
     label = "Nuova Categoria",
     onSuccess,
-}: {
-    label?: string;
-    onSuccess?: () => void;
-}) {
+}: NewCategoryButtonProps) {
     const { openModal } = useCategories();
 
     return (

@@ -7,14 +7,9 @@
 import { ReactNode } from "react";
 import DashboardCard from "../DashboardCard";
 import { ClipLoader } from "react-spinners";
+import type { LoadingSpinnerCardProps } from "@/types";
 
-type Props = {
-    icon: ReactNode;
-    title: string;
-    message?: string;
-};
-
-export default function LoadingSpinnerCard({ icon, title, message = "Caricamento dati..." }: Props) {
+export default function LoadingSpinnerCard({ icon, title, message = "Caricamento dati..." }: LoadingSpinnerCardProps) {
     return (
         <DashboardCard icon={<span className="opacity-60 animate-pulse">{icon}</span>} title={title}>
             <div className="flex flex-col items-center gap-2 py-4">

@@ -7,14 +7,12 @@
 import { Repeat, ArrowDown, ArrowUp } from "lucide-react";
 import { aggregaRicorrenzePerTipoEFrequenza, frequenzaOrder, sommaTotaleAnnua } from "../utils/ricorrenza-utils";
 import { Ricorrenza } from "@/types/types/ricorrenza";
+import type { CardTotaliAnnuiProps } from "@/types/ricorrenti/card";
 import NewRicorrenzaButton from "@/app/(protected)/newRicorrenza/NewRicorrenzaButton";
 
 // ============================
 // Props tipizzate
 // ============================
-type Props = {
-    ricorrenze: Ricorrenza[];
-};
 
 // ============================
 // Ordina frequenze
@@ -51,7 +49,7 @@ function getFreqStyle(freq: string) {
 // ║ COMPONENTE PRINCIPALE                                      ║
 // ╚══════════════════════════════════════════════════════════════╝
 
-export default function CardTotaliAnnui({ ricorrenze }: Props) {
+export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
     // ===== Raggruppa dati =====
     const aggregato = aggregaRicorrenzePerTipoEFrequenza(ricorrenze);
 

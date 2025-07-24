@@ -2,14 +2,9 @@
 // YearDropdown.tsx
 // ==========================
 import React, { useState, useRef } from "react";
+import type { YearDropdownProps } from "@/types";
 
-type Props = {
-    value: number;
-    options: number[];
-    onChange: (val: number) => void;
-};
-
-export default function YearDropdown({ value, options, onChange }: Props) {
+export default function YearDropdown({ value, options, onChange }: YearDropdownProps) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 

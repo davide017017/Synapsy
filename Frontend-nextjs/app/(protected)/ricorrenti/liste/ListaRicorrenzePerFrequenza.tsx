@@ -9,6 +9,7 @@ import RicorrenzaGroup from "./ListaRicorrenzeComponents/RicorrenzaGroup";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import { Repeat } from "lucide-react";
 import { Ricorrenza } from "@/types/types/ricorrenza";
+import type { ListaRicorrenzePerFrequenzaProps } from "@/types/ricorrenti/liste";
 
 // ============================
 // COSTANTI FREQUENZE & LABEL
@@ -24,16 +25,11 @@ export const FREQUENZE_LABEL: Record<string, string> = {
 // ============================
 // Props tipizzate
 // ============================
-type Props = {
-    ricorrenze: Ricorrenza[];
-    onEdit?: (r: Ricorrenza) => void;
-    onDelete?: (r: Ricorrenza) => Promise<void> | void;
-};
 
 // =======================================================
 // COMPONENTE PRINCIPALE
 // =======================================================
-export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDelete }: Props) {
+export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDelete }: ListaRicorrenzePerFrequenzaProps) {
     const [toDelete, setToDelete] = useState<Ricorrenza | null>(null);
     const [loading, setLoading] = useState(false);
 
