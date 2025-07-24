@@ -5,6 +5,7 @@ namespace Modules\User\Http\Requests;
 use Modules\User\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * Gestisce validazione e autorizzazione per l'aggiornamento del profilo utente.
@@ -65,9 +66,24 @@ class ProfileUpdateRequest extends FormRequest
             ],
 
             // ----------------------------
-            // Avatar (file immagine opzionale)
+            // Avatar (file o path opzionale)
             // ----------------------------
-            'avatar'   => ['nullable', 'image', 'max:2048'], // max 2MB
+            'avatar'   => ['nullable', function ($attribute, $value, $fail) {
+                if ($this->hasFile($attribute)) {
+                    $validator = Validator::make(
+                        $this->all(),
+                        [$attribute => 'image|max:2048'],
+                        $this->messages()
+                    );
+                    if ($validator->fails()) {
+                        foreach ($validator->errors()->get($attribute) as $msg) {
+                            $fail($msg);
+                        }
+                    }
+                } elseif ($value !== null && !is_string($value)) {
+                    $fail('L\'avatar deve essere un percorso o un file valido.');
+                }
+            }],
 
             // ----------------------------
             // Tema preferito
