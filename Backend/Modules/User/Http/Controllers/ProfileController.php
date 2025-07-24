@@ -38,12 +38,21 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
+        $avatarUrl = null;
+        $avatarPath = $user->avatar;
+        if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
+            $avatarUrl = asset('storage/' . $avatarPath);
+        }
+
         return ApiResponse::success('Profilo corrente.', [
             'id' => $user->id,
-            'name' => $user->name,
-            'surname' => $user->surname,
-            'email' => $user->email,
-            'avatar_url' => $user->avatar ? asset('storage/' . $user->avatar) : null,
+            'name'        => $user->name,
+            'surname'     => $user->surname,
+            'username'    => $user->username,
+            'email'       => $user->email,
+            'theme'       => $user->theme,
+            'avatar'      => $avatarPath,
+            'avatar_url'  => $avatarUrl,
         ]);
     }
 
@@ -68,7 +77,7 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
         }
 
-        // Gestione avatar upload/rimozione
+        // Gestione avatar upload/rimozione/impostazione path
         if ($request->hasFile('avatar')) {
             // Elimina avatar vecchio se esiste
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
@@ -77,6 +86,12 @@ class ProfileController extends Controller
             // Salva nuovo avatar
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $path;
+        } elseif ($request->filled('avatar')) {
+            // Imposta avatar da path stringa
+            if ($user->avatar && $request->input('avatar') !== $user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $user->avatar = $request->input('avatar');
         } elseif ($request->has('avatar') && $request->input('avatar') === '') {
             // Rimozione avatar
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
@@ -87,13 +102,22 @@ class ProfileController extends Controller
 
         $user->save();
 
+        $avatarUrl = null;
+        $avatarPath = $user->avatar;
+        if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
+            $avatarUrl = asset('storage/' . $avatarPath);
+        }
+
         return $request->wantsJson()
             ? ApiResponse::success('Profilo aggiornato.', [
-                'id' => $user->id,
-                'name' => $user->name,
-                'surname' => $user->surname,
-                'email' => $user->email,
-                'avatar_url' => $user->avatar ? asset('storage/' . $user->avatar) : null,
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'surname'    => $user->surname,
+                'username'   => $user->username,
+                'email'      => $user->email,
+                'theme'      => $user->theme,
+                'avatar'     => $avatarPath,
+                'avatar_url' => $avatarUrl,
             ])
             : Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
