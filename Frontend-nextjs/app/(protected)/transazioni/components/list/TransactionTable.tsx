@@ -9,7 +9,7 @@ import { useReactTable, getCoreRowModel, flexRender, ColumnResizeMode, Row } fro
 import { Transaction } from "@/types/types/transaction";
 import { addMonthGroup } from "./table/utils";
 import { getColumnsWithSelection } from "./table/columns";
-import { TransactionWithGroup } from "./table/types";
+import { TransactionWithGroup } from "@/types/transazioni";
 import TableRow from "./table/TableRow";
 import MonthDividerRow from "./table/MonthDividerRow";
 import YearDividerRow from "./table/YearDividerRow";

@@ -1,11 +1,7 @@
 import { X } from "lucide-react";
-type Props = {
-    value: string;
-    onChange: (v: string) => void;
-    original: string;
-};
+import type { DateFieldProps } from "@/types/transazioni/modal/components/field";
 
-export default function DateField({ value, onChange, original }: Props) {
+export default function DateField({ value, onChange, original }: DateFieldProps) {
     const isModified = value !== original;
     return (
         <div className="flex flex-col items-center w-full sm:w-1/2 relative">

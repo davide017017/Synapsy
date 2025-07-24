@@ -1,12 +1,7 @@
 import { X } from "lucide-react";
-type Props = {
-    value: string;
-    onChange: (v: string) => void;
-    original: string;
-    showError?: boolean;
-};
+import type { DescriptionFieldProps } from "@/types/transazioni/modal/components/field";
 
-export default function DescriptionField({ value, onChange, original, showError }: Props) {
+export default function DescriptionField({ value, onChange, original, showError }: DescriptionFieldProps) {
     const isModified = value !== original;
     return (
         <div className="flex flex-col items-center w-full relative">

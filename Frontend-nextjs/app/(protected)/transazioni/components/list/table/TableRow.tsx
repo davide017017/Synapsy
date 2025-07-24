@@ -3,7 +3,7 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { Row, flexRender } from "@tanstack/react-table";
-import { TransactionWithGroup } from "./types";
+import { TransactionWithGroup } from "@/types/transazioni";
 import clsx from "clsx";
 import { useSelection } from "../../../../../../context/contexts/SelectionContext";
 
