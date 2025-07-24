@@ -15,7 +15,9 @@
         <link rel="icon" href="{{ asset('favicon_red.ico') }}" type="image/x-icon">
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @unless(app()->environment('testing'))
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @endunless
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">

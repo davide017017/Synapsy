@@ -35,7 +35,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes(): void
     {
-        Route::middleware('web')->group(module_path($this->name, '/Routes/web.php'));
+        $webPath = module_path($this->name, 'Routes/web.php');
+        if (file_exists($webPath)) {
+            Route::middleware('web')->group($webPath);
+        }
     }
 
     /**
@@ -45,6 +48,9 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes(): void
     {
-        Route::middleware('api')->prefix('api')->name('api.')->group(module_path($this->name, '/Routes/api.php'));
+        $apiPath = module_path($this->name, 'Routes/api.php');
+        if (file_exists($apiPath)) {
+            Route::middleware('api')->prefix('api')->name('api.')->group($apiPath);
+        }
     }
 }
