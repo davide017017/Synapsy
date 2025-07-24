@@ -6,26 +6,7 @@
 
 import React, { useEffect } from "react";
 import { RotateCcw, Search, Funnel, Tag } from "lucide-react";
-
-// =========================
-// Tipi
-// =========================
-type Filter = {
-    search: string;
-    type: string;
-    category: string;
-};
-
-type Category = { name: string; id: number; type: string };
-
-type Props = {
-    filter: Filter;
-    setFilter: (f: Filter) => void;
-    categories: Category[];
-    iconSearch?: React.ReactNode;
-    iconType?: React.ReactNode;
-    iconCategory?: React.ReactNode;
-};
+import type { TransactionListFilterProps, Filter, Category } from "@/types/transazioni/list";
 
 // =========================
 // TransactionListFilter
@@ -37,7 +18,7 @@ export default function TransactionListFilter({
     iconSearch,
     iconType,
     iconCategory,
-}: Props) {
+}: TransactionListFilterProps) {
     // Categorie filtrate per tipo
     const filteredCategories =
         filter.type === "tutti" ? categories : categories.filter((cat) => cat.type === filter.type);

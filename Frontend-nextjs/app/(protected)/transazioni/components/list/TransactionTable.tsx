@@ -6,10 +6,9 @@
 
 import React, { useMemo } from "react";
 import { useReactTable, getCoreRowModel, flexRender, ColumnResizeMode, Row } from "@tanstack/react-table";
-import { Transaction } from "@/types/types/transaction";
 import { addMonthGroup } from "./table/utils";
 import { getColumnsWithSelection } from "./table/columns";
-import { TransactionWithGroup } from "@/types/transazioni";
+import type { TransactionTableProps, TransactionWithGroup } from "@/types/transazioni/list";
 import TableRow from "./table/TableRow";
 import MonthDividerRow from "./table/MonthDividerRow";
 import YearDividerRow from "./table/YearDividerRow";
@@ -18,14 +17,6 @@ import { useSelection } from "@/context/contexts/SelectionContext";
 // =============================
 // Props
 // =============================
-type Props = {
-    data: Transaction[];
-    onRowClick: (t: Transaction) => void;
-    selectedId?: number | null;
-    isSelectionMode?: boolean;
-    selectedIds?: number[];
-    setSelectedIds?: React.Dispatch<React.SetStateAction<number[]>>;
-};
 
 // =============================
 // TransactionTable principale
@@ -37,7 +28,7 @@ export default function TransactionTable({
     isSelectionMode: propIsSelectionMode,
     selectedIds: propSelectedIds,
     setSelectedIds: propSetSelectedIds,
-}: Props) {
+}: TransactionTableProps) {
     // Context selection come fallback
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
 
