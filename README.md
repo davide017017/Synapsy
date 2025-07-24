@@ -9,7 +9,7 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 /
 ├── backend/ # API RESTful Laravel 12.x (gestione dati e logica di business)
-├── frontend/ # Web app Next.js 15 (dashboard, UI, autenticazione)
+├── Frontend-nextjs/ # Web app Next.js 15 (dashboard, UI, autenticazione)
 ├── docs/ # Documentazione tecnica e guide
 ├── LICENSE
 ├── README.md # (questo file)
@@ -41,7 +41,7 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 3. **Setup Frontend**
 
     ```bash
-    cd frontend
+    cd Frontend-nextjs
     npm install
     cp .env.example .env
     # Configura API_URL e variabili necessarie
@@ -54,7 +54,7 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 Per la dashboard e l’interfaccia utente consulta il README del frontend:
 
--   [🌈 Synapsi Finance — Frontend Web (Next.js)](../Frontend-nextjs/README.md)
+-   [🌈 Synapsi Finance — Frontend Web (Next.js)](Frontend-nextjs/README.md)
 
 ## 📸 Screenshot
 
