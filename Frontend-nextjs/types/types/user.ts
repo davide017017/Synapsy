@@ -1,4 +1,4 @@
-import { AVATAR_CHOICES } from "./constants";
+import { AVATAR_CHOICES } from "@/app/(protected)/profilo/components/constants";
 
 export type UserType = {
     name: string;
@@ -16,15 +16,4 @@ export const DEFAULT_USER: UserType = {
     email: "mario.rossi@email.com",
     theme: "solarized",
     avatar: AVATAR_CHOICES[0],
-};
-
-export type RowProps = {
-    label: string;
-    value: string;
-    editing?: boolean;
-    onEdit: () => void;
-    onChange: (v: string) => void;
-    onSave: () => void;
-    type?: "text" | "select";
-    options?: { value: string; label: string }[];
 };
