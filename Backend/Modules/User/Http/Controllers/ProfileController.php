@@ -110,6 +110,7 @@ class ProfileController extends Controller
 
         return $request->wantsJson()
             ? ApiResponse::success('Profilo aggiornato.', [
+
                 'id'         => $user->id,
                 'name'       => $user->name,
                 'surname'    => $user->surname,

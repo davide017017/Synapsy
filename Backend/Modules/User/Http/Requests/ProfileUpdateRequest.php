@@ -70,6 +70,7 @@ class ProfileUpdateRequest extends FormRequest
             // Avatar (file o path opzionale)
             // ----------------------------
             'avatar'   => ['sometimes', function ($attribute, $value, $fail) {
+              
                 if ($this->hasFile($attribute)) {
                     $validator = Validator::make(
                         $this->all(),
