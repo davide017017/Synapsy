@@ -5,6 +5,7 @@
 // =======================================================
 
 import { Ricorrenza } from "@/types/types/ricorrenza";
+import type { RicorrenzaItemProps } from "@/types/ricorrenti/liste";
 import { Pencil, Trash2 } from "lucide-react";
 import { getFreqPill } from "../../utils/ricorrenza-utils";
 
@@ -28,16 +29,11 @@ function getTypeStyle(type: "entrata" | "spesa") {
 // ============================
 // Props tipizzate
 // ============================
-type Props = {
-    r: Ricorrenza;
-    onEdit?: (r: Ricorrenza) => void;
-    onDelete?: (r: Ricorrenza) => void;
-};
 
 // =======================================================
 // COMPONENTE: Singola ricorrenza compatta
 // =======================================================
-export default function RicorrenzaItem({ r, onEdit, onDelete }: Props) {
+export default function RicorrenzaItem({ r, onEdit, onDelete }: RicorrenzaItemProps) {
     const { symbol, valueClass, bgClass } = getTypeStyle(r.type);
     const { label, style } = getFreqPill(r.frequenza); // <--- aggiunto
 

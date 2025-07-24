@@ -8,21 +8,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { X, Undo2 } from "lucide-react";
 import { Transaction } from "@/types/types/transaction";
 import { Category } from "@/types/types/category";
+import type { TransactionDetailModalProps } from "@/types/transazioni/modal";
 import TransactionTypeSwitch from "./components/TransactionTypeSwitch";
 import TransactionDetailForm from "./components/TransactionDetailForm";
 import TransactionActionButtons from "./components/TransactionActionButtons";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 
 // ========== Props tipizzate ==========
-type Props = {
-    transaction: Transaction;
-    onClose: () => void;
-    categories: Category[];
-    onEdit?: (t: Transaction) => void;
-    onDelete?: (t: Transaction) => void;
-};
 
-export default function TransactionDetailModal({ transaction, onClose, categories, onEdit, onDelete }: Props) {
+export default function TransactionDetailModal({ transaction, onClose, categories, onEdit, onDelete }: TransactionDetailModalProps) {
     // Stato UI
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);

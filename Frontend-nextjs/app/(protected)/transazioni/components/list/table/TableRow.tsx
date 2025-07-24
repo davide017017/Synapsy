@@ -3,18 +3,11 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { Row, flexRender } from "@tanstack/react-table";
-import { TransactionWithGroup } from "./types";
+import type { TransactionWithGroup, TableRowProps } from "@/types/transazioni/list";
 import clsx from "clsx";
 import { useSelection } from "../../../../../../context/contexts/SelectionContext";
 
-type Props = {
-    row: Row<TransactionWithGroup>;
-    onClick?: (t: TransactionWithGroup) => void;
-    className?: string;
-    selected?: boolean;
-};
-
-export default function TableRow({ row, onClick, className }: Props) {
+export default function TableRow({ row, onClick, className }: TableRowProps) {
     const { isSelectionMode, selectedIds } = useSelection();
     const isChecked = selectedIds.includes(row.original.id);
 

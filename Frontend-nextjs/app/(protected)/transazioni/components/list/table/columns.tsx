@@ -5,7 +5,7 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
 import clsx from "clsx";
 import { ColumnDef, Row } from "@tanstack/react-table";
-import { TransactionWithGroup } from "./types";
+import { TransactionWithGroup } from "@/types/transazioni/list";
 import { hexToHSL } from "./utils"; // Importa la funzione dal tuo utils
 
 // ============================

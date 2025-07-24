@@ -1,12 +1,7 @@
 import { X } from "lucide-react";
-type Props = {
-    value: number;
-    onChange: (v: number) => void;
-    original: number;
-    showError?: boolean;
-};
+import type { AmountFieldProps } from "@/types/transazioni/modal/components/field";
 
-export default function AmountField({ value, onChange, original, showError }: Props) {
+export default function AmountField({ value, onChange, original, showError }: AmountFieldProps) {
     const isModified = value !== original;
     return (
         <div className="flex flex-col items-center w-full sm:w-1/2 relative">
