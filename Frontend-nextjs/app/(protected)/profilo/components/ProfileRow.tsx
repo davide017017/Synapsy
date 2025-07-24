@@ -1,4 +1,4 @@
-import { RowProps } from "./types";
+import { RowProps } from "@/types/profilo/row";
 
 export default function ProfileRow({ label, value, editing, onEdit, onChange, onSave, type = "text", options }: RowProps) {
     return (
