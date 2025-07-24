@@ -1,5 +1,5 @@
 import type { ReactNode, Dispatch, SetStateAction } from "react";
-import type { Transaction } from "@/types/types/transaction";
+import type { Transaction } from "@/types/models/transaction";
 
 export type TransactionsListProps = {
     transactions: Transaction[];

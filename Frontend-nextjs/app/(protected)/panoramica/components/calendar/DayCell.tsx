@@ -7,7 +7,7 @@
 // ║ - Tooltip, layout a grid                             ║
 // ╚═══════════════════════════════════════════════════════╝
 
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 import type { DayCellProps } from "@/types";
 
 

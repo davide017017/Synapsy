@@ -6,8 +6,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { X, Undo2 } from "lucide-react";
-import { Transaction } from "@/types/types/transaction";
-import { Category } from "@/types/types/category";
+import { Transaction } from "@/types/models/transaction";
+import { Category } from "@/types/models/category";
 import type { TransactionDetailModalProps } from "@/types/transazioni/modal";
 import TransactionTypeSwitch from "./components/TransactionTypeSwitch";
 import TransactionDetailForm from "./components/TransactionDetailForm";

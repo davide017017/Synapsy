@@ -20,8 +20,8 @@ export type DescriptionFieldProps = {
 
 export type CategoryFieldProps = {
     value: number | undefined;
-    categories: import("@/types/types/category").Category[];
-    onChange: (id: number, cat: import("@/types/types/category").Category | undefined) => void;
+    categories: import("@/types/models/category").Category[];
+    onChange: (id: number, cat: import("@/types/models/category").Category | undefined) => void;
     original: number | undefined;
     showError?: boolean;
 };

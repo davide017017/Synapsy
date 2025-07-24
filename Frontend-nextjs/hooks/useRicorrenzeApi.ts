@@ -3,7 +3,7 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { useState } from "react";
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import { createRicorrenza, updateRicorrenza, deleteRicorrenza } from "@/lib/api/ricorrenzeApi";
 
 type Status = "idle" | "loading" | "success" | "error";

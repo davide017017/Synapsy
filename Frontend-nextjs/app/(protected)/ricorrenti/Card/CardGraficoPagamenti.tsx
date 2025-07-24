@@ -7,7 +7,7 @@
 import { BarChart as BarChartIcon } from "lucide-react";
 import { Bar } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from "chart.js";
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { CardGraficoPagamentiProps } from "@/types/ricorrenti/card";
 import { buildBarChartOptions, daysArr } from "../utils/ricorrenza-utils";
 

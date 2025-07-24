@@ -1,4 +1,4 @@
-import type { Ricorrenza } from "@/types/types/ricorrenza";
+import type { Ricorrenza } from "@/types/models/ricorrenza";
 
 export type RicorrenzaGroupProps = {
     freq: string;
