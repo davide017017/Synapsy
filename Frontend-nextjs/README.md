@@ -40,10 +40,10 @@ Frontend **Next.js**/React per Synapsi Finance — visualizza, filtra e gestisci
 
 ## ⚡ Avvio rapido
 
-1. **Spostati nella cartella frontend**
+1. **Spostati nella cartella Frontend-nextjs**
 
     ```bash
-    cd frontend
+    cd Frontend-nextjs
     ```
 
 2. **Installa le dipendenze**
