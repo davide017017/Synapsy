@@ -31,6 +31,22 @@ class ProfileController extends Controller
         ]);
     }
 
+    // ============================
+    // Show - Current Profile
+    // ============================
+    public function show(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        return ApiResponse::success('Profilo corrente.', [
+            'id' => $user->id,
+            'name' => $user->name,
+            'surname' => $user->surname,
+            'email' => $user->email,
+            'avatar_url' => $user->avatar ? asset('storage/' . $user->avatar) : null,
+        ]);
+    }
+
 
     // ============================
     // Update - Update Profile Info

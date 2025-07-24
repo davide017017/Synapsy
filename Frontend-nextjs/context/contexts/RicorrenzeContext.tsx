@@ -5,7 +5,7 @@
 // ╚════════════════════════════════════════════════════════════╝
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { Ricorrenza, RicorrenzaBase } from "@/types/types/ricorrenza";
+import { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
 import { fetchRicorrenze, createRicorrenza, updateRicorrenza, deleteRicorrenza } from "@/lib/api/ricorrenzeApi";
 import { unwrapApiArray } from "@/utils/unwrapApiArray";
 import { normalizeRicorrenza } from "@/utils/normalizeRicorrenza";

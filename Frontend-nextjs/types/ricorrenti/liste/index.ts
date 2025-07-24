@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import type { Ricorrenza } from "@/types/types/ricorrenza";
+import type { Ricorrenza } from "@/types/models/ricorrenza";
 
 export type ListaProssimiPagamentiProps = {
     pagamenti: Ricorrenza[];

@@ -3,7 +3,7 @@
 // ║   + Move entrate/spese/ricorrenze su altra categoria║
 // ╚══════════════════════════════════════════════════════╝
 
-import { Category, CategoryBase } from "@/types/types/category";
+import { Category, CategoryBase } from "@/types/models/category";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // ==============================

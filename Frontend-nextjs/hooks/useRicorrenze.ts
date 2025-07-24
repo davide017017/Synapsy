@@ -3,7 +3,7 @@
 // ╚════════════════════════════════════════════╝
 
 import { useEffect, useState } from "react";
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import { fetchRicorrenze } from "@/lib/api/ricorrenzeApi";
 
 // ==============================
