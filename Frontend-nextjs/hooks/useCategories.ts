@@ -3,7 +3,7 @@
 // ╚════════════════════════════════════════════╝
 
 import { useEffect, useState } from "react";
-import { Category } from "@/types/types/category";
+import { Category } from "@/types/models/category";
 import { getAllCategories } from "@/lib/api/categoriesApi";
 
 // ==============================

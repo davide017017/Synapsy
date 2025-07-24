@@ -1,18 +1,18 @@
 export type TransactionDetailModalProps = {
-    transaction: import("@/types/types/transaction").Transaction;
+    transaction: import("@/types/models/transaction").Transaction;
     onClose: () => void;
-    categories: import("@/types/types/category").Category[];
-    onEdit?: (t: import("@/types/types/transaction").Transaction) => void;
-    onDelete?: (t: import("@/types/types/transaction").Transaction) => void;
+    categories: import("@/types/models/category").Category[];
+    onEdit?: (t: import("@/types/models/transaction").Transaction) => void;
+    onDelete?: (t: import("@/types/models/transaction").Transaction) => void;
 };
 
 export type TransactionDetailFormProps = {
-    formData: import("@/types/types/transaction").Transaction;
-    setFormData: (fd: import("@/types/types/transaction").Transaction) => void;
-    categories: import("@/types/types/category").Category[];
+    formData: import("@/types/models/transaction").Transaction;
+    setFormData: (fd: import("@/types/models/transaction").Transaction) => void;
+    categories: import("@/types/models/category").Category[];
     selectedType: "entrata" | "spesa";
     showErrors: boolean;
-    transaction: import("@/types/types/transaction").Transaction;
+    transaction: import("@/types/models/transaction").Transaction;
 };
 
 export type TransactionTypeSwitchProps = {

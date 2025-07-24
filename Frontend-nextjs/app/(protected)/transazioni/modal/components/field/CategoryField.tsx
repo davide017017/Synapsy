@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { Category } from "@/types/types/category";
+import { Category } from "@/types/models/category";
 import type { CategoryFieldProps } from "@/types/transazioni/modal/components/field";
 
 export default function CategoryField({ value, categories, onChange, original, showError }: CategoryFieldProps) {

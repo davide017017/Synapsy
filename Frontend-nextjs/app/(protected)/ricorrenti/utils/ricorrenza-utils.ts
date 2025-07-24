@@ -3,7 +3,7 @@
 // Utility principali per ricorrenze (ordinamento, calcoli, chart, aggregazioni)
 // ============================
 
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 
 // ╔══════════════════════════════════════════════════════╗
 // ║ 1. COSTANTI: ORDINE FREQUENZA E MOLTIPLICATORI      ║

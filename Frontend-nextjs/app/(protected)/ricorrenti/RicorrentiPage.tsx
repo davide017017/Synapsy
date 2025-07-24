@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { useRicorrenze } from "@/context/contexts/RicorrenzeContext";
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import CardTotaliAnnui from "./Card/CardTotaliAnnui";
 import CardGraficoPagamenti from "./Card/CardGraficoPagamenti";
 import ListaRicorrenzePerFrequenza from "./liste/ListaRicorrenzePerFrequenza";

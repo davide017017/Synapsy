@@ -6,8 +6,8 @@ import DateField from "./field/DateField";
 import DescriptionField from "./field/DescriptionField";
 import CategoryField from "./field/CategoryField";
 import NotesField from "./field/NotesField";
-import { Transaction } from "@/types/types/transaction";
-import { Category } from "@/types/types/category";
+import { Transaction } from "@/types/models/transaction";
+import { Category } from "@/types/models/category";
 import type { TransactionDetailFormProps } from "@/types/transazioni/modal";
 
 export default function TransactionDetailForm({

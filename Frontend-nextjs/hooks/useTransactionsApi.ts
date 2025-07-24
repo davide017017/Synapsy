@@ -3,7 +3,7 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { useState } from "react";
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 import { createTransaction, updateTransaction, deleteTransaction } from "@/lib/api/transactionsApi";
 
 type Status = "idle" | "loading" | "success" | "error";

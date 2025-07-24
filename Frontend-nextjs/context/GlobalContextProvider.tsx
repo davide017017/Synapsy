@@ -9,26 +9,29 @@ import { TransactionsProvider } from "./contexts/TransactionsContext";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { SelectionProvider } from "./contexts/SelectionContext";
 import { RicorrenzeProvider } from "./contexts/RicorrenzeContext";
+import { UserProvider } from "./contexts/UserContext";
 
 export default function GlobalContextProvider({ children }: { children: ReactNode }) {
     return (
         <SessionProvider>
-            <ThemeProvider
+            <UserProvider>
+                <ThemeProvider
                 attribute="class" // <--- Usa la classe "dark" su <html>
                 defaultTheme="system" // system = usa impostazione sistema
                 enableSystem
                 storageKey="theme" // key in localStorage
             >
-                <CategoriesProvider>
-                    <TransactionsProvider>
-                        <RicorrenzeProvider>
-                            <SelectionProvider>
-                                <SidebarProvider>{children}</SidebarProvider>
-                            </SelectionProvider>
-                        </RicorrenzeProvider>
-                    </TransactionsProvider>
-                </CategoriesProvider>
-            </ThemeProvider>
+                    <CategoriesProvider>
+                        <TransactionsProvider>
+                            <RicorrenzeProvider>
+                                <SelectionProvider>
+                                    <SidebarProvider>{children}</SidebarProvider>
+                                </SelectionProvider>
+                            </RicorrenzeProvider>
+                        </TransactionsProvider>
+                    </CategoriesProvider>
+                </ThemeProvider>
+            </UserProvider>
         </SessionProvider>
     );
 }

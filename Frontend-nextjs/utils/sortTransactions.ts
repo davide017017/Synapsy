@@ -1,4 +1,4 @@
-import { Transaction } from "../types/types/transaction";
+import { Transaction } from "../types/models/transaction";
 
 export function sortTransactions(list: Transaction[], sortBy: "date" | "amount", sortDirection: "asc" | "desc") {
     return [...list].sort((a, b) => {
