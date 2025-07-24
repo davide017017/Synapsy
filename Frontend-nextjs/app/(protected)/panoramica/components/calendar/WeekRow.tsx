@@ -5,15 +5,9 @@
 import React from "react";
 import DayCell from "./DayCell";
 import { Transaction } from "@/types/types/transaction";
-import { CalendarWeek } from "./utils/calendarUtils";
+import type { WeekRowProps } from "@/types";
 
-type Props = {
-    week: CalendarWeek;
-    transactions: Transaction[];
-    maxImporto: number;
-};
-
-export default function WeekRow({ week, transactions, maxImporto }: Props) {
+export default function WeekRow({ week, transactions, maxImporto }: WeekRowProps) {
     return (
         <>
             {/* Numero settimana */}

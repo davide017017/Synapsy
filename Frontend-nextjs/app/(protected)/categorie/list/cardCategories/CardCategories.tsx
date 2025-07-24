@@ -5,15 +5,10 @@
 // ============================
 
 import { Category } from "@/types";
+import type { CardCategoriesProps, CategoryCardProps } from "@/types";
 import { getIconComponent } from "@/utils/iconMap";
 import { Pencil, Trash2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-
-type CardCategoriesProps = {
-    categories: Category[];
-    onEdit: (cat: Category) => void;
-    onDelete: (cat: Category) => void;
-};
 
 export default function CardCategories({ categories, onEdit, onDelete }: CardCategoriesProps) {
     return (
@@ -25,13 +20,7 @@ export default function CardCategories({ categories, onEdit, onDelete }: CardCat
     );
 }
 
-type CardProps = {
-    cat: Category;
-    onEdit: (cat: Category) => void;
-    onDelete: (cat: Category) => void;
-};
-
-function CategoryCard({ cat, onEdit, onDelete }: CardProps) {
+function CategoryCard({ cat, onEdit, onDelete }: CategoryCardProps) {
     const Icon = getIconComponent(cat.icon);
 
     const nameRef = useRef<HTMLDivElement>(null);

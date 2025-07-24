@@ -5,20 +5,7 @@
 // ║   (6 settimane, inizia lunedì, opzionale numeri settimana)    ║
 // ╚════════════════════════════════════════════════════════════════╝
 
-export type CalendarCell = {
-    day: number;
-    monthDelta: -1 | 0 | 1;
-    date: Date;
-};
-
-export type CalendarWeek = {
-    weekNumber: number;
-    days: CalendarCell[];
-};
-
-type Options = {
-    withWeekNumbers?: boolean;
-};
+import type { CalendarCell, CalendarWeek, CalendarOptions } from "@/types";
 
 /**
  * Ritorna celle calendario (sempre 6x7) e, opzionalmente, settimane con numerazione ISO
@@ -30,7 +17,7 @@ type Options = {
 export function getCalendarGrid(
     year: number,
     month: number,
-    options: Options = {}
+    options: CalendarOptions = {}
 ): { cells: CalendarCell[]; weeks?: CalendarWeek[] } {
     // --- Giorni mese corrente e precedente ---
     const daysInCurrent = new Date(year, month + 1, 0).getDate();

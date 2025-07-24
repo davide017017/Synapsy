@@ -6,6 +6,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Transaction, TransactionBase } from "@/types";
+import type { NewTransactionFormProps } from "@/types";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
@@ -17,18 +18,11 @@ function cn(...classes: string[]) {
 }
 
 // ===== Props tipizzate =====
-type Props = {
-    onSave?: (data: TransactionBase) => void;
-    transaction?: Transaction;
-    disabled?: boolean;
-    onChangeForm?: (data: Partial<TransactionBase>) => void;
-    onCancel?: () => void; // aggiungi questa per uniformare UX
-};
 
 // ╔═══════════════════════════════╗
 // ║      COMPONENTE PRINCIPALE    ║
 // ╚═══════════════════════════════╝
-export default function NewTransactionForm({ onSave, transaction, disabled, onChangeForm, onCancel }: Props) {
+export default function NewTransactionForm({ onSave, transaction, disabled, onChangeForm, onCancel }: NewTransactionFormProps) {
     // ----- Stato form -----
     const [formData, setFormData] = useState<TransactionBase>({
         description: "",

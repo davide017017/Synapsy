@@ -10,21 +10,12 @@ import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import NewRicorrenzaForm from "./NewRicorrenzaForm";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Ricorrenza, RicorrenzaBase } from "@/types/types/ricorrenza";
-
-// ============================
-// Props tipizzate
-// ============================
-type Props = {
-    open: boolean;
-    onClose: () => void;
-    ricorrenzaToEdit?: Ricorrenza | null;
-    onSave: (data: RicorrenzaBase) => Promise<void>;
-};
+import type { NewRicorrenzaModalProps } from "@/types";
 
 // ============================
 // Componente principale
 // ============================
-export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, onSave }: Props) {
+export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, onSave }: NewRicorrenzaModalProps) {
     const [loading, setLoading] = useState(false);
     const [formValues, setFormValues] = useState<Partial<RicorrenzaBase>>({});
     const { categories } = useCategories();

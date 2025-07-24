@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import type { DashboardCardProps } from "@/types";
 import Link from "next/link";
 
 // ╔══════════════════════════════════════╗
@@ -6,15 +7,7 @@ import Link from "next/link";
 // ║  Card generica con icona, titolo... ║
 // ╚══════════════════════════════════════╝
 
-type Props = {
-    icon: ReactNode;
-    title: string;
-    value?: ReactNode; // ← adesso facoltativo!
-    children?: ReactNode;
-    href?: string;
-};
-
-export default function DashboardCard({ icon, title, value, children, href }: Props) {
+export default function DashboardCard({ icon, title, value, children, href }: DashboardCardProps) {
     // Stili base
     const className = [
         "flex flex-col gap-2 p-4 rounded-xl min-h-[120px]",

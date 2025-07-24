@@ -7,14 +7,9 @@
 
 import { PlusCircle } from "lucide-react";
 import { useRicorrenze } from "@/context/contexts/RicorrenzeContext";
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import type { NewRicorrenzaButtonProps } from "@/types";
 
-type Props = {
-    label?: string;
-    onSuccess?: (newRicorrenza: Ricorrenza) => void;
-};
-
-export default function NewRicorrenzaButton({ label = "Nuova Ricorrenza", onSuccess }: Props) {
+export default function NewRicorrenzaButton({ label = "Nuova Ricorrenza", onSuccess }: NewRicorrenzaButtonProps) {
     const { openModal } = useRicorrenze();
     return (
         <button

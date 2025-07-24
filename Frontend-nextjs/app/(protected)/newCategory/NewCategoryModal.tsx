@@ -8,18 +8,11 @@ import { useEffect, useState } from "react";
 import Dialog from "@/app/components/ui/Dialog";
 import ModalLayout from "@/app/components/ui/ModalLayout";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
-import { Category, CategoryBase } from "@/types";
+import { Category, CategoryBase, NewCategoryModalProps } from "@/types";
 import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/utils/categoryOptions";
 import { getIconComponent } from "@/utils/iconMap";
 
-type Props = {
-    open: boolean;
-    onClose: () => void;
-    categoryToEdit?: Category | null;
-    onSave: (data: CategoryBase) => Promise<void>;
-};
-
-export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave }: Props) {
+export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave }: NewCategoryModalProps) {
     // Stato form
     const [name, setName] = useState("");
     const [type, setType] = useState<"entrata" | "spesa">("entrata");

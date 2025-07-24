@@ -7,6 +7,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { Transaction } from "@/types/types/transaction";
+import type { CalendarGridProps } from "@/types";
 import DayCell from "./calendar/DayCell";
 import { useMediaQuery } from "usehooks-ts";
 import { getCalendarGrid } from "./calendar/utils/calendarUtils";
@@ -39,12 +40,11 @@ const yearOptions = Array.from({ length: 15 }, (_, i) => currentYear - 7 + i);
 // ============================
 // Props
 // ============================
-type Props = { transactions: Transaction[] };
 
 // ============================
 // CalendarGrid principale
 // ============================
-export default function CalendarGrid({ transactions }: Props) {
+export default function CalendarGrid({ transactions }: CalendarGridProps) {
     // Stato visualizzazione mese/anno
     const isLg = useMediaQuery("(min-width: 1024px)");
     const [viewYear, setViewYear] = useState(currentYear);
