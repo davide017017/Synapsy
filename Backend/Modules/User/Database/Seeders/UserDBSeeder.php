@@ -31,15 +31,16 @@ class UserDBSeeder extends Seeder
             ['email' => 'test@example.com'],
             [
                 'name'              => 'Test',
-                'surname'           => 'User',
+                'surname'           => 'Admin',
+                'username'          => 'admin',
+                'theme'             => 'solarized',
+                'avatar'            => 'images/avatars/avatar-1.svg',
                 'password'          => Hash::make('password1234'),
                 'email_verified_at' => now(),
                 'remember_token'    => Str::random(10),
                 'is_admin'          => true,
             ]
         );
-
-
 
         // =========================================================================
         // 🧪 Generazione utenti fittizi

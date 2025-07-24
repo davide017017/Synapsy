@@ -43,21 +43,40 @@ class UserFactory extends Factory
             ['full_name' => 'Alfred Pennyworth', 'email_base' => 'alfred'],
         ];
 
+        $avatarChoices = [
+            'images/avatars/avatar-1.svg',
+            'images/avatars/avatar-2.svg',
+            'images/avatars/avatar-3.svg',
+            'images/avatars/avatar-4.svg',
+            'images/avatars/avatar-5.svg',
+            'images/avatars/avatar-6.svg',
+        ];
+
         $identity = $this->faker->unique()->randomElement($identities);
         [$name, $surname] = explode(' ', $identity['full_name']) + [null, null];
+
+        // Username generato (senza spazi, minuscolo, oppure random se già esiste)
+        $username = Str::slug($identity['full_name'], '.')
+            . $this->faker->unique()->randomNumber(3);
+
+        // Temi possibili
+        $themes = ['light', 'dark', 'emerald', 'solarized'];
 
         $isVerified = $this->faker->boolean(70);
 
         return [
             'name'              => $name,
             'surname'           => $surname,
+            'username'          => $username, // NEW
+            'theme'             => $this->faker->randomElement($themes), // NEW
+            'avatar' => $this->faker->randomElement($avatarChoices),
             'email'             => $identity['email_base'] . '@' . $this->faker->unique()->domainWord() . '.' . $this->faker->tld(),
             'email_verified_at' => $isVerified ? Carbon::now() : null,
             'password'          => Hash::make('password1234'),
             'remember_token'    => Str::random(10),
+            'is_admin'          => false,
         ];
     }
-
 
     /**
      * Stato: email non verificata.

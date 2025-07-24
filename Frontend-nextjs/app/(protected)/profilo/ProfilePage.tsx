@@ -1,56 +1,66 @@
 "use client";
 
-// =============================
-// ProfilePage.tsx — Compatta, avatar animato, colori da tema CSS
-// =============================
+// ======================================================
+// ProfilePage.tsx — Avatar gallery scelta rapida (no upload)
+// ======================================================
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ---- Placeholder dati utente ----
+// -------------------------
+// Avatar disponibili (aggiungi le tue immagini)
+// -------------------------
+const AVATAR_CHOICES = [
+    "/images/avatars/avatar-1.svg",
+    "/images/avatars/avatar-2.svg",
+    "/images/avatars/avatar-3.svg",
+    "/images/avatars/avatar-4.svg",
+    "/images/avatars/avatar-5.svg",
+    "/images/avatars/avatar-6.svg",
+
+    // ...aggiungi altri se ne metti altri!
+];
+
+// -------------------------
+// Mock dati utente (da sostituire con fetch API)
+// -------------------------
 const MOCK_USER = {
-    name: "Mario Rossi",
+    name: "Mario",
+    surname: "Rossi",
+    username: "mario.rossi",
     email: "mario.rossi@email.com",
-    theme: "dark",
+    theme: "solarized",
+    avatar: AVATAR_CHOICES[0], // default primo avatar
 };
 
+type UserType = typeof MOCK_USER;
+
+// ======================================================
+// Componente principale
+// ======================================================
 export default function ProfilePage() {
-    // -----------------------------
-    // Stato profilo/avatar
-    // -----------------------------
-    const [user, setUser] = useState(MOCK_USER);
-    const [editing, setEditing] = useState<{ [K in keyof typeof MOCK_USER]?: boolean }>({});
-    const [avatar, setAvatar] = useState<string | null>(null);
-    const [showPreview, setShowPreview] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    // -----------------------------------
+    // Stato dati utente e UI
+    // -----------------------------------
+    const [user, setUser] = useState<UserType>(MOCK_USER);
+    const [editing, setEditing] = useState<{ [K in keyof UserType]?: boolean }>({});
+    const [showPicker, setShowPicker] = useState(false);
 
-    // -----------------------------
-    // Edit campi
-    // -----------------------------
-    const handleEdit = (field: keyof typeof MOCK_USER) => setEditing({ ...editing, [field]: true });
-    const handleChange = (field: keyof typeof MOCK_USER, value: string) => setUser({ ...user, [field]: value });
-    const handleSave = (field: keyof typeof MOCK_USER) => setEditing({ ...editing, [field]: false });
+    // Gestione cambio campi
+    const handleEdit = (field: keyof UserType) => setEditing({ ...editing, [field]: true });
+    const handleChange = (field: keyof UserType, value: string) => setUser({ ...user, [field]: value });
+    const handleSave = (field: keyof UserType) => setEditing({ ...editing, [field]: false });
 
-    // -----------------------------
-    // Avatar
-    // -----------------------------
-    const handleAvatarClick = () => (avatar ? setShowPreview(true) : fileInputRef.current?.click());
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (evt) => setAvatar(evt.target?.result as string);
-            reader.readAsDataURL(file);
-        }
-    };
-    const handleRemoveAvatar = () => {
-        setAvatar(null);
-        setShowPreview(false);
+    // Gestione scelta avatar
+    const handleAvatarChange = (val: string) => {
+        setUser({ ...user, avatar: val });
+        setShowPicker(false);
+        // Qui: PATCH /api/user { avatar: val } se vuoi salvare lato backend
     };
 
-    // -----------------------------
-    // Render
-    // -----------------------------
+    // -----------------------------------
+    // Render pagina
+    // -----------------------------------
     return (
         <div className="max-w-lg mx-auto space-y-6">
             {/* ========================================= */}
@@ -60,37 +70,20 @@ export default function ProfilePage() {
                 className="flex items-center gap-4 pb-2 border-b"
                 style={{ borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))" }}
             >
+                {/* ---- Avatar attuale (click per cambiare) ---- */}
                 <motion.div whileHover={{ scale: 1.07 }} className="relative group">
-                    {/* Avatar */}
-                    {avatar ? (
-                        <img
-                            src={avatar}
-                            alt="Avatar"
-                            className="w-16 h-16 rounded-full object-cover border-2 cursor-pointer shadow transition group-hover:ring-2"
-                            style={{
-                                borderColor: "hsl(var(--c-primary, 205 66% 49%))",
-                                boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
-                            }}
-                            onClick={handleAvatarClick}
-                        />
-                    ) : (
-                        <div
-                            className="w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold cursor-pointer select-none transition group-hover:ring-2"
-                            style={{
-                                background: "hsl(var(--c-primary, 205 66% 49%) / 0.6)",
-                                color: "hsl(var(--c-text-invert, 44 81% 94%))",
-                                boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
-                            }}
-                            onClick={handleAvatarClick}
-                        >
-                            {user.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")
-                                .toUpperCase()}
-                        </div>
-                    )}
-                    {/* Bottone cambio avatar */}
+                    <img
+                        src={user.avatar}
+                        alt="Avatar"
+                        className="w-16 h-16 rounded-full object-cover border-2 cursor-pointer shadow transition group-hover:ring-2"
+                        style={{
+                            borderColor: "hsl(var(--c-primary, 205 66% 49%))",
+                            boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
+                        }}
+                        onClick={() => setShowPicker(true)}
+                        title="Cambia avatar"
+                    />
+                    {/* Badge matita (edit) */}
                     <button
                         type="button"
                         className="absolute bottom-0 right-0 shadow px-1.5 py-0.5 rounded-full text-xs font-semibold opacity-85 hover:opacity-100 transition border"
@@ -99,44 +92,20 @@ export default function ProfilePage() {
                             borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
                             color: "hsl(var(--c-primary, 205 66% 49%))",
                         }}
-                        onClick={() => fileInputRef.current?.click()}
+                        onClick={() => setShowPicker(true)}
                         tabIndex={-1}
                         title="Cambia avatar"
                     >
                         ✎
                     </button>
-                    {/* Bottone rimuovi avatar */}
-                    {avatar && (
-                        <button
-                            type="button"
-                            className="absolute -top-1 -left-1 px-1 rounded-full text-xs font-bold shadow hover:opacity-90 transition"
-                            style={{
-                                background: "hsl(var(--c-danger, 2 64% 52%))",
-                                color: "hsl(var(--c-bg, 44 81% 94%))",
-                            }}
-                            onClick={handleRemoveAvatar}
-                            title="Rimuovi avatar"
-                        >
-                            ×
-                        </button>
-                    )}
-                    {/* Input file nascosto */}
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleAvatarChange}
-                        tabIndex={-1}
-                    />
                 </motion.div>
-                {/* Titolo */}
+                {/* ---- Titolo ---- */}
                 <div>
                     <h1 className="text-xl font-bold" style={{ color: "hsl(var(--c-primary, 205 66% 49%))" }}>
                         👤 Profilo
                     </h1>
                     <p className="text-xs" style={{ color: "hsl(var(--c-text-secondary, 197 13% 45%))" }}>
-                        Modifica le info e il tema.
+                        Modifica le informazioni del tuo account.
                     </p>
                 </div>
             </div>
@@ -159,6 +128,22 @@ export default function ProfilePage() {
                     onEdit={() => handleEdit("name")}
                     onChange={(v) => handleChange("name", v)}
                     onSave={() => handleSave("name")}
+                />
+                <ProfileRow
+                    label="Cognome"
+                    value={user.surname ?? ""}
+                    editing={editing.surname}
+                    onEdit={() => handleEdit("surname")}
+                    onChange={(v) => handleChange("surname", v)}
+                    onSave={() => handleSave("surname")}
+                />
+                <ProfileRow
+                    label="Username"
+                    value={user.username}
+                    editing={editing.username}
+                    onEdit={() => handleEdit("username")}
+                    onChange={(v) => handleChange("username", v)}
+                    onSave={() => handleSave("username")}
                 />
                 <ProfileRow
                     label="Email"
@@ -187,20 +172,25 @@ export default function ProfilePage() {
             </div>
 
             {/* ========================================= */}
-            {/* Modale preview avatar (animata) */}
+            {/* Modale scelta avatar */}
             {/* ========================================= */}
             <AnimatePresence>
-                {showPreview && avatar && (
-                    <AvatarModal avatar={avatar} onClose={() => setShowPreview(false)} onRemove={handleRemoveAvatar} />
+                {showPicker && (
+                    <AvatarPickerModal
+                        avatarList={AVATAR_CHOICES}
+                        selected={user.avatar}
+                        onSelect={handleAvatarChange}
+                        onClose={() => setShowPicker(false)}
+                    />
                 )}
             </AnimatePresence>
         </div>
     );
 }
 
-// =========================================
-// Riga editabile profilo — COMPATTA, colori da tema
-// =========================================
+// ======================================================
+// ProfileRow — Riga editabile profilo utente
+// ======================================================
 type RowProps = {
     label: string;
     value: string;
@@ -288,10 +278,20 @@ function ProfileRow({ label, value, editing, onEdit, onChange, onSave, type = "t
     );
 }
 
-// =========================================
-// Modale avatar animata (framer-motion, colori tema)
-// =========================================
-function AvatarModal({ avatar, onClose, onRemove }: { avatar: string; onClose: () => void; onRemove: () => void }) {
+// ======================================================
+// AvatarPickerModal — Modale scelta avatar
+// ======================================================
+function AvatarPickerModal({
+    avatarList,
+    selected,
+    onSelect,
+    onClose,
+}: {
+    avatarList: string[];
+    selected: string;
+    onSelect: (val: string) => void;
+    onClose: () => void;
+}) {
     return (
         <motion.div
             className="fixed inset-0 flex items-center justify-center z-50"
@@ -316,37 +316,33 @@ function AvatarModal({ avatar, onClose, onRemove }: { avatar: string; onClose: (
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
             >
-                <img
-                    src={avatar}
-                    alt="Avatar grande"
-                    className="w-36 h-36 rounded-full object-cover mb-4"
-                    style={{
-                        border: "3px solid hsl(var(--c-primary, 205 66% 49%))",
-                        boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
-                    }}
-                />
-                <div className="flex gap-2">
-                    <button
-                        className="px-3 py-1 rounded font-semibold text-xs transition"
-                        style={{
-                            background: "hsl(var(--c-secondary, 220 15% 48%))",
-                            color: "hsl(var(--c-bg, 44 81% 94%))",
-                        }}
-                        onClick={onClose}
-                    >
-                        Chiudi
-                    </button>
-                    <button
-                        className="px-3 py-1 rounded font-semibold text-xs transition"
-                        style={{
-                            background: "hsl(var(--c-danger, 2 64% 52%))",
-                            color: "hsl(var(--c-bg, 44 81% 94%))",
-                        }}
-                        onClick={onRemove}
-                    >
-                        Rimuovi
-                    </button>
+                <div className="mb-2 text-base font-bold">Scegli il tuo avatar</div>
+                <div className="grid grid-cols-3 gap-4 my-3">
+                    {avatarList.map((src) => (
+                        <button
+                            key={src}
+                            type="button"
+                            className={`rounded-full border-2 transition-all duration-100 ${
+                                selected === src
+                                    ? "border-primary ring-2 ring-primary scale-110"
+                                    : "border-transparent opacity-80 hover:opacity-100"
+                            }`}
+                            onClick={() => onSelect(src)}
+                        >
+                            <img src={src} alt="" className="w-16 h-16 rounded-full object-cover" />
+                        </button>
+                    ))}
                 </div>
+                <button
+                    className="px-3 py-1 mt-2 rounded font-semibold text-xs transition"
+                    style={{
+                        background: "hsl(var(--c-secondary, 220 15% 48%))",
+                        color: "hsl(var(--c-bg, 44 81% 94%))",
+                    }}
+                    onClick={onClose}
+                >
+                    Annulla
+                </button>
                 <button
                     className="absolute top-2 right-2 font-bold text-xl"
                     style={{ color: "hsl(var(--modal-title, 205 66% 49%))" }}

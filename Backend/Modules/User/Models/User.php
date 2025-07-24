@@ -19,44 +19,67 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 /**
  * @property int $id
  * @property string $name
+ * @property string $surname
+ * @property string $username
  * @property string $email
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property string $password
- * @property string|null $remember_token
+ * @property string|null $avatar
+ * @property string|null $theme      // es: dark, light, solarized, emerald, etc.
+ * @property string|null $password
  * @property bool $is_admin
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * // Opzionali:
+ * @property string|null $birthdate
+ * @property string|null $phone
+ * @property string|null $locale
  */
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // 🔑 JWT: id nel subject del token
+    // ===================================================================
+    // JWT Auth
+    // ===================================================================
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
-    // 🔐 Nessun custom claim extra (puoi aggiungerne se serve)
     public function getJWTCustomClaims()
     {
         return [];
     }
 
+    // ===================================================================
+    // Fillable
+    // ===================================================================
     protected $fillable = [
         'name',
         'surname',
+        'username',         // NEW: username univoco
         'email',
         'password',
+        'avatar',           // NEW: url o path avatar
+        'theme',            // NEW: tema preferito utente
+        // 'birthdate',     // Opzionale: data di nascita
+        // 'phone',         // Opzionale: telefono
+        // 'locale',        // Opzionale: lingua preferita
         'is_admin',
-        'avatar',
     ];
 
+    // ===================================================================
+    // Hidden
+    // ===================================================================
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    // ===================================================================
+    // Casts
+    // ===================================================================
     protected function casts(): array
     {
         return [
@@ -64,14 +87,22 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'avatar' => 'string',
+            'theme' => 'string',
+            'birthdate' => 'date:Y-m-d', // se usi la colonna
         ];
     }
 
+    // ===================================================================
+    // Notifiche email custom
+    // ===================================================================
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new CustomVerifyEmail());
     }
 
+    // ===================================================================
+    // RELAZIONI
+    // ===================================================================
     public function spese(): HasMany
     {
         return $this->hasMany(Spesa::class);
@@ -92,11 +123,17 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return $this->hasMany(RecurringOperation::class);
     }
 
+    // ===================================================================
+    // Helpers
+    // ===================================================================
     public function isAdmin(): bool
     {
         return (bool) $this->is_admin;
     }
 
+    // ===================================================================
+    // Factory
+    // ===================================================================
     public static function newFactory(): UserFactory
     {
         return UserFactory::new();
