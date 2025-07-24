@@ -1,6 +1,6 @@
 // utils.ts
 import { Transaction } from "@/types/types/transaction";
-import { TransactionWithGroup } from "./types";
+import { TransactionWithGroup } from "@/types/transazioni";
 
 // Aggiunge monthGroup (YYYY-MM) a ogni transazione
 export function addMonthGroup(transactions: Transaction[]): TransactionWithGroup[] {
