@@ -2,14 +2,9 @@
 // Switch Entrata/Spesa
 // ================================
 import { FC } from "react";
+import type { TransactionTypeSwitchProps } from "@/types/transazioni/modal";
 
-type Props = {
-    selectedType: "entrata" | "spesa";
-    setSelectedType: (t: "entrata" | "spesa") => void;
-    disabled?: boolean;
-};
-
-const TransactionTypeSwitch: FC<Props> = ({ selectedType, setSelectedType, disabled }) => (
+const TransactionTypeSwitch: FC<TransactionTypeSwitchProps> = ({ selectedType, setSelectedType, disabled }) => (
     <div className="flex justify-center mb-4 gap-2">
         <button
             type="button"
