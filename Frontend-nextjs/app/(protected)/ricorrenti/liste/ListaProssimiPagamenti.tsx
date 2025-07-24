@@ -5,6 +5,7 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { Ricorrenza } from "@/types/types/ricorrenza";
+import type { ListaProssimiPagamentiProps, SectionOccorrenzeProps } from "@/types/ricorrenti/liste";
 import { normalizzaFrequenza, freqToIt, freqToDays } from "../utils/ricorrenza-utils";
 import { Pencil, Trash2 } from "lucide-react";
 import { useCategories } from "@/context/contexts/CategoriesContext";
@@ -12,15 +13,6 @@ import { useCategories } from "@/context/contexts/CategoriesContext";
 // ============================
 // Props tipizzate
 // ============================
-type Props = {
-    pagamenti: Ricorrenza[];
-    filtro: "tutti" | "settimana" | "mese";
-    setFiltro: React.Dispatch<React.SetStateAction<"tutti" | "settimana" | "mese">>;
-    totaleSettimana: number;
-    totaleMese: number;
-    onEditOccorrenza?: (ric: Ricorrenza) => void;
-    onDeleteOccorrenza?: (ric: Ricorrenza) => void;
-};
 
 // ============================
 // Helper: Espandi occorrenze future
@@ -123,7 +115,7 @@ export default function ListaProssimiPagamenti({
     totaleMese,
     onEditOccorrenza,
     onDeleteOccorrenza,
-}: Props) {
+}: ListaProssimiPagamentiProps) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const weekTo = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000);
@@ -222,13 +214,7 @@ function SectionOccorrenze({
     bilancio,
     onEdit,
     onDelete,
-}: {
-    title: string;
-    occorrenze: { ricorrenza: Ricorrenza; data: string }[];
-    bilancio: number;
-    onEdit?: (ric: Ricorrenza) => void;
-    onDelete?: (ric: Ricorrenza) => void;
-}) {
+}: SectionOccorrenzeProps) {
     const { categories } = useCategories();
 
     return (

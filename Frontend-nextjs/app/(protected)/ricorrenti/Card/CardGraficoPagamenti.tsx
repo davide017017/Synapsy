@@ -8,6 +8,7 @@ import { BarChart as BarChartIcon } from "lucide-react";
 import { Bar } from "react-chartjs-2";
 import { Chart, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from "chart.js";
 import { Ricorrenza } from "@/types/types/ricorrenza";
+import type { CardGraficoPagamentiProps } from "@/types/ricorrenti/card";
 import { buildBarChartOptions, daysArr } from "../utils/ricorrenza-utils";
 
 // --------- Registrazione elementi Chart.js ---------
@@ -16,10 +17,6 @@ Chart.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 // ============================
 // Props tipizzate
 // ============================
-type Props = {
-    ricorrenze: Ricorrenza[];
-    customDaysArr?: Date[];
-};
 
 // ============================
 // Utility: formato range date
@@ -39,7 +36,7 @@ function getDateRangeStr(daysArr: Date[]) {
 // ║ COMPONENTE PRINCIPALE                               ║
 // ╚══════════════════════════════════════════════════════╝
 
-export default function CardGraficoPagamenti({ ricorrenze, customDaysArr }: Props) {
+export default function CardGraficoPagamenti({ ricorrenze, customDaysArr }: CardGraficoPagamentiProps) {
     // ===== Variabili CSS per colori =====
     function cssVar(name: string) {
         return getComputedStyle(document.documentElement).getPropertyValue(name)?.trim();

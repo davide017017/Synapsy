@@ -7,19 +7,13 @@
 import RicorrenzaItem from "./RicorrenzaItem";
 import { FREQUENZE_LABEL } from "../ListaRicorrenzePerFrequenza";
 import { Ricorrenza } from "@/types/types/ricorrenza";
+import type { RicorrenzaGroupProps } from "@/types/ricorrenti/liste";
 import { Calendar, Repeat, AlarmClock, Award } from "lucide-react";
 import { getFreqPill } from "../../utils/ricorrenza-utils"; // <-- importa la utility
 
 // ============================
 // Props tipizzate
 // ============================
-type Props = {
-    freq: string;
-    items: Ricorrenza[];
-    showSeparator?: boolean;
-    onEdit?: (r: Ricorrenza) => void;
-    onDelete?: (r: Ricorrenza) => void;
-};
 
 // ============================
 // Icone abbinate alle frequenze (puoi estendere se aggiungi freq nuove)
@@ -34,7 +28,7 @@ const FREQ_ICONS: Record<string, React.ReactNode> = {
 // =======================================================
 // COMPONENTE: Gruppo per frequenza (compatto)
 // =======================================================
-export default function RicorrenzaGroup({ freq, items, showSeparator, onEdit, onDelete }: Props) {
+export default function RicorrenzaGroup({ freq, items, showSeparator, onEdit, onDelete }: RicorrenzaGroupProps) {
     // --- Colore e label pill da utility (coerente col tema) ---
     const { label, style } = getFreqPill(freq);
 
