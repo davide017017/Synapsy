@@ -8,15 +8,7 @@ import CategoryField from "./field/CategoryField";
 import NotesField from "./field/NotesField";
 import { Transaction } from "@/types/types/transaction";
 import { Category } from "@/types/types/category";
-
-type Props = {
-    formData: Transaction;
-    setFormData: (fd: Transaction) => void;
-    categories: Category[];
-    selectedType: "entrata" | "spesa";
-    showErrors: boolean;
-    transaction: Transaction;
-};
+import type { TransactionDetailFormProps } from "@/types/transazioni/modal";
 
 export default function TransactionDetailForm({
     formData,
@@ -25,7 +17,7 @@ export default function TransactionDetailForm({
     selectedType,
     showErrors,
     transaction,
-}: Props) {
+}: TransactionDetailFormProps) {
     // Filtra categorie per tipo selezionato
     const filteredCategories = categories.filter((c) => c.type === selectedType);
 

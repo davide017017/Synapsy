@@ -3,17 +3,9 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { labelMeseAnno } from "./utils";
+import type { MonthDividerRowProps } from "@/types/transazioni/list";
 
-type Props = {
-    monthKey: string;
-    colSpan: number;
-    entrate?: number;
-    spese?: number;
-    saldo?: number;
-    className?: string;
-};
-
-export default function MonthDividerRow({ monthKey, colSpan, entrate = 0, spese = 0, saldo = 0, className }: Props) {
+export default function MonthDividerRow({ monthKey, colSpan, entrate = 0, spese = 0, saldo = 0, className }: MonthDividerRowProps) {
     return (
         <tr className={className}>
             <td

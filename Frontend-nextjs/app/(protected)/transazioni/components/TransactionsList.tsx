@@ -4,24 +4,17 @@
 // ====================================================
 
 import { useState, useMemo } from "react";
-import { Transaction } from "@/types/types/transaction";
 import TransactionListFilter from "./list/TransactionListFilter";
 import TransactionTable from "./list/TransactionTable";
 import { useSelection } from "@/context/contexts/SelectionContext";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import { Funnel, Search, Tag } from "lucide-react"; // icone esempio
-
-// ---------- Props ----------
-type Props = {
-    transactions: Transaction[];
-    onSelect: (t: Transaction) => void;
-    selectedId?: number | null;
-};
+import type { TransactionsListProps } from "@/types/transazioni/list";
 
 // ----------------------------------------------
 // Componente principale lista + filtro + tabella
 // ----------------------------------------------
-export default function TransactionsList({ transactions, onSelect, selectedId }: Props) {
+export default function TransactionsList({ transactions, onSelect, selectedId }: TransactionsListProps) {
     // ===== Stato filtro frontend =====
     const [filter, setFilter] = useState({
         search: "",
