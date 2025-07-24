@@ -65,7 +65,8 @@
 
     php artisan test
     # oppure con coverage:
-    php artisan test --coverage📄 Documentazione
+    php artisan test --coverage
+📄 Documentazione
     Guida tecnica sviluppatori (README-dev)
 
     API Routes

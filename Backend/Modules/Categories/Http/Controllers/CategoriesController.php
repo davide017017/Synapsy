@@ -23,6 +23,7 @@ class CategoriesController extends Controller
     public function __construct(CategoryService $service)
     {
         $this->service = $service;
+        $this->authorizeResource(Category::class, 'category');
     }
 
     // ============================
@@ -100,6 +101,7 @@ class CategoriesController extends Controller
     // Show (API)
     public function showApi(Request $request, Category $category): JsonResponse
     {
+        $this->authorize('view', $category);
         return response()->json($category);
     }
 
@@ -114,6 +116,7 @@ class CategoriesController extends Controller
     // Update (API)
     public function updateApi(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
+        $this->authorize('update', $category);
         $data = $request->validated();
         $this->service->update($category, $data);
         return response()->json($category);
@@ -122,6 +125,7 @@ class CategoriesController extends Controller
     // Destroy (API)
     public function destroyApi(Request $request, Category $category): JsonResponse
     {
+        $this->authorize('delete', $category);
         $this->service->delete($category);
         return response()->json(['success' => true], 204);
     }
