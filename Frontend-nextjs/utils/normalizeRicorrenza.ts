@@ -4,7 +4,7 @@
 // nello shape Ricorrenza usato nel frontend
 // ============================
 
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 
 // -----------------------------------
 // Funzione: Normalizza Ricorrenza

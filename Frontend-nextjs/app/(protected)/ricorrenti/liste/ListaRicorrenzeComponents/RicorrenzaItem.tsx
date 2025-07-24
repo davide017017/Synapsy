@@ -4,7 +4,7 @@
 // RicorrenzaItem.tsx — Compatto, riga uniforme
 // =======================================================
 
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { RicorrenzaItemProps } from "@/types/ricorrenti/liste";
 import { Pencil, Trash2 } from "lucide-react";
 import { getFreqPill } from "../../utils/ricorrenza-utils";

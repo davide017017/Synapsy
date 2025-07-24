@@ -6,7 +6,7 @@
 
 import RicorrenzaItem from "./RicorrenzaItem";
 import { FREQUENZE_LABEL } from "../ListaRicorrenzePerFrequenza";
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { RicorrenzaGroupProps } from "@/types/ricorrenti/liste";
 import { Calendar, Repeat, AlarmClock, Award } from "lucide-react";
 import { getFreqPill } from "../../utils/ricorrenza-utils"; // <-- importa la utility

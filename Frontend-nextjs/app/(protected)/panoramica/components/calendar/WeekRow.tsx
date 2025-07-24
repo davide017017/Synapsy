@@ -4,7 +4,7 @@
 
 import React from "react";
 import DayCell from "./DayCell";
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 import type { WeekRowProps } from "@/types";
 
 export default function WeekRow({ week, transactions, maxImporto }: WeekRowProps) {

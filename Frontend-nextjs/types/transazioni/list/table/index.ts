@@ -1,5 +1,5 @@
 import type { Row } from "@tanstack/react-table";
-import type { Transaction } from "@/types/types/transaction";
+import type { Transaction } from "@/types/models/transaction";
 
 export type TransactionWithGroup = Transaction & { monthGroup: string };
 

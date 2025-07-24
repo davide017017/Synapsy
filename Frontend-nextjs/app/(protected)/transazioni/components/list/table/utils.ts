@@ -1,5 +1,5 @@
 // utils.ts
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 import { TransactionWithGroup } from "@/types/transazioni/list";
 
 // Aggiunge monthGroup (YYYY-MM) a ogni transazione

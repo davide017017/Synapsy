@@ -12,7 +12,7 @@ import TransactionsList from "./components/TransactionsList";
 import TransactionsListSkeleton from "./skeleton/TransactionsListSkeleton";
 import TransactionDetailModal from "./modal/TransactionDetailModal";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import { Loader2 } from "lucide-react";
 

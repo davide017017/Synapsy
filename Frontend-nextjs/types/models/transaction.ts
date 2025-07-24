@@ -1,5 +1,5 @@
 // =======================================================
-// types/types/transaction.ts
+// types/models/transaction.ts
 // Tipi per le transazioni finanziarie (con categoria)
 // =======================================================
 

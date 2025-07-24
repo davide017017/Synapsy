@@ -8,7 +8,7 @@ import { useState } from "react";
 import RicorrenzaGroup from "./ListaRicorrenzeComponents/RicorrenzaGroup";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import { Repeat } from "lucide-react";
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { ListaRicorrenzePerFrequenzaProps } from "@/types/ricorrenti/liste";
 
 // ============================
