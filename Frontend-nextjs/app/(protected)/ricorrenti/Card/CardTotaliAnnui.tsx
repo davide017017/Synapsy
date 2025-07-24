@@ -6,7 +6,7 @@
 
 import { Repeat, ArrowDown, ArrowUp } from "lucide-react";
 import { aggregaRicorrenzePerTipoEFrequenza, frequenzaOrder, sommaTotaleAnnua } from "../utils/ricorrenza-utils";
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { CardTotaliAnnuiProps } from "@/types/ricorrenti/card";
 import NewRicorrenzaButton from "@/app/(protected)/newRicorrenza/NewRicorrenzaButton";
 

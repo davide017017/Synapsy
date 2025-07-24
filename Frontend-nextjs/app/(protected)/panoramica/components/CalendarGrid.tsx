@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 import type { CalendarGridProps } from "@/types";
 import DayCell from "./calendar/DayCell";
 import { useMediaQuery } from "usehooks-ts";

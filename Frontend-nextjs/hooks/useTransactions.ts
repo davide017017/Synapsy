@@ -3,7 +3,7 @@
 // ╚════════════════════════════════════════════╝
 
 import { useEffect, useState } from "react";
-import { Transaction } from "@/types/types/transaction";
+import { Transaction } from "@/types/models/transaction";
 import { fetchTransactions } from "@/lib/api/transactionsApi";
 
 // ==============================

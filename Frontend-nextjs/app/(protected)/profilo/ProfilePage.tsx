@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ProfileRow from "./components/ProfileRow";
 import AvatarPickerModal from "./components/AvatarPickerModal";
 import { AVATAR_CHOICES } from "./components/constants";
-import { DEFAULT_USER, UserType } from "@/types/types/user";
+import { DEFAULT_USER, UserType } from "@/types/models/user";
 
 // ======================================================
 // Componente principale

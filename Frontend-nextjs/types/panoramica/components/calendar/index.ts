@@ -1,4 +1,4 @@
-import type { Transaction } from "@/types/types/transaction";
+import type { Transaction } from "@/types/models/transaction";
 import type { CalendarWeek } from "./utils";
 
 export type DayCellProps = {

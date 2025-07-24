@@ -4,7 +4,7 @@
 // ║ ListaProssimiPagamenti.tsx — border riga categoria  ║
 // ╚══════════════════════════════════════════════════════╝
 
-import { Ricorrenza } from "@/types/types/ricorrenza";
+import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { ListaProssimiPagamentiProps, SectionOccorrenzeProps } from "@/types/ricorrenti/liste";
 import { normalizzaFrequenza, freqToIt, freqToDays } from "../utils/ricorrenza-utils";
 import { Pencil, Trash2 } from "lucide-react";
