@@ -3,15 +3,7 @@
 // ================================
 import { useState } from "react";
 import { Check, X, Trash2 } from "lucide-react";
-
-type Props = {
-    onSave: () => void;
-    onClose: () => void;
-    onDelete?: () => void;
-    loading: "save" | "delete" | null;
-    isSaveDisabled: boolean;
-    saveTooltipMessage: string;
-};
+import type { TransactionActionButtonsProps } from "@/types/transazioni/modal";
 
 export default function TransactionActionButtons({
     onSave,
@@ -20,7 +12,7 @@ export default function TransactionActionButtons({
     loading,
     isSaveDisabled,
     saveTooltipMessage,
-}: Props) {
+}: TransactionActionButtonsProps) {
     const [showSaveTooltip, setShowSaveTooltip] = useState(false);
 
     return (

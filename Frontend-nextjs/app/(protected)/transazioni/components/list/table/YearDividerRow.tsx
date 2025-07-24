@@ -2,16 +2,9 @@
 // ║   YearDividerRow.tsx — Divider ANNO tabella         ║
 // ╚══════════════════════════════════════════════════════╝
 
-type Props = {
-    year: string;
-    colSpan: number;
-    entrate?: number;
-    spese?: number;
-    saldo?: number;
-    className?: string;
-};
+import type { YearDividerRowProps } from "@/types/transazioni/list";
 
-export default function YearDividerRow({ year, colSpan, entrate = 0, spese = 0, saldo = 0, className }: Props) {
+export default function YearDividerRow({ year, colSpan, entrate = 0, spese = 0, saldo = 0, className }: YearDividerRowProps) {
     return (
         <tr className={className}>
             <td
