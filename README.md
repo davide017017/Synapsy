@@ -52,7 +52,7 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 ## 🔗 Frontend Web
 
-Per la dashboard e l’interfaccia utente consulta la README del frontend:
+Per la dashboard e l’interfaccia utente consulta il README del frontend:
 
 -   [🌈 Synapsi Finance — Frontend Web (Next.js)](../Frontend-nextjs/README.md)
 

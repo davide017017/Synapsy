@@ -43,7 +43,7 @@ class CategoryService
     /**
      * Crea una nuova categoria per l'utente autenticato.
      *
-     * @param array{name: string, type: string} $data
+     * @param array{name: string, type: string, color?: string|null, icon?: string|null} $data
      */
     public function createForUser(array $data): Category
     {
