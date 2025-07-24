@@ -21,11 +21,11 @@
 
         <!-- Moduli Laravel -->
         <testsuite name="Module - Entrate">
-            <directory>Modules/Entrate/Tests</directory>
+            <directory>Modules/Entrate/tests</directory>
         </testsuite>
 
         <testsuite name="Module - Categories">
-            <directory>Modules/Categories/Tests</directory>
+            <directory>Modules/Categories/tests</directory>
         </testsuite>
         
     </testsuites>
@@ -49,6 +49,7 @@
         <env name="CACHE_STORE" value="array"/>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
+        <env name="APP_KEY" value="base64:DwklhLXLhEnwPFsb/hHxIAzZU5Cl2+o/uhC/7PQ/fZg="/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
