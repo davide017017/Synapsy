@@ -14,6 +14,6 @@ export const DEFAULT_USER: UserType = {
     surname: "Rossi",
     username: "mario.rossi",
     email: "mario.rossi@email.com",
-    theme: "solarized",
+    theme: "dark",
     avatar: AVATAR_CHOICES[0],
 };

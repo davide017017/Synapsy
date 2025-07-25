@@ -21,7 +21,7 @@ import {
     ListOrdered,
 } from "lucide-react";
 import { useSidebar } from "@/context/contexts/SidebarContext";
-import { useTheme } from "next-themes";
+import { useThemeContext } from "@/context/contexts/ThemeContext";
 import { useState } from "react";
 
 // ────────────────────────────────
@@ -51,8 +51,8 @@ export default function Sidebar() {
     const pathname = usePathname();
 
     // ========== Gestione temi ==========
-    const { resolvedTheme, theme, setTheme } = useTheme();
-    const isDark = resolvedTheme === "dark";
+    const { theme, setTheme } = useThemeContext();
+    const isDark = theme === "dark";
 
     // ========== Helper ==========
     const toggleMobile = () => setIsOpenMobile((p) => !p);

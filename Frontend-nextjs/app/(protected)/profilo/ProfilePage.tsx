@@ -11,12 +11,14 @@ import AvatarPickerModal from "./components/AvatarPickerModal";
 import { AVATAR_CHOICES } from "./components/constants";
 import { DEFAULT_USER, UserType } from "@/types/models/user";
 import { useUser } from "@/context/contexts/UserContext";
+import { useThemeContext } from "@/context/contexts/ThemeContext";
 
 // ======================================================
 // Componente principale
 // ======================================================
 export default function ProfilePage() {
     const { user, update } = useUser();
+    const { setTheme } = useThemeContext();
 
     // -----------------------------------
     // Stato UI e form locale
@@ -33,6 +35,9 @@ export default function ProfilePage() {
     const handleEdit = (field: keyof UserType) => setEditing({ ...editing, [field]: true });
     const handleChange = (field: keyof UserType, value: string) => setForm({ ...form, [field]: value });
     const handleSave = async (field: keyof UserType) => {
+        if (field === "theme") {
+            setTheme(form.theme, false);
+        }
         await update({ [field]: form[field] } as Partial<UserType>);
         setEditing({ ...editing, [field]: false });
     };
