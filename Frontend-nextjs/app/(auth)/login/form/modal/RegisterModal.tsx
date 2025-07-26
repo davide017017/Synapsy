@@ -5,6 +5,7 @@ import Dialog from "@/app/components/ui/Dialog";
 import ModalLayout from "@/app/components/ui/ModalLayout";
 import { Input } from "@/app/components/ui/Input";
 import { Button } from "@/app/components/ui/Button";
+import PasswordInput from "../form-components/PasswordInput";
 import { handleRegister } from "@/lib/auth/handleRegister";
 
 interface Props {
@@ -91,19 +92,15 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
                         onChange={(e) => handleChange("username", e.target.value)}
                         required
                     />
-                    <Input
-                        type="password"
-                        placeholder="Password"
+                    <PasswordInput
                         value={form.password}
-                        onChange={(e) => handleChange("password", e.target.value)}
-                        required
+                        onChange={(v) => handleChange("password", v)}
+                        placeholder="Password"
                     />
-                    <Input
-                        type="password"
-                        placeholder="Conferma password"
+                    <PasswordInput
                         value={form.confirm}
-                        onChange={(e) => handleChange("confirm", e.target.value)}
-                        required
+                        onChange={(v) => handleChange("confirm", v)}
+                        placeholder="Conferma password"
                     />
                     {error && <p className="text-danger text-sm">{error}</p>}
                     {message && !error && <p className="text-success text-sm">{message}</p>}

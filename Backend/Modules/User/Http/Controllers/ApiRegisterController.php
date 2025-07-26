@@ -20,6 +20,7 @@ class ApiRegisterController extends Controller
             'username' => $data['username'],
             'password' => $data['password'],
             'theme' => $data['theme'] ?? null,
+            'avatar' => 'images/avatars/avatar-1.svg',
         ]);
 
         $user->sendEmailVerificationNotification();
