@@ -5,5 +5,6 @@ export const AVATAR_CHOICES = [
     "/images/avatars/avatar-4.svg",
     "/images/avatars/avatar-5.svg",
     "/images/avatars/avatar-6.svg",
+    "/images/avatars/avatar-7.svg",
     // ...aggiungi altri se ne metti altri!
 ];
