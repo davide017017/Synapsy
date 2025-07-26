@@ -13,7 +13,7 @@ export type Filter = {
     category: string;
 };
 
-export type Category = {
+export type TxCategory = {
     name: string;
     id: number;
     type: string;
@@ -22,7 +22,7 @@ export type Category = {
 export type TransactionListFilterProps = {
     filter: Filter;
     setFilter: (f: Filter) => void;
-    categories: Category[];
+    categories: TxCategory[];
     iconSearch?: ReactNode;
     iconType?: ReactNode;
     iconCategory?: ReactNode;

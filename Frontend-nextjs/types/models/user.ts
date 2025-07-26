@@ -7,6 +7,7 @@ export type UserType = {
     email: string;
     theme: string;
     avatar: string;
+    pending_email?: string | null;
 };
 
 export const DEFAULT_USER: UserType = {
@@ -16,4 +17,5 @@ export const DEFAULT_USER: UserType = {
     email: "mario.rossi@email.com",
     theme: "dark",
     avatar: AVATAR_CHOICES[0],
+    pending_email: null,
 };

@@ -6,7 +6,7 @@
 
 import React, { useEffect } from "react";
 import { RotateCcw, Search, Funnel, Tag } from "lucide-react";
-import type { TransactionListFilterProps, Filter, Category } from "@/types/transazioni/list";
+import type { TransactionListFilterProps, Filter, TxCategory } from "@/types/transazioni/list";
 
 // =========================
 // TransactionListFilter
@@ -25,7 +25,7 @@ export default function TransactionListFilter({
 
     // Ordina e deduplica
     const uniqueCategories = Array.from(
-        filteredCategories.reduce((acc, cat) => acc.set(cat.id, cat), new Map<number, Category>()).values()
+        filteredCategories.reduce((acc, cat) => acc.set(cat.id, cat), new Map<number, TxCategory>()).values()
     ).sort((a, b) => a.name.localeCompare(b.name));
 
     // Reset categoria se cambia tipo

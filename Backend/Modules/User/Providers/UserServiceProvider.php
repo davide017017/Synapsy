@@ -8,6 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Modules\User\Models\User;
+use Modules\User\Observers\UserObserver;
 
 class UserServiceProvider extends ServiceProvider
 {
@@ -37,6 +39,9 @@ class UserServiceProvider extends ServiceProvider
             fn(string $modelName) =>
             "Modules\\User\\Database\\Factories\\" . class_basename($modelName) . 'Factory'
         );
+
+        // Register model observers
+        User::observe(UserObserver::class);
     }
 
 
