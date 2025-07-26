@@ -50,6 +50,7 @@ class UserFactory extends Factory
             'images/avatars/avatar-4.svg',
             'images/avatars/avatar-5.svg',
             'images/avatars/avatar-6.svg',
+            'images/avatars/avatar-7.svg',
         ];
 
         $identity = $this->faker->unique()->randomElement($identities);
