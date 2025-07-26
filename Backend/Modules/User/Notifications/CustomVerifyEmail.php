@@ -20,7 +20,7 @@ class CustomVerifyEmail extends BaseVerifyEmail implements ShouldQueue
 
         return (new MailMessage)
             ->subject(__('Attiva Subito il Tuo Account Synapsi!'))
-            ->markdown('user::emails.verify', [
+            ->view('user::emails.verify', [
                 'url' => $verificationUrl,
                 'title' => __('Attiva Subito il Tuo Account Synapsi!'),
                 'buttonText' => __('Verifica il Mio Indirizzo Email'),

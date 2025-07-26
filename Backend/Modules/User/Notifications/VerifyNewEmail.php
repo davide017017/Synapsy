@@ -38,7 +38,7 @@ class VerifyNewEmail extends BaseVerifyEmail implements ShouldQueue
 
         return (new MailMessage)
             ->subject(__('Conferma il nuovo indirizzo email'))
-            ->markdown('user::emails.verify', [
+            ->view('user::emails.verify', [
                 'url' => $verificationUrl,
                 'title' => __('Conferma il nuovo indirizzo email'),
                 'buttonText' => __('Conferma Nuova Email'),
