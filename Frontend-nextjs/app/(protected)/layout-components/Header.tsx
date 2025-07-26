@@ -5,7 +5,7 @@
 // ╚══════════════════════════════════════════════════╝
 
 import { signOut } from "next-auth/react";
-import { LogOut } from "lucide-react";
+import { LogOut, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,7 +32,7 @@ export default function Header() {
     // RENDER
     // ==================================================
     return (
-        <header className="relative flex items-center px-4 py-2 border-b border-white/10 bg-black/50 backdrop-blur-sm text-white">
+        <header className="relative flex items-center px-4 py-2 border-b border-white/10 bg-black/50 backdrop-blur-sm">
             {/* LOGO CENTRALE */}
             <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center" aria-label="Homepage">
                 <Image
@@ -48,10 +48,23 @@ export default function Header() {
             {/* UTENTE + LOGOUT (a destra) */}
             <div className="flex items-center gap-4 ml-auto">
                 {username && (
-                    <span className="text-sm font-medium truncate max-w-[10rem]" title={username}>
-                        {username}
-                    </span>
+                    <Link
+                        href="/profilo"
+                        className="
+                            flex items-center gap-2 px-3 py-1 rounded-full 
+                            bg-white/10 hover:bg-primary/20 
+                            transition shadow-sm
+                            text-sm font-medium max-w-[12rem] truncate
+                            ring-1 ring-white/20 hover:ring-primary
+                            focus:outline-none focus:ring-2 focus:ring-primary
+                        "
+                        title="Vai al profilo"
+                    >
+                        <UserCircle size={18} className="text-primary" />
+                        <span className="truncate">{username}</span>
+                    </Link>
                 )}
+
                 <button
                     onClick={handleLogout}
                     className="flex items-center gap-1 p-2 rounded bg-white/10 text-white hover:text-red-400 transition"
