@@ -63,7 +63,8 @@ class ProfileUpdateRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($request->user()->id),
+                Rule::unique(User::class, 'email')->ignore($request->user()->id),
+                Rule::unique(User::class, 'pending_email')->ignore($request->user()->id),
             ],
 
             // ----------------------------

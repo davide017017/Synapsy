@@ -50,6 +50,7 @@ class ProfileController extends Controller
             'surname'     => $user->surname,
             'username'    => $user->username,
             'email'       => $user->email,
+            'pending_email' => $user->pending_email,
             'theme'       => $user->theme,
             'avatar'      => $avatarPath,
             'avatar_url'  => $avatarUrl,
@@ -71,11 +72,17 @@ class ProfileController extends Controller
         // Rimuovi avatar da $data perché lo gestiamo a parte
         unset($data['avatar']);
 
-        $user->fill($data);
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+        // Gestione richiesta cambio email
+        if (array_key_exists('email', $data) && $data['email'] !== $user->email) {
+            if ($user->pending_email) {
+                return ApiResponse::error('Hai già una richiesta di cambio email in sospeso.', null, 422);
+            }
+            $user->pending_email = $data['email'];
+            unset($data['email']);
+            $user->sendPendingEmailVerificationNotification();
         }
+
+        $user->fill($data);
 
         // Gestione avatar upload/rimozione/impostazione path
         if ($request->hasFile('avatar')) {
@@ -116,6 +123,7 @@ class ProfileController extends Controller
                 'surname'    => $user->surname,
                 'username'   => $user->username,
                 'email'      => $user->email,
+                'pending_email' => $user->pending_email,
                 'theme'      => $user->theme,
                 'avatar'     => $avatarPath,
                 'avatar_url' => $avatarUrl,
