@@ -13,6 +13,7 @@ use Modules\Entrate\Models\Entrata;
 use Modules\Categories\Models\Category;
 use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\User\Notifications\CustomVerifyEmail;
+use Modules\User\Notifications\VerifyNewEmail;
 use Modules\User\Database\Factories\UserFactory;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
@@ -63,6 +64,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'password',
         'avatar',           // NEW: url o path avatar
         'theme',            // NEW: tema preferito utente
+        'pending_email',    // NEW: email in attesa di conferma
         // 'birthdate',     // Opzionale: data di nascita
         // 'phone',         // Opzionale: telefono
         // 'locale',        // Opzionale: lingua preferita
@@ -88,6 +90,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             'is_admin' => 'boolean',
             'avatar' => 'string',
             'theme' => 'string',
+            'pending_email' => 'string',
             'birthdate' => 'date:Y-m-d', // se usi la colonna
         ];
     }
@@ -98,6 +101,13 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new CustomVerifyEmail());
+    }
+
+    public function sendPendingEmailVerificationNotification(): void
+    {
+        if ($this->pending_email) {
+            $this->notify(new \Modules\User\Notifications\VerifyNewEmail($this->pending_email));
+        }
     }
 
     // ===================================================================
