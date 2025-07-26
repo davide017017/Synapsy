@@ -31,6 +31,25 @@ export const authOptions: NextAuthOptions = {
         } as any;
       },
     }),
+    Credentials({
+      id: "token-login",
+      name: "TokenLogin",
+      credentials: { token: { type: "text" } },
+      async authorize(credentials) {
+        if (!credentials?.token) return null;
+        const res = await fetch(`${API}/v1/me`, {
+          headers: { Authorization: `Bearer ${credentials.token}` },
+        });
+        if (!res.ok) return null;
+        const user = await res.json();
+        return {
+          id: user.id.toString(),
+          name: user.name ?? undefined,
+          email: user.email ?? undefined,
+          access_token: credentials.token,
+        } as any;
+      },
+    }),
   ],
   session: {
     strategy: "jwt",

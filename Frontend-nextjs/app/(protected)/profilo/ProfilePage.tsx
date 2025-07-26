@@ -7,6 +7,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProfileRow from "./components/ProfileRow";
+import { availableThemes } from "@/lib/themeUtils";
 import AvatarPickerModal from "./components/AvatarPickerModal";
 import { AVATAR_CHOICES } from "./components/constants";
 import { DEFAULT_USER, UserType } from "@/types/models/user";
@@ -151,13 +152,10 @@ export default function ProfilePage() {
                     onChange={(v) => handleChange("theme", v)}
                     onSave={() => handleSave("theme")}
                     type="select"
-                    options={[
-                        { value: "system", label: "Sistema" },
-                        { value: "light", label: "Chiaro" },
-                        { value: "dark", label: "Scuro" },
-                        { value: "emerald", label: "Emerald" },
-                        { value: "solarized", label: "Solarized" },
-                    ]}
+                    options={availableThemes.map((t) => ({
+                        value: t,
+                        label: t.charAt(0).toUpperCase() + t.slice(1),
+                    }))}
                 />
             </div>
 

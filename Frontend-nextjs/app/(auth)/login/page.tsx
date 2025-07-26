@@ -5,9 +5,10 @@
 // ==============================
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import LoginForm from "@/app/(auth)/login/form/LoginForm";
 import { handleLogin } from "@/lib/auth/handleLogin";
+import { handleTokenLogin } from "@/lib/auth/handleTokenLogin";
 import RegisterModal from "@/app/(auth)/login/form/modal/RegisterModal";
 import ForgotPasswordModal from "@/app/(auth)/login/form/modal/ForgotPasswordModal";
 
@@ -18,8 +19,10 @@ export default function LoginPage() {
     // ───── Stato auth sessione ─────
     const { status } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [showReg, setShowReg] = useState(false);
     const [showForgot, setShowForgot] = useState(false);
+    const [info, setInfo] = useState<string | null>(null);
 
     // ───── Redirect se già autenticato ─────
     useEffect(() => {
@@ -27,6 +30,18 @@ export default function LoginPage() {
             router.replace("/");
         }
     }, [status, router]);
+
+    useEffect(() => {
+        const token = searchParams.get("token");
+        if (token) {
+            handleTokenLogin(token).then((ok) => {
+                if (ok) router.replace("/");
+            });
+        }
+        if (searchParams.get("verified")) {
+            setInfo("Email verificata, ora puoi accedere");
+        }
+    }, [searchParams, router]);
 
     // ───── Handler login form (usa helper) ─────
     async function onLogin(email: string, password: string) {
@@ -56,7 +71,10 @@ export default function LoginPage() {
                 }}
             />
             {/* Form login */}
-            <LoginForm onSubmit={onLogin} onOpenRegister={() => setShowReg(true)} onOpenForgot={() => setShowForgot(true)} />
+            <div className="z-10 w-full max-w-sm space-y-2">
+                {info && <p className="text-success text-center text-sm">{info}</p>}
+                <LoginForm onSubmit={onLogin} onOpenRegister={() => setShowReg(true)} onOpenForgot={() => setShowForgot(true)} />
+            </div>
 
             {/* Modali */}
             <RegisterModal isOpen={showReg} onClose={() => setShowReg(false)} />

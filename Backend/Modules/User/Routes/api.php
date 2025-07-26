@@ -9,6 +9,7 @@ use Modules\User\Http\Controllers\DashboardController;
 use Modules\User\Http\Controllers\ApiLoginController;
 use Modules\User\Http\Controllers\ApiRegisterController;
 use Modules\User\Http\Controllers\VerifyPendingEmailController;
+use Modules\User\Http\Controllers\ApiVerifyEmailController;
 use Modules\User\Http\Controllers\ApiForgotPasswordController;
 use Modules\User\Http\Controllers\ApiResetPasswordController;
 
@@ -16,6 +17,7 @@ Route::prefix('v1')->group(function () {
     // --- Auth / Registrazione ---
     Route::post('login', [ApiLoginController::class, 'login']);
     Route::post('register', [ApiRegisterController::class, 'register']);
+    Route::get('verify-email/{id}/{hash}', ApiVerifyEmailController::class)->name('api.verification.verify');
     Route::post('forgot-password', [ApiForgotPasswordController::class, 'sendResetLink']);
     Route::post('reset-password', [ApiResetPasswordController::class, 'reset']);
     Route::get('verify-new-email/{id}/{hash}', VerifyPendingEmailController::class)

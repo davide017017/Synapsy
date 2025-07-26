@@ -7,6 +7,7 @@ import { Input } from "@/app/components/ui/Input";
 import { Button } from "@/app/components/ui/Button";
 import PasswordInput from "../form-components/PasswordInput";
 import { handleRegister } from "@/lib/auth/handleRegister";
+import { PASSWORD_RULES_TEXT, isPasswordValid } from "@/lib/auth/passwordRules";
 
 interface Props {
     isOpen: boolean;
@@ -25,6 +26,7 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const passwordValid = isPasswordValid(form.password);
 
     const handleChange = (field: string, value: string) => {
         setForm((f) => ({ ...f, [field]: value }));
@@ -38,7 +40,13 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
             setError("Le password non coincidono");
             return;
         }
+        if (!passwordValid) {
+            setError("La password non rispetta i criteri");
+            return;
+        }
         setLoading(true);
+        setMessage("Invio email in corso...");
+
         try {
             const { success, message } = await handleRegister({
                 name: form.name,
@@ -92,10 +100,13 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
                         onChange={(e) => handleChange("username", e.target.value)}
                         required
                     />
+                    <p className="text-xs" style={{color: passwordValid ? '#16a34a' : '#dc2626'}}>{PASSWORD_RULES_TEXT}</p>
+
                     <PasswordInput
                         value={form.password}
                         onChange={(v) => handleChange("password", v)}
                         placeholder="Password"
+                        isValid={passwordValid}
                     />
                     <PasswordInput
                         value={form.confirm}
