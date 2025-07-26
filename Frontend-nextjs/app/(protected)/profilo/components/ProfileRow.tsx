@@ -1,6 +1,6 @@
 import { RowProps } from "@/types/profilo/row";
 
-export default function ProfileRow({ label, value, editing, onEdit, onChange, onSave, type = "text", options }: RowProps) {
+export default function ProfileRow({ label, value, editing, onEdit, onChange, onSave, type = "text", options, disabled = false }: RowProps) {
     return (
         <div
             className="flex items-center px-3 py-3 gap-4 group transition-all"
@@ -65,8 +65,11 @@ export default function ProfileRow({ label, value, editing, onEdit, onChange, on
                         style={{
                             background: "hsl(var(--c-secondary, 220 15% 48%))",
                             color: "hsl(var(--c-bg, 44 81% 94%))",
+                            opacity: disabled ? 0.4 : undefined,
+                            pointerEvents: disabled ? "none" : undefined,
                         }}
                         onClick={onEdit}
+                        disabled={disabled}
                     >
                         Modifica
                     </button>

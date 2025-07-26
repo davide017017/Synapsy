@@ -132,6 +132,53 @@ class ProfileController extends Controller
     }
 
     // ============================
+    // Cancel pending email change
+    // ============================
+    public function cancelPendingEmail(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (! $user->pending_email) {
+            return ApiResponse::error('Nessun cambio email in sospeso.', null, 400);
+        }
+
+        $user->pending_email = null;
+        $user->save();
+
+        $avatarUrl = null;
+        $avatarPath = $user->avatar;
+        if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
+            $avatarUrl = asset('storage/' . $avatarPath);
+        }
+
+        return ApiResponse::success('Richiesta annullata.', [
+            'id'            => $user->id,
+            'name'          => $user->name,
+            'surname'       => $user->surname,
+            'username'      => $user->username,
+            'email'         => $user->email,
+            'pending_email' => $user->pending_email,
+            'theme'         => $user->theme,
+            'avatar'        => $avatarPath,
+            'avatar_url'    => $avatarUrl,
+        ]);
+    }
+
+    // ============================
+    // Resend pending email link
+    // ============================
+    public function resendPendingEmail(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (! $user->pending_email) {
+            return ApiResponse::error('Nessuna email da confermare.', null, 400);
+        }
+
+        $user->sendPendingEmailVerificationNotification();
+
+        return ApiResponse::success('Email di conferma inviata.', null);
+    }
+
+    // ============================
     // Destroy - Delete User Account
     // ============================
     public function destroy(Request $request): RedirectResponse

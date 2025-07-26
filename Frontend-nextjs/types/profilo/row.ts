@@ -7,4 +7,5 @@ export type RowProps = {
     onSave: () => void;
     type?: "text" | "select";
     options?: { value: string; label: string }[];
+    disabled?: boolean;
 };

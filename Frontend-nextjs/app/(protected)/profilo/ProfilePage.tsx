@@ -13,6 +13,7 @@ import { AVATAR_CHOICES } from "./components/constants";
 import { DEFAULT_USER, UserType } from "@/types/models/user";
 import { useUser } from "@/context/contexts/UserContext";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
+import PendingEmailNotice from "@/app/components/PendingEmailNotice";
 
 // ======================================================
 // Componente principale
@@ -54,6 +55,7 @@ export default function ProfilePage() {
     // -----------------------------------
     return (
         <div className="max-w-lg mx-auto space-y-6">
+            <PendingEmailNotice />
             {/* ========================================= */}
             {/* Avatar + Intestazione */}
             {/* ========================================= */}
@@ -143,6 +145,7 @@ export default function ProfilePage() {
                     onEdit={() => handleEdit("email")}
                     onChange={(v) => handleChange("email", v)}
                     onSave={() => handleSave("email")}
+                    disabled={!!user?.pending_email}
                 />
                 <ProfileRow
                     label="Tema"
