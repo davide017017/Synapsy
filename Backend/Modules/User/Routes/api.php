@@ -30,6 +30,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('users', UserController::class)->names('users');
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('profile/pending-email', [ProfileController::class, 'cancelPendingEmail'])->name('profile.pending-email.cancel');
+        Route::post('profile/pending-email/resend', [ProfileController::class, 'resendPendingEmail'])->name('profile.pending-email.resend');
         Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     });

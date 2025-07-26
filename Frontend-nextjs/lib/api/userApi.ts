@@ -38,7 +38,40 @@ export async function updateUserProfile(
         },
         body: JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error("Errore aggiornamento profilo");
-    const data = await res.json();
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.message || "Errore aggiornamento profilo");
     return data.data || data;
+}
+
+// ==============================
+// DELETE pending email
+// ==============================
+export async function cancelPendingEmail(token: string): Promise<UserType> {
+    const res = await fetch(`${API_URL}/v1/profile/pending-email`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+        },
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.message || "Errore annullamento richiesta");
+    return data.data || data;
+}
+
+// ==============================
+// RESEND pending email link
+// ==============================
+export async function resendPendingEmail(token: string): Promise<void> {
+    const res = await fetch(`${API_URL}/v1/profile/pending-email/resend`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+        },
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.message || "Errore invio email");
 }
