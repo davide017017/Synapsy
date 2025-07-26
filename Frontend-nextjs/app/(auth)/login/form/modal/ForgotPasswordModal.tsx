@@ -24,6 +24,7 @@ export default function ForgotPasswordModal({ isOpen, onClose }: Props) {
         setMessage(null);
         setLoading(true);
         setMessage("Invio email in corso...");
+      
         try {
             const { success, message } = await handleForgotPassword(email);
             if (success) {

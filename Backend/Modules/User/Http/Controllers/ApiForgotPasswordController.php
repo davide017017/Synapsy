@@ -14,7 +14,6 @@ class ApiForgotPasswordController extends Controller
     public function sendResetLink(Request $request): JsonResponse
     {
         $request->validate(['email' => ['required', 'email']]);
-
         $user = \Modules\User\Models\User::where('email', $request->email)->first();
         if ($user) {
             $token = Password::createToken($user);

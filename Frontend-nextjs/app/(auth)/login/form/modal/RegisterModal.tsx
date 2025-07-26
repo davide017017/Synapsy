@@ -46,6 +46,7 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
         }
         setLoading(true);
         setMessage("Invio email in corso...");
+
         try {
             const { success, message } = await handleRegister({
                 name: form.name,
@@ -100,6 +101,7 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
                         required
                     />
                     <p className="text-xs" style={{color: passwordValid ? '#16a34a' : '#dc2626'}}>{PASSWORD_RULES_TEXT}</p>
+
                     <PasswordInput
                         value={form.password}
                         onChange={(v) => handleChange("password", v)}
