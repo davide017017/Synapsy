@@ -6,9 +6,11 @@ import { Eye, EyeOff, Lock } from "lucide-react";
 interface Props {
     value: string;
     onChange: (value: string) => void;
+    placeholder?: string;
+    isValid?: boolean;
 }
 
-export default function PasswordInput({ value, onChange }: Props) {
+export default function PasswordInput({ value, onChange, placeholder = "Password", isValid }: Props) {
     const [show, setShow] = useState(false);
 
     return (
@@ -18,9 +20,9 @@ export default function PasswordInput({ value, onChange }: Props) {
                 type={show ? "text" : "password"}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                placeholder="Password"
+                placeholder={placeholder}
                 required
-                className="w-full pl-10 pr-10 py-2 rounded-md bg-white text-black placeholder-gray-500 shadow-sm ring-2 ring-transparent focus:outline-none focus:ring-primary transition"
+                className={`w-full pl-10 pr-10 py-2 rounded-md bg-white text-black placeholder-gray-500 shadow-sm ring-2 focus:outline-none transition ${isValid === undefined ? 'ring-transparent' : isValid ? 'ring-green-500' : 'ring-red-500'}`}
             />
             <button
                 type="button"

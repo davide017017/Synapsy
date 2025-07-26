@@ -5,8 +5,6 @@
 // ==============================
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import RegisterModal from "@/app/(auth)/login/form/RegisterModal";
-import ForgotPasswordModal from "@/app/(auth)/login/form/ForgotPasswordModal";
 import EmailInput from "./form-components/EmailInput";
 import PasswordInput from "./form-components/PasswordInput";
 import RememberMeSwitch from "./form-components/RememberMeSwitch";
@@ -18,9 +16,11 @@ import { LogIn } from "lucide-react";
 // ==============================
 interface LoginFormProps {
     onSubmit: (email: string, password: string) => Promise<void>;
+    onOpenRegister: () => void;
+    onOpenForgot: () => void;
 }
 
-export default function LoginForm({ onSubmit }: LoginFormProps) {
+export default function LoginForm({ onSubmit, onOpenRegister, onOpenForgot }: LoginFormProps) {
     // ───── Stati input ─────
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -29,8 +29,6 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
     // ───── Stati feedback/modali ─────
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [showReg, setShowReg] = useState(false);
-    const [showForgot, setShowForgot] = useState(false);
 
     // ───── Ricorda email al mount ─────
     useEffect(() => {
@@ -112,12 +110,8 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                 </form>
 
                 {/* Link “registrati/recupera password” */}
-                <AuthLinks onForgotClick={() => setShowForgot(true)} onRegisterClick={() => setShowReg(true)} />
+                <AuthLinks onForgotClick={onOpenForgot} onRegisterClick={onOpenRegister} />
             </motion.div>
-
-            {/* ===== MODALI ===== */}
-            <RegisterModal isOpen={showReg} onClose={() => setShowReg(false)} />
-            <ForgotPasswordModal isOpen={showForgot} onClose={() => setShowForgot(false)} />
         </>
     );
 }

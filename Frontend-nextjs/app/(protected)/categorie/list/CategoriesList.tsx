@@ -29,7 +29,8 @@ export default function CategoriesList() {
         if (mode === "move" && targetCategoryId) {
             await moveAndDelete(category.id, targetCategoryId, () => refresh());
         } else if (mode === "deleteAll") {
-            await remove(category.id, () => refresh());
+            await remove(category.id);
+            refresh();
         }
     };
 

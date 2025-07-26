@@ -37,7 +37,8 @@ export function useCategoriesApi(token?: string) {
         setStatus("loading");
         setError(null);
         try {
-            const data = await updateCategory(token, category);
+            const { id, ...payload } = category;
+            const data = await updateCategory(token, id, payload);
             setStatus("success");
             return data;
         } catch (e: any) {

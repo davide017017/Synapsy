@@ -2,6 +2,7 @@
 import "@/styles/globals.css";
 import { ThemeProvider } from "next-themes";
 import GlobalContextProvider from "@/context/GlobalContextProvider";
+import { availableThemes } from "@/lib/themeUtils";
 import { Toaster } from "sonner";
 
 export const metadata = {
@@ -18,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     attribute="data-theme"
                     defaultTheme="system"
                     enableSystem
-                    themes={["light", "dark", "emerald", "solarized"]}
+                    themes={availableThemes}
                 >
                     {/* ==================================== */}
                     {/*      TOASTER CENTRATO & STILOSO      */}
