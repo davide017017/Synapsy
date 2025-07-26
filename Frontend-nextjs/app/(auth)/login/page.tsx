@@ -3,11 +3,13 @@
 // ==============================
 // IMPORT PRINCIPALI
 // ==============================
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LoginForm from "@/app/(auth)/login/form/LoginForm";
 import { handleLogin } from "@/lib/auth/handleLogin";
+import RegisterModal from "@/app/(auth)/login/form/modal/RegisterModal";
+import ForgotPasswordModal from "@/app/(auth)/login/form/modal/ForgotPasswordModal";
 
 // ==============================
 // PAGINA DI LOGIN CON REDIRECT E SFONDO
@@ -16,6 +18,8 @@ export default function LoginPage() {
     // ───── Stato auth sessione ─────
     const { status } = useSession();
     const router = useRouter();
+    const [showReg, setShowReg] = useState(false);
+    const [showForgot, setShowForgot] = useState(false);
 
     // ───── Redirect se già autenticato ─────
     useEffect(() => {
@@ -52,7 +56,11 @@ export default function LoginPage() {
                 }}
             />
             {/* Form login */}
-            <LoginForm onSubmit={onLogin} />
+            <LoginForm onSubmit={onLogin} onOpenRegister={() => setShowReg(true)} onOpenForgot={() => setShowForgot(true)} />
+
+            {/* Modali */}
+            <RegisterModal isOpen={showReg} onClose={() => setShowReg(false)} />
+            <ForgotPasswordModal isOpen={showForgot} onClose={() => setShowForgot(false)} />
         </div>
     );
 }
