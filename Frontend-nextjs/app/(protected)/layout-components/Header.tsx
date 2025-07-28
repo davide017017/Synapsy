@@ -77,7 +77,7 @@ export default function Header() {
 
                 <button
                     onClick={handleLogout}
-                    className="flex items-center gap-1 p-2 rounded bg-white/10 text-white hover:text-red-400 transition"
+                    className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-white hover:text-red-400 ring-1 ring-white/20 hover:ring-red-400 transition shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
                     <span className="text-sm">Logout</span>
                     <LogOut size={16} />

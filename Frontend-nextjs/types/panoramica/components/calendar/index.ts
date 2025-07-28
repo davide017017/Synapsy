@@ -15,6 +15,7 @@ export type WeekRowProps = {
     week: CalendarWeek;
     transactions: Transaction[];
     maxImporto: number;
+    onClickDay?: (date: Date, transactions: Transaction[]) => void;
 };
 
 export type YearDropdownProps = {

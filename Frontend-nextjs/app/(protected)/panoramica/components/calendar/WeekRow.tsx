@@ -7,7 +7,7 @@ import DayCell from "./DayCell";
 import { Transaction } from "@/types/models/transaction";
 import type { WeekRowProps } from "@/types";
 
-export default function WeekRow({ week, transactions, maxImporto }: WeekRowProps) {
+export default function WeekRow({ week, transactions, maxImporto, onClickDay }: WeekRowProps) {
     return (
         <>
             {/* Numero settimana */}
@@ -35,6 +35,7 @@ export default function WeekRow({ week, transactions, maxImporto }: WeekRowProps
                         transactions={dayTx}
                         showWeekDay={false}
                         maxImporto={maxImporto}
+                        onClickDay={onClickDay}
                     />
                 );
             })}
