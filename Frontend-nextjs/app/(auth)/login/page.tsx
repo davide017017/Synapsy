@@ -11,7 +11,6 @@ import { handleLogin } from "@/lib/auth/handleLogin";
 import { handleTokenLogin } from "@/lib/auth/handleTokenLogin";
 import RegisterModal from "@/app/(auth)/login/form/modal/RegisterModal";
 import ForgotPasswordModal from "@/app/(auth)/login/form/modal/ForgotPasswordModal";
-import { useThemeContext } from "@/context/contexts/ThemeContext";
 
 // ==============================
 // PAGINA DI LOGIN CON REDIRECT E SFONDO
@@ -24,18 +23,6 @@ export default function LoginPage() {
     const [showReg, setShowReg] = useState(false);
     const [showForgot, setShowForgot] = useState(false);
     const [info, setInfo] = useState<string | null>(null);
-    const { theme, setTheme } = useThemeContext();
-
-    // ───── Forza tema dark durante la schermata di login ─────
-    useEffect(() => {
-        const prev = theme;
-        if (prev !== "dark") setTheme("dark", false);
-        return () => {
-            if (prev && prev !== "dark") setTheme(prev, false);
-        };
-        // deliberately exclude `theme` from deps to avoid loop
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [setTheme]);
 
     // ───── Redirect se già autenticato ─────
     useEffect(() => {
