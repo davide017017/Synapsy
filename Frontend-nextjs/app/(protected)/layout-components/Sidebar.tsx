@@ -132,7 +132,7 @@ export default function Sidebar() {
                         return (
                             <button
                                 key={t}
-                                onClick={() => setTheme(t)}
+                                onClick={() => setTheme(t as any)}
                                 className={`flex items-center justify-center gap-2 py-2 rounded font-medium transition
                                     ${isActive ? "bg-primary text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
                             >

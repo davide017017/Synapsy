@@ -153,8 +153,11 @@ export default function ProfilePage() {
                     editing={editing.theme}
                     onEdit={() => handleEdit("theme")}
                     onSave={(val) => {
-                        handleChange("theme", val);
-                        handleSave("theme");
+                        // Applica subito il tema selezionato e persiste in background
+                        setTheme(val as any);
+                        // Aggiorna stato locale senza attendere risposta
+                        setForm((f) => ({ ...f, theme: val as any }));
+                        setEditing((e) => ({ ...e, theme: false }));
                     }}
                 />
             </div>
