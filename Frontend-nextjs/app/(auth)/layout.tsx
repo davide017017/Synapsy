@@ -1,5 +1,4 @@
 /* app/(auth)/layout.tsx */
-import { ThemeProvider } from "next-themes";
 import Script from "next/script";
 
 export const metadata = {
@@ -13,10 +12,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 id="force-dark"
                 strategy="beforeInteractive"
                 dangerouslySetInnerHTML={{
-                    __html: "try{localStorage.setItem('theme','dark');}catch{}",
+                    __html: "document.documentElement.className='dark';",
                 }}
             />
-            <ThemeProvider forcedTheme="dark">{children}</ThemeProvider>
+            {children}
         </>
     );
 }
