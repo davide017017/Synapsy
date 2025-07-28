@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useUser } from "./UserContext";
 
-export type Theme = "light" | "dark" | "solarized";
+export type Theme = "light" | "dark" | "emerald" | "solarized";
 
 export type ThemeContextType = {
     theme: Theme;

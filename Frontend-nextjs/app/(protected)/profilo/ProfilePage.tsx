@@ -60,7 +60,7 @@ export default function ProfilePage() {
             {/* Avatar + Intestazione */}
             {/* ========================================= */}
             <div
-                className="flex items-center gap-4 pb-2 border-b"
+                className="flex flex-col items-center text-center gap-3 pb-4 border-b"
                 style={{ borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))" }}
             >
                 {/* ---- Avatar attuale (click per cambiare) ---- */}
@@ -94,10 +94,10 @@ export default function ProfilePage() {
                 </motion.div>
                 {/* ---- Titolo ---- */}
                 <div>
-                    <h1 className="text-xl font-bold" style={{ color: "hsl(var(--c-primary, 205 66% 49%))" }}>
+                    <h1 className="text-2xl font-bold text-primary drop-shadow-sm">
                         👤 Profilo
                     </h1>
-                    <p className="text-xs" style={{ color: "hsl(var(--c-text-secondary, 197 13% 45%))" }}>
+                    <p className="text-sm text-muted-foreground">
                         Modifica le informazioni del tuo account.
                     </p>
                 </div>
@@ -159,6 +159,7 @@ export default function ProfilePage() {
                         setForm((f) => ({ ...f, theme: val as any }));
                         setEditing((e) => ({ ...e, theme: false }));
                     }}
+                    onCancel={() => setEditing((e) => ({ ...e, theme: false }))}
                 />
             </div>
 
