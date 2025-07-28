@@ -66,11 +66,11 @@ export default function DayCell({ day, date, monthDelta, transactions, showWeekD
                 grid grid-cols-[1.1fr_1fr] gap-1 shadow-sm
                 ${opacity} ${border} ${todayClass}
                 transition-all duration-150
-                cursor-${txCount > 0 && onClickDay ? "pointer" : "default"}
+                cursor-${onClickDay ? "pointer" : "default"}
             `}
             title={tooltip}
             onClick={() => {
-                if (txCount > 0 && onClickDay) onClickDay(date, transactions);
+                if (onClickDay) onClickDay(date, transactions);
             }}
         >
             {/* ==== SINISTRA: Info giorno ==== */}

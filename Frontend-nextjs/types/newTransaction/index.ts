@@ -8,4 +8,5 @@ export type NewTransactionFormProps = {
     disabled?: boolean;
     onChangeForm?: (data: Partial<import("@/types").TransactionBase>) => void;
     onCancel?: () => void;
+    initialDate?: string;
 };

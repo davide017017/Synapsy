@@ -4,14 +4,23 @@
 // Pagina riepilogo calendario — CRUD sincrono
 // ================================================
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
 import CalendarGrid from "./components/CalendarGrid";
 import CalendarGridSkeleton from "./components/skeleton/CalendarGridSkeleton";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
+import DayTransactionsModal from "./components/modal/DayTransactionsModal";
+import { Transaction } from "@/types";
 
 export default function PanoramicaPage() {
     const { transactions, loading, fetchAll } = useTransactions();
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [selectedTx, setSelectedTx] = useState<Transaction[]>([]);
+
+    const handleDayClick = (date: Date, tx: Transaction[]) => {
+        setSelectedDate(date);
+        setSelectedTx(tx);
+    };
 
     useEffect(() => {
         fetchAll();
@@ -65,7 +74,17 @@ export default function PanoramicaPage() {
                 </div>
             </div>
 
-            {loading ? <CalendarGridSkeleton /> : <CalendarGrid transactions={transactions} />}
+            {loading ? (
+                <CalendarGridSkeleton />
+            ) : (
+                <CalendarGrid transactions={transactions} onDayClick={handleDayClick} />
+            )}
+            <DayTransactionsModal
+                open={selectedDate !== null}
+                onClose={() => setSelectedDate(null)}
+                date={selectedDate || new Date()}
+                transactions={selectedTx}
+            />
         </div>
     );
 }

@@ -44,7 +44,7 @@ const yearOptions = Array.from({ length: 15 }, (_, i) => currentYear - 7 + i);
 // ============================
 // CalendarGrid principale
 // ============================
-export default function CalendarGrid({ transactions }: CalendarGridProps) {
+export default function CalendarGrid({ transactions, onDayClick }: CalendarGridProps) {
     // Stato visualizzazione mese/anno
     const isLg = useMediaQuery("(min-width: 1024px)");
     const [viewYear, setViewYear] = useState(currentYear);
@@ -198,6 +198,7 @@ export default function CalendarGrid({ transactions }: CalendarGridProps) {
                                           week={week}
                                           transactions={weekTx}
                                           maxImporto={maxImportoGriglia}
+                                          onClickDay={onDayClick}
                                       />
                                   );
                               })
@@ -220,6 +221,7 @@ export default function CalendarGrid({ transactions }: CalendarGridProps) {
                                           transactions={dayTx}
                                           showWeekDay={false}
                                           maxImporto={maxImportoGriglia}
+                                          onClickDay={onDayClick}
                                       />
                                   );
                               })}

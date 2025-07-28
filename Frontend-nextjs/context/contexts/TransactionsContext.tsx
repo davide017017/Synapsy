@@ -32,8 +32,9 @@ type TransactionsContextType = {
     softMove: (original: Transaction, formData: Transaction, newType: "entrata" | "spesa") => Promise<void>;
     isOpen: boolean;
     transactionToEdit: Transaction | null;
-    openModal: (txToEdit?: Transaction | null) => void;
+    openModal: (txToEdit?: Transaction | null, defaultDate?: string) => void;
     closeModal: () => void;
+    defaultDate: string | null;
     monthBalance: number;
     yearBalance: number;
 };
@@ -54,6 +55,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // Modale
     const [isOpen, setIsOpen] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
+    const [defaultDate, setDefaultDate] = useState<string | null>(null);
 
     // Per undo temporaneo
     const [lastDeleted, setLastDeleted] = useState<Transaction | null>(null);
@@ -209,12 +211,14 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // ==================================================
     // Gestione Modale
     // ==================================================
-    const openModal = (tx?: Transaction | null) => {
+    const openModal = (tx?: Transaction | null, date?: string) => {
         setTransactionToEdit(tx || null);
+        setDefaultDate(date ?? null);
         setIsOpen(true);
     };
     const closeModal = () => {
         setTransactionToEdit(null);
+        setDefaultDate(null);
         setIsOpen(false);
     };
 
@@ -234,6 +238,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 softMove,
                 isOpen,
                 transactionToEdit,
+                defaultDate,
                 openModal,
                 closeModal,
                 monthBalance,
@@ -241,7 +246,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             }}
         >
             {children}
-            <NewTransactionModal />
+            <NewTransactionModal defaultDate={defaultDate ?? undefined} />
         </TransactionsContext.Provider>
     );
 }

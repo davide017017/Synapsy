@@ -22,12 +22,12 @@ function cn(...classes: string[]) {
 // ╔═══════════════════════════════╗
 // ║      COMPONENTE PRINCIPALE    ║
 // ╚═══════════════════════════════╝
-export default function NewTransactionForm({ onSave, transaction, disabled, onChangeForm, onCancel }: NewTransactionFormProps) {
+export default function NewTransactionForm({ onSave, transaction, disabled, onChangeForm, onCancel, initialDate }: NewTransactionFormProps) {
     // ----- Stato form -----
     const [formData, setFormData] = useState<TransactionBase>({
         description: "",
         amount: "" as any,
-        date: new Date().toISOString().split("T")[0],
+        date: initialDate || new Date().toISOString().split("T")[0],
         category_id: 0,
         notes: "",
         type: "entrata",
@@ -49,8 +49,10 @@ export default function NewTransactionForm({ onSave, transaction, disabled, onCh
                 notes: transaction.notes || "",
                 type: transaction.type,
             });
+        } else if (initialDate) {
+            setFormData((prev) => ({ ...prev, date: initialDate }));
         }
-    }, [transaction]);
+    }, [transaction, initialDate]);
 
     // ----- Comunica dati aggiornati -----
     useEffect(() => {
