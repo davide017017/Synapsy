@@ -107,11 +107,12 @@ export default function ProfilePage() {
             {/* Dati profilo */}
             {/* ========================================= */}
             <div
-                className="rounded-xl shadow-sm divide-y"
+                className="rounded-xl shadow-sm "
                 style={{
                     background: "hsl(var(--c-bg-elevate, 44 36% 88%) / 0.8)",
                     border: "1px solid hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
                     boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
+                    overflow: "visible",
                 }}
             >
                 <ProfileRow

@@ -1,64 +1,52 @@
 "use client";
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { useUser } from "./UserContext";
 
-// ==============================
-// Tipizzazione
-// ==============================
+export type Theme = "light" | "dark" | "solarized";
+
 export type ThemeContextType = {
-    theme: string;
-    setTheme: (theme: string, persist?: boolean) => void;
+    theme: Theme;
+    setTheme: (theme: Theme, persist?: boolean) => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// ==============================
-// Provider
-// ==============================
 export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
     const { user, update } = useUser();
+    const [theme, setThemeState] = useState<Theme>("dark");
 
-    const [theme, setThemeState] = useState("dark");
-
-    // Inizializza tema da localStorage o profilo utente
+    // Inizializza tema da localStorage o user
     useEffect(() => {
         if (typeof window === "undefined") return;
-        const stored = localStorage.getItem("theme");
-        const initial = stored || user?.theme || "dark";
-        setThemeState(initial);
-    }, []);
+        const stored = localStorage.getItem("theme") as Theme | null;
+        const initial = user?.theme as Theme | undefined;
+        setThemeState(initial || stored || "dark");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.theme]); // si aggiorna se cambia il profilo
 
-    // Aggiorna tema quando cambia quello salvato nel profilo
+    // Applica classe e data-theme su <html>
     useEffect(() => {
-        if (user?.theme && user.theme !== theme) {
-            setThemeState(user.theme);
-        }
-    }, [user?.theme]);
-
-    // Applica classe e data-theme al tag html
-    useEffect(() => {
-        if (typeof document !== "undefined") {
-            document.documentElement.className = theme;
-            document.documentElement.setAttribute("data-theme", theme);
-        }
+        document.documentElement.className = theme;
+        document.documentElement.setAttribute("data-theme", theme);
     }, [theme]);
 
-    const handleSetTheme = (t: string, persist = true) => {
-        setThemeState(t);
-
-        if (typeof window !== "undefined" && persist) {
-            localStorage.setItem("theme", t);
+    // SetTheme: anteprima (persist === false) o salvataggio (persist === true, default)
+    const setTheme = (newTheme: Theme, persist = true) => {
+        setThemeState(newTheme);
+        document.documentElement.className = newTheme;
+        document.documentElement.setAttribute("data-theme", newTheme);
+        if (persist) {
+            localStorage.setItem("theme", newTheme);
+            // aggiorna backend
+            update({ theme: newTheme });
         }
-
-        if (persist) update({ theme: t });
     };
 
-    return <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme }}>{children}</ThemeContext.Provider>;
+    return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useThemeContext() {
     const ctx = useContext(ThemeContext);
-    if (!ctx) throw new Error("useThemeContext deve essere usato dentro <ThemeContextProvider>");
+    if (!ctx) throw new Error("useThemeContext deve essere usato dentro ThemeContextProvider");
     return ctx;
 }

@@ -1,15 +1,9 @@
-let themes: string[] = [];
-if (typeof window === 'undefined') {
-  try {
-    const fs = require('fs');
-    const path = require('path');
-    const dir = path.join(process.cwd(), 'styles', 'themes');
-    themes = fs.readdirSync(dir)
-      .filter((f: string) => f.endsWith('.css'))
-      .map((f: string) => path.parse(f).name);
-  } catch {
-    themes = ['light', 'dark'];
-  }
-}
+// themeUtils.ts
+export const themeMeta = {
+    light: { label: "Chiaro", color: "#faf6ee" },
+    dark: { label: "Scuro", color: "#222934" },
+    emerald: { label: "Smeraldo", color: "#4bffb1" },
+    solarized: { label: "Solarized", color: "#ffd671" },
+};
 
-export const availableThemes = themes;
+export const availableThemes = Object.keys(themeMeta) as (keyof typeof themeMeta)[];

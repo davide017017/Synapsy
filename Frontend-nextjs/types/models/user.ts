@@ -1,3 +1,4 @@
+import type { Theme } from "@/context/contexts/ThemeContext";
 import { AVATAR_CHOICES } from "@/app/(protected)/profilo/components/constants";
 
 export type UserType = {
@@ -5,7 +6,7 @@ export type UserType = {
     surname: string;
     username: string;
     email: string;
-    theme: string;
+    theme: Theme;
     avatar: string;
     pending_email?: string | null;
 };
