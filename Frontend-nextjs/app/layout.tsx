@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="it" className="dark" suppressHydrationWarning>
+        <html lang="it" className="dark" data-theme="dark" suppressHydrationWarning>
             <body>
                 {/* Toaster e contesti globali */}
                 {/* ==================================== */}
