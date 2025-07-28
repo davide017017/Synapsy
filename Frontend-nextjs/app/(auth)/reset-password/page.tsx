@@ -20,7 +20,9 @@ export default function ResetPasswordPage() {
     return () => {
       if (prev && prev !== "dark") setTheme(prev, false);
     };
-  }, [theme, setTheme]);
+    // intentionally exclude `theme` from deps to prevent toggle loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setTheme]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
