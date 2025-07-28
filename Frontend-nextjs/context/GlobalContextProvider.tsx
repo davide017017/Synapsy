@@ -2,7 +2,6 @@
 "use client";
 
 import { ReactNode } from "react";
-import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
 import { CategoriesProvider } from "./contexts/CategoriesContext";
 import { TransactionsProvider } from "./contexts/TransactionsContext";
@@ -16,24 +15,17 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
     return (
         <SessionProvider>
             <UserProvider>
-                <ThemeProvider
-                    attribute="class" // <--- Usa la classe "dark" su <html>
-                    defaultTheme="system" // system = usa impostazione sistema
-                    enableSystem
-                    storageKey="theme" // key in localStorage
-                >
-                    <ThemeContextProvider>
-                        <CategoriesProvider>
-                            <TransactionsProvider>
-                                <RicorrenzeProvider>
-                                    <SelectionProvider>
-                                        <SidebarProvider>{children}</SidebarProvider>
-                                    </SelectionProvider>
-                                </RicorrenzeProvider>
-                            </TransactionsProvider>
-                        </CategoriesProvider>
-                    </ThemeContextProvider>
-                </ThemeProvider>
+                <ThemeContextProvider>
+                    <CategoriesProvider>
+                        <TransactionsProvider>
+                            <RicorrenzeProvider>
+                                <SelectionProvider>
+                                    <SidebarProvider>{children}</SidebarProvider>
+                                </SelectionProvider>
+                            </RicorrenzeProvider>
+                        </TransactionsProvider>
+                    </CategoriesProvider>
+                </ThemeContextProvider>
             </UserProvider>
         </SessionProvider>
     );

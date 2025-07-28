@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { useTheme } from "next-themes";
 import { useUser } from "./UserContext";
 
 // ==============================
@@ -18,35 +17,26 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 // Provider
 // ==============================
 export function ThemeContextProvider({ children }: { children: React.ReactNode }) {
-    const { setTheme: setNextTheme } = useTheme();
     const { user, update } = useUser();
 
     const [theme, setThemeState] = useState("dark");
 
-    // Inizializza tema da profilo o localStorage
+    // Inizializza tema da profilo utente
     useEffect(() => {
         if (typeof window === "undefined") return;
-        const stored = localStorage.getItem("theme");
-        const initial = user?.theme || stored || "dark";
+        const initial = user?.theme || "dark";
         setThemeState(initial);
-        setNextTheme(initial);
-    }, [user?.theme, setNextTheme]);
+    }, [user?.theme]);
 
-    // Sincronizza tra tab
+    // Applica la classe al tag html
     useEffect(() => {
-        const handler = (e: StorageEvent) => {
-            if (e.key === "theme" && e.newValue) {
-                setThemeState(e.newValue);
-                setNextTheme(e.newValue);
-            }
-        };
-        window.addEventListener("storage", handler);
-        return () => window.removeEventListener("storage", handler);
-    }, [setNextTheme]);
+        if (typeof document !== "undefined") {
+            document.documentElement.className = theme;
+        }
+    }, [theme]);
 
     const handleSetTheme = (t: string, persist = true) => {
         setThemeState(t);
-        setNextTheme(t);
         if (persist) update({ theme: t });
     };
 
