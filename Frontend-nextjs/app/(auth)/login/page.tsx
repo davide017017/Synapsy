@@ -33,7 +33,9 @@ export default function LoginPage() {
         return () => {
             if (prev && prev !== "dark") setTheme(prev, false);
         };
-    }, [theme, setTheme]);
+        // deliberately exclude `theme` from deps to avoid loop
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setTheme]);
 
     // ───── Redirect se già autenticato ─────
     useEffect(() => {
