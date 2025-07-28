@@ -14,6 +14,7 @@ import { DEFAULT_USER, UserType } from "@/types/models/user";
 import { useUser } from "@/context/contexts/UserContext";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
 import PendingEmailNotice from "@/app/components/PendingEmailNotice";
+import { UserRound } from "lucide-react";
 
 // ======================================================
 // Componente principale
@@ -93,13 +94,10 @@ export default function ProfilePage() {
                     </button>
                 </motion.div>
                 {/* ---- Titolo ---- */}
-                <div>
-                    <h1 className="text-2xl font-bold text-primary drop-shadow-sm">
-                        👤 Profilo
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Modifica le informazioni del tuo account.
-                    </p>
+                <div className="flex flex-col items-center gap-1 mb-4">
+                    <UserRound size={40} className="text-primary drop-shadow" />
+                    <h1 className="text-2xl font-bold text-primary">Profilo</h1>
+                    <p className="text-sm text-muted-foreground">Modifica le informazioni del tuo account.</p>
                 </div>
             </div>
 
