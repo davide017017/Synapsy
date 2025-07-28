@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 id="force-dark"
                 strategy="beforeInteractive"
                 dangerouslySetInnerHTML={{
-                    __html: "document.documentElement.className='dark';",
+                    __html: "document.documentElement.className='dark';document.documentElement.setAttribute('data-theme','dark');",
                 }}
             />
             {children}
