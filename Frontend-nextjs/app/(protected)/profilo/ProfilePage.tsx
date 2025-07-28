@@ -7,7 +7,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProfileRow from "./components/ProfileRow";
-import { availableThemes } from "@/lib/themeUtils";
+import ThemeSelectorRow from "./components/ThemeSelectorRow";
 import AvatarPickerModal from "./components/AvatarPickerModal";
 import { AVATAR_CHOICES } from "./components/constants";
 import { DEFAULT_USER, UserType } from "@/types/models/user";
@@ -147,18 +147,14 @@ export default function ProfilePage() {
                     onSave={() => handleSave("email")}
                     disabled={!!user?.pending_email}
                 />
-                <ProfileRow
-                    label="Tema"
+                <ThemeSelectorRow
                     value={form.theme}
                     editing={editing.theme}
                     onEdit={() => handleEdit("theme")}
-                    onChange={(v) => handleChange("theme", v)}
-                    onSave={() => handleSave("theme")}
-                    type="select"
-                    options={availableThemes.map((t) => ({
-                        value: t,
-                        label: t.charAt(0).toUpperCase() + t.slice(1),
-                    }))}
+                    onSave={(val) => {
+                        handleChange("theme", val);
+                        handleSave("theme");
+                    }}
                 />
             </div>
 

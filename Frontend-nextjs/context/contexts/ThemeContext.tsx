@@ -21,22 +21,32 @@ export function ThemeContextProvider({ children }: { children: React.ReactNode }
 
     const [theme, setThemeState] = useState("dark");
 
-    // Inizializza tema da profilo utente
+    // Inizializza tema da localStorage o profilo utente
     useEffect(() => {
         if (typeof window === "undefined") return;
-        const initial = user?.theme || "dark";
+        const stored = localStorage.getItem("theme");
+        const initial = stored || user?.theme || "dark";
         setThemeState(initial);
+    }, []);
+
+    // Aggiorna tema quando cambia quello salvato nel profilo
+    useEffect(() => {
+        if (user?.theme) setThemeState(user.theme);
     }, [user?.theme]);
 
-    // Applica la classe al tag html
+    // Applica classe e data-theme al tag html
     useEffect(() => {
         if (typeof document !== "undefined") {
             document.documentElement.className = theme;
+            document.documentElement.setAttribute("data-theme", theme);
         }
     }, [theme]);
 
     const handleSetTheme = (t: string, persist = true) => {
         setThemeState(t);
+        if (typeof window !== "undefined") {
+            localStorage.setItem("theme", t);
+        }
         if (persist) update({ theme: t });
     };
 
