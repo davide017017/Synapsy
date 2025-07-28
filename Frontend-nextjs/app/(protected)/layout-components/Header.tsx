@@ -60,7 +60,17 @@ export default function Header() {
                         "
                         title="Vai al profilo"
                     >
-                        <UserCircle size={18} className="text-primary" />
+                        {user?.avatar ? (
+                            <Image
+                                src={user.avatar}
+                                alt="Avatar utente"
+                                width={20}
+                                height={20}
+                                className="w-5 h-5 rounded-full object-cover"
+                            />
+                        ) : (
+                            <UserCircle size={18} className="text-primary" />
+                        )}
                         <span className="truncate">{username}</span>
                     </Link>
                 )}

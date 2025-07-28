@@ -9,6 +9,7 @@ import { useState } from "react";
 import DeleteCategoryModal from "../deleteModal/DeleteCategoryModal";
 import { Category } from "@/types";
 import CardCategories from "./cardCategories/CardCategories";
+import CategoriesListSkeleton from "./skeleton/CategoriesListSkeleton";
 
 // ============================
 // Componente principale
@@ -34,7 +35,16 @@ export default function CategoriesList() {
         }
     };
 
-    if (loading) return <div className="text-center p-4">Caricamento categorie...</div>;
+    if (loading) return (
+        <div className="px-2 md:px-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                <div className="hidden xl:block" />
+                <div className="space-y-2">
+                    <CategoriesListSkeleton />
+                </div>
+            </div>
+        </div>
+    );
     if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
 
     return (

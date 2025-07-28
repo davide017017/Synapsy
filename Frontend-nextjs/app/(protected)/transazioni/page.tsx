@@ -4,12 +4,13 @@
 // Pagina principale lista transazioni — CRUD sync
 // ==============================================
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
 import { useCategories } from "@/context/contexts/CategoriesContext";
 import SelectionToolbar from "./components/SelectionToolbar";
-import TransactionsList from "./components/TransactionsList";
+import dynamic from "next/dynamic";
 import TransactionsListSkeleton from "./skeleton/TransactionsListSkeleton";
+const TransactionsList = dynamic(() => import("./components/TransactionsList"), { suspense: true });
 import TransactionDetailModal from "./modal/TransactionDetailModal";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
 import { Transaction } from "@/types/models/transaction";
@@ -112,14 +113,16 @@ export default function TransazioniPage() {
             {loading ? (
                 <TransactionsListSkeleton />
             ) : (
-                <>
-                    <SelectionToolbar onDeleteSelected={handleDeleteSelectedTransactions} />
-                    <TransactionsList
-                        transactions={transactions}
-                        onSelect={(tx) => setSelected(tx.id)}
-                        selectedId={selected}
-                    />
-                </>
+                <Suspense fallback={<TransactionsListSkeleton />}>
+                    <>
+                        <SelectionToolbar onDeleteSelected={handleDeleteSelectedTransactions} />
+                        <TransactionsList
+                            transactions={transactions}
+                            onSelect={(tx) => setSelected(tx.id)}
+                            selectedId={selected}
+                        />
+                    </>
+                </Suspense>
             )}
             {/* ===================== /Lista ===================== */}
 
