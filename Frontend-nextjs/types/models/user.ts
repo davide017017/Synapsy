@@ -11,10 +11,10 @@ export type UserType = {
 };
 
 export const DEFAULT_USER: UserType = {
-    name: "Mario",
-    surname: "Rossi",
-    username: "mario.rossi",
-    email: "mario.rossi@email.com",
+    name: "Nome ...",
+    surname: "Cognome...",
+    username: "Username...",
+    email: "Email...",
     theme: "dark",
     avatar: AVATAR_CHOICES[0],
     pending_email: null,

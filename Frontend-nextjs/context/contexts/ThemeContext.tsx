@@ -31,7 +31,9 @@ export function ThemeContextProvider({ children }: { children: React.ReactNode }
 
     // Aggiorna tema quando cambia quello salvato nel profilo
     useEffect(() => {
-        if (user?.theme) setThemeState(user.theme);
+        if (user?.theme && user.theme !== theme) {
+            setThemeState(user.theme);
+        }
     }, [user?.theme]);
 
     // Applica classe e data-theme al tag html
@@ -44,17 +46,15 @@ export function ThemeContextProvider({ children }: { children: React.ReactNode }
 
     const handleSetTheme = (t: string, persist = true) => {
         setThemeState(t);
-        if (typeof window !== "undefined") {
+
+        if (typeof window !== "undefined" && persist) {
             localStorage.setItem("theme", t);
         }
+
         if (persist) update({ theme: t });
     };
 
-    return (
-        <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme }}>
-            {children}
-        </ThemeContext.Provider>
-    );
+    return <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useThemeContext() {
