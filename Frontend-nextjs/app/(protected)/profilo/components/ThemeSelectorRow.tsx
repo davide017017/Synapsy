@@ -11,14 +11,14 @@ interface ThemeSelectorRowProps {
 }
 
 export default function ThemeSelectorRow({ value, editing, onEdit, onSave }: ThemeSelectorRowProps) {
-    const { setTheme, theme } = useThemeContext();
+    const { theme } = useThemeContext();
     const [open, setOpen] = useState(false);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     // Cambia subito tema al click su opzione
     const handleSelect = (t: string) => {
-        setTheme(t as any, true); // true: salva e update backend
-        onSave(t); // aggiorna stato locale/form
+        // Delega al parent l'applicazione del tema
+        onSave(t);
         setOpen(false);
         buttonRef.current?.focus();
     };
