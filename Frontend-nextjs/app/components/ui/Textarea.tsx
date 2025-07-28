@@ -8,7 +8,7 @@ export function Textarea(props: Props) {
         <textarea
             {...props}
             rows={3}
-            className={`w-full px-3 py-2 rounded-xl border border-bg-elevate bg-bg text-text text-sm
+            className={`block mx-auto w-full px-3 py-2 rounded-xl border border-bg-elevate bg-bg text-text text-sm
                         focus:ring-2 focus:ring-primary focus:outline-none transition
                         ${props.className || ""}`}
         />
