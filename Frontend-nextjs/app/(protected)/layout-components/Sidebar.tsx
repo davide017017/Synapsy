@@ -23,6 +23,7 @@ import {
 import { useSidebar } from "@/context/contexts/SidebarContext";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
 import { useState } from "react";
+import { themeMeta } from "@/lib/themeUtils";
 
 // ────────────────────────────────
 // Configurazione navigazione
@@ -126,7 +127,7 @@ export default function Sidebar() {
                 <div className="p-4 border-t border-white/10 grid grid-cols-2 gap-2">
                     {["light", "dark", ...extraThemes].map((t) => {
                         const isActive = theme === t;
-                        const label = t.charAt(0).toUpperCase() + t.slice(1);
+                        const label = themeMeta[t as keyof typeof themeMeta].label;
                         const icon = t === "light" ? <Sun size={18} /> : t === "dark" ? <Moon size={18} /> : null;
 
                         return (

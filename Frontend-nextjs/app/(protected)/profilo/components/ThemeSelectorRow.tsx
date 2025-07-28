@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
 import { themeMeta, availableThemes } from "@/lib/themeUtils";
 
@@ -8,12 +8,42 @@ interface ThemeSelectorRowProps {
     editing: boolean | undefined;
     onEdit: () => void;
     onSave: (val: string) => void;
+    onCancel: () => void;
 }
 
-export default function ThemeSelectorRow({ value, editing, onEdit, onSave }: ThemeSelectorRowProps) {
+export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCancel }: ThemeSelectorRowProps) {
     const { theme } = useThemeContext();
     const [open, setOpen] = useState(false);
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Gestione chiusura con ESC e click fuori
+    useEffect(() => {
+        if (!open) return;
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                setOpen(false);
+                onCancel();
+                buttonRef.current?.focus();
+            }
+        };
+        const handleClick = (e: MouseEvent) => {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(e.target as Node) &&
+                !buttonRef.current?.contains(e.target as Node)
+            ) {
+                setOpen(false);
+                onCancel();
+            }
+        };
+        document.addEventListener("keydown", handleKey);
+        document.addEventListener("mousedown", handleClick);
+        return () => {
+            document.removeEventListener("keydown", handleKey);
+            document.removeEventListener("mousedown", handleClick);
+        };
+    }, [open, onCancel]);
 
     // Cambia subito tema al click su opzione
     const handleSelect = (t: string) => {
@@ -28,7 +58,7 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave }: The
         return (
             <div className="flex items-center px-3 py-3 gap-4 group border-b border-primary/10">
                 <div className="w-28 font-medium text-sm text-muted-foreground">Tema</div>
-                <div className="flex-1 capitalize">{value}</div>
+                <div className="flex-1 capitalize">{themeMeta[value as keyof typeof themeMeta].label}</div>
                 <div>
                     <button
                         className="opacity-70 group-hover:opacity-100 px-2 py-1 rounded font-semibold text-xs transition"
@@ -47,7 +77,10 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave }: The
 
     // UI: selettore a tendina, responsive e accessibile
     return (
-        <div className="flex items-center px-3 py-3 gap-4 border-b border-primary/10">
+        <div
+            ref={containerRef}
+            className="flex items-center px-3 py-3 gap-4 border-b border-primary/10"
+        >
             <div className="w-28 font-medium text-sm text-muted-foreground">Tema</div>
             <div className="flex-1 relative">
                 <button
@@ -58,7 +91,7 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave }: The
                     aria-expanded={open}
                     aria-haspopup="listbox"
                 >
-                    <span>{theme}</span>
+                    <span>{themeMeta[theme as keyof typeof themeMeta].label}</span>
                     <svg width="18" height="18" className="ml-2 opacity-60" viewBox="0 0 20 20">
                         <path d="M5.8 8l4.2 4.2L14.2 8" stroke="currentColor" strokeWidth="2" fill="none" />
                     </svg>
@@ -93,7 +126,10 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave }: The
             <div>
                 <button
                     className="ml-2 px-2 py-1 rounded font-semibold shadow text-xs transition bg-primary text-bg"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                        setOpen(false);
+                        onCancel();
+                    }}
                 >
                     Chiudi
                 </button>
