@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useThemeContext } from "@/context/contexts/ThemeContext";
 import { Button } from "@/app/components/ui/Button";
 import PasswordInput from "../login/form/form-components/PasswordInput";
 import { handleResetPassword } from "@/lib/auth/handleResetPassword";
@@ -11,16 +10,6 @@ export default function ResetPasswordPage() {
   const router = useRouter();
   const [token, setToken] = useState("");
   const [email, setEmail] = useState("");
-  const { theme, setTheme } = useThemeContext();
-
-  // Forza il tema scuro su questa pagina
-  useEffect(() => {
-    const prev = theme;
-    if (prev !== "dark") setTheme("dark", false);
-    return () => {
-      if (prev && prev !== "dark") setTheme(prev, false);
-    };
-  }, [theme, setTheme]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
