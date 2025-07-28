@@ -13,6 +13,7 @@ import CardGraficoPagamenti from "./Card/CardGraficoPagamenti";
 import ListaRicorrenzePerFrequenza from "./liste/ListaRicorrenzePerFrequenza";
 import ListaProssimiPagamenti from "./liste/ListaProssimiPagamenti";
 import AreaGraficiRicorrenze from "./grafici/AreaGraficiRicorrenze";
+import RicorrentiPageSkeleton from "./skeleton/RicorrentiPageSkeleton";
 import {
     ordinaPerPrezzo,
     calcolaTotaliAnnuiPerFrequenza,
@@ -58,6 +59,8 @@ export default function RicorrentiPage() {
     // =======================================================
     // RENDER
     // =======================================================
+    if (loading) return <RicorrentiPageSkeleton />;
+
     return (
         <div className="space-y-8">
             {/* === Cards principali === */}
@@ -86,9 +89,6 @@ export default function RicorrentiPage() {
 
             {/* === Area grafici avanzati (opzionale) === */}
             <AreaGraficiRicorrenze />
-
-            {/* === Loading/errore === */}
-            {loading && <div className="text-center text-zinc-400 py-6">Caricamento ricorrenze...</div>}
         </div>
     );
 }
