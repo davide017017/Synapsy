@@ -9,4 +9,5 @@ export type NewTransactionFormProps = {
     onChangeForm?: (data: Partial<import("@/types").TransactionBase>) => void;
     onCancel?: () => void;
     initialDate?: string;
+    initialType?: "entrata" | "spesa";
 };
