@@ -22,7 +22,15 @@ function cn(...classes: string[]) {
 // ╔═══════════════════════════════╗
 // ║      COMPONENTE PRINCIPALE    ║
 // ╚═══════════════════════════════╝
-export default function NewTransactionForm({ onSave, transaction, disabled, onChangeForm, onCancel, initialDate }: NewTransactionFormProps) {
+export default function NewTransactionForm({
+    onSave,
+    transaction,
+    disabled,
+    onChangeForm,
+    onCancel,
+    initialDate,
+    initialType,
+}: NewTransactionFormProps) {
     // ----- Stato form -----
     const [formData, setFormData] = useState<TransactionBase>({
         description: "",
@@ -30,7 +38,7 @@ export default function NewTransactionForm({ onSave, transaction, disabled, onCh
         date: initialDate || new Date().toISOString().split("T")[0],
         category_id: 0,
         notes: "",
-        type: "entrata",
+        type: initialType || "entrata",
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -49,10 +57,14 @@ export default function NewTransactionForm({ onSave, transaction, disabled, onCh
                 notes: transaction.notes || "",
                 type: transaction.type,
             });
-        } else if (initialDate) {
-            setFormData((prev) => ({ ...prev, date: initialDate }));
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                ...(initialDate ? { date: initialDate } : {}),
+                ...(initialType ? { type: initialType } : {}),
+            }));
         }
-    }, [transaction, initialDate]);
+    }, [transaction, initialDate, initialType]);
 
     // ----- Comunica dati aggiornati -----
     useEffect(() => {

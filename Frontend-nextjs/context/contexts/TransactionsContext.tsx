@@ -32,9 +32,14 @@ type TransactionsContextType = {
     softMove: (original: Transaction, formData: Transaction, newType: "entrata" | "spesa") => Promise<void>;
     isOpen: boolean;
     transactionToEdit: Transaction | null;
-    openModal: (txToEdit?: Transaction | null, defaultDate?: string) => void;
+    openModal: (
+        txToEdit?: Transaction | null,
+        defaultDate?: string,
+        defaultType?: "entrata" | "spesa"
+    ) => void;
     closeModal: () => void;
     defaultDate: string | null;
+    defaultType: "entrata" | "spesa" | null;
     monthBalance: number;
     yearBalance: number;
 };
@@ -56,6 +61,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     const [isOpen, setIsOpen] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
     const [defaultDate, setDefaultDate] = useState<string | null>(null);
+    const [defaultType, setDefaultType] = useState<"entrata" | "spesa" | null>(null);
 
     // Per undo temporaneo
     const [lastDeleted, setLastDeleted] = useState<Transaction | null>(null);
@@ -211,14 +217,20 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // ==================================================
     // Gestione Modale
     // ==================================================
-    const openModal = (tx?: Transaction | null, date?: string) => {
+    const openModal = (
+        tx?: Transaction | null,
+        date?: string,
+        type?: "entrata" | "spesa"
+    ) => {
         setTransactionToEdit(tx || null);
         setDefaultDate(date ?? null);
+        setDefaultType(type ?? null);
         setIsOpen(true);
     };
     const closeModal = () => {
         setTransactionToEdit(null);
         setDefaultDate(null);
+        setDefaultType(null);
         setIsOpen(false);
     };
 
@@ -239,6 +251,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 isOpen,
                 transactionToEdit,
                 defaultDate,
+                defaultType,
                 openModal,
                 closeModal,
                 monthBalance,
@@ -246,7 +259,10 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             }}
         >
             {children}
-            <NewTransactionModal defaultDate={defaultDate ?? undefined} />
+            <NewTransactionModal
+                defaultDate={defaultDate ?? undefined}
+                defaultType={defaultType ?? undefined}
+            />
         </TransactionsContext.Provider>
     );
 }

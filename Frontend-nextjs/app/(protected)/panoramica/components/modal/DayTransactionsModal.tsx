@@ -1,11 +1,11 @@
 "use client";
 
 import Dialog from "@/app/components/ui/Dialog";
-import { PlusCircle, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ArrowUpCircle, ArrowDownCircle, Calendar, Calculator } from "lucide-react";
 import { Transaction } from "@/types/models/transaction";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
-import { Calendar, ArrowUpCircle, ArrowDownCircle, Calculator } from "lucide-react";
 import { CATEGORY_ICONS_MAP } from "@/utils/categoryOptions";
+import { toDateInputValue } from "@/utils/date";
 import { FiTag } from "react-icons/fi";
 
 export type DayTransactionsModalProps = {
@@ -26,7 +26,7 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
     const totalEntrate = somma(entrate);
     const totalSpese = somma(spese);
 
-    const isoDate = date.toISOString().split("T")[0];
+    const isoDate = toDateInputValue(date);
     const label = date.toLocaleDateString("it-IT", {
         weekday: "long",
         year: "numeric",
@@ -149,16 +149,26 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                 </ul>
 
                 {/* ===== Azione: nuova transazione ===== */}
-                <div className="w-full flex justify-center border-t border-bg-elevate py-4">
+                <div className="w-full flex justify-center gap-3 border-t border-bg-elevate py-4">
                     <button
                         type="button"
                         onClick={() => {
                             onClose();
-                            openModal(null, isoDate);
+                            openModal(null, isoDate, "spesa");
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary-dark text-bg rounded-xl shadow hover:opacity-90 transition text-base font-semibold active:scale-100"
+                        className="flex items-center gap-2 px-3 py-2 bg-orange-500 text-bg rounded-xl shadow hover:opacity-90 transition text-sm font-semibold active:scale-100"
                     >
-                        <PlusCircle size={18} /> Nuova transazione
+                        <ArrowDownCircle size={18} /> Aggiungi spesa
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            onClose();
+                            openModal(null, isoDate, "entrata");
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 bg-primary-dark text-bg rounded-xl shadow hover:opacity-90 transition text-sm font-semibold active:scale-100"
+                    >
+                        <ArrowUpCircle size={18} /> Aggiungi entrata
                     </button>
                 </div>
             </div>

@@ -14,7 +14,13 @@ import { useCategories } from "@/context/contexts/CategoriesContext";
 // ============================
 // Componente principale
 // ============================
-export default function NewTransactionModal({ defaultDate }: { defaultDate?: string }) {
+export default function NewTransactionModal({
+    defaultDate,
+    defaultType,
+}: {
+    defaultDate?: string;
+    defaultType?: "entrata" | "spesa";
+}) {
     const { isOpen, closeModal, transactionToEdit, create, update } = useTransactions();
     const { categories } = useCategories();
     const [loading, setLoading] = useState(false);
@@ -101,6 +107,7 @@ export default function NewTransactionModal({ defaultDate }: { defaultDate?: str
                         onChangeForm={setFormValues}
                         onCancel={closeModal}
                         initialDate={!transactionToEdit ? defaultDate : undefined}
+                        initialType={!transactionToEdit ? defaultType : undefined}
                     />
                 </div>
             </div>
