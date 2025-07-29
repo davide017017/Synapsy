@@ -6,6 +6,7 @@ import { Transaction } from "@/types/models/transaction";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
 import { Calendar, ArrowUpCircle, ArrowDownCircle, Calculator } from "lucide-react";
 import { CATEGORY_ICONS_MAP } from "@/utils/categoryOptions";
+import { FiTag } from "react-icons/fi";
 
 export type DayTransactionsModalProps = {
     open: boolean;
@@ -86,7 +87,6 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                             // Prendi icona e colore categoria (fallback icona generica)
                             const iconKey = t.category?.icon as keyof typeof CATEGORY_ICONS_MAP;
                             const IconComp = iconKey && CATEGORY_ICONS_MAP[iconKey];
-
                             const catColor = t.category?.color || "#ccc";
                             return (
                                 <li
@@ -98,17 +98,15 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                                         {IconComp ? (
                                             <IconComp size={22} color={catColor} className="drop-shadow" />
                                         ) : (
-                                            <span className="inline-block w-5 h-5 rounded-full bg-gray-200" />
+                                            <FiTag size={22} className="text-muted-foreground" />
                                         )}
                                     </div>
                                     {/* Descrizione + categoria */}
                                     <div className="flex-1 min-w-0">
                                         <div className="font-semibold truncate">{t.description}</div>
-                                        {t.category && (
-                                            <div className="text-xs text-text-secondary capitalize">
-                                                {t.category.name}
-                                            </div>
-                                        )}
+                                        <div className="text-xs text-text-secondary capitalize">
+                                            {t.category?.name || "Nessuna categoria"}
+                                        </div>
                                     </div>
                                     {/* Importo + azioni */}
                                     <div className="flex items-center gap-1 flex-shrink-0">
