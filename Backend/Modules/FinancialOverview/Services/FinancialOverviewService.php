@@ -41,7 +41,7 @@ class FinancialOverviewService
         $financialEntries = $entrate->concat($spese)->sortBy(function ($item) use ($sortBy) {
             return match ($sortBy) {
                 'type'     => class_basename($item),
-                'category' => $item->category->name ?? '',
+                'category' => $item->category?->name ?? '',
                 default    => $item->{$sortBy}
             };
         }, SORT_REGULAR, $sortDirection === 'desc');

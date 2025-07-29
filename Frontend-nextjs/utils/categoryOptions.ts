@@ -25,11 +25,14 @@ import {
 import {
     FaUtensils,
     FaCar,
+    FaGamepad,
     FaRegSmile,
     FaHeartbeat,
     FaPlane,
     FaPiggyBank,
     FaRegMoneyBillAlt,
+    FaMoneyBillWave,
+    FaChartLine,
     FaBus,
     FaBolt,
     FaTree,
@@ -49,6 +52,7 @@ import {
     FaTshirt,
     FaDog,
     FaCat,
+    FaEllipsisH,
 } from "react-icons/fa";
 import {
     MdAttachMoney,
@@ -73,11 +77,14 @@ import {
     MdLocalHospital,
     MdSpa,
     MdBeachAccess,
+    MdOutlineLightbulb,
     MdOutlineSportsHandball,
     MdOutlineTrain,
     MdOutlineFlightTakeoff,
     MdOutlineShoppingCart,
 } from "react-icons/md";
+import { PiStudentBold } from "react-icons/pi";
+import { GiKnifeFork } from "react-icons/gi";
 
 // =======================
 // PALETTE COLORI ESTESA (MAXI, con nome)
@@ -193,14 +200,20 @@ export const CATEGORY_ICONS = [
     { value: "FiSun", name: "Sole" },
     { value: "FiMoon", name: "Luna" },
 
+    // Game Icons
+    { value: "GiKnifeFork", name: "Posate" },
+
     // FontAwesome (Fa)
     { value: "FaUtensils", name: "Cibo" },
     { value: "FaCar", name: "Auto" },
     { value: "FaRegSmile", name: "Sorriso" },
     { value: "FaHeartbeat", name: "Salute" },
     { value: "FaPlane", name: "Aereo" },
+    { value: "FaGamepad", name: "Gamepad" },
     { value: "FaPiggyBank", name: "Salvadanaio" },
     { value: "FaRegMoneyBillAlt", name: "Banconota" },
+    { value: "FaMoneyBillWave", name: "Busta paga" },
+    { value: "FaChartLine", name: "Investimenti" },
     { value: "FaBus", name: "Bus" },
     { value: "FaBolt", name: "Energia" },
     { value: "FaTree", name: "Albero" },
@@ -220,6 +233,7 @@ export const CATEGORY_ICONS = [
     { value: "FaTshirt", name: "Tshirt" },
     { value: "FaDog", name: "Cane" },
     { value: "FaCat", name: "Gatto" },
+    { value: "FaEllipsisH", name: "Altro" },
 
     // Material (Md)
     { value: "MdAttachMoney", name: "Soldi" },
@@ -244,6 +258,8 @@ export const CATEGORY_ICONS = [
     { value: "MdLocalHospital", name: "Ospedale" },
     { value: "MdSpa", name: "Spa" },
     { value: "MdBeachAccess", name: "Spiaggia" },
+    { value: "PiStudentBold", name: "Studente" },
+    { value: "MdOutlineLightbulb", name: "Lampadina" },
     { value: "MdOutlineSportsHandball", name: "Pallamano" },
     { value: "MdOutlineTrain", name: "Treno" },
     { value: "MdOutlineFlightTakeoff", name: "Decollo" },
@@ -273,13 +289,18 @@ export const CATEGORY_ICONS_MAP = {
     FiSun,
     FiMoon,
 
+    GiKnifeFork,
+
     FaUtensils,
     FaCar,
+    FaGamepad,
     FaRegSmile,
     FaHeartbeat,
     FaPlane,
     FaPiggyBank,
     FaRegMoneyBillAlt,
+    FaMoneyBillWave,
+    FaChartLine,
     FaBus,
     FaBolt,
     FaTree,
@@ -299,6 +320,7 @@ export const CATEGORY_ICONS_MAP = {
     FaTshirt,
     FaDog,
     FaCat,
+    FaEllipsisH,
 
     MdAttachMoney,
     MdHealthAndSafety,
@@ -322,10 +344,12 @@ export const CATEGORY_ICONS_MAP = {
     MdLocalHospital,
     MdSpa,
     MdBeachAccess,
+    MdOutlineLightbulb,
     MdOutlineSportsHandball,
     MdOutlineTrain,
     MdOutlineFlightTakeoff,
     MdOutlineShoppingCart,
+    PiStudentBold,
 } as const;
 
 export type CategoryIconName = keyof typeof CATEGORY_ICONS_MAP;

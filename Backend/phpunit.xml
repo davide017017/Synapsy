@@ -27,6 +27,10 @@
         <testsuite name="Module - Categories">
             <directory>Modules/Categories/tests</directory>
         </testsuite>
+
+        <testsuite name="Module - FinancialOverview">
+            <file>Modules/FinancialOverview/tests/Feature/TransactionsCategoryTest.php</file>
+        </testsuite>
         
     </testsuites>
 
