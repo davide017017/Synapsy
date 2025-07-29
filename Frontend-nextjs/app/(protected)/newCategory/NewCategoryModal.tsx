@@ -9,20 +9,24 @@ import Dialog from "@/app/components/ui/Dialog";
 import ModalLayout from "@/app/components/ui/ModalLayout";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import { Category, CategoryBase, NewCategoryModalProps } from "@/types";
-import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/utils/categoryOptions";
-import { getIconComponent } from "@/utils/iconMap";
+import {
+    CATEGORY_COLORS,
+    CATEGORY_ICONS,
+    getIconComponent,
+    type CategoryIconName,
+} from "@/utils/categoryOptions";
 
 export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave }: NewCategoryModalProps) {
     // Stato form
     const [name, setName] = useState("");
     const [type, setType] = useState<"entrata" | "spesa">("entrata");
     const [color, setColor] = useState<string>(CATEGORY_COLORS[0].value);
-    const [icon, setIcon] = useState<string>(CATEGORY_ICONS[0].value);
+    const [icon, setIcon] = useState<CategoryIconName>(CATEGORY_ICONS[0].value);
     const [loading, setLoading] = useState(false);
 
     // Helpers
     const getColorName = (value: string) => CATEGORY_COLORS.find((c) => c.value === value)?.name || value;
-    const getIconName = (value: string) => CATEGORY_ICONS.find((i) => i.value === value)?.name || value;
+    const getIconName = (value: CategoryIconName) => CATEGORY_ICONS.find((i) => i.value === value)?.name || value;
 
     // Popola form se edit
     useEffect(() => {

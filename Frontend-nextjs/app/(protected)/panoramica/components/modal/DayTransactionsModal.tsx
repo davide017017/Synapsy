@@ -5,7 +5,7 @@ import { PlusCircle, Pencil, Trash2 } from "lucide-react";
 import { Transaction } from "@/types/models/transaction";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
 import { Calendar, ArrowUpCircle, ArrowDownCircle, Calculator } from "lucide-react";
-import { CATEGORY_ICONS_MAP } from "@/lib/icons"; // <-- importa la tua mappa icone
+import { CATEGORY_ICONS_MAP } from "@/utils/categoryOptions";
 
 export type DayTransactionsModalProps = {
     open: boolean;

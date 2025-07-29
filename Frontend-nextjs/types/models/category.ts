@@ -6,12 +6,14 @@
 /**
  * Categoria transazione
  */
+import type { CategoryIconName } from "@/utils/categoryOptions";
+
 export type Category = {
     id: number;
     name: string;
     type: "entrata" | "spesa";
     color: string;
-    icon: string;
+    icon: CategoryIconName;
 };
 
 /**
@@ -21,7 +23,7 @@ export type CategoryBase = {
     name: string;
     type: "entrata" | "spesa";
     color: string;
-    icon: string;
+    icon: CategoryIconName;
 };
 
 // =======================================================

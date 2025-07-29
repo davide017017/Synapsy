@@ -6,7 +6,7 @@
 
 import { Category } from "@/types";
 import type { CardCategoriesProps, CategoryCardProps } from "@/types";
-import { getIconComponent } from "@/utils/iconMap";
+import { getIconComponent } from "@/utils/categoryOptions";
 import { Pencil, Trash2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
