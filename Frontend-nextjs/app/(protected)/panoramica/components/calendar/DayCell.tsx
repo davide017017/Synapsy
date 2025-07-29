@@ -10,13 +10,20 @@
 import { Transaction } from "@/types/models/transaction";
 import type { DayCellProps } from "@/types";
 
-
 // ----------- Funzione somma importi ----------- //
 const somma = (arr: Transaction[]) =>
     arr.reduce((tot, t) => tot + (typeof t.amount === "string" ? parseFloat(t.amount) : t.amount), 0);
 
 // ----------- Componente principale ----------- //
-export default function DayCell({ day, date, monthDelta, transactions, showWeekDay, onClickDay, maxImporto }: DayCellProps) {
+export default function DayCell({
+    day,
+    date,
+    monthDelta,
+    transactions,
+    showWeekDay,
+    onClickDay,
+    maxImporto,
+}: DayCellProps) {
     // Oggi
     const now = new Date();
     const isToday =
@@ -86,13 +93,13 @@ export default function DayCell({ day, date, monthDelta, transactions, showWeekD
                     )}
                 </div>
                 {/* Riepilogo */}
-                <div className="mt-auto mb-0.5 text-[10px] font-medium leading-4">
+                <div className="mt-auto mb-0.5 text-[10px] font-medium leading-4 whitespace-nowrap">
                     <div>{txCount} TX</div>
                     <div>
-                        <span className="text-primary">Entrate: {entrate.length}</span>
+                        <span className="text-primary whitespace-nowrap">In: {entrate.length}</span>
                     </div>
                     <div>
-                        <span className="text-orange-400">Spese: {spese.length}</span>
+                        <span className="text-orange-400 whitespace-nowrap">Out: {spese.length}</span>
                     </div>
                 </div>
             </div>
