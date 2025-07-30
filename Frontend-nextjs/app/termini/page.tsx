@@ -1,8 +1,9 @@
+import TermsContent from "@/app/components/legal/TermsContent";
+
 export default function TerminiPage() {
-    return (
-        <div className="p-8 prose mx-auto">
-            <h1>Termini di servizio</h1>
-            <p>Condizioni di utilizzo della versione beta di Synapsy.</p>
-        </div>
-    );
+  return (
+    <div className="p-8 mx-auto max-w-2xl">
+      <TermsContent />
+    </div>
+  );
 }

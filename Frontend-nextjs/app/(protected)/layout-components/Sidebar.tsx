@@ -23,6 +23,9 @@ import {
 import { useSidebar } from "@/context/contexts/SidebarContext";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
 import { useState } from "react";
+import BetaBadge from "@/app/components/BetaBadge";
+import PrivacyModal from "@/app/components/legal/PrivacyModal";
+import TermsModal from "@/app/components/legal/TermsModal";
 import { themeMeta } from "@/lib/themeUtils";
 
 // ────────────────────────────────
@@ -49,6 +52,8 @@ export default function Sidebar() {
     // ========== Stato sidebar ==========
     const { isCollapsed, toggleSidebar } = useSidebar();
     const [isOpenMobile, setIsOpenMobile] = useState(false);
+    const [showPrivacy, setShowPrivacy] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
     const pathname = usePathname();
 
     // ========== Gestione temi ==========
@@ -97,6 +102,7 @@ export default function Sidebar() {
                     onClick={() => setIsOpenMobile(false)}
                 >
                     <span className="ml-2 text-xl font-bold text-primary">Synapsi</span>
+                    <BetaBadge inline className="ml-1" />
                 </Link>
 
                 {/* ----------- Navigazione ----------- */}
@@ -143,6 +149,16 @@ export default function Sidebar() {
                         );
                     })}
                 </div>
+                <div className="p-4 border-t border-white/10 text-center text-xs space-x-2">
+                    <button className="underline hover:text-white" onClick={() => setShowPrivacy(true)}>
+                        Privacy
+                    </button>
+                    <button className="underline hover:text-white" onClick={() => setShowTerms(true)}>
+                        Termini
+                    </button>
+                </div>
+                <PrivacyModal open={showPrivacy} onClose={() => setShowPrivacy(false)} />
+                <TermsModal open={showTerms} onClose={() => setShowTerms(false)} />
             </aside>
         </>
     );

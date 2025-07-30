@@ -2,7 +2,6 @@
 import "@/styles/globals.css";
 import GlobalContextProvider from "@/context/GlobalContextProvider";
 import { Toaster } from "sonner";
-import BetaBadge from "@/app/components/BetaBadge";
 
 export const metadata = {
     title: "Synapsy",
@@ -13,7 +12,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="it" className="dark" data-theme="dark" suppressHydrationWarning>
             <body>
-                <BetaBadge />
                 {/* Toaster e contesti globali */}
                 {/* ==================================== */}
                 {/*      TOASTER CENTRATO & STILOSO      */}

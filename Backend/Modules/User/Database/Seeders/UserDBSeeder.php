@@ -39,14 +39,15 @@ class UserDBSeeder extends Seeder
                 'email_verified_at' => now(),
                 'remember_token'    => Str::random(10),
                 'is_admin'          => true,
+                'has_accepted_terms'=> true,
             ]
         );
 
         // =========================================================================
         // 🧪 Generazione utenti fittizi
         // =========================================================================
-        $this->logInfo('User', 'Generazione 3 utenti fittizi...', '🧪');
-        User::factory(3)->create();
+        $this->logInfo('User', 'Generazione 1 utente demo...', '🧪');
+        User::factory()->create(['has_accepted_terms' => true]);
 
         // =========================================================================
         // ✅ Fine seeding
