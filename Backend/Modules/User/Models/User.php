@@ -65,6 +65,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'avatar',           // NEW: url o path avatar
         'theme',            // NEW: tema preferito utente
         'pending_email',    // NEW: email in attesa di conferma
+        'has_accepted_terms',
         // 'birthdate',     // Opzionale: data di nascita
         // 'phone',         // Opzionale: telefono
         // 'locale',        // Opzionale: lingua preferita
@@ -91,6 +92,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
             'avatar' => 'string',
             'theme' => 'string',
             'pending_email' => 'string',
+            'has_accepted_terms' => 'boolean',
             'birthdate' => 'date:Y-m-d', // se usi la colonna
         ];
     }

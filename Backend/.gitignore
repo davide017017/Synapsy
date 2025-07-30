@@ -2,6 +2,7 @@
 /node_modules
 /.env
 .env.*
+!.env.example
 /.idea
 /public/storage
 /storage/*.key

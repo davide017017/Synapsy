@@ -6,6 +6,7 @@
 
 import { signOut } from "next-auth/react";
 import { LogOut, UserCircle } from "lucide-react";
+import BetaBadge from "@/app/components/BetaBadge";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -43,6 +44,7 @@ export default function Header() {
                     priority
                     className="h-8 w-auto"
                 />
+                <BetaBadge inline />
             </Link>
 
             {/* UTENTE + LOGOUT (a destra) */}

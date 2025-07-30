@@ -15,11 +15,11 @@ use Modules\User\Http\Controllers\ApiResetPasswordController;
 
 Route::prefix('v1')->group(function () {
     // --- Auth / Registrazione ---
-    Route::post('login', [ApiLoginController::class, 'login']);
-    Route::post('register', [ApiRegisterController::class, 'register']);
+    Route::post('login', [ApiLoginController::class, 'login'])->middleware('throttle:5,1');
+    Route::post('register', [ApiRegisterController::class, 'register'])->middleware('throttle:5,1');
     Route::get('verify-email/{id}/{hash}', ApiVerifyEmailController::class)->name('api.verification.verify');
-    Route::post('forgot-password', [ApiForgotPasswordController::class, 'sendResetLink']);
-    Route::post('reset-password', [ApiResetPasswordController::class, 'reset']);
+    Route::post('forgot-password', [ApiForgotPasswordController::class, 'sendResetLink'])->middleware('throttle:5,1');
+    Route::post('reset-password', [ApiResetPasswordController::class, 'reset'])->middleware('throttle:5,1');
     Route::get('verify-new-email/{id}/{hash}', VerifyPendingEmailController::class)
         ->name('verification.pending-email');
 
