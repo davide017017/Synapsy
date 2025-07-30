@@ -20,6 +20,7 @@ class ApiRegisterController extends Controller
             'username' => $data['username'],
             'password' => $data['password'],
             'theme' => $data['theme'] ?? null,
+            'has_accepted_terms' => $data['has_accepted_terms'],
             'avatar' => 'images/avatars/avatar-1.svg',
         ]);
 

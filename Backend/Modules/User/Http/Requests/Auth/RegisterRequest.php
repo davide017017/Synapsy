@@ -23,6 +23,7 @@ class RegisterRequest extends FormRequest
             'username' => ['required', 'string', 'max:64', Rule::unique(User::class)],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'theme' => ['nullable', 'string', Rule::in(['system','light','dark','emerald','solarized'])],
+            'has_accepted_terms' => ['accepted'],
         ];
     }
 }
