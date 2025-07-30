@@ -177,7 +177,7 @@ export default function ProfilePage() {
                 )}
             </AnimatePresence>
             <DeleteAccountSection />
-            <LegalLinks className="mt-4" />
+            <LegalLinks className="p-4 border-t border-white/10 text-center" />
         </div>
     );
 }
