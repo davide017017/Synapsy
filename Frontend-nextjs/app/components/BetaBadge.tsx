@@ -2,20 +2,20 @@
 
 interface Props {
     inline?: boolean;
+    floating?: boolean;
+    className?: string;
 }
 
-export default function BetaBadge({ inline = false }: Props) {
+export default function BetaBadge({ inline = false, floating = false, className = "" }: Props) {
     if (process.env.NEXT_PUBLIC_BETA !== "true") return null;
     const text =
-        "Versione Beta - Alcuni dati potrebbero essere cancellati. " +
-        "Alcune funzionalita potrebbero essere modificate o rimosse. " +
-        "Feedback e bug possono essere comunicati a support@synapsy.app";
-    const className = inline
-        ? "ml-2 px-2 py-0.5 text-xs font-bold rounded bg-yellow-300 text-black"
-        :
-          "fixed top-2 right-2 z-50 px-2 py-0.5 text-xs font-bold rounded bg-yellow-300 text-black";
+        "Versione Beta: alcuni dati potrebbero essere cancellati; " +
+        "funzionalità e UI potrebbero cambiare senza preavviso; " +
+        "non usare per dati sensibili reali; per feedback scrivi a support@synapsy.app.";
+    const base = "px-2 py-0.5 text-xs font-bold rounded bg-yellow-300 text-black";
+    const pos = floating ? "fixed top-2 right-2 z-50" : inline ? "ml-2" : "";
     return (
-        <span className={className} title={text}>
+        <span className={`${base} ${pos} ${className}`.trim()} title={text}>
             Beta
         </span>
     );

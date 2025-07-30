@@ -3,7 +3,7 @@
 // Lista transazioni con filtro e tabella — uniformata
 // ====================================================
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import TransactionListFilter from "./list/TransactionListFilter";
 import TransactionTable from "./list/TransactionTable";
 import { useSelection } from "@/context/contexts/SelectionContext";
@@ -24,6 +24,7 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
 
     const { categories } = useCategories();
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
+    const [visible, setVisible] = useState(20);
 
     // ===== Filtro transazioni =====
     const filtered = useMemo(() => {
@@ -34,6 +35,10 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
             return matchType && matchCategory && matchSearch;
         });
     }, [transactions, filter]);
+
+    useEffect(() => {
+        setVisible(20);
+    }, [filter, transactions]);
 
     // ===== Render Vuoto =====
     if (!transactions.length) {
@@ -64,13 +69,27 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
             {/* ====== Tabella ====== */}
             <div className="flex-1 min-w-0">
                 <TransactionTable
-                    data={filtered}
+                    data={filtered.slice(0, visible)}
                     onRowClick={onSelect}
                     selectedId={selectedId}
                     isSelectionMode={isSelectionMode}
                     selectedIds={selectedIds}
                     setSelectedIds={setSelectedIds}
                 />
+                {visible < filtered.length ? (
+                    <div className="text-center mt-4">
+                        <button
+                            onClick={() => setVisible((v) => v + 20)}
+                            className="px-3 py-1 rounded bg-primary text-white text-sm"
+                        >
+                            Carica altre transazioni
+                        </button>
+                    </div>
+                ) : (
+                    <div className="text-center text-sm text-muted-foreground mt-4">
+                        Hai visualizzato tutte le transazioni.
+                    </div>
+                )
             </div>
         </div>
     );
