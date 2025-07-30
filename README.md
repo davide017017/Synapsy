@@ -20,7 +20,7 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 -   **Backend:** [Laravel 12.x](https://laravel.com/) (PHP 8.2+)
 -   **Frontend:** [Next.js 15](https://nextjs.org/) (React, TypeScript, Tailwind CSS)
--   **Database:** MySQL / SQLite (testing)
+ -   **Database:** PostgreSQL / SQLite (testing)
 -   **Autenticazione:** Laravel Sanctum (API Token)
 
 ---

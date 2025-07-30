@@ -16,10 +16,11 @@ return new class extends Migration
             $table->id();                                 // ID del job
             $table->string('queue')->index();             // Nome della coda
             $table->longText('payload');                  // Dati serializzati del job
-            $table->unsignedTinyInteger('attempts');      // Tentativi effettuati
-            $table->unsignedInteger('reserved_at')->nullable();  // Timestamp prenotazione
-            $table->unsignedInteger('available_at');      // Quando il job diventa disponibile
-            $table->unsignedInteger('created_at');        // Timestamp creazione
+            // PostgreSQL non supporta tipi unsigned o tinyint
+            $table->smallInteger('attempts'); // @TODO: check postgresql
+            $table->integer('reserved_at')->nullable();
+            $table->integer('available_at');
+            $table->integer('created_at');
         });
 
         // Tabella per raggruppare job in batch
@@ -30,7 +31,8 @@ return new class extends Migration
             $table->integer('pending_jobs');              // Job ancora da completare
             $table->integer('failed_jobs');               // Job falliti
             $table->longText('failed_job_ids');           // Lista ID job falliti
-            $table->mediumText('options')->nullable();    // Opzioni extra
+            // mediumText non esiste su PostgreSQL
+            $table->text('options')->nullable(); // @TODO: check postgresql
             $table->integer('cancelled_at')->nullable();  // Timestamp annullamento
             $table->integer('created_at');                // Timestamp creazione
             $table->integer('finished_at')->nullable();   // Timestamp completamento

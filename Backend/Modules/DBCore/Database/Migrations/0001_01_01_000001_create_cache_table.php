@@ -14,7 +14,8 @@ return new class extends Migration
         // Tabella principale della cache
         Schema::create('cache', function (Blueprint $table) {
             $table->string('key')->primary();     // Chiave univoca della cache
-            $table->mediumText('value');          // Valore serializzato
+            // mediumText non esiste su PostgreSQL
+            $table->text('value'); // @TODO: check postgresql
             $table->integer('expiration');        // Timestamp di scadenza
         });
 

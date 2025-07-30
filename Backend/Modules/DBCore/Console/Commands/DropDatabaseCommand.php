@@ -15,7 +15,7 @@ class DropDatabaseCommand extends Command
     /**
      * Descrizione del comando.
      */
-    protected $description = 'Elimina il database MySQL configurato, se esiste. Utile solo in ambienti di sviluppo.';
+    protected $description = 'Elimina il database configurato, se esiste. Utile solo in ambienti di sviluppo.';
 
     /**
      * Esecuzione del comando.
@@ -30,10 +30,10 @@ class DropDatabaseCommand extends Command
         }
 
         // Disconnetti per evitare errore su "database in uso"
-        config(['database.connections.mysql.database' => null]);
+        config(['database.connections.pgsql.database' => 'postgres']);
 
         try {
-            DB::statement("DROP DATABASE IF EXISTS `$dbName`");
+            DB::statement("DROP DATABASE IF EXISTS \"$dbName\""); // @TODO: check postgresql
             $this->info("🗑️  Database `$dbName` eliminato (se esiste).");
         } catch (\Exception $e) {
             $this->error("❌ Errore durante l'eliminazione del database: " . $e->getMessage());
