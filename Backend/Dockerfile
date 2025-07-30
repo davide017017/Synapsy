@@ -33,7 +33,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Build front-end assets if package.json exists
-RUN if [ -f package.json ]; then npm ci --omit=dev && npm run build; fi
+RUN if [ -f package.json ]; then npm ci && npm run build; fi
 
 # Fix permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
