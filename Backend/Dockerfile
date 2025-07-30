@@ -11,6 +11,7 @@ RUN apk add --no-cache --virtual .build-deps \
         freetype-dev \
         libzip-dev \
         oniguruma-dev \
+        libxml2-dev \
         git \
         curl \
         unzip \
