@@ -15,6 +15,8 @@ import { useUser } from "@/context/contexts/UserContext";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
 import PendingEmailNotice from "@/app/components/PendingEmailNotice";
 import { UserRound } from "lucide-react";
+import LegalLinks from "@/app/components/legal/LegalLinks";
+import DeleteAccountSection from "./components/DeleteAccountSection";
 
 // ======================================================
 // Componente principale
@@ -174,6 +176,8 @@ export default function ProfilePage() {
                     />
                 )}
             </AnimatePresence>
+            <DeleteAccountSection />
+            <LegalLinks className="mt-4" />
         </div>
     );
 }

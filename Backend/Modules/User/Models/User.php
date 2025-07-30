@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Spese\Models\Spesa;
 use Modules\Entrate\Models\Entrata;
 use Modules\Categories\Models\Category;
@@ -37,8 +38,8 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
  * @property string|null $locale
  */
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
-{
-    use HasApiTokens, HasFactory, Notifiable;
+{ 
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     // ===================================================================
     // JWT Auth

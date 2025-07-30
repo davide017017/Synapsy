@@ -14,7 +14,7 @@ export default function TermsContent() {
       <p>
         Gli account e i relativi dati potranno essere cancellati in qualsiasi
         momento. Per problemi o feedback scrivi a
-        <a href="mailto:support@synapsy.app">support@synapsy.app</a>.
+        <a href="mailto:synapsy.customer@gmail.com">synapsy.customer@gmail.com</a>.
       </p>
     </div>
   );
