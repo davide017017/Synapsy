@@ -1,8 +1,9 @@
+import PrivacyContent from "@/app/components/legal/PrivacyContent";
+
 export default function PrivacyPage() {
-    return (
-        <div className="p-8 prose mx-auto">
-            <h1>Privacy</h1>
-            <p>Informativa sulla privacy della versione beta di Synapsy.</p>
-        </div>
-    );
+  return (
+    <div className="p-8 mx-auto max-w-2xl">
+      <PrivacyContent />
+    </div>
+  );
 }

@@ -8,6 +8,8 @@ import { Button } from "@/app/components/ui/Button";
 import PasswordInput from "../form-components/PasswordInput";
 import { handleRegister } from "@/lib/auth/handleRegister";
 import { PASSWORD_RULES_TEXT, isPasswordValid } from "@/lib/auth/passwordRules";
+import PrivacyModal from "@/app/components/legal/PrivacyModal";
+import TermsModal from "@/app/components/legal/TermsModal";
 
 interface Props {
     isOpen: boolean;
@@ -27,6 +29,8 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [showPrivacy, setShowPrivacy] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
     const passwordValid = isPasswordValid(form.password);
 
     const handleChange = (field: string, value: any) => {
@@ -127,8 +131,22 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
                             required
                         />
                         <span>
-                            Accetto <a href="/privacy" className="underline">Privacy</a> e
-                            <a href="/termini" className="underline ml-1">Termini</a>
+                            Accetto
+                            <button
+                                type="button"
+                                onClick={() => setShowPrivacy(true)}
+                                className="underline ml-1"
+                            >
+                                Privacy
+                            </button>
+                            e
+                            <button
+                                type="button"
+                                onClick={() => setShowTerms(true)}
+                                className="underline ml-1"
+                            >
+                                Termini
+                            </button>
                         </span>
                     </label>
                     {error && <p className="text-danger text-sm">{error}</p>}
@@ -138,6 +156,8 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
                     </Button>
                 </form>
             </ModalLayout>
+            <PrivacyModal open={showPrivacy} onClose={() => setShowPrivacy(false)} />
+            <TermsModal open={showTerms} onClose={() => setShowTerms(false)} />
         </Dialog>
     );
 }

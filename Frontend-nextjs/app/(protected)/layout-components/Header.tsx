@@ -6,7 +6,10 @@
 
 import { signOut } from "next-auth/react";
 import { LogOut, UserCircle } from "lucide-react";
+import { useState } from "react";
 import BetaBadge from "@/app/components/BetaBadge";
+import PrivacyModal from "@/app/components/legal/PrivacyModal";
+import TermsModal from "@/app/components/legal/TermsModal";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,6 +22,8 @@ export default function Header() {
     // ─────────── USER & ROUTER ───────────
     const { user } = useUser();
     const router = useRouter();
+    const [showPrivacy, setShowPrivacy] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
 
     // ─────────── USERNAME ───────────
     const username = user?.username;
@@ -78,6 +83,19 @@ export default function Header() {
                 )}
 
                 <button
+                    onClick={() => setShowPrivacy(true)}
+                    className="text-xs underline text-gray-300 hover:text-white"
+                >
+                    Privacy
+                </button>
+                <button
+                    onClick={() => setShowTerms(true)}
+                    className="text-xs underline text-gray-300 hover:text-white"
+                >
+                    Termini
+                </button>
+
+                <button
                     onClick={handleLogout}
                     className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-white hover:text-red-400 ring-1 ring-white/20 hover:ring-red-400 transition shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400"
                 >
@@ -85,6 +103,8 @@ export default function Header() {
                     <LogOut size={16} />
                 </button>
             </div>
+            <PrivacyModal open={showPrivacy} onClose={() => setShowPrivacy(false)} />
+            <TermsModal open={showTerms} onClose={() => setShowTerms(false)} />
         </header>
     );
 }
