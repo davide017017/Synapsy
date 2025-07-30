@@ -9,6 +9,7 @@ export interface RegisterPayload {
     username: string;
     password: string;
     password_confirmation: string;
+    has_accepted_terms: boolean;
 }
 
 export async function handleRegister(payload: RegisterPayload): Promise<{success:boolean; message:string}> {

@@ -76,6 +76,7 @@ class UserFactory extends Factory
             'password'          => Hash::make('password1234'),
             'remember_token'    => Str::random(10),
             'is_admin'          => false,
+            'has_accepted_terms' => true,
         ];
     }
 

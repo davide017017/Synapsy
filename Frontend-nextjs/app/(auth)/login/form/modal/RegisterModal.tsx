@@ -22,13 +22,14 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
         username: "",
         password: "",
         confirm: "",
+        accepted: false,
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const passwordValid = isPasswordValid(form.password);
 
-    const handleChange = (field: string, value: string) => {
+    const handleChange = (field: string, value: any) => {
         setForm((f) => ({ ...f, [field]: value }));
     };
 
@@ -36,6 +37,10 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
         e.preventDefault();
         setError(null);
         setMessage(null);
+        if (!form.accepted) {
+            setError("Devi accettare Privacy e Termini");
+            return;
+        }
         if (form.password !== form.confirm) {
             setError("Le password non coincidono");
             return;
@@ -55,6 +60,7 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
                 username: form.username,
                 password: form.password,
                 password_confirmation: form.confirm,
+                has_accepted_terms: form.accepted,
             });
             if (success) {
                 setMessage(message);
@@ -113,6 +119,18 @@ export default function RegisterModal({ isOpen, onClose }: Props) {
                         onChange={(v) => handleChange("confirm", v)}
                         placeholder="Conferma password"
                     />
+                    <label className="flex items-center gap-2 text-xs">
+                        <input
+                            type="checkbox"
+                            checked={form.accepted}
+                            onChange={(e) => handleChange("accepted", e.target.checked)}
+                            required
+                        />
+                        <span>
+                            Accetto <a href="/privacy" className="underline">Privacy</a> e
+                            <a href="/termini" className="underline ml-1">Termini</a>
+                        </span>
+                    </label>
                     {error && <p className="text-danger text-sm">{error}</p>}
                     {message && !error && <p className="text-success text-sm">{message}</p>}
                     <Button type="submit" disabled={loading} className="w-full mt-2">
