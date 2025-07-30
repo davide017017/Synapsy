@@ -82,9 +82,9 @@ export function getColumnsWithSelection(
             cell: ({ row }: { row: Row<TransactionWithGroup> }) => {
                 const type = row.original?.category?.type;
                 return type === "entrata" ? (
-                    <ArrowDown className="text-[hsl(var(--c-table-success-2))]" size={16} />
+                    <ArrowUp className="text-[hsl(var(--c-table-success-2))]" size={16} />
                 ) : (
-                    <ArrowUp className="text-[hsl(var(--c-table-danger-2))]" size={16} />
+                    <ArrowDown className="text-[hsl(var(--c-table-danger-2))]" size={16} />
                 );
             },
         },
