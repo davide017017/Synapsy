@@ -33,7 +33,7 @@ class DropDatabaseCommand extends Command
         config(['database.connections.pgsql.database' => 'postgres']);
 
         try {
-            DB::statement("DROP DATABASE IF EXISTS \"$dbName\""); // @TODO: check postgresql
+            DB::statement("DROP DATABASE IF EXISTS \"$dbName\"");
             $this->info("🗑️  Database `$dbName` eliminato (se esiste).");
         } catch (\Exception $e) {
             $this->error("❌ Errore durante l'eliminazione del database: " . $e->getMessage());

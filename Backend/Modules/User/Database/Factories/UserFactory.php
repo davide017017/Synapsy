@@ -70,7 +70,7 @@ class UserFactory extends Factory
             'surname'           => $surname,
             'username'          => $username, // NEW
             'theme'             => $this->faker->randomElement($themes), // NEW
-            'avatar' => $this->faker->randomElement($avatarChoices),
+            'avatar'            => $this->faker->randomElement($avatarChoices),
             'email'             => $identity['email_base'] . '@' . $this->faker->unique()->domainWord() . '.' . $this->faker->tld(),
             'email_verified_at' => $isVerified ? Carbon::now() : null,
             'password'          => Hash::make('password1234'),

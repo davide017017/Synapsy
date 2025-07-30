@@ -27,7 +27,7 @@ return new class extends Migration
             // METADATI DEL PERIODO
             // =========================================================================
             // PostgreSQL non supporta ENUM MySQL
-            $table->string('period_type'); // @TODO: check postgresql
+            $table->string('period_type');
             $table->date('period_start_date');
             $table->date('period_end_date');
 

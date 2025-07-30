@@ -31,7 +31,7 @@ return new class extends Migration
             // =========================================================================
             $table->string('name');
             // PostgreSQL non supporta il tipo ENUM di MySQL
-            $table->string('type')->default('spesa'); // @TODO: check postgresql
+            $table->string('type')->default('spesa');
 
             $table->string('color', 32)->nullable();
             $table->string('icon', 64)->nullable();

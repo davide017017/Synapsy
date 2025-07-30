@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('queue')->index();             // Nome della coda
             $table->longText('payload');                  // Dati serializzati del job
             // PostgreSQL non supporta tipi unsigned o tinyint
-            $table->smallInteger('attempts'); // @TODO: check postgresql
+            $table->smallInteger('attempts');
             $table->integer('reserved_at')->nullable();
             $table->integer('available_at');
             $table->integer('created_at');
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->integer('failed_jobs');               // Job falliti
             $table->longText('failed_job_ids');           // Lista ID job falliti
             // mediumText non esiste su PostgreSQL
-            $table->text('options')->nullable(); // @TODO: check postgresql
+            $table->text('options')->nullable();
             $table->integer('cancelled_at')->nullable();  // Timestamp annullamento
             $table->integer('created_at');                // Timestamp creazione
             $table->integer('finished_at')->nullable();   // Timestamp completamento

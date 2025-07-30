@@ -28,27 +28,26 @@ return new class extends Migration
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
 
-            // In PostgreSQL non esiste unsigned
-            $table->bigInteger('user_id')->nullable()->index(); // @TODO: check postgresql
-            $table->string('action');                                        // Azione (es: created, updated, deleted, moved)
-            $table->string('auditable_type');                                // Classe modello (es: App\Models\Spesa)
-            $table->bigInteger('auditable_id'); // @TODO: check postgresql
+            // =========================================================
+            // Foreign key moderna e compatibile
+            // =========================================================
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
 
-            $table->json('old_values')->nullable();                          // Stato PRIMA (json, nullable)
-            $table->json('new_values')->nullable();                          // Stato DOPO (json, nullable)
+            $table->string('action');           // Azione (es: created, updated, deleted, moved)
+            $table->string('auditable_type');   // Classe modello (es: App\Models\Spesa)
+            $table->bigInteger('auditable_id'); // ID del modello (puoi lasciarlo così, va bene per FK generiche)
 
-            $table->text('reason')->nullable();                              // Motivo (testo libero, nullable)
+            $table->json('old_values')->nullable(); // Stato PRIMA (json, nullable)
+            $table->json('new_values')->nullable(); // Stato DOPO (json, nullable)
 
-            // Facoltativi, per audit avanzato
-            $table->string('ip_address', 45)->nullable();                    // IP (45 per IPv6 compatibilità)
-            $table->text('user_agent')->nullable();                          // User Agent (browser, device...)
+            $table->text('reason')->nullable();     // Motivo (testo libero, nullable)
+            $table->string('ip_address', 45)->nullable(); // IP compatibile IPv6
+            $table->text('user_agent')->nullable();       // User Agent (browser, device...)
 
             $table->timestamps();
-
-            // Foreign key: se utente viene eliminato, imposta a NULL
-            $table->foreign('user_id')
-                ->references('id')->on('users')
-                ->nullOnDelete();
         });
     }
 

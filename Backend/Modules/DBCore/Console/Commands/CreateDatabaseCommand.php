@@ -33,7 +33,7 @@ class CreateDatabaseCommand extends Command
 
         try {
             // Creazione DB compatibile con PostgreSQL
-            \DB::statement("CREATE DATABASE \"$dbName\""); // @TODO: check postgresql
+            \DB::statement("CREATE DATABASE \"$dbName\"");
             $this->info("✅ Database `$dbName` pronto.");
 
             // 🔁 Ripristina la configurazione del database
@@ -42,7 +42,6 @@ class CreateDatabaseCommand extends Command
             // 🔄 Forza Laravel a riconnettere
             \DB::purge('pgsql');
             \DB::reconnect('pgsql');
-
         } catch (\Exception $e) {
             $this->error("❌ Errore nella creazione del database: " . $e->getMessage());
         }
