@@ -4,7 +4,7 @@
 
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-red?style=flat-square&logo=laravel)](https://laravel.com/)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-blue?style=flat-square&logo=php)](https://www.php.net/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.x-blue?style=flat-square&logo=mysql)](https://www.mysql.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.x-blue?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-3-lightgrey?style=flat-square&logo=sqlite)](https://www.sqlite.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-green?style=flat-square&logo=node.js)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
@@ -39,7 +39,7 @@
 -   Laravel 12.x
 -   Composer
 -   Node.js + npm (per asset Blade, opzionale)
--   **MySQL 8.x** (consigliato)
+ -   **PostgreSQL 15.x** (consigliato)
 -   SQLite (per testing rapido)
 
 ---

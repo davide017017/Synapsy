@@ -27,22 +27,21 @@ class CreateDatabaseCommand extends Command
     public function handle(): void
     {
         $dbName = env('DB_DATABASE', 'synapsi_db_core');
-        $charset = 'utf8mb4';
-        $collation = 'utf8mb4_unicode_ci';
 
         // Disconnetti temporaneamente il database per creare senza errore
-        config(['database.connections.mysql.database' => null]);
+        config(['database.connections.pgsql.database' => 'postgres']);
 
         try {
-            \DB::statement("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET $charset COLLATE $collation");
+            // Creazione DB compatibile con PostgreSQL
+            \DB::statement("CREATE DATABASE \"$dbName\""); // @TODO: check postgresql
             $this->info("✅ Database `$dbName` pronto.");
 
             // 🔁 Ripristina la configurazione del database
-            config(['database.connections.mysql.database' => $dbName]);
+            config(['database.connections.pgsql.database' => $dbName]);
 
             // 🔄 Forza Laravel a riconnettere
-            \DB::purge('mysql');
-            \DB::reconnect('mysql');
+            \DB::purge('pgsql');
+            \DB::reconnect('pgsql');
 
         } catch (\Exception $e) {
             $this->error("❌ Errore nella creazione del database: " . $e->getMessage());

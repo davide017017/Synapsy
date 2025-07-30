@@ -28,10 +28,11 @@ return new class extends Migration
         Schema::create('audit_logs', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('user_id')->nullable()->index();      // Utente (nullable, perché potrebbe non esistere)
+            // In PostgreSQL non esiste unsigned
+            $table->bigInteger('user_id')->nullable()->index(); // @TODO: check postgresql
             $table->string('action');                                        // Azione (es: created, updated, deleted, moved)
             $table->string('auditable_type');                                // Classe modello (es: App\Models\Spesa)
-            $table->unsignedBigInteger('auditable_id');                      // PK del modello
+            $table->bigInteger('auditable_id'); // @TODO: check postgresql
 
             $table->json('old_values')->nullable();                          // Stato PRIMA (json, nullable)
             $table->json('new_values')->nullable();                          // Stato DOPO (json, nullable)
