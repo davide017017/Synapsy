@@ -31,7 +31,9 @@ class RegistrationTest extends TestCase
             ->post('/register', [
                 '_token'                 => 'test_csrf_token',
                 'name'                   => 'Test User',
+                'username'               => 'testuser',
                 'email'                  => 'test@example.com',
+                'has_accepted_terms'     => '1',
                 'password'               => 'password',
                 'password_confirmation'  => 'password',
             ]);

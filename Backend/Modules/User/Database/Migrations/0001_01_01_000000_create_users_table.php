@@ -24,7 +24,8 @@ return new class extends Migration
             // -------------------------
             $table->string('name'); // Nome
             $table->string('surname')->nullable(); // Cognome (opzionale)
-            $table->string('username', 64)->unique()->nullable(); // Username univoco (opzionale)
+            // Username univoco e obbligatorio
+            $table->string('username', 64)->unique();
             $table->string('email', 191)->unique(); // Email univoca
 
             // -------------------------
