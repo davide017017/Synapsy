@@ -107,7 +107,8 @@ class ProfileTest extends TestCase
             ->assertRedirect('/');
 
         $this->assertGuest();
-        $this->assertNull($user->fresh());
+        $this->assertNotNull($user->fresh());
+        $this->assertNotNull($user->fresh()->deleted_at);
     }
 
     // ================================================================

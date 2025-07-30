@@ -75,3 +75,20 @@ export async function resendPendingEmail(token: string): Promise<void> {
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.message || "Errore invio email");
 }
+
+// ==============================
+// DELETE profilo (soft delete)
+// ==============================
+export async function deleteUserProfile(token: string, password: string): Promise<void> {
+    const res = await fetch(`${API_URL}/v1/profile`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+        },
+        body: JSON.stringify({ password }),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.message || "Errore eliminazione profilo");
+}

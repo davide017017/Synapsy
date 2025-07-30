@@ -10,12 +10,12 @@ export default function PrivacyContent() {
       <p>
         Non condividiamo le informazioni con terze parti. Puoi richiederne la
         cancellazione in qualsiasi momento scrivendo a
-        <a href="mailto:support@synapsy.app">support@synapsy.app</a>.
+        <a href="mailto:synapsy.customer@gmail.com">synapsy.customer@gmail.com</a>.
       </p>
       <p>
         Utilizzando la beta accetti che eventuali errori possano causare perdita
         di dati. Segnalaci bug o suggerimenti a
-        <a href="mailto:support@synapsy.app">support@synapsy.app</a>.
+        <a href="mailto:synapsy.customer@gmail.com">synapsy.customer@gmail.com</a>.
       </p>
     </div>
   );

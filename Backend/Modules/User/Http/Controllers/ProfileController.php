@@ -181,7 +181,7 @@ class ProfileController extends Controller
     // ============================
     // Destroy - Delete User Account
     // ============================
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse|JsonResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
@@ -195,6 +195,10 @@ class ProfileController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if ($request->wantsJson()) {
+            return ApiResponse::success('Account disattivato. Potrai recuperarlo entro 30 giorni.');
+        }
 
         return Redirect::to('/');
     }
