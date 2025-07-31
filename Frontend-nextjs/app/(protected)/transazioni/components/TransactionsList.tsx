@@ -89,7 +89,7 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                     <div className="text-center text-sm text-muted-foreground mt-4">
                         Hai visualizzato tutte le transazioni.
                     </div>
-                )
+                )}
             </div>
         </div>
     );
