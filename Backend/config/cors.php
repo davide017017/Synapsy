@@ -1,5 +1,5 @@
 <?php
-// ⚠️ Modifica allowed_origins prima del deploy! Lascia SOLO il dominio reale della tua app!
+// ⚠️ In produzione definitiva lascia solo il dominio reale!
 
 return [
     'paths' => [
@@ -11,16 +11,14 @@ return [
 
     'allowed_methods' => ['*'],
 
-    // --- SVILUPPO: accetta chiamate dal frontend in locale o LAN ---
+    // =========================================================================
+    // Accetta chiamate sia da produzione che da sviluppo
+    // =========================================================================
     'allowed_origins' => [
-        'http://localhost:3000',           // Frontend locale
-        'http://192.168.0.111:3000',       // Frontend su rete locale
+        'https://synapsy-frontend.vercel.app', // Frontend produzione (Vercel)
+        'http://localhost:3000',               // Sviluppo locale
+        'http://192.168.0.111:3000',           // Sviluppo su rete LAN (se ti serve)
     ],
-
-    // --- DEPLOY: per la produzione decommenta SOLO il dominio reale ---
-    // 'allowed_origins' => [
-    //     'https://app.synapsi.com',       // Dominio reale di produzione (modifica con il tuo)
-    // ],
 
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
