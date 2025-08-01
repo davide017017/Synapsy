@@ -4,6 +4,7 @@ namespace Modules\DBCore\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\User\Database\Seeders\UserDBSeeder;
+use Modules\User\Database\Seeders\DemoUserSeeder;
 use Modules\Categories\Database\Seeders\CategoriesDBSeeder;
 use Modules\Entrate\Database\Seeders\EntrateDBSeeder;
 use Modules\Spese\Database\Seeders\SpeseDBSeeder;
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
         echo "\n🔄 Avvio seed centrale da DBCore...\n";
 
         $this->call(UserDBSeeder::class);
+        $this->call(DemoUserSeeder::class); // utente demo beta
         $this->call(CategoriesDBSeeder::class);
         $this->call(EntrateDBSeeder::class);
         $this->call(SpeseDBSeeder::class);
