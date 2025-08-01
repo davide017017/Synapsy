@@ -70,6 +70,17 @@ Per la dashboard e l’interfaccia utente consulta il README del frontend:
 
 ![Screenshot di Synapsi Finance](/Frontend-nextjs/public/images/ScreenS.png)
 
+## Utente Demo (Versione Beta)
+
+Puoi accedere rapidamente con il bottone rosa **"Accedi come demo"** nella pagina di login.
+
+**Credenziali demo:**
+
+- Email: `demo@synapsy.app`
+- Password: `demo`
+
+⚠️ I dati demo possono essere cancellati in qualsiasi momento, non inserire dati sensibili. La funzione è disponibile solo se `NEXT_PUBLIC_BETA=true` nel frontend.
+
 ---
 
 ## 📄 Licenza

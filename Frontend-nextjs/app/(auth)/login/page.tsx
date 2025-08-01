@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import LoginForm from "@/app/(auth)/login/form/LoginForm";
+import BetaBadge from "@/app/components/BetaBadge";
 import { handleLogin } from "@/lib/auth/handleLogin";
 import { handleTokenLogin } from "@/lib/auth/handleTokenLogin";
 import RegisterModal from "@/app/(auth)/login/form/modal/RegisterModal";
@@ -53,6 +54,11 @@ export default function LoginPage() {
         }
     }
 
+    // ───── Login demo rapido ─────
+    async function handleDemoLogin() {
+        await onLogin("demo@synapsy.app", "demo");
+    }
+
     // ==============================
     // RENDER
     // ==============================
@@ -61,6 +67,7 @@ export default function LoginPage() {
             className="relative min-h-screen flex items-center justify-center bg-no-repeat bg-center bg-cover"
             style={{ backgroundImage: "url('/images/bg-login.png')" }}
         >
+            <BetaBadge floating />
             {/* Overlay sfocato/oscuro */}
             <div
                 className="absolute inset-0 bg-black z-0 pointer-events-none"
@@ -74,6 +81,15 @@ export default function LoginPage() {
             <div className="z-10 w-full max-w-sm space-y-2">
                 {info && <p className="text-success text-center text-sm">{info}</p>}
                 <LoginForm onSubmit={onLogin} onOpenRegister={() => setShowReg(true)} onOpenForgot={() => setShowForgot(true)} />
+                <button
+                    type="button"
+                    className="w-full mt-4 py-2 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold shadow-md transition flex items-center justify-center gap-2"
+                    title="Accedi rapidamente con utente demo. Dati NON salvati!"
+                    onClick={handleDemoLogin}
+                >
+                    <span role="img" aria-label="demo">🧪</span>
+                    Accedi come demo
+                </button>
             </div>
 
             {/* Modali */}
