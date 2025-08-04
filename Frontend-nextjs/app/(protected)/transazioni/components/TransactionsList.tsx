@@ -8,7 +8,7 @@ import TransactionListFilter from "./list/TransactionListFilter";
 import TransactionTable from "./list/TransactionTable";
 import { useSelection } from "@/context/contexts/SelectionContext";
 import { useCategories } from "@/context/contexts/CategoriesContext";
-import { Funnel, Search, Tag } from "lucide-react"; // icone esempio
+import { Funnel, Search, Tag, RefreshCw } from "lucide-react"; // icone esempio
 import type { TransactionsListProps } from "@/types/transazioni/list";
 
 // ----------------------------------------------
@@ -87,8 +87,22 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                     <div className="text-center mt-4">
                         <button
                             onClick={() => setVisible((v) => v + 20)}
-                            className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white font-semibold shadow-md transition"
+                            className={`
+                                w-full py-2 rounded-2xl font-semibold
+                                flex justify-center items-center gap-2
+                                text-white shadow-md
+                                transition-all duration-200
+                                bg-gradient-to-b from-primary to-primary-dark
+                                hover:shadow-2xl hover:-translate-y-0.5
+                                active:scale-95
+                                focus:outline-none focus:ring-2 focus:ring-primary/40
+                            `}
+                            style={{
+                                background: "var(--c-primary-gradient)",
+                            }}
+                            aria-label="Carica altre transazioni"
                         >
+                            <RefreshCw size={18} className="mr-2" />
                             Carica altre transazioni
                         </button>
                     </div>
@@ -101,4 +115,3 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
         </div>
     );
 }
-

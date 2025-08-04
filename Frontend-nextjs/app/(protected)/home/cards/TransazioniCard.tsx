@@ -3,7 +3,6 @@ import { useEffect, useState, useMemo } from "react";
 // TransazioniCard.tsx
 // Card riepilogo transazioni, cliccabile per dettaglio
 // ============================
-
 import { BarChart2 } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import { fetchTransactions } from "@/lib/api/transactionsApi";
@@ -12,7 +11,21 @@ import { useSession } from "next-auth/react";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer"; // Debug per vedere quanto tempo ci mette a rtenderizzare
 
-// --------- Utility date per settimana/mese ---------
+// ======================================================================
+// Utility: Formatta la data in italiano leggibile (es: 23 luglio 2024)
+// ======================================================================
+function formatDataIt(dateStr: string) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("it-IT", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+    });
+}
+
+// ======================================================================
+// Utility date per settimana, mese e anno
+// ======================================================================
 function isThisWeek(dateStr: string) {
     const now = new Date();
     const start = new Date(now);
@@ -29,7 +42,15 @@ function isThisMonth(dateStr: string) {
     return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
 }
 
-// --------- Componente principale ---------
+function isThisYear(dateStr: string) {
+    const now = new Date();
+    const date = new Date(dateStr);
+    return date.getFullYear() === now.getFullYear();
+}
+
+// ======================================================================
+// Componente principale
+// ======================================================================
 export default function TransazioniCard() {
     useRenderTimer("TransazioniCard"); // Debug per vedere quanto tempo ci mette a rtenderizzare
     const { data: session } = useSession();
@@ -48,11 +69,19 @@ export default function TransazioniCard() {
             .finally(() => setLoading(false));
     }, [token]);
 
+    // ======================================================================
+    // Calcolo totali e prima transazione
+    // ======================================================================
     const totali = useMemo(() => {
         const totale = transactions.length;
         const settimana = transactions.filter((t) => isThisWeek(t.date)).length;
         const mese = transactions.filter((t) => isThisMonth(t.date)).length;
-        return { totale, settimana, mese };
+        const anno = transactions.filter((t) => isThisYear(t.date)).length;
+        // Prima transazione per data crescente
+        const prima = transactions.length
+            ? [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
+            : null;
+        return { totale, settimana, mese, anno, prima };
     }, [transactions]);
 
     if (!token) return null;
@@ -68,23 +97,16 @@ export default function TransazioniCard() {
 
     if (error)
         return (
-            <DashboardCard
-                icon={<BarChart2 size={20} />}
-                title="Transazioni"
-                value="-"
-                href="/panoramica" // <- qui la rendi cliccabile!
-            >
+            <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni" value="-" href="/panoramica">
                 {error}
             </DashboardCard>
         );
 
+    // ======================================================================
+    // Render principale
+    // ======================================================================
     return (
-        <DashboardCard
-            icon={<BarChart2 size={20} />}
-            title="Transazioni"
-            value={totali.totale}
-            href="/panoramica" // <- cliccabile!
-        >
+        <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni" value={totali.totale} href="/panoramica">
             <span>
                 <b>Questa settimana:</b> {totali.settimana}
             </span>
@@ -92,7 +114,22 @@ export default function TransazioniCard() {
             <span>
                 <b>Questo mese:</b> {totali.mese}
             </span>
+            <br />
+            <span>
+                <b>Quest’anno:</b> {totali.anno}
+            </span>
+            {/* ======================= */}
+            {/* Linea divisoria elegante */}
+            {/* ======================= */}
+            <hr className="my-2 border-t border-dashed border-zinc-400 dark:border-zinc-600" />
+
+            {totali.prima && (
+                <span>
+                    <b>Prima transazione:</b> {formatDataIt(totali.prima.date)}
+                    {/* Se vuoi mostrare anche la descrizione: */}
+                    {/*  — {totali.prima.description} */}
+                </span>
+            )}
         </DashboardCard>
     );
 }
-
