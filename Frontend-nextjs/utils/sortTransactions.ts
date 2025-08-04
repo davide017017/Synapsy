@@ -7,3 +7,4 @@ export function sortTransactions(list: Transaction[], sortBy: "date" | "amount",
         return sortDirection === "asc" ? valA - valB : valB - valA;
     });
 }
+

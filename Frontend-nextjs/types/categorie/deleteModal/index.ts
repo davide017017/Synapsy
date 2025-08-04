@@ -4,3 +4,4 @@ export type DeleteCategoryModalProps = {
     categories: import("@/types").Category[];
     onDelete: (mode: "deleteAll" | "move", targetCategoryId?: number) => void | Promise<void>;
 };
+

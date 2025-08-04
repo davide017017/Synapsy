@@ -21,3 +21,4 @@ export default function BetaBadge({ inline = false, floating = false, className 
         </span>
     );
 }
+

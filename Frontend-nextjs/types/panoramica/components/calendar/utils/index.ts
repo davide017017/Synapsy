@@ -12,3 +12,4 @@ export type CalendarWeek = {
 export type CalendarOptions = {
     withWeekNumbers?: boolean;
 };
+

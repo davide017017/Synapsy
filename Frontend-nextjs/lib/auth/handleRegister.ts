@@ -26,3 +26,4 @@ export async function handleRegister(payload: RegisterPayload): Promise<{success
     }
     return { success: true, message: data.message || 'Registrazione completata' };
 }
+

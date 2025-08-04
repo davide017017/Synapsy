@@ -352,3 +352,4 @@ class RecurringOperationFactory extends Factory
         return new self();
     }
 }
+

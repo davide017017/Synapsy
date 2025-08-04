@@ -175,3 +175,4 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
         </Dialog>
     );
 }
+

@@ -40,3 +40,4 @@ class ExportApiRoutesJson extends Command
         $this->info("✅ File JSON creato in: {$path}");
     }
 }
+

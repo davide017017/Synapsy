@@ -191,3 +191,4 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
 }
 // ==========================================
 // END TransactionDetailModal.tsx
+

@@ -73,3 +73,4 @@ export default function Dialog({ open, onClose, title, children }: Props) {
         </Transition>
     );
 }
+

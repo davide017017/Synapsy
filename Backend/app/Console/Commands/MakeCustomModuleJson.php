@@ -43,3 +43,4 @@ class MakeCustomModuleJson extends Command
         $this->info("✅ module.json creato in: Modules/{$module}/module.json");
     }
 }
+

@@ -262,3 +262,4 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onC
         </form>
     );
 }
+

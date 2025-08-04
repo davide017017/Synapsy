@@ -49,3 +49,4 @@ async function collectModuleAssetsPaths(paths, modulesPath) {
 }
 
 export default collectModuleAssetsPaths;
+

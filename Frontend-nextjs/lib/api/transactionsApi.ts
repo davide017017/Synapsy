@@ -9,7 +9,10 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 // Fetch: Lista transazioni (overview completa)
 // ======================================================
 export async function fetchTransactions(token: string): Promise<Transaction[]> {
-    const res = await fetch(`${API_URL}/v1/financialoverview`, {
+    // --------------------------------------------------
+    // Richiede le transazioni dalla più recente alla più vecchia
+    // --------------------------------------------------
+    const res = await fetch(`${API_URL}/v1/financialoverview?sort_by=date&sort_direction=desc`, {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -181,3 +184,4 @@ export async function softMoveTransaction(
     return resCreate.json();
 }
 // ════════════════════════════════════════════════════════
+

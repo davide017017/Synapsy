@@ -80,3 +80,4 @@ class CategoriesApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
     }
 }
+

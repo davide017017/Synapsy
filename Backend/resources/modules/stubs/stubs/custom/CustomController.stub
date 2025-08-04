@@ -100,3 +100,4 @@ class {{Model}}Controller extends Controller
             : redirect()->route('{{module}}.web.index')->with('status', '{{Model}} eliminato!');
     }
 }
+

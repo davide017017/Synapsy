@@ -52,3 +52,4 @@ export default function YearDividerRow({ year, colSpan, entrate = 0, spese = 0, 
         </tr>
     );
 }
+

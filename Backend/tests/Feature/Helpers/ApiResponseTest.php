@@ -78,3 +78,4 @@ class ApiResponseTest extends TestCase
         ], $response->getData(true));
     }
 }
+

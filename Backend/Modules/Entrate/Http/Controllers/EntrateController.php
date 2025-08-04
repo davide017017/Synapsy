@@ -161,3 +161,4 @@ class EntrateController extends Controller
         return redirect()->route('entrate.web.index')->with('status', 'Entrata eliminata con successo!');
     }
 }
+

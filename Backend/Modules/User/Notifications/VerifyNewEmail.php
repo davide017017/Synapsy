@@ -45,3 +45,4 @@ class VerifyNewEmail extends BaseVerifyEmail implements ShouldQueue
             ]);
     }
 }
+

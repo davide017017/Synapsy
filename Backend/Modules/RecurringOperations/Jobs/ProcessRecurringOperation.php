@@ -129,3 +129,4 @@ class ProcessRecurringOperation implements ShouldQueue
         return $nextDate->startOfDay();
     }
 }
+

@@ -18,3 +18,4 @@ trait TruncatesTable
         Schema::enableForeignKeyConstraints();
     }
 }
+

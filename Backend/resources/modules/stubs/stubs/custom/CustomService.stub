@@ -71,3 +71,4 @@ class {{Model}}Service
         return ${{model}}->delete();
     }
 }
+

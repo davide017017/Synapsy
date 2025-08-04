@@ -84,3 +84,4 @@ Per la dashboard e l’interfaccia utente consulta la README del frontend:
 ## 📝 Licenza
 
 Distribuito sotto licenza MIT.
+

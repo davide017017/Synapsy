@@ -41,3 +41,4 @@ export default function CategoryField({ value, categories, onChange, original, s
         </div>
     );
 }
+

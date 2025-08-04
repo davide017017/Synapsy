@@ -167,3 +167,4 @@ class SpeseDBSeeder extends Seeder
         });
     }
 }
+

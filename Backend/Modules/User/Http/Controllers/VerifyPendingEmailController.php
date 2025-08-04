@@ -28,3 +28,4 @@ class VerifyPendingEmailController extends Controller
 
     }
 }
+

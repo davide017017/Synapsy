@@ -26,3 +26,4 @@ export type ListaRicorrenzePerFrequenzaProps = {
 };
 
 export * from "./components";
+

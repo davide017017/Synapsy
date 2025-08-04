@@ -17,3 +17,4 @@ export default function PrivacyModal({ open, onClose }: Props) {
     </Dialog>
   );
 }
+

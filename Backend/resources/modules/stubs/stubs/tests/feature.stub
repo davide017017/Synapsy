@@ -16,3 +16,4 @@ class $CLASS$ extends TestCase
         $response->assertStatus(200);
     }
 }
+

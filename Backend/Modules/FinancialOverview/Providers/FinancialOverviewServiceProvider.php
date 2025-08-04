@@ -138,3 +138,4 @@ class FinancialOverviewServiceProvider extends ServiceProvider
         return [];
     }
 }
+

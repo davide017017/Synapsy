@@ -55,3 +55,4 @@ export default defineConfig({
 //    'Modules/AuditTrail/resources/assets/sass/app.scss',
 //    'Modules/AuditTrail/resources/assets/js/app.js',
 //];
+

@@ -25,3 +25,4 @@ Route::middleware(['web'])->group(function () {
             ->name('recurring-operations.index');
     });
 });
+

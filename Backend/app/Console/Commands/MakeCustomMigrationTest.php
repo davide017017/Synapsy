@@ -50,3 +50,4 @@ class MakeCustomMigrationTest extends Command
         $this->info("✅ Migration test creato in: Modules/{$module}/Tests/Unit/{$model}MigrationTest.php");
     }
 }
+

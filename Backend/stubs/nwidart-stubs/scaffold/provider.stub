@@ -133,3 +133,4 @@ class $CLASS$ extends ServiceProvider
         return $paths;
     }
 }
+

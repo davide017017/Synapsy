@@ -66,3 +66,4 @@ class PasswordConfirmationTest extends TestCase
         $response->assertSessionHasErrors('password');
     }
 }
+

@@ -10,3 +10,4 @@ export const metadata = {
 export default function ProtectedServerLayout({ children }: { children: React.ReactNode }) {
     return <ProtectedLayoutClient>{children}</ProtectedLayoutClient>;
 }
+

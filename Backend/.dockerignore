@@ -9,3 +9,4 @@ docker-compose*
 vendor
 storage/*.key
 *.sqlite
+

@@ -23,3 +23,4 @@ class ApiForgotPasswordController extends Controller
         return ApiResponse::success("Se l'email esiste riceverai un messaggio con le istruzioni per il reset");
     }
 }
+

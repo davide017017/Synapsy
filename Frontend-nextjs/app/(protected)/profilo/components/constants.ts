@@ -8,3 +8,4 @@ export const AVATAR_CHOICES = [
     "/images/avatars/avatar-7.svg",
     // ...aggiungi altri se ne metti altri!
 ];
+

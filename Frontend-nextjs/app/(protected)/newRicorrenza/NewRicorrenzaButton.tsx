@@ -22,3 +22,4 @@ export default function NewRicorrenzaButton({ label = "Nuova Ricorrenza", onSucc
         </button>
     );
 }
+

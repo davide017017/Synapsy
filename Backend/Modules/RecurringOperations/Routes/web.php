@@ -32,3 +32,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Puoi definire qui rotte non protette se necessario, ma per le operazioni ricorrenti non è comune.
+

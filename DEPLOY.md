@@ -19,3 +19,4 @@ Se si utilizza `ai-service`, creare un servizio separato su Render e configurare
 
 ## Backup
 Si consiglia di abilitare backup automatici del database.
+

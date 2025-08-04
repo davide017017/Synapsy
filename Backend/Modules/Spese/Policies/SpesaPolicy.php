@@ -61,3 +61,4 @@ class SpesaPolicy
         return false;
     }
 }
+

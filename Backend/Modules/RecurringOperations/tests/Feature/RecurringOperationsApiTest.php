@@ -112,3 +112,4 @@ class RecurringOperationsApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('recurring_operations', ['id' => $operation->id]);
     }
 }
+

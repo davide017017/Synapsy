@@ -29,3 +29,4 @@ class DatabaseSeeder extends Seeder
         echo "\n✅ Seeding completo per tutti i moduli principali.\n";
     }
 }
+

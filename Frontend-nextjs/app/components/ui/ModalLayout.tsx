@@ -58,3 +58,4 @@ export default function ModalLayout({ title, onClose, children, footer, showClos
         </div>
     );
 }
+

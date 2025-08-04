@@ -54,3 +54,4 @@ class $CLASS$ extends Controller
      */
     public function destroy($id) {}
 }
+

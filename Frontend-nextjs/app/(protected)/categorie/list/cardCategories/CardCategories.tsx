@@ -110,3 +110,4 @@ function CategoryCard({ cat, onEdit, onDelete }: CategoryCardProps) {
 }
 
 // ===================== END CardCategories =====================
+

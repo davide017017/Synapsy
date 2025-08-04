@@ -38,3 +38,4 @@ class SeedAllCommand extends Command
         $this->info('✅ Seeding completato con successo!');
     }
 }
+

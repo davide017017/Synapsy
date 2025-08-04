@@ -91,3 +91,4 @@ Apri una **Issue** su GitHub o contatta il maintainer per segnalazioni e suggeri
 ## 📝 Licenza
 
 Distribuito sotto licenza [MIT](../Backend/LICENSE).
+

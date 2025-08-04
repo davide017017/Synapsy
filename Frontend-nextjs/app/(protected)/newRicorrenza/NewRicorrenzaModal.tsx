@@ -102,3 +102,4 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
         </Dialog>
     );
 }
+

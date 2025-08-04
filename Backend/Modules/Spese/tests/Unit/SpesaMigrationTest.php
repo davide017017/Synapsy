@@ -53,3 +53,4 @@ class SpesaMigrationTest extends TestCase
         return false;
     }
 }
+

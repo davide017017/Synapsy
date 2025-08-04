@@ -103,3 +103,4 @@ class RouteBindingTest extends TestCase
             ->assertJsonFragment(['id' => $recurring->id]);
     }
 }
+

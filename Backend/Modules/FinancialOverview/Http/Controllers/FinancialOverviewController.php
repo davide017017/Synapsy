@@ -67,3 +67,4 @@ class FinancialOverviewController extends Controller
         return response()->json($overviewData['financialEntries']);
     }
 }
+

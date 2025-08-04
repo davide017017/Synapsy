@@ -172,3 +172,4 @@ export function getColumnsWithSelection(
 // Esporta colonne base (senza selezione multipla)
 // ============================
 export const baseColumns: ColumnDef<TransactionWithGroup, any>[] = getColumnsWithSelection(false, [], () => {});
+

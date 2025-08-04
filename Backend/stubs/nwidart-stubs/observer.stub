@@ -31,3 +31,4 @@ class $NAME$Observer
      */
     public function forceDeleted($NAME$ $NAME_VARIABLE$): void {}
 }
+

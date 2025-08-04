@@ -24,3 +24,4 @@ class FinancialOverviewDatabaseSeeder extends Seeder
         });
     }
 }
+

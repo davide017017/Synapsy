@@ -111,3 +111,4 @@ class FinancialSnapshotMigrationTest extends TestCase
         return false;
     }
 }
+

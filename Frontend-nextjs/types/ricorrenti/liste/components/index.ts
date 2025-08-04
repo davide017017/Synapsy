@@ -13,3 +13,4 @@ export type RicorrenzaItemProps = {
     onEdit?: (r: Ricorrenza) => void;
     onDelete?: (r: Ricorrenza) => void;
 };
+

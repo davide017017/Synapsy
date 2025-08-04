@@ -35,3 +35,4 @@ export type RicorrenzaBase = {
     is_active: number; // 1=attiva, 0=disattivata (obbligatorio)
     interval: number; // Quanti intervalli tra una ricorrenza e l'altra (es: 1=ogni mese)
 };
+

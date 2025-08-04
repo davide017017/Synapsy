@@ -161,3 +161,4 @@ export default function DeleteCategoryModal({ category, onClose, categories, onD
         </div>
     );
 }
+
