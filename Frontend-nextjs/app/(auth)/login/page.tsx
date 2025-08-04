@@ -12,6 +12,7 @@ import { handleLogin } from "@/lib/auth/handleLogin";
 import { handleTokenLogin } from "@/lib/auth/handleTokenLogin";
 import RegisterModal from "@/app/(auth)/login/form/modal/RegisterModal";
 import ForgotPasswordModal from "@/app/(auth)/login/form/modal/ForgotPasswordModal";
+import LegalLinks from "@/app/components/legal/LegalLinks";
 
 // ==============================
 // PAGINA DI LOGIN CON REDIRECT E SFONDO
@@ -83,13 +84,14 @@ export default function LoginPage() {
                 <LoginForm onSubmit={onLogin} onOpenRegister={() => setShowReg(true)} onOpenForgot={() => setShowForgot(true)} />
                 <button
                     type="button"
-                    className="w-full mt-4 py-2 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold shadow-md transition flex items-center justify-center gap-2"
+                    className="w-full mt-4 py-2 rounded-2xl font-semibold flex justify-center items-center gap-2 text-white shadow-md transition-all duration-200 bg-gradient-to-r from-primary to-primary-dark hover:shadow-2xl hover:-translate-y-0.5 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/40"
                     title="Accedi rapidamente con utente demo. Dati NON salvati!"
                     onClick={handleDemoLogin}
                 >
                     <span role="img" aria-label="demo">🧪</span>
                     Accedi come demo
                 </button>
+                <LegalLinks className="pt-4" />
             </div>
 
             {/* Modali */}
