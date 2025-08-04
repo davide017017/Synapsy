@@ -87,7 +87,7 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                     <div className="text-center mt-4">
                         <button
                             onClick={() => setVisible((v) => v + 20)}
-                            className="px-3 py-1 rounded bg-primary text-white text-sm"
+                            className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white font-semibold shadow-md transition"
                         >
                             Carica altre transazioni
                         </button>
