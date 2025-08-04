@@ -141,3 +141,4 @@ class CategoriesServiceProvider extends ServiceProvider
         return [];
     }
 }
+

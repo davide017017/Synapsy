@@ -40,3 +40,4 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
         </div>
     );
 }
+

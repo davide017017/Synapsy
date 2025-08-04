@@ -62,3 +62,4 @@ export default function ForgotPasswordModal({ isOpen, onClose }: Props) {
         </Dialog>
     );
 }
+

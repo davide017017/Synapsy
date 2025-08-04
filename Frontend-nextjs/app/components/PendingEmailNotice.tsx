@@ -50,3 +50,4 @@ export default function PendingEmailNotice() {
         </AnimatePresence>
     );
 }
+

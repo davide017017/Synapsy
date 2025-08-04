@@ -56,3 +56,4 @@ class UserDBSeeder extends Seeder
         $this->logNewLine();
     }
 }
+

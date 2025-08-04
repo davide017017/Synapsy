@@ -104,3 +104,4 @@ Pull Request e segnalazioni sono benvenute!
 Apri una issue per bug, domande o suggerimenti.
 
 ---
+

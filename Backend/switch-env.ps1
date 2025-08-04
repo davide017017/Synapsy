@@ -20,3 +20,4 @@ if (-Not (Test-Path $envFile)) {
 Copy-Item -Path $envFile -Destination ".env" -Force
 
 Write-Host "✅ Ambiente $envType attivo! ($envFile -> .env)"
+

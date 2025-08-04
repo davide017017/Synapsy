@@ -48,3 +48,4 @@ class $CLASS$ extends ServiceProvider
         Route::middleware('api')->prefix('api')->name('api.')->group(module_path($this->name, '$API_ROUTES_PATH$'));
     }
 }
+

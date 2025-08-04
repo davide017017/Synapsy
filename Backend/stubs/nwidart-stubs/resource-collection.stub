@@ -15,3 +15,4 @@ class $CLASS$ extends ResourceCollection
         return parent::toArray($request);
     }
 }
+

@@ -42,3 +42,4 @@ class CustomVerifyEmail extends BaseVerifyEmail implements ShouldQueue
             ]);
     }
 }
+

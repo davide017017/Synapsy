@@ -30,3 +30,4 @@ export function useTransactions(token?: string) {
 
     return { transactions, loading, error };
 }
+

@@ -65,3 +65,4 @@ class PasswordUpdateTest extends TestCase
             ->assertRedirect('/profile');
     }
 }
+

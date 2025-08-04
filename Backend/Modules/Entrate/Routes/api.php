@@ -14,3 +14,4 @@ Route::middleware(['auth:sanctum'])
         Route::patch('/entrate/move-category', [EntrateController::class, 'moveCategory']);
         Route::get('entrate/next-occurrences', [EntrateController::class, 'getNextOccurrences']);
     });
+

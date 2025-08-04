@@ -7,3 +7,4 @@ export const themeMeta = {
 };
 
 export const availableThemes = Object.keys(themeMeta) as (keyof typeof themeMeta)[];
+

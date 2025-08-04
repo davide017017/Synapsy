@@ -27,3 +27,4 @@ class AuthServiceProvider extends ServiceProvider
         // Puoi anche definire qui dei Gate globali se necessario.
     }
 }
+

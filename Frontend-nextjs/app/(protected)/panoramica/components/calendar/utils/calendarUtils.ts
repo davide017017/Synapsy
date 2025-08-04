@@ -91,3 +91,4 @@ function getISOWeekNumber(date: Date) {
 
     return 1 + Math.round(diff / (7 * 24 * 3600 * 1000));
 }
+

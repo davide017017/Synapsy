@@ -205,3 +205,4 @@ class RecurringOperationsDBSeeder extends Seeder
         });
     }
 }
+

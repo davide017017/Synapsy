@@ -36,3 +36,4 @@ export default function AmountField({ value, onChange, original, showError }: Am
         </div>
     );
 }
+

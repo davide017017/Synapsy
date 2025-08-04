@@ -36,3 +36,4 @@ Route::prefix('v1')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     });
 });
+

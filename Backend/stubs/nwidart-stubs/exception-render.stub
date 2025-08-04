@@ -13,3 +13,4 @@ class $CLASS$ extends Exception
      */
     public function render(Request $request): Response {}
 }
+

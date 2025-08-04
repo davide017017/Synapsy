@@ -19,3 +19,4 @@ class $CLASS$ implements ShouldQueue
      */
     public function handle($event): void {}
 }
+

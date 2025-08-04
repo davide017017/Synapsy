@@ -42,3 +42,4 @@ export default function WeekRow({ week, transactions, maxImporto, onClickDay }: 
         </>
     );
 }
+

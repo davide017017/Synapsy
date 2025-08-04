@@ -12,3 +12,4 @@ class DatabaseSeeder extends Seeder
         $this->call(\Modules\DBCore\Database\Seeders\DatabaseSeeder::class);
     }
 }
+

@@ -101,3 +101,4 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
         </div>
     );
 }
+

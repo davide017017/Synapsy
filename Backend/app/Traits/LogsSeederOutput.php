@@ -38,3 +38,4 @@ trait LogsSeederOutput
         $this->out->writeln('');
     }
 }
+

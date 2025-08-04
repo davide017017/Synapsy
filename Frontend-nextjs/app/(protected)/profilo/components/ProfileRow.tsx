@@ -78,3 +78,4 @@ export default function ProfileRow({ label, value, editing, onEdit, onChange, on
         </div>
     );
 }
+

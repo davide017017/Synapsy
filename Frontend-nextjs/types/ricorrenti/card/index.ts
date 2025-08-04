@@ -8,3 +8,4 @@ export type CardGraficoPagamentiProps = {
     ricorrenze: Ricorrenza[];
     customDaysArr?: Date[];
 };
+

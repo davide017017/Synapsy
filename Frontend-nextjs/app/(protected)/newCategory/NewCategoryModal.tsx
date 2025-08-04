@@ -239,3 +239,4 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
         </Dialog>
     );
 }
+

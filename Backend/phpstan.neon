@@ -17,3 +17,4 @@ parameters:
 
     ignoreErrors:
         - '#Expected type .*Authenticatable.*Found .*Model.*#'
+

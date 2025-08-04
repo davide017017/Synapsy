@@ -30,3 +30,4 @@ export default function GlobalContextProvider({ children }: { children: ReactNod
         </SessionProvider>
     );
 }
+

@@ -61,3 +61,4 @@ class GenerateRecurringOperationsCommand extends Command
         return Command::SUCCESS;
     }
 }
+

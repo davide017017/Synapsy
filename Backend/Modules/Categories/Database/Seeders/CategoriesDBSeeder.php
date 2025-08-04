@@ -103,3 +103,4 @@ class CategoriesDBSeeder extends Seeder
         $this->logNewLine();
     }
 }
+

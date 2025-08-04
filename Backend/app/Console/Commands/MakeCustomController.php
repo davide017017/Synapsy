@@ -55,3 +55,4 @@ class MakeCustomController extends Command
 }
 
 }
+

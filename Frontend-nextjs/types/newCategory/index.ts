@@ -9,3 +9,4 @@ export type NewCategoryButtonProps = {
     label?: string;
     onSuccess?: () => void;
 };
+

@@ -11,3 +11,4 @@ class $CLASS$ extends Exception
      */
     public function report(): void {}
 }
+

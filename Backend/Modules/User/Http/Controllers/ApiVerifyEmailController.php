@@ -23,3 +23,4 @@ class ApiVerifyEmailController extends Controller
         return redirect()->to($frontend.'/login?verified=1&token='.$token);
     }
 }
+

@@ -53,3 +53,4 @@ class {{Model}}MigrationTest extends TestCase
         $this->assertTrue($found, 'Vincolo unico mancante su colonne: ' . implode(', ', $columns));
     }
 }
+

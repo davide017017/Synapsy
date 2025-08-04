@@ -43,3 +43,4 @@ class TransactionsCategoryTest extends AuthenticatedTestCase
     }
 }
 
+

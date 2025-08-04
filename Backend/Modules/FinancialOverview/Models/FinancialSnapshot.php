@@ -86,3 +86,4 @@ class FinancialSnapshot extends Model
         return \Modules\FinancialOverview\Database\Factories\FinancialSnapshotFactory::new();
     }
 }
+

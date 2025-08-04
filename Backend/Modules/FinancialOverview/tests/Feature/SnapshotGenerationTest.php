@@ -61,3 +61,4 @@ class SnapshotGenerationTest extends TestCase
         $this->assertEquals(1, FinancialSnapshot::count());
     }
 }
+

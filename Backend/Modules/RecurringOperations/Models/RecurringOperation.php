@@ -123,3 +123,4 @@ class RecurringOperation extends Model
         return $this->type === 'spesa';
     }
 }
+

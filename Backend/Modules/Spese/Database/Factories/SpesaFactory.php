@@ -119,3 +119,4 @@ class SpesaFactory extends Factory
         });
     }
 }
+

@@ -145,3 +145,4 @@ class SpeseServiceProvider extends ServiceProvider
         return [];
     }
 }
+

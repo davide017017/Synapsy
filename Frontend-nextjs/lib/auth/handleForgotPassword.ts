@@ -15,3 +15,4 @@ export async function handleForgotPassword(email: string): Promise<{success:bool
     }
     return { success: true, message: data.message || 'Se l\'email esiste riceverai un messaggio con le istruzioni per il reset' };
 }
+

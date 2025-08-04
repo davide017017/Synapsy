@@ -30,3 +30,4 @@ export default function EmailInput({ value, onChange }: Props) {
         </div>
     );
 }
+

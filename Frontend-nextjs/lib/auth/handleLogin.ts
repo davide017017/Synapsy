@@ -13,3 +13,4 @@ export async function handleLogin(email: string, password: string): Promise<bool
     });
     return !res?.error;
 }
+

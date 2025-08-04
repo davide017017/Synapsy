@@ -17,3 +17,4 @@ class $CLASS$
      */
     public function handle($event): void {}
 }
+
