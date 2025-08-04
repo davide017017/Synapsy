@@ -4,37 +4,7 @@ import DashboardCard from "./DashboardCard";
 import { useRicorrenze } from "@/context/contexts/RicorrenzeContext";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
-
-// ===============================
-// Utility
-// ===============================
-function isThisWeek(dateStr: string) {
-    const now = new Date();
-    const start = new Date(now);
-    start.setDate(now.getDate() - now.getDay());
-    const end = new Date(start);
-    end.setDate(start.getDate() + 7);
-    const date = new Date(dateStr);
-    return date >= start && date < end;
-}
-function isThisMonth(dateStr: string) {
-    const now = new Date();
-    const date = new Date(dateStr);
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-}
-function isThisYear(dateStr: string) {
-    const now = new Date();
-    const date = new Date(dateStr);
-    return date.getFullYear() === now.getFullYear();
-}
-function formatDataIt(dateStr: string) {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("it-IT", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-    });
-}
+import { formatDataIt, isThisWeek, isThisMonth, isThisYear } from "@/utils/date";
 
 // ===============================
 // Componente principale
@@ -52,6 +22,7 @@ export default function RicorrentiCard() {
         const mese = attive.filter((r) => isThisMonth(r.prossima)).length;
         const anno = attive.filter((r) => isThisYear(r.prossima)).length;
         // Ricorrenza con prossima più vecchia
+        // Basata su "prossima" in assenza della data di creazione effettiva
         const piuVecchia = attive.length
             ? [...attive].sort((a, b) => new Date(a.prossima).getTime() - new Date(b.prossima).getTime())[0]
             : null;
