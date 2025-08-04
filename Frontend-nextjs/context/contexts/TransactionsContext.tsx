@@ -99,7 +99,12 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         setError(null);
         try {
             const data = await fetchTransactions(token);
-            setTransactions(data);
+            // --------------------------------------------------
+            // Mantiene l'ordine dalla più recente alla più vecchia
+            // --------------------------------------------------
+            setTransactions(
+                data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            );
         } catch (e: any) {
             setError(e.message || "Errore caricamento transazioni");
             toast.error(e.message || "Errore caricamento transazioni");

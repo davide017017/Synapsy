@@ -26,19 +26,26 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
     const [visible, setVisible] = useState(20);
 
-    // ===== Filtro transazioni =====
+    // --------------------------------------------------
+    // Applica filtri e ordina dalla più recente alla più vecchia
+    // --------------------------------------------------
     const filtered = useMemo(() => {
-        return transactions.filter((t) => {
-            const matchType = filter.type === "tutti" || t.category?.type === filter.type;
-            const matchCategory = filter.category === "tutte" || String(t.category?.id) === filter.category;
-            const matchSearch = t.description.toLowerCase().includes(filter.search.toLowerCase());
-            return matchType && matchCategory && matchSearch;
-        });
+        return transactions
+            .filter((t) => {
+                const matchType = filter.type === "tutti" || t.category?.type === filter.type;
+                const matchCategory = filter.category === "tutte" || String(t.category?.id) === filter.category;
+                const matchSearch = t.description.toLowerCase().includes(filter.search.toLowerCase());
+                return matchType && matchCategory && matchSearch;
+            })
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }, [transactions, filter]);
 
     useEffect(() => {
-        setVisible(20);
-    }, [filter, transactions]);
+        // --------------------------------------------------
+        // Mostra almeno un blocco di 20 risultati se disponibili
+        // --------------------------------------------------
+        setVisible(filtered.length < 20 ? filtered.length : 20);
+    }, [filter, transactions, filtered]);
 
     // ===== Render Vuoto =====
     if (!transactions.length) {

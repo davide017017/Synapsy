@@ -35,16 +35,29 @@ class FinancialOverviewService
             $speseQuery->whereDate('date', '<=', $filters['end_date']);
         }
 
-        $entrate = $entrateQuery->get();
-        $spese   = $speseQuery->get();
+        // --------------------------------------------------
+        // Recupera entrate e spese ordinate dalla più recente
+        // --------------------------------------------------
+        $entrate = $entrateQuery->orderByDesc('date')->get();
+        $spese   = $speseQuery->orderByDesc('date')->get();
 
-        $financialEntries = $entrate->concat($spese)->sortBy(function ($item) use ($sortBy) {
-            return match ($sortBy) {
-                'type'     => class_basename($item),
-                'category' => $item->category?->name ?? '',
-                default    => $item->{$sortBy}
-            };
-        }, SORT_REGULAR, $sortDirection === 'desc');
+        // --------------------------------------------------
+        // Unisce e ordina i risultati (fallback su created_at)
+        // --------------------------------------------------
+        $financialEntries = $entrate
+            ->concat($spese)
+            ->sortBy(
+                function ($item) use ($sortBy) {
+                    return match ($sortBy) {
+                        'type'     => class_basename($item),
+                        'category' => $item->category?->name ?? '',
+                        default    => $item->{$sortBy} ?? $item->created_at,
+                    };
+                },
+                SORT_REGULAR,
+                $sortDirection === 'desc'
+            )
+            ->values(); // Reindicizza per preservare l'ordine JSON
 
         return [
             'financialEntries' => $financialEntries,
