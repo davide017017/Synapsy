@@ -34,3 +34,4 @@ export default function TableRow({ row, onClick, className }: TableRowProps) {
         </tr>
     );
 }
+

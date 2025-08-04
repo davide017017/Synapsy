@@ -29,3 +29,4 @@ class ApiRegisterController extends Controller
         return ApiResponse::success('Registrazione completata. Controlla la tua email per confermare l\'account.', null, 201);
     }
 }
+

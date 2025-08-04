@@ -22,3 +22,4 @@ class ApiResponse
         ], $code);
     }
 }
+

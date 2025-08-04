@@ -96,3 +96,4 @@ class SpeseApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('spese', ['id' => $spesa->id]);
     }
 }
+

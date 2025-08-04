@@ -20,3 +20,4 @@ export default function LoadingSpinnerCard({ icon, title, message = "Caricamento
         </DashboardCard>
     );
 }
+

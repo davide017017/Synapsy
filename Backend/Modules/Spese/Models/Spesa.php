@@ -145,3 +145,4 @@ class Spesa extends Model
     // Esempio: un metodo per formattare l'importo
     // public function getFormattedAmountAttribute(): string { return number_format($this->amount, 2) . ' â‚¬'; }
 }
+

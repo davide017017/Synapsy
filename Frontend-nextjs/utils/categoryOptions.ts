@@ -358,3 +358,4 @@ export function getIconComponent(name?: CategoryIconName): IconType {
     if (name && CATEGORY_ICONS_MAP[name]) return CATEGORY_ICONS_MAP[name];
     return FiTag;
 }
+

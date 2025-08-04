@@ -140,3 +140,4 @@ class DBCoreServiceProvider extends ServiceProvider
         return [];
     }
 }
+

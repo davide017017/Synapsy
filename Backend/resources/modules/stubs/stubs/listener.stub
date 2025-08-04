@@ -18,3 +18,4 @@ class $CLASS$
      */
     public function handle($SHORTEVENTNAME$ $event): void {}
 }
+

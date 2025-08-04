@@ -75,3 +75,4 @@ export function useRicorrenzeApi(token?: string) {
 
     return { create, update, remove, status, error, reset };
 }
+

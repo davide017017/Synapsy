@@ -72,3 +72,4 @@ export function useCategoriesApi(token?: string) {
 
     return { create, update, remove, status, error, reset };
 }
+

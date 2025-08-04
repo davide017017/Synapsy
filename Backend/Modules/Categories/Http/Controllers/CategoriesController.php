@@ -130,3 +130,4 @@ class CategoriesController extends Controller
         return response()->json(['success' => true], 204);
     }
 }
+

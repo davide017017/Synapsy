@@ -27,3 +27,4 @@
         {{-- Vite JS --}}
         {{-- {{ module_vite('build-financialoverview', 'resources/assets/js/app.js') }} --}}
     </body>
+

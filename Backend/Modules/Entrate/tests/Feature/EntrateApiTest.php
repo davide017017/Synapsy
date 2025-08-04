@@ -96,3 +96,4 @@ class EntrateApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('entrate', ['id' => $entrata->id]);
     }
 }
+

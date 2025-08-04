@@ -26,3 +26,4 @@ export default function RememberMeSwitch({ checked, onToggle }: Props) {
         </label>
     );
 }
+

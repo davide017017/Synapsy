@@ -30,3 +30,4 @@ const TransactionTypeSwitch: FC<TransactionTypeSwitchProps> = ({ selectedType, s
 );
 
 export default TransactionTypeSwitch;
+

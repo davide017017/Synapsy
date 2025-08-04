@@ -6,3 +6,4 @@ class $CLASS$
 {
     public function __invoke() {}
 }
+

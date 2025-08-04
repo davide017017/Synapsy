@@ -65,3 +65,4 @@ class FinancialSnapshotFactory extends Factory
         ]);
     }
 }
+

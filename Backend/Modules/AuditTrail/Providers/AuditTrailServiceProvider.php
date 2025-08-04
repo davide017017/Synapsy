@@ -152,3 +152,4 @@ class AuditTrailServiceProvider extends ServiceProvider
         return $paths;
     }
 }
+

@@ -53,3 +53,4 @@ export default function MonthDividerRow({ monthKey, colSpan, entrate = 0, spese 
         </tr>
     );
 }
+

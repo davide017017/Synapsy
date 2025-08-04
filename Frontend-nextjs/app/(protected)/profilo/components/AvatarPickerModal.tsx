@@ -70,3 +70,4 @@ export default function AvatarPickerModal({ avatarList, selected, onSelect, onCl
         </motion.div>
     );
 }
+

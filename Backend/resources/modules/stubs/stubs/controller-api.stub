@@ -57,3 +57,4 @@ class $CLASS$ extends Controller
         return response()->json([]);
     }
 }
+

@@ -20,3 +20,4 @@ class $CLASS$ extends Model
     //     // return $NAME$Factory::new();
     // }
 }
+

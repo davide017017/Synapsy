@@ -136,3 +136,4 @@ class {{Module}}ServiceProvider extends ServiceProvider
         return [];
     }
 }
+

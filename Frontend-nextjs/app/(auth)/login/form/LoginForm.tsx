@@ -115,3 +115,4 @@ export default function LoginForm({ onSubmit, onOpenRegister, onOpenForgot }: Lo
         </>
     );
 }
+

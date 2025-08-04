@@ -50,3 +50,4 @@ export function useThemeContext() {
     if (!ctx) throw new Error("useThemeContext deve essere usato dentro ThemeContextProvider");
     return ctx;
 }
+

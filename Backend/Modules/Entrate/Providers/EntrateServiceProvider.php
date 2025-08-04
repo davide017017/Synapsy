@@ -145,3 +145,4 @@ class EntrateServiceProvider extends ServiceProvider
         return [];
     }
 }
+

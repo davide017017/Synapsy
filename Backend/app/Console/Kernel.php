@@ -75,3 +75,4 @@ class Kernel extends ConsoleKernel
         User::all()->each($callback);
     }
 }
+

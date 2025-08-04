@@ -25,3 +25,4 @@ class $CLASS$ extends ServiceProvider
      */
     protected function configureEmailVerification(): void {}
 }
+

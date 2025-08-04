@@ -62,3 +62,4 @@ class RecurringOperationsMigrationTest extends TestCase
         return false;
     }
 }
+

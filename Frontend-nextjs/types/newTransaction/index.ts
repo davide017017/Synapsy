@@ -11,3 +11,4 @@ export type NewTransactionFormProps = {
     initialDate?: string;
     initialType?: "entrata" | "spesa";
 };
+

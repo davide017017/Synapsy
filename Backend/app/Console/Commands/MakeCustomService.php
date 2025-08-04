@@ -51,3 +51,4 @@ class MakeCustomService extends Command
         $this->info("✅ Service creato in: Modules/{$module}/Services/{$model}Service.php");
     }
 }
+

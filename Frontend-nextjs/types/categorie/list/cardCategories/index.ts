@@ -9,3 +9,4 @@ export type CategoryCardProps = {
     onEdit: (cat: import("@/types").Category) => void;
     onDelete: (cat: import("@/types").Category) => void;
 };
+

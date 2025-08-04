@@ -70,3 +70,4 @@ class FinancialSnapshotTest extends TestCase
         $this->assertInstanceOf(User::class, $snapshot->user);
     }
 }
+

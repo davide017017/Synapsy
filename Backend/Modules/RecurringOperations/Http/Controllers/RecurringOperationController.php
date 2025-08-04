@@ -194,3 +194,4 @@ class RecurringOperationController extends Controller
         return response()->json(['status' => 'ok']);
     }
 }
+

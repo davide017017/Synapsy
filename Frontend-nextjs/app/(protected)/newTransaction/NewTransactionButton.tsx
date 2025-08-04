@@ -34,3 +34,4 @@ export default function NewTransactionButton({ label = "Nuova Transazione" }: Ne
         </button>
     );
 }
+

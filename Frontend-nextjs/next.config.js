@@ -23,3 +23,4 @@ const nextConfig = {
 // Esporta la configurazione
 // =========================
 module.exports = nextConfig;
+

@@ -30,3 +30,4 @@ class CustomResetPassword extends BaseResetPassword implements ShouldQueue
             ]);
     }
 }
+

@@ -54,3 +54,4 @@ class MakeCustomApiTest extends Command
         $this->info("✅ Test API creato in: Modules/{$module}/Tests/Feature/{$model}ApiTest.php");
     }
 }
+

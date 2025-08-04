@@ -14,3 +14,4 @@ class $CLASS$
      */
     public function join(Operator $user): array|bool {}
 }
+

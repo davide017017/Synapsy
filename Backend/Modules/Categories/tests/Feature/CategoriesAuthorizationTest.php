@@ -53,3 +53,4 @@ class CategoriesAuthorizationTest extends AuthenticatedTestCase
         ]);
     }
 }
+

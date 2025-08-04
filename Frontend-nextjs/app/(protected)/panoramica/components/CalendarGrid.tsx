@@ -231,3 +231,4 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
         </div>
     );
 }
+

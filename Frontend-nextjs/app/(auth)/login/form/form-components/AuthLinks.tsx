@@ -23,3 +23,4 @@ export default function AuthLinks({ onForgotClick, onRegisterClick }: Props) {
         </div>
     );
 }
+

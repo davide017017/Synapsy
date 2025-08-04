@@ -30,3 +30,4 @@ class ResetDatabaseCommand extends Command
     }
 }
 
+

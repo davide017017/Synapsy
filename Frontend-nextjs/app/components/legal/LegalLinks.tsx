@@ -53,3 +53,4 @@ export default function LegalLinks({ className = "" }: Props) {
         </div>
     );
 }
+

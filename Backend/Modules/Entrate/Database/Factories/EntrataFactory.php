@@ -119,3 +119,4 @@ class EntrataFactory extends Factory
         });
     }
 }
+

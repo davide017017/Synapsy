@@ -92,3 +92,4 @@ export async function deleteUserProfile(token: string, password: string): Promis
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.message || "Errore eliminazione profilo");
 }
+

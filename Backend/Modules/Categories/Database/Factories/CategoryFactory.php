@@ -52,3 +52,4 @@ class CategoryFactory extends Factory
         return $this->state(fn () => ['type' => 'spesa']);
     }
 }
+

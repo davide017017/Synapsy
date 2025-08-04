@@ -30,3 +30,4 @@ export function useCategories(token?: string) {
 
     return { categories, loading, error };
 }
+

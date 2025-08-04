@@ -82,3 +82,4 @@ class {{Model}}ApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('{{module}}', ['id' => $item->id]);
     }
 }
+

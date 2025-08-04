@@ -16,3 +16,4 @@ export type NewRicorrenzaButtonProps = {
     label?: string;
     onSuccess?: (newRicorrenza: import("@/types/models/ricorrenza").Ricorrenza) => void;
 };
+
