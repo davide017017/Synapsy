@@ -1,5 +1,4 @@
 import type { Theme } from "@/context/contexts/ThemeContext";
-import { AVATAR_CHOICES } from "@/app/(protected)/profilo/components/constants";
 
 export type UserType = {
     name: string;
@@ -17,7 +16,7 @@ export const DEFAULT_USER: UserType = {
     username: "Username...",
     email: "Email...",
     theme: "dark",
-    avatar: AVATAR_CHOICES[0],
+    avatar: "/images/avatars/avatar_01_boy.webp",
     pending_email: null,
 };
 
