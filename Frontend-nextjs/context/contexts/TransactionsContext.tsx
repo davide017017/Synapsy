@@ -4,7 +4,7 @@
 // ║ TransactionsContext — CRUD + Undo/Redo Sonner   ║
 // ╚══════════════════════════════════════════════════╝
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { Transaction, TransactionBase } from "@/types";
 import {
     fetchTransactions,
@@ -16,7 +16,6 @@ import {
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import NewTransactionModal from "@/app/(protected)/newTransaction/NewTransactionModal";
-import { useMemo } from "react";
 
 // ==================================================
 // Tipi context
@@ -32,16 +31,14 @@ type TransactionsContextType = {
     softMove: (original: Transaction, formData: Transaction, newType: "entrata" | "spesa") => Promise<void>;
     isOpen: boolean;
     transactionToEdit: Transaction | null;
-    openModal: (
-        txToEdit?: Transaction | null,
-        defaultDate?: string,
-        defaultType?: "entrata" | "spesa"
-    ) => void;
+    openModal: (txToEdit?: Transaction | null, defaultDate?: string, defaultType?: "entrata" | "spesa") => void;
     closeModal: () => void;
     defaultDate: string | null;
     defaultType: "entrata" | "spesa" | null;
     monthBalance: number;
     yearBalance: number;
+    weekBalance: number;
+    totalBalance: number;
 };
 
 // ==================================================
@@ -71,7 +68,16 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     const token = session?.accessToken;
 
     // ==================================================
-    // Saldi mese/anno
+    // Carica tutte le transazioni all'avvio/autenticazione
+    // ==================================================
+    useEffect(() => {
+        if (token) {
+            fetchAll();
+        }
+    }, [token]);
+
+    // ==================================================
+    // Saldi mese/anno/settimana/totale
     // ==================================================
     const monthBalance = useMemo(() => {
         const now = new Date();
@@ -90,6 +96,32 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             .reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
     }, [transactions]);
 
+    // Settimana corrente (da lunedì a domenica)
+    const weekBalance = useMemo(() => {
+        const now = new Date();
+        // Calcola il lunedì della settimana corrente
+        const firstDayOfWeek = new Date(now);
+        const day = now.getDay() || 7; // Domenica=7
+        firstDayOfWeek.setDate(now.getDate() - day + 1);
+        firstDayOfWeek.setHours(0, 0, 0, 0);
+        // Calcola la domenica della settimana corrente
+        const lastDayOfWeek = new Date(firstDayOfWeek);
+        lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+        lastDayOfWeek.setHours(23, 59, 59, 999);
+
+        return transactions
+            .filter((t) => {
+                const d = new Date(t.date);
+                return d >= firstDayOfWeek && d <= lastDayOfWeek;
+            })
+            .reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
+    }, [transactions]);
+
+    // Saldo totale (tutte le transazioni)
+    const totalBalance = useMemo(() => {
+        return transactions.reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
+    }, [transactions]);
+
     // ==================================================
     // Fetch ALL
     // ==================================================
@@ -99,12 +131,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         setError(null);
         try {
             const data = await fetchTransactions(token);
-            // --------------------------------------------------
-            // Mantiene l'ordine dalla più recente alla più vecchia
-            // --------------------------------------------------
-            setTransactions(
-                data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-            );
+            setTransactions(data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
         } catch (e: any) {
             setError(e.message || "Errore caricamento transazioni");
             toast.error(e.message || "Errore caricamento transazioni");
@@ -222,11 +249,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // ==================================================
     // Gestione Modale
     // ==================================================
-    const openModal = (
-        tx?: Transaction | null,
-        date?: string,
-        type?: "entrata" | "spesa"
-    ) => {
+    const openModal = (tx?: Transaction | null, date?: string, type?: "entrata" | "spesa") => {
         setTransactionToEdit(tx || null);
         setDefaultDate(date ?? null);
         setDefaultType(type ?? null);
@@ -261,13 +284,12 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 closeModal,
                 monthBalance,
                 yearBalance,
+                weekBalance,
+                totalBalance,
             }}
         >
             {children}
-            <NewTransactionModal
-                defaultDate={defaultDate ?? undefined}
-                defaultType={defaultType ?? undefined}
-            />
+            <NewTransactionModal defaultDate={defaultDate ?? undefined} defaultType={defaultType ?? undefined} />
         </TransactionsContext.Provider>
     );
 }
@@ -281,4 +303,3 @@ export function useTransactions() {
     return context;
 }
 // ==================================================
-

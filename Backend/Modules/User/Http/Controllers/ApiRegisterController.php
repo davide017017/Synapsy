@@ -21,7 +21,8 @@ class ApiRegisterController extends Controller
             'password' => $data['password'],
             'theme' => $data['theme'] ?? null,
             'has_accepted_terms' => $data['has_accepted_terms'],
-            'avatar' => 'images/avatars/avatar-1.svg',
+            'avatar' => 'images/avatars/avatar_01_boy.webp', // Default avatar
+            'is_admin' => false,
         ]);
 
         $user->sendEmailVerificationNotification();
@@ -29,4 +30,3 @@ class ApiRegisterController extends Controller
         return ApiResponse::success('Registrazione completata. Controlla la tua email per confermare l\'account.', null, 201);
     }
 }
-

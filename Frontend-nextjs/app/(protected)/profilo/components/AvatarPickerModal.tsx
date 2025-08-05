@@ -39,7 +39,9 @@ export default function AvatarPickerModal({ avatarList, selected, onSelect, onCl
                             key={src}
                             type="button"
                             className={`rounded-full border-2 transition-all duration-100 ${
-                                selected === src ? "border-primary ring-2 ring-primary scale-110" : "border-transparent opacity-80 hover:opacity-100"
+                                selected === src
+                                    ? "border-primary ring-2 ring-primary scale-110"
+                                    : "border-transparent opacity-80 hover:opacity-100"
                             }`}
                             onClick={() => onSelect(src)}
                         >
@@ -70,4 +72,3 @@ export default function AvatarPickerModal({ avatarList, selected, onSelect, onCl
         </motion.div>
     );
 }
-

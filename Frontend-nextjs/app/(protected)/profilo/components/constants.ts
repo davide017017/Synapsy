@@ -1,11 +1,17 @@
 export const AVATAR_CHOICES = [
-    "/images/avatars/avatar-1.svg",
-    "/images/avatars/avatar-2.svg",
-    "/images/avatars/avatar-3.svg",
-    "/images/avatars/avatar-4.svg",
-    "/images/avatars/avatar-5.svg",
-    "/images/avatars/avatar-6.svg",
-    "/images/avatars/avatar-7.svg",
-    // ...aggiungi altri se ne metti altri!
+    { id: 1, label: "Ragazzo con giacca", src: "/images/avatars/avatar_01_boy.webp" },
+    { id: 2, label: "Anziano elegante", src: "/images/avatars/avatar_02_anziano.webp" },
+    { id: 3, label: "Scimmia felice", src: "/images/avatars/avatar_03_felice.webp" },
+    { id: 4, label: "Affamato e sorridente", src: "/images/avatars/avatar_04_affamato.webp" },
+    { id: 5, label: "Classico", src: "/images/avatars/avatar_05_classico.webp" },
+    { id: 6, label: "Anziana gentile", src: "/images/avatars/avatar_06_anziana.webp" },
+    { id: 7, label: "Professionale (rossa)", src: "/images/avatars/avatar_07_professionale.webp" },
+    { id: 8, label: "Elegante (rossa)", src: "/images/avatars/avatar_08_elegante_rossa.webp" },
+    { id: 9, label: "Elegante (castana)", src: "/images/avatars/avatar_09_elegante_castana.webp" },
+    { id: 10, label: "Elegante (chiara)", src: "/images/avatars/avatar_10_elegante_chiara.webp" },
+    { id: 11, label: "Muscoloso", src: "/images/avatars/avatar_11_muscoloso.webp" },
+    { id: 12, label: "Giovane con verde", src: "/images/avatars/avatar_12_young_verde.webp" },
+    { id: 13, label: "Surfista", src: "/images/avatars/avatar_13_surfista.webp" },
+    { id: 14, label: "Surfista donna", src: "/images/avatars/avatar_14_surfista_donna.webp" },
+    { id: 15, label: "Business con occhiali", src: "/images/avatars/avatar_15_business.webp" },
 ];
-

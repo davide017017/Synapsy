@@ -1,25 +1,30 @@
-// app/(protected)/home/hero/heroItems/HeroSuggerimento.tsx
 "use client";
 
-import { useMemo } from "react";
+import { useState } from "react";
+import { heroSuggestions } from "./heroSuggestions";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HeroSuggerimento — placeholder per suggerimenti finanziari
-// ─────────────────────────────────────────────────────────────────────────────
+// ======================================================================
+// HeroSuggerimento — suggerimenti, motivazioni e consigli d’uso
+// ======================================================================
 export default function HeroSuggerimento() {
-    // ── Lista di suggerimenti di esempio ──
-    const suggestions = useMemo(
-        () => [
-            "Imposta un budget settimanale per le spese superflue.",
-            "Automatizza un trasferimento mensile al tuo conto risparmio.",
-            "Rivedi le tariffe degli abbonamenti e cancella quelli inutilizzati.",
-            "Confronta le offerte di carte cashback ogni trimestre.",
-        ],
-        []
-    );
+    const suggestions = heroSuggestions;
 
-    // ── Seleziona un suggerimento casuale ──
-    const tip = suggestions[Math.floor(Math.random() * suggestions.length)];
+    // ── Indice del suggerimento corrente ──
+    const [index, setIndex] = useState(() => Math.floor(Math.random() * suggestions.length));
+
+    // ── Funzione per cambiare suggerimento (senza ripetere subito lo stesso) ──
+    const getNewIndex = () => {
+        let newIndex = Math.floor(Math.random() * suggestions.length);
+        while (suggestions.length > 1 && newIndex === index) {
+            newIndex = Math.floor(Math.random() * suggestions.length);
+        }
+        return newIndex;
+    };
+
+    // ── Handler bottone ──
+    const handleNext = () => {
+        setIndex(getNewIndex());
+    };
 
     return (
         <div className="px-4 text-center">
@@ -27,13 +32,21 @@ export default function HeroSuggerimento() {
             <h2 className="text-lg font-bold mb-2">Suggerimento 🌱</h2>
 
             {/* Suggerimento principale */}
-            <p className="text-base ">{tip}</p>
+            <p className="text-base min-h-[40px]">{suggestions[index]}</p>
 
-            {/* Nota che è un placeholder */}
+            {/* Bottone nuovo suggerimento */}
+            <button
+                className="mt-3 px-4 py-1 rounded-xl bg-emerald-400 text-white font-semibold shadow transition hover:bg-emerald-500 active:scale-95"
+                onClick={handleNext}
+                title="Mostra un nuovo suggerimento"
+            >
+                Nuovo suggerimento
+            </button>
+
+            {/* Nota */}
             <p className="text-sm text-gray-500 mt-2">
-                (Placeholder — presto qui arriveranno suggerimenti personalizzati!)
+                (Presto arriveranno suggerimenti ancora più personalizzati!)
             </p>
         </div>
     );
 }
-

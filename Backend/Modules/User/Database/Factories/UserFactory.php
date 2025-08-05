@@ -44,13 +44,21 @@ class UserFactory extends Factory
         ];
 
         $avatarChoices = [
-            'images/avatars/avatar-1.svg',
-            'images/avatars/avatar-2.svg',
-            'images/avatars/avatar-3.svg',
-            'images/avatars/avatar-4.svg',
-            'images/avatars/avatar-5.svg',
-            'images/avatars/avatar-6.svg',
-            'images/avatars/avatar-7.svg',
+            'images/avatars/avatar_01_boy.webp',
+            'images/avatars/avatar_02_anziano.webp',
+            'images/avatars/avatar_03_felice.webp',
+            'images/avatars/avatar_04_affamato.webp',
+            'images/avatars/avatar_05_classico.webp',
+            'images/avatars/avatar_06_anziana.webp',
+            'images/avatars/avatar_07_professionale.webp',
+            'images/avatars/avatar_08_elegante_rossa.webp',
+            'images/avatars/avatar_09_elegante_castana.webp',
+            'images/avatars/avatar_10_elegante_chiara.webp',
+            'images/avatars/avatar_11_muscoloso.webp',
+            'images/avatars/avatar_12_young_verde.webp',
+            'images/avatars/avatar_13_surfista.webp',
+            'images/avatars/avatar_14_surfista_donna.webp',
+            'images/avatars/avatar_15_business.webp',
         ];
 
         $identity = $this->faker->unique()->randomElement($identities);

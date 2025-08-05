@@ -14,7 +14,7 @@ class UserObserver
         }
         // Set default avatar if not provided
         if (!$user->avatar) {
-            $user->avatar = 'images/avatars/avatar-1.svg';
+            $user->avatar = 'images/avatars/avatar_01_boy.webp';
             $user->save();
         }
 
@@ -44,4 +44,3 @@ class UserObserver
         }
     }
 }
-

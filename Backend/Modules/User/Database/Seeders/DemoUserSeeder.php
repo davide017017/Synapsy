@@ -29,11 +29,11 @@ class DemoUserSeeder extends Seeder
                 'username'          => 'demo',
                 'password'          => Hash::make('demo'),
                 'theme'             => 'dark',
-                'avatar'            => 'images/avatars/avatar-1.svg',
+                'avatar'            => 'images/avatars/avatar_01_boy.webp',
                 'is_admin'          => false,
                 'email_verified_at' => now(),
                 'remember_token'    => Str::random(10),
-                'has_accepted_terms'=> true,
+                'has_accepted_terms' => true,
             ]
         );
 
@@ -41,4 +41,3 @@ class DemoUserSeeder extends Seeder
         $this->logNewLine();
     }
 }
-
