@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import ProfileRow from "./components/ProfileRow";
 import ThemeSelectorRow from "./components/ThemeSelectorRow";
 import AvatarPickerModal from "./components/AvatarPickerModal";
-import { AVATAR_CHOICES } from "./components/constants";
 import { DEFAULT_USER, UserType } from "@/types/models/user";
 import { useUser } from "@/context/contexts/UserContext";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
@@ -53,6 +52,8 @@ export default function ProfilePage() {
         setShowPicker(false);
     };
 
+    const avatarUrl = `${process.env.NEXT_PUBLIC_CDN_URL || ""}${form.avatar}`;
+
     // -----------------------------------
     // Render pagina
     // -----------------------------------
@@ -69,7 +70,7 @@ export default function ProfilePage() {
                 {/* ---- Avatar attuale (click per cambiare) ---- */}
                 <motion.div whileHover={{ scale: 1.07 }} className="relative group">
                     <img
-                        src={form.avatar}
+                        src={avatarUrl}
                         alt="Avatar"
                         className="w-16 h-16 rounded-full object-cover border-2 cursor-pointer shadow transition group-hover:ring-2"
                         style={{
@@ -169,7 +170,6 @@ export default function ProfilePage() {
             <AnimatePresence>
                 {showPicker && (
                     <AvatarPickerModal
-                        avatarList={AVATAR_CHOICES}
                         selected={form.avatar}
                         onSelect={handleAvatarChange}
                         onClose={() => setShowPicker(false)}

@@ -22,6 +22,9 @@ export default function Header() {
 
     // ─────────── USERNAME ───────────
     const username = user?.username;
+    const avatarUrl = user?.avatar
+        ? `${process.env.NEXT_PUBLIC_CDN_URL || ""}${user.avatar}`
+        : undefined;
 
     // ─────────── LOGOUT HANDLER ───────────
     const handleLogout = async () => {
@@ -62,9 +65,9 @@ export default function Header() {
                         "
                         title="Vai al profilo"
                     >
-                        {user?.avatar ? (
+                        {avatarUrl ? (
                             <Image
-                                src={user.avatar}
+                                src={avatarUrl}
                                 alt="Avatar utente"
                                 width={20}
                                 height={20}

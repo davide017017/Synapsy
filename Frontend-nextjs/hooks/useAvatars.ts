@@ -13,7 +13,7 @@ export function useAvatars() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/avatars`)
+        fetch("/api/v1/avatars")
             .then((res) => res.json())
             .then((data) => {
                 setAvatars(data);
