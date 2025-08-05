@@ -66,7 +66,7 @@ export default function LoginPage() {
     return (
         <div
             className="relative min-h-screen flex items-center justify-center bg-no-repeat bg-center bg-cover"
-            style={{ backgroundImage: "url('/images/bg-login.png')" }}
+            style={{ backgroundImage: "url('/images/bg-login.webp')" }}
         >
             <BetaBadge floating />
             {/* Overlay sfocato/oscuro */}

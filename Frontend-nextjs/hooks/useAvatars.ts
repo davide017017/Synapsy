@@ -13,16 +13,21 @@ export function useAvatars() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("/api/v1/avatars")
-            .then((res) => res.json())
-            .then((data) => {
-                setAvatars(data);
-                setLoading(false);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!apiUrl) {
+            console.error("NEXT_PUBLIC_API_URL non definita");
+            setLoading(false);
+            return;
+        }
+
+        fetch(`${apiUrl}/v1/avatars`)
+            .then((res) => {
+                if (!res.ok) throw new Error(`Errore HTTP: ${res.status}`);
+                return res.json();
             })
-            .catch((err) => {
-                console.error("Errore caricamento avatar:", err);
-                setLoading(false);
-            });
+            .then((data) => setAvatars(data))
+            .catch((err) => console.error("Errore caricamento avatar:", err))
+            .finally(() => setLoading(false));
     }, []);
 
     return { avatars, loading };

@@ -22,9 +22,7 @@ export default function Header() {
 
     // ─────────── USERNAME ───────────
     const username = user?.username;
-    const avatarUrl = user?.avatar
-        ? `${process.env.NEXT_PUBLIC_CDN_URL || ""}${user.avatar}`
-        : undefined;
+    const avatarUrl = user?.avatar ? `${process.env.NEXT_PUBLIC_CDN_URL || ""}${user.avatar}` : undefined;
 
     // ─────────── LOGOUT HANDLER ───────────
     const handleLogout = async () => {
@@ -40,7 +38,7 @@ export default function Header() {
             {/* LOGO CENTRALE */}
             <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center" aria-label="Homepage">
                 <Image
-                    src="/images/icon_1024x1024.png"
+                    src="/images/icon_1024x1024.webp"
                     alt="Synapsi logo"
                     width={32}
                     height={32}
@@ -80,7 +78,6 @@ export default function Header() {
                     </Link>
                 )}
 
-
                 <button
                     onClick={handleLogout}
                     className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-white hover:text-red-400 ring-1 ring-white/20 hover:ring-red-400 transition shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400"
@@ -92,4 +89,3 @@ export default function Header() {
         </header>
     );
 }
-

@@ -9,7 +9,7 @@ const nextConfig = {
 
     experimental: {
         scrollRestoration: true, // Ripristino scroll tra le pagine (UX migliore)
-        // Puoi aggiungere altri flag qui se servono
+        // Aggiungi altri flag sperimentali se servono
     },
 
     productionBrowserSourceMaps: false, // No sourcemap in produzione (sicurezza)
@@ -17,10 +17,13 @@ const nextConfig = {
     typescript: {
         ignoreBuildErrors: false, // Blocca build se errori TS
     },
+
+    images: {
+        unoptimized: true, // ✅ Disabilita ottimizzazione immagini Next.js
+    },
 };
 
 // =========================
 // Esporta la configurazione
 // =========================
 module.exports = nextConfig;
-

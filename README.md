@@ -20,7 +20,7 @@ Monorepo con **Laravel API backend** + **Next.js frontend**
 
 -   **Backend:** [Laravel 12.x](https://laravel.com/) (PHP 8.2+)
 -   **Frontend:** [Next.js 15](https://nextjs.org/) (React, TypeScript, Tailwind CSS)
- -   **Database:** PostgreSQL / SQLite (testing)
+-   **Database:** PostgreSQL / SQLite (testing)
 -   **Autenticazione:** Laravel Sanctum (API Token)
 
 ---
@@ -68,7 +68,7 @@ Per la dashboard e l’interfaccia utente consulta il README del frontend:
 
 ## 📸 Screenshot
 
-![Screenshot di Synapsi Finance](/Frontend-nextjs/public/images/ScreenS.png)
+![Screenshot di Synapsi Finance](/Frontend-nextjs/public/images/ScreenS.webp)
 
 ## Utente Demo (Versione Beta)
 
@@ -76,8 +76,8 @@ Puoi accedere rapidamente con il bottone rosa **"Accedi come demo"** nella pagin
 
 **Credenziali demo:**
 
-- Email: `demo@synapsy.app`
-- Password: `demo`
+-   Email: `demo@synapsy.app`
+-   Password: `demo`
 
 ⚠️ I dati demo possono essere cancellati in qualsiasi momento, non inserire dati sensibili. La funzione è disponibile solo se `NEXT_PUBLIC_BETA=true` nel frontend.
 
@@ -104,4 +104,3 @@ Pull Request e segnalazioni sono benvenute!
 Apri una issue per bug, domande o suggerimenti.
 
 ---
-
