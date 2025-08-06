@@ -24,7 +24,7 @@ export default function AvatarCard({ src, label, selected, onClick }: AvatarCard
                     selected ? "ring-2 ring-primary" : "ring-1 ring-transparent"
                 )}
             >
-                <Image src={url} alt={label ?? "Avatar"} width={64} height={64} className="w-16 h-16 object-cover" />
+                <Image src={url} alt={label ?? "Avatar"} width={64} height={64} className="w-16 h-32 object-cover" />
             </button>
             {label && <span className="text-sm text-center">{label}</span>}
         </div>

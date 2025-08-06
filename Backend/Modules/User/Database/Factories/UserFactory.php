@@ -55,7 +55,7 @@ class UserFactory extends Factory
             'images/avatars/avatar_09_elegante_castana.webp',
             'images/avatars/avatar_10_elegante_chiara.webp',
             'images/avatars/avatar_11_muscoloso.webp',
-            'images/avatars/avatar_12_young_verde.webp',
+            'images/avatars/avatar_12_pink_beta.webp',
             'images/avatars/avatar_13_surfista.webp',
             'images/avatars/avatar_14_surfista_donna.webp',
             'images/avatars/avatar_15_business.webp',

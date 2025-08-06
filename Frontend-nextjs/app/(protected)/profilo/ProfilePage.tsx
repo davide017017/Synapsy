@@ -1,7 +1,7 @@
 "use client";
 
 // ======================================================
-// ProfilePage.tsx — Avatar gallery scelta rapida (no upload)
+// ProfilePage.tsx — Avatar a sinistra, dati a destra
 // ======================================================
 
 import { useEffect, useState } from "react";
@@ -25,9 +25,6 @@ export default function ProfilePage() {
     const { user, update } = useUser();
     const { setTheme } = useThemeContext();
 
-    // -----------------------------------
-    // Stato UI e form locale
-    // -----------------------------------
     const [form, setForm] = useState<UserType>(DEFAULT_USER);
     const [editing, setEditing] = useState<{ [K in keyof UserType]?: boolean }>({});
     const [showPicker, setShowPicker] = useState(false);
@@ -36,18 +33,13 @@ export default function ProfilePage() {
         if (user) setForm(user);
     }, [user]);
 
-    // Gestione cambio campi
     const handleEdit = (field: keyof UserType) => setEditing({ ...editing, [field]: true });
     const handleChange = (field: keyof UserType, value: string) => setForm({ ...form, [field]: value });
     const handleSave = async (field: keyof UserType) => {
-        if (field === "theme") {
-            setTheme(form.theme, false);
-        }
+        if (field === "theme") setTheme(form.theme, false);
         await update({ [field]: form[field] } as Partial<UserType>);
         setEditing({ ...editing, [field]: false });
     };
-
-    // Gestione scelta avatar
     const handleAvatarChange = async (val: string) => {
         await update({ avatar: val });
         setShowPicker(false);
@@ -55,119 +47,114 @@ export default function ProfilePage() {
 
     const avatarUrl = getAvatarUrl(form.avatar);
 
-    // -----------------------------------
-    // Render pagina
-    // -----------------------------------
     return (
-        <div className="max-w-lg mx-auto space-y-6">
+        <div className="max-w-3xl mx-auto">
             <PendingEmailNotice />
-            {/* ========================================= */}
-            {/* Avatar + Intestazione */}
-            {/* ========================================= */}
-            <div
-                className="flex flex-col items-center text-center gap-3 pb-4 border-b"
-                style={{ borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))" }}
-            >
-                {/* ---- Avatar attuale (click per cambiare) ---- */}
-                <motion.div whileHover={{ scale: 1.07 }} className="relative group">
-                    <img
-                        src={avatarUrl}
-                        alt="Avatar"
-                        className="w-16 h-16 rounded-full object-cover border-2 cursor-pointer shadow transition group-hover:ring-2"
+            {/* ───────────────────────────── */}
+            {/*   DUE COLONNE SU MD+         */}
+            {/* ───────────────────────────── */}
+            <div className="flex flex-col md:flex-row md:items-start md:gap-8">
+                {/* -------- Colonna avatar -------- */}
+                <div className="flex justify-center md:justify-start md:min-w-[160px] md:pt-4">
+                    <motion.div whileHover={{ scale: 1.07 }} className="relative group">
+                        <img
+                            src={avatarUrl}
+                            alt="Avatar"
+                            className="w-50 h-72 rounded-full object-cover border-2 cursor-pointer shadow transition group-hover:ring-2"
+                            style={{
+                                borderColor: "hsl(var(--c-primary, 205 66% 49%))",
+                                boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
+                            }}
+                            onClick={() => setShowPicker(true)}
+                            title="Cambia avatar"
+                        />
+                        {/* Badge matita (edit) */}
+                        <button
+                            type="button"
+                            className="absolute bottom-0 right-0 shadow px-1.5 py-0.5 rounded-full text-xs font-semibold opacity-85 hover:opacity-100 transition border"
+                            style={{
+                                background: "hsl(var(--c-bg, 44 81% 94%))",
+                                borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
+                                color: "hsl(var(--c-primary, 205 66% 49%))",
+                            }}
+                            onClick={() => setShowPicker(true)}
+                            tabIndex={-1}
+                            title="Cambia avatar"
+                        >
+                            ✎
+                        </button>
+                    </motion.div>
+                </div>
+
+                {/* -------- Colonna dati profilo -------- */}
+                <div className="flex-1 flex flex-col gap-4">
+                    {/* Intestazione */}
+                    <div className="flex flex-col items-center md:items-start gap-1 mb-2 mt-4 md:mt-0">
+                        <UserRound size={40} className="text-primary drop-shadow" />
+                        <h1 className="text-2xl font-bold text-primary">Profilo</h1>
+                        <p className="text-sm text-muted-foreground">Modifica le informazioni del tuo account.</p>
+                    </div>
+
+                    {/* Dati profilo */}
+                    <div
+                        className="rounded-xl shadow-sm"
                         style={{
-                            borderColor: "hsl(var(--c-primary, 205 66% 49%))",
+                            background: "hsl(var(--c-bg-elevate, 44 36% 88%) / 0.8)",
+                            border: "1px solid hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
                             boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
+                            overflow: "visible",
                         }}
-                        onClick={() => setShowPicker(true)}
-                        title="Cambia avatar"
-                    />
-                    {/* Badge matita (edit) */}
-                    <button
-                        type="button"
-                        className="absolute bottom-0 right-0 shadow px-1.5 py-0.5 rounded-full text-xs font-semibold opacity-85 hover:opacity-100 transition border"
-                        style={{
-                            background: "hsl(var(--c-bg, 44 81% 94%))",
-                            borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
-                            color: "hsl(var(--c-primary, 205 66% 49%))",
-                        }}
-                        onClick={() => setShowPicker(true)}
-                        tabIndex={-1}
-                        title="Cambia avatar"
                     >
-                        ✎
-                    </button>
-                </motion.div>
-                {/* ---- Titolo ---- */}
-                <div className="flex flex-col items-center gap-1 mb-4">
-                    <UserRound size={40} className="text-primary drop-shadow" />
-                    <h1 className="text-2xl font-bold text-primary">Profilo</h1>
-                    <p className="text-sm text-muted-foreground">Modifica le informazioni del tuo account.</p>
+                        <ProfileRow
+                            label="Nome"
+                            value={form.name}
+                            editing={editing.name}
+                            onEdit={() => handleEdit("name")}
+                            onChange={(v) => handleChange("name", v)}
+                            onSave={() => handleSave("name")}
+                        />
+                        <ProfileRow
+                            label="Cognome"
+                            value={form.surname ?? ""}
+                            editing={editing.surname}
+                            onEdit={() => handleEdit("surname")}
+                            onChange={(v) => handleChange("surname", v)}
+                            onSave={() => handleSave("surname")}
+                        />
+                        <ProfileRow
+                            label="Username"
+                            value={form.username}
+                            editing={editing.username}
+                            onEdit={() => handleEdit("username")}
+                            onChange={(v) => handleChange("username", v)}
+                            onSave={() => handleSave("username")}
+                        />
+                        <ProfileRow
+                            label="Email"
+                            value={form.email}
+                            editing={editing.email}
+                            onEdit={() => handleEdit("email")}
+                            onChange={(v) => handleChange("email", v)}
+                            onSave={() => handleSave("email")}
+                            disabled={!!user?.pending_email}
+                        />
+                        <ThemeSelectorRow
+                            value={form.theme}
+                            editing={editing.theme}
+                            onEdit={() => handleEdit("theme")}
+                            onSave={(val) => {
+                                setTheme(val as any);
+                                setForm((f) => ({ ...f, theme: val as any }));
+                                setEditing((e) => ({ ...e, theme: false }));
+                            }}
+                            onCancel={() => setEditing((e) => ({ ...e, theme: false }))}
+                        />
+                    </div>
                 </div>
             </div>
-
-            {/* ========================================= */}
-            {/* Dati profilo */}
-            {/* ========================================= */}
-            <div
-                className="rounded-xl shadow-sm "
-                style={{
-                    background: "hsl(var(--c-bg-elevate, 44 36% 88%) / 0.8)",
-                    border: "1px solid hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
-                    boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
-                    overflow: "visible",
-                }}
-            >
-                <ProfileRow
-                    label="Nome"
-                    value={form.name}
-                    editing={editing.name}
-                    onEdit={() => handleEdit("name")}
-                    onChange={(v) => handleChange("name", v)}
-                    onSave={() => handleSave("name")}
-                />
-                <ProfileRow
-                    label="Cognome"
-                    value={form.surname ?? ""}
-                    editing={editing.surname}
-                    onEdit={() => handleEdit("surname")}
-                    onChange={(v) => handleChange("surname", v)}
-                    onSave={() => handleSave("surname")}
-                />
-                <ProfileRow
-                    label="Username"
-                    value={form.username}
-                    editing={editing.username}
-                    onEdit={() => handleEdit("username")}
-                    onChange={(v) => handleChange("username", v)}
-                    onSave={() => handleSave("username")}
-                />
-                <ProfileRow
-                    label="Email"
-                    value={form.email}
-                    editing={editing.email}
-                    onEdit={() => handleEdit("email")}
-                    onChange={(v) => handleChange("email", v)}
-                    onSave={() => handleSave("email")}
-                    disabled={!!user?.pending_email}
-                />
-                <ThemeSelectorRow
-                    value={form.theme}
-                    editing={editing.theme}
-                    onEdit={() => handleEdit("theme")}
-                    onSave={(val) => {
-                        // Applica subito il tema selezionato e persiste in background
-                        setTheme(val as any);
-                        // Aggiorna stato locale senza attendere risposta
-                        setForm((f) => ({ ...f, theme: val as any }));
-                        setEditing((e) => ({ ...e, theme: false }));
-                    }}
-                    onCancel={() => setEditing((e) => ({ ...e, theme: false }))}
-                />
-            </div>
-
-            {/* ========================================= */}
-            {/* Modale scelta avatar */}
-            {/* ========================================= */}
+            {/* ───────────────────────────── */}
+            {/* Modale scelta avatar          */}
+            {/* ───────────────────────────── */}
             <AnimatePresence>
                 {showPicker && (
                     <AvatarPickerModal

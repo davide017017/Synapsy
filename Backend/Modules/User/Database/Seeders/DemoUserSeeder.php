@@ -29,7 +29,7 @@ class DemoUserSeeder extends Seeder
                 'username'          => 'demo',
                 'password'          => Hash::make('demo'),
                 'theme'             => 'dark',
-                'avatar'            => 'images/avatars/avatar_01_boy.webp',
+                'avatar'            => 'avatar_12_pink_beta.webp',
                 'is_admin'          => false,
                 'email_verified_at' => now(),
                 'remember_token'    => Str::random(10),

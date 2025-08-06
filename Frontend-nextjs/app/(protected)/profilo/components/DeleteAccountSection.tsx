@@ -1,4 +1,9 @@
 "use client";
+
+// ==========================
+// DeleteAccountSection — Solo TailwindCSS (palette custom)
+// ==========================
+
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -31,18 +36,24 @@ export default function DeleteAccountSection() {
     };
 
     return (
-        <div className="flex justify-center text-center mt-6">
+        <div className="flex justify-end text-center mt-6 mb-6">
             <button
                 type="button"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-red-400 text-white font-semibold bg-red-700 hover:bg-white hover:text-red-700 hover:scale-110 active:scale-95 shadow transition-all duration-150 cursor-pointer group"
+                className="
+                    flex items-center gap-2 px-4 py-2 rounded-xl border
+                    border-danger-dark bg-danger text-text-invert font-semibold
+                    hover:bg-danger-dark hover:scale-110 hover:text-white
+                    focus:outline-none focus:ring-2 focus:ring-danger-dark
+                    active:scale-95 shadow transition-all duration-150 group
+                "
                 onClick={() => setOpen(true)}
             >
-                <Trash2 size={18} className="text:white hover:text-red-500 group-hover:animate-shake" />
+                <Trash2 size={18} className="text-invert group-hover:animate-shake" />
                 Elimina profilo
             </button>
             <Dialog open={open} onClose={() => setOpen(false)}>
                 <ModalLayout title="Conferma eliminazione" onClose={() => setOpen(false)}>
-                    <p className="text-sm mb-2">
+                    <p className="text-sm mb-2 text-text-secondary">
                         Inserisci la tua password per confermare. Potrai recuperare il profilo entro 30 giorni.
                     </p>
                     <Input
@@ -53,15 +64,33 @@ export default function DeleteAccountSection() {
                         className="mb-4"
                     />
                     <div className="flex justify-end gap-2">
+                        {/* ──────────────── Bottone Annulla ──────────────── */}
                         <button
-                            className="px-3 py-1 rounded bg-gray-200"
+                            type="button"
+                            className="
+                                px-4 py-1 rounded-xl font-medium border
+                                bg-bg-soft text-text-secondary border-secondary
+                                hover:bg-bg-alt hover:text-text
+                                focus:outline-none focus:ring-2 focus:ring-primary
+                                transition
+                                disabled:opacity-60
+                            "
                             onClick={() => setOpen(false)}
                             disabled={loading}
                         >
                             Annulla
                         </button>
+                        {/* ──────────────── Bottone Elimina ──────────────── */}
                         <button
-                            className="px-3 py-1 rounded bg-red-600 text-white"
+                            type="button"
+                            className="
+                                px-4 py-1 rounded-xl font-medium border
+                                bg-danger text-text-invert border-danger-dark
+                                hover:bg-danger-dark hover:text-white
+                                focus:outline-none focus:ring-2 focus:ring-primary
+                                transition
+                                disabled:opacity-60
+                            "
                             onClick={handleDelete}
                             disabled={loading}
                         >
@@ -73,4 +102,3 @@ export default function DeleteAccountSection() {
         </div>
     );
 }
-

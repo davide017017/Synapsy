@@ -30,7 +30,7 @@ Route::prefix('v1')->group(function () {
             ['id' => 9, 'label' => 'Elegante (castana)', 'src' => 'avatar_09_elegante_castana.webp'],
             ['id' => 10, 'label' => 'Elegante (chiara)', 'src' => 'avatar_10_elegante_chiara.webp'],
             ['id' => 11, 'label' => 'Muscoloso', 'src' => 'avatar_11_muscoloso.webp'],
-            ['id' => 12, 'label' => 'Giovane con verde', 'src' => 'avatar_12_young_verde.webp'],
+            ['id' => 12, 'label' => 'Giovane Rosa', 'src' => 'avatar_12_pink_beta.webp'],
             ['id' => 13, 'label' => 'Surfista', 'src' => 'avatar_13_surfista.webp'],
             ['id' => 14, 'label' => 'Surfista donna', 'src' => 'avatar_14_surfista_donna.webp'],
             ['id' => 15, 'label' => 'Business con occhiali', 'src' => 'avatar_15_business.webp'],

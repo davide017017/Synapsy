@@ -2,14 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
 import { themeMeta, availableThemes } from "@/lib/themeUtils";
-
-interface ThemeSelectorRowProps {
-    value: string;
-    editing: boolean | undefined;
-    onEdit: () => void;
-    onSave: (val: string) => void;
-    onCancel: () => void;
-}
+import { ThemeSelectorRowProps } from "@/types/profilo/row";
 
 export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCancel }: ThemeSelectorRowProps) {
     const { theme } = useThemeContext();
@@ -61,7 +54,7 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
                 <div className="flex-1 capitalize">{themeMeta[value as keyof typeof themeMeta].label}</div>
                 <div>
                     <button
-                        className="opacity-70 group-hover:opacity-100 px-2 py-1 rounded font-semibold text-xs transition"
+                        className="opacity-70 group-hover:opacity-100 px-2 py-1 rounded-xl font-semibold text-xs transition"
                         style={{
                             background: "hsl(var(--c-secondary, 220 15% 48%))",
                             color: "hsl(var(--c-bg, 44 81% 94%))",
@@ -77,10 +70,7 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
 
     // UI: selettore a tendina, responsive e accessibile
     return (
-        <div
-            ref={containerRef}
-            className="flex items-center px-3 py-3 gap-4 border-b border-primary/10"
-        >
+        <div ref={containerRef} className="flex items-center px-3 py-3 gap-4 border-b border-primary/10">
             <div className="w-28 font-medium text-sm text-muted-foreground">Tema</div>
             <div className="flex-1 relative">
                 <button
@@ -125,7 +115,7 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
             </div>
             <div>
                 <button
-                    className="ml-2 px-2 py-1 rounded font-semibold shadow text-xs transition bg-primary text-bg"
+                    className="ml-2 px-2 py-1 rounded-xl font-semibold shadow text-xs transition bg-primary text-bg"
                     onClick={() => {
                         setOpen(false);
                         onCancel();
@@ -137,4 +127,3 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
         </div>
     );
 }
-

@@ -34,7 +34,7 @@ class UserDBSeeder extends Seeder
                 'surname'           => 'Admin',
                 'username'          => 'admin',
                 'theme'             => 'solarized',
-                'avatar'            => 'images/avatars/avatar_01_boy.webp',
+                'avatar'            => 'avatar_15_business.webp',
                 'password'          => Hash::make('password1234'),
                 'email_verified_at' => now(),
                 'remember_token'    => Str::random(10),
