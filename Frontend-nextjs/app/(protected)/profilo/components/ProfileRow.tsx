@@ -71,25 +71,23 @@ export default function ProfileRow({
                         >
                             Salva
                         </button>
-                        {onCancel && (
-                            <button
-                                type="button"
-                                className="ml-1 p-2 rounded-full flex items-center justify-center transition hover:bg-red-100"
-                                onClick={onCancel}
-                                title="Annulla modifiche"
+                        <button
+                            type="button"
+                            className="ml-1 p-2 rounded-full flex items-center justify-center transition hover:bg-red-100"
+                            onClick={onCancel}
+                            title="Annulla modifiche"
+                        >
+                            {/* X svg semplice */}
+                            <svg
+                                viewBox="0 0 20 20"
+                                fill="none"
+                                className="w-4 h-4 text-red-500"
+                                stroke="currentColor"
+                                strokeWidth={2}
                             >
-                                {/* X svg semplice */}
-                                <svg
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                    className="w-4 h-4 text-red-500"
-                                    stroke="currentColor"
-                                    strokeWidth={2}
-                                >
-                                    <path d="M6 6l8 8M6 14L14 6" strokeLinecap="round" />
-                                </svg>
-                            </button>
-                        )}
+                                <path d="M6 6l8 8M6 14L14 6" strokeLinecap="round" />
+                            </svg>
+                        </button>
                     </>
                 ) : (
                     <button
