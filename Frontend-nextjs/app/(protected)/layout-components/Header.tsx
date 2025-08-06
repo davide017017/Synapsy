@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useUser } from "@/context/contexts/UserContext";
+import getAvatarUrl from "@/utils/getAvatarUrl";
 
 // ==================================================
 // Header principale
@@ -22,12 +23,7 @@ export default function Header() {
 
     // ─────────── USERNAME ───────────
     const username = user?.username;
-    const avatarUrl = user?.avatar
-        ? `${(process.env.NEXT_PUBLIC_CDN_URL || "/images/avatars").replace(/\/$/, "")}/${user.avatar.replace(
-              /^\//,
-              ""
-          )}`
-        : undefined;
+    const avatarUrl = user?.avatar ? getAvatarUrl(user.avatar) : undefined;
 
     // ─────────── LOGOUT HANDLER ───────────
     const handleLogout = async () => {
