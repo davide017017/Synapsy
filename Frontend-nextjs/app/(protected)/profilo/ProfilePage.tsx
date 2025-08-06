@@ -52,7 +52,8 @@ export default function ProfilePage() {
         setShowPicker(false);
     };
 
-    const avatarUrl = `${process.env.NEXT_PUBLIC_CDN_URL || ""}${form.avatar}`;
+    const cdn = process.env.NEXT_PUBLIC_CDN_URL || "/images/avatars";
+    const avatarUrl = `${cdn.replace(/\/$/, "")}/${form.avatar.replace(/^\//, "")}`;
 
     // -----------------------------------
     // Render pagina
@@ -181,4 +182,3 @@ export default function ProfilePage() {
         </div>
     );
 }
-

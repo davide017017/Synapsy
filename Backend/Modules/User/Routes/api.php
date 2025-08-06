@@ -19,23 +19,24 @@ Route::prefix('v1')->group(function () {
     // =========================================================================
     Route::get('avatars', function () {
         return response()->json([
-            ['id' => 1, 'label' => 'Ragazzo con giacca', 'src' => 'images/avatars/avatar_01_boy.webp'],
-            ['id' => 2, 'label' => 'Anziano elegante', 'src' => 'images/avatars/avatar_02_anziano.webp'],
-            ['id' => 3, 'label' => 'Scimmia felice', 'src' => 'images/avatars/avatar_03_felice.webp'],
-            ['id' => 4, 'label' => 'Affamato e sorridente', 'src' => 'images/avatars/avatar_04_affamato.webp'],
-            ['id' => 5, 'label' => 'Classico', 'src' => 'images/avatars/avatar_05_classico.webp'],
-            ['id' => 6, 'label' => 'Anziana gentile', 'src' => 'images/avatars/avatar_06_anziana.webp'],
-            ['id' => 7, 'label' => 'Professionale (rossa)', 'src' => 'images/avatars/avatar_07_professionale.webp'],
-            ['id' => 8, 'label' => 'Elegante (rossa)', 'src' => 'images/avatars/avatar_08_elegante_rossa.webp'],
-            ['id' => 9, 'label' => 'Elegante (castana)', 'src' => 'images/avatars/avatar_09_elegante_castana.webp'],
-            ['id' => 10, 'label' => 'Elegante (chiara)', 'src' => 'images/avatars/avatar_10_elegante_chiara.webp'],
-            ['id' => 11, 'label' => 'Muscoloso', 'src' => 'images/avatars/avatar_11_muscoloso.webp'],
-            ['id' => 12, 'label' => 'Giovane con verde', 'src' => 'images/avatars/avatar_12_young_verde.webp'],
-            ['id' => 13, 'label' => 'Surfista', 'src' => 'images/avatars/avatar_13_surfista.webp'],
-            ['id' => 14, 'label' => 'Surfista donna', 'src' => 'images/avatars/avatar_14_surfista_donna.webp'],
-            ['id' => 15, 'label' => 'Business con occhiali', 'src' => 'images/avatars/avatar_15_business.webp'],
+            ['id' => 1, 'label' => 'Ragazzo con giacca', 'src' => 'avatar_01_boy.webp'],
+            ['id' => 2, 'label' => 'Anziano elegante', 'src' => 'avatar_02_anziano.webp'],
+            ['id' => 3, 'label' => 'Scimmia felice', 'src' => 'avatar_03_felice.webp'],
+            ['id' => 4, 'label' => 'Affamato e sorridente', 'src' => 'avatar_04_affamato.webp'],
+            ['id' => 5, 'label' => 'Classico', 'src' => 'avatar_05_classico.webp'],
+            ['id' => 6, 'label' => 'Anziana gentile', 'src' => 'avatar_06_anziana.webp'],
+            ['id' => 7, 'label' => 'Professionale (rossa)', 'src' => 'avatar_07_professionale.webp'],
+            ['id' => 8, 'label' => 'Elegante (rossa)', 'src' => 'avatar_08_elegante_rossa.webp'],
+            ['id' => 9, 'label' => 'Elegante (castana)', 'src' => 'avatar_09_elegante_castana.webp'],
+            ['id' => 10, 'label' => 'Elegante (chiara)', 'src' => 'avatar_10_elegante_chiara.webp'],
+            ['id' => 11, 'label' => 'Muscoloso', 'src' => 'avatar_11_muscoloso.webp'],
+            ['id' => 12, 'label' => 'Giovane con verde', 'src' => 'avatar_12_young_verde.webp'],
+            ['id' => 13, 'label' => 'Surfista', 'src' => 'avatar_13_surfista.webp'],
+            ['id' => 14, 'label' => 'Surfista donna', 'src' => 'avatar_14_surfista_donna.webp'],
+            ['id' => 15, 'label' => 'Business con occhiali', 'src' => 'avatar_15_business.webp'],
         ]);
     });
+
 
     // =========================================================================
     // 🔐 Auth / Registrazione

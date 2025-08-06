@@ -22,7 +22,12 @@ export default function Header() {
 
     // ─────────── USERNAME ───────────
     const username = user?.username;
-    const avatarUrl = user?.avatar ? `${process.env.NEXT_PUBLIC_CDN_URL || ""}${user.avatar}` : undefined;
+    const avatarUrl = user?.avatar
+        ? `${(process.env.NEXT_PUBLIC_CDN_URL || "/images/avatars").replace(/\/$/, "")}/${user.avatar.replace(
+              /^\//,
+              ""
+          )}`
+        : undefined;
 
     // ─────────── LOGOUT HANDLER ───────────
     const handleLogout = async () => {
