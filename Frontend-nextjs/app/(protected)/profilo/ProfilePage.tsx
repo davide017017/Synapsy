@@ -27,18 +27,34 @@ export default function ProfilePage() {
 
     const [form, setForm] = useState<UserType>(DEFAULT_USER);
     const [editing, setEditing] = useState<{ [K in keyof UserType]?: boolean }>({});
+    const [backup, setBackup] = useState<Partial<UserType>>({});
     const [showPicker, setShowPicker] = useState(false);
 
     useEffect(() => {
         if (user) setForm(user);
     }, [user]);
 
-    const handleEdit = (field: keyof UserType) => setEditing({ ...editing, [field]: true });
+    const handleEdit = (field: keyof UserType) => {
+        setBackup((b) => ({ ...b, [field]: form[field] }));
+        setEditing({ ...editing, [field]: true });
+    };
     const handleChange = (field: keyof UserType, value: string) => setForm({ ...form, [field]: value });
     const handleSave = async (field: keyof UserType) => {
         if (field === "theme") setTheme(form.theme, false);
         await update({ [field]: form[field] } as Partial<UserType>);
         setEditing({ ...editing, [field]: false });
+        setBackup((b) => {
+            const { [field]: _omit, ...rest } = b;
+            return rest;
+        });
+    };
+    const handleCancel = (field: keyof UserType) => {
+        setForm((f) => ({ ...f, [field]: backup[field] as any }));
+        setEditing({ ...editing, [field]: false });
+        setBackup((b) => {
+            const { [field]: _omit, ...rest } = b;
+            return rest;
+        });
     };
     const handleAvatarChange = async (val: string) => {
         await update({ avatar: val });
@@ -112,6 +128,7 @@ export default function ProfilePage() {
                             onEdit={() => handleEdit("name")}
                             onChange={(v) => handleChange("name", v)}
                             onSave={() => handleSave("name")}
+                            onCancel={() => handleCancel("name")}
                         />
                         <ProfileRow
                             label="Cognome"
@@ -120,6 +137,7 @@ export default function ProfilePage() {
                             onEdit={() => handleEdit("surname")}
                             onChange={(v) => handleChange("surname", v)}
                             onSave={() => handleSave("surname")}
+                            onCancel={() => handleCancel("surname")}
                         />
                         <ProfileRow
                             label="Username"
@@ -128,6 +146,7 @@ export default function ProfilePage() {
                             onEdit={() => handleEdit("username")}
                             onChange={(v) => handleChange("username", v)}
                             onSave={() => handleSave("username")}
+                            onCancel={() => handleCancel("username")}
                         />
                         <ProfileRow
                             label="Email"
@@ -136,6 +155,7 @@ export default function ProfilePage() {
                             onEdit={() => handleEdit("email")}
                             onChange={(v) => handleChange("email", v)}
                             onSave={() => handleSave("email")}
+                            onCancel={() => handleCancel("email")}
                             disabled={!!user?.pending_email}
                         />
                         <ThemeSelectorRow
