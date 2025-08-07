@@ -7,6 +7,7 @@ import ConfirmDialog from "@/app/components/ui/ConfirmDialog";
 
 export default function PendingEmailNotice() {
     const { user, cancelPending, resendPending } = useUser();
+    const isDemo = user?.email === "demo@synapsy.app";
 
     // Stato per la dialog di conferma
     const [showConfirm, setShowConfirm] = useState(false);
@@ -41,16 +42,20 @@ export default function PendingEmailNotice() {
                         </p>
                         <div className="flex gap-2">
                             <motion.button
-                                whileHover={{ scale: 1.05, opacity: 0.9 }}
+                                whileHover={isDemo ? {} : { scale: 1.05, opacity: 0.9 }}
                                 className="px-2 py-1 rounded-xl shadow bg-red-500 text-white text-xs font-semibold"
                                 onClick={handleCancel}
+                                disabled={isDemo}
+                                style={{ opacity: isDemo ? 0.5 : undefined, pointerEvents: isDemo ? "none" : undefined }}
                             >
                                 Annulla richiesta
                             </motion.button>
                             <motion.button
-                                whileHover={{ scale: 1.05, opacity: 0.9 }}
+                                whileHover={isDemo ? {} : { scale: 1.05, opacity: 0.9 }}
                                 className="px-2 py-1 rounded-xl shadow bg-blue-500 text-white text-xs font-semibold"
                                 onClick={handleResend}
+                                disabled={isDemo}
+                                style={{ opacity: isDemo ? 0.5 : undefined, pointerEvents: isDemo ? "none" : undefined }}
                             >
                                 Reinvia email
                             </motion.button>

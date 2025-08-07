@@ -22,6 +22,10 @@ class ApiResetPasswordController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        if ($request->email === 'demo@synapsy.app') {
+            return ApiResponse::error("L'utente demo non può essere modificato", null, 403);
+        }
+
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user) use ($request) {
