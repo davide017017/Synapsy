@@ -17,4 +17,5 @@ export type ThemeSelectorRowProps = {
     onEdit: () => void;
     onSave: (val: string) => void;
     onCancel: () => void;
+    disabled?: boolean;
 };

@@ -21,6 +21,8 @@ export default function DeleteAccountSection() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const isDemo = session?.user?.email === "demo@synapsy.app";
+
     const handleDelete = async () => {
         if (!session?.accessToken) return;
         setLoading(true);
@@ -34,6 +36,14 @@ export default function DeleteAccountSection() {
             setLoading(false);
         }
     };
+
+    if (isDemo) {
+        return (
+            <p className="text-center text-sm text-muted-foreground mt-6 mb-6">
+                L'utente demo non può eliminare il profilo.
+            </p>
+        );
+    }
 
     return (
         <div className="flex justify-end text-center mt-6 mb-6">

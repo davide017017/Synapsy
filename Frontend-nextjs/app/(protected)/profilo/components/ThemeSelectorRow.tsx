@@ -4,7 +4,7 @@ import { useThemeContext } from "@/context/contexts/ThemeContext";
 import { themeMeta, availableThemes } from "@/lib/themeUtils";
 import { ThemeSelectorRowProps } from "@/types/profilo/row";
 
-export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCancel }: ThemeSelectorRowProps) {
+export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCancel, disabled = false }: ThemeSelectorRowProps) {
     const { theme } = useThemeContext();
     const [open, setOpen] = useState(false);
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -58,8 +58,11 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
                         style={{
                             background: "hsl(var(--c-secondary, 220 15% 48%))",
                             color: "hsl(var(--c-bg, 44 81% 94%))",
+                            opacity: disabled ? 0.4 : undefined,
+                            pointerEvents: disabled ? "none" : undefined,
                         }}
                         onClick={onEdit}
+                        disabled={disabled}
                     >
                         Modifica
                     </button>

@@ -30,6 +30,8 @@ export default function ProfilePage() {
     const [backup, setBackup] = useState<Partial<UserType>>({});
     const [showPicker, setShowPicker] = useState(false);
 
+    const isDemo = user?.email === "demo@synapsy.app";
+
     useEffect(() => {
         if (user) setForm(user);
     }, [user]);
@@ -65,6 +67,11 @@ export default function ProfilePage() {
 
     return (
         <div className="max-w-3xl mx-auto">
+            {isDemo && (
+                <div className="mb-4 p-3 text-sm text-center rounded-xl bg-yellow-100 text-yellow-800">
+                    Questo è un account demo. I dati non possono essere modificati.
+                </div>
+            )}
             <PendingEmailNotice />
             {/* ───────────────────────────── */}
             {/*   DUE COLONNE SU MD+         */}
@@ -72,33 +79,36 @@ export default function ProfilePage() {
             <div className="flex flex-col md:flex-row md:items-start md:gap-8">
                 {/* -------- Colonna avatar -------- */}
                 <div className="flex justify-center md:justify-start md:min-w-[160px] md:pt-4">
-                    <motion.div whileHover={{ scale: 1.07 }} className="relative group">
+                    <motion.div whileHover={isDemo ? {} : { scale: 1.07 }} className="relative group">
                         <img
                             src={avatarUrl}
                             alt="Avatar"
-                            className="w-50 h-72 rounded-full object-cover border-2 cursor-pointer shadow transition group-hover:ring-2"
+                            className="w-50 h-72 rounded-full object-cover border-2 shadow transition group-hover:ring-2"
                             style={{
                                 borderColor: "hsl(var(--c-primary, 205 66% 49%))",
                                 boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
+                                cursor: isDemo ? "not-allowed" : "pointer",
                             }}
-                            onClick={() => setShowPicker(true)}
+                            onClick={isDemo ? undefined : () => setShowPicker(true)}
                             title="Cambia avatar"
                         />
                         {/* Badge matita (edit) */}
-                        <button
-                            type="button"
-                            className="absolute bottom-0 right-0 shadow px-1.5 py-0.5 rounded-full text-xs font-semibold opacity-85 hover:opacity-100 transition border"
-                            style={{
-                                background: "hsl(var(--c-bg, 44 81% 94%))",
-                                borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
-                                color: "hsl(var(--c-primary, 205 66% 49%))",
-                            }}
-                            onClick={() => setShowPicker(true)}
-                            tabIndex={-1}
-                            title="Cambia avatar"
-                        >
-                            ✎
-                        </button>
+                        {!isDemo && (
+                            <button
+                                type="button"
+                                className="absolute bottom-0 right-0 shadow px-1.5 py-0.5 rounded-full text-xs font-semibold opacity-85 hover:opacity-100 transition border"
+                                style={{
+                                    background: "hsl(var(--c-bg, 44 81% 94%))",
+                                    borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
+                                    color: "hsl(var(--c-primary, 205 66% 49%))",
+                                }}
+                                onClick={() => setShowPicker(true)}
+                                tabIndex={-1}
+                                title="Cambia avatar"
+                            >
+                                ✎
+                            </button>
+                        )}
                     </motion.div>
                 </div>
 
@@ -129,6 +139,7 @@ export default function ProfilePage() {
                             onChange={(v) => handleChange("name", v)}
                             onSave={() => handleSave("name")}
                             onCancel={() => handleCancel("name")}
+                            disabled={isDemo}
                         />
                         <ProfileRow
                             label="Cognome"
@@ -138,6 +149,7 @@ export default function ProfilePage() {
                             onChange={(v) => handleChange("surname", v)}
                             onSave={() => handleSave("surname")}
                             onCancel={() => handleCancel("surname")}
+                            disabled={isDemo}
                         />
                         <ProfileRow
                             label="Username"
@@ -147,6 +159,7 @@ export default function ProfilePage() {
                             onChange={(v) => handleChange("username", v)}
                             onSave={() => handleSave("username")}
                             onCancel={() => handleCancel("username")}
+                            disabled={isDemo}
                         />
                         <ProfileRow
                             label="Email"
@@ -156,7 +169,7 @@ export default function ProfilePage() {
                             onChange={(v) => handleChange("email", v)}
                             onSave={() => handleSave("email")}
                             onCancel={() => handleCancel("email")}
-                            disabled={!!user?.pending_email}
+                            disabled={isDemo || !!user?.pending_email}
                         />
                         <ThemeSelectorRow
                             value={form.theme}
@@ -168,6 +181,7 @@ export default function ProfilePage() {
                                 setEditing((e) => ({ ...e, theme: false }));
                             }}
                             onCancel={() => setEditing((e) => ({ ...e, theme: false }))}
+                            disabled={isDemo}
                         />
                     </div>
                 </div>
@@ -176,7 +190,7 @@ export default function ProfilePage() {
             {/* Modale scelta avatar          */}
             {/* ───────────────────────────── */}
             <AnimatePresence>
-                {showPicker && (
+                {showPicker && !isDemo && (
                     <AvatarPickerModal
                         selected={form.avatar}
                         onSelect={handleAvatarChange}
