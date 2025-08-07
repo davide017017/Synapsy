@@ -1,3 +1,9 @@
+# 📜 API Routes
+
+Elenco completo delle rotte raggruppate per modulo.
+
+---
+
 ## 🧩 Modulo: `Categories`
 ---
 ### `GET|HEAD` | `api/v1/categories`

@@ -1,106 +1,54 @@
-# 🚀 Synapsi Finance — Fullstack Monorepo
+# 🚀 Synapsy Finance — Fullstack Monorepo
 
-**Gestione avanzata di entrate, spese e operazioni ricorrenti**  
-Monorepo con **Laravel API backend** + **Next.js frontend**
+Gestione avanzata di entrate, spese e operazioni ricorrenti.
 
----
-
-## 📂 Struttura del progetto
-
-/
-├── backend/ # API RESTful Laravel 12.x (gestione dati e logica di business)
-├── Frontend-nextjs/ # Web app Next.js 15 (dashboard, UI, autenticazione)
-├── docs/ # Documentazione tecnica e guide
-├── LICENSE
-├── README.md # (questo file)
+**🚀 Prova ora Synapsy!**
 
 ---
 
-## 🌐 Tecnologie principali
-
--   **Backend:** [Laravel 12.x](https://laravel.com/) (PHP 8.2+)
--   **Frontend:** [Next.js 15](https://nextjs.org/) (React, TypeScript, Tailwind CSS)
--   **Database:** PostgreSQL / SQLite (testing)
--   **Autenticazione:** Laravel Sanctum (API Token)
+## 📚 Indice
+- [📦 Backend API](Backend/docs/README.md)
+- [💻 Frontend Web](Frontend-nextjs/docs/README.md)
 
 ---
 
-## ⚡ Come iniziare
-
-1. **Clona il repository**
-
-    ```bash
-    git clone https://github.com/davide017017/Synapsy.git
-    cd Synapsy
-    ```
-
-2. **Setup Backend**
-
-    ```bash
-    cd Backend
-    composer install
-    cp .env.example .env
-    php artisan key:generate
-    php artisan migrate --seed
-    composer test
-    cd ..
-    ```
-
-    Per maggiori dettagli consulta [`Backend/README.md`](Backend/README.md)
-
-3. **Setup Frontend**
-
-    ```bash
-    cd Frontend-nextjs
-    npm install
-    cp .env.example .env
-    # Configura API_URL e variabili necessarie
-    npm run dev
-    ```
+## 🛠️ Requisiti minimi
+- PHP 8.2+
+- Node.js 20+
+- PostgreSQL (oppure SQLite per i test)
 
 ---
 
-## 🔗 Frontend Web
+## ⚡ Avvio rapido
+```bash
+git clone https://github.com/davide017017/Synapsy.git
+cd Synapsy
+```
 
-Per la dashboard e l’interfaccia utente consulta il README del frontend:
+### Backend
+```bash
+cd Backend
+composer install
+cp .env.example .env
+php artisan migrate --seed
+php artisan serve
+```
 
--   [🌈 Synapsi Finance — Frontend Web (Next.js)](Frontend-nextjs/README.md)
+### Frontend
+```bash
+cd Frontend-nextjs
+npm install
+cp .env.example .env
+npm run dev
+```
 
-## 📸 Screenshot
+---
 
-![Screenshot di Synapsi Finance](/Frontend-nextjs/public/images/ScreenS.webp)
-
-## Utente Demo (Versione Beta)
-
-Puoi accedere rapidamente con il bottone rosa **"Accedi come demo"** nella pagina di login.
-
-**Credenziali demo:**
-
--   Email: `demo@synapsy.app`
--   Password: `demo`
-
-⚠️ I dati demo possono essere cancellati in qualsiasi momento, non inserire dati sensibili. La funzione è disponibile solo se `NEXT_PUBLIC_BETA=true` nel frontend.
+## 🔗 Demo
+- Email demo: `demo@synapsy.app`
+- Password: `demo`
 
 ---
 
 ## 📄 Licenza
-
-Distribuito sotto licenza MIT.  
-Vedi il file [LICENSE](LICENSE) per i dettagli.
-
----
-
-## 📚 Risorse aggiuntive
-
--   [Documentazione tecnica (backend)](Backend/docs/README-dev.md)
--   [Esport API (rotte)](Backend/docs/routes_api_export.md)
--   [Checklist deploy](Backend/docs/deploy-checklist.md)
-
----
-
-## 🤝 Contributi
-
-Pull Request e segnalazioni sono benvenute!  
-Apri una issue per bug, domande o suggerimenti.
-
----
+Distribuito sotto licenza MIT. Vedi [LICENSE](LICENSE).
