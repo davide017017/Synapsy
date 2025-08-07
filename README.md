@@ -57,9 +57,14 @@ npm run dev
 
 > Puoi accedere in modalità demo per esplorare tutte le funzionalità senza registrazione!
 
+<br/>
+
+<img src="./Frontend-nextjs/public/images/ScreenS.webp" alt="Screenshot Synapsy" width="600" style="border-radius: 18px; box-shadow: 0 4px 16px #0002; margin-top: 10px;" />
+
 ---
 
 ## 🔒 Protezione utente demo
+
 Le operazioni di scrittura sono bloccate per l'utente demo tramite un middleware centralizzato (`PreventDemoUserModification`) applicato a rotte API, web e auth. La UI mostra un avviso e disabilita i controlli di modifica (tema, avatar, eliminazione account). Feature introdotta nel commit `426d9c0`.
 
 ---
