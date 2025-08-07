@@ -24,6 +24,11 @@ php artisan serve
 
 ---
 
+## 🔒 Protezione utente demo
+Un middleware centralizzato (`PreventDemoUserModification`) blocca qualsiasi richiesta di scrittura per l'utente `demo@synapsy.app`. Il middleware è registrato in `bootstrap/app.php` e applicato a rotte API, web, auth e reset password. Test automatici in `tests/Feature/DemoUserProtectionTest.php` verificano il blocco.
+
+---
+
 ## 📚 Documentazione
 - [📜 Rotte API](API_ROUTES.md)
 - [🔐 Autenticazione](AUTH_FLOW.md)

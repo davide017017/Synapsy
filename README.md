@@ -10,6 +10,7 @@ Gestione avanzata di entrate, spese e operazioni ricorrenti.
 
 -   [📦 Backend API](Backend/docs/README.md)
 -   [💻 Frontend Web](Frontend-nextjs/docs/README.md)
+-   [🗺️ Site Structure](Frontend-nextjs/docs/SITE_STRUCTURE.md)
 
 ---
 
@@ -55,6 +56,11 @@ npm run dev
 [https://synapsy-frontend.vercel.app/](https://synapsy-frontend.vercel.app/)
 
 > Puoi accedere in modalità demo per esplorare tutte le funzionalità senza registrazione!
+
+---
+
+## 🔒 Protezione utente demo
+Le operazioni di scrittura sono bloccate per l'utente demo tramite un middleware centralizzato (`PreventDemoUserModification`) applicato a rotte API, web e auth. La UI mostra un avviso e disabilita i controlli di modifica (tema, avatar, eliminazione account). Feature introdotta nel commit `426d9c0`.
 
 ---
 

@@ -1,25 +1,32 @@
-# 🧩 Components
+# 🧩 Componenti
 
-Panoramica dei principali componenti UI.
+Panoramica sintetica dei componenti principali. Per l'associazione completa pagina/componente vedi [SITE_STRUCTURE.md](SITE_STRUCTURE.md).
 
----
+## Generali
+- Layout (header, sidebar)
+- Dialog & ModalLayout
+- Input, Button
 
-## Layout
-Wrappa tutte le pagine e gestisce header e sidebar.
+## Home
+- HeroCarousel
+- CategorieCard, TransazioniCard, RicorrentiCard, ProssimoPagamentoCard
+- NewTransactionButton, NewRicorrenzaButton, NewCategoryButton
 
-## Dashboard
-Mostra grafici e riepiloghi finanziari.
+## Transazioni
+- TransactionsList
+- SelectionToolbar
+- TransactionDetailModal
 
-## Calendar
-Calendario interattivo per visualizzare operazioni.
+## Ricorrenti
+- CardTotaliAnnui, CardGraficoPagamenti
+- ListaRicorrenzePerFrequenza, ListaProssimiPagamenti
+- NewRicorrenzaModal
 
-## Modals
-Componenti riutilizzabili per creare/modificare entrate e spese.
+## Categorie
+- CategoriesList
+- NewCategoryModal
+- DeleteCategoryModal
 
----
-Esempio utilizzo:
-```tsx
-<Modal onClose={...}>
-  <ExpenseForm />
-</Modal>
-```
+## Profilo
+- ProfileRow, ThemeSelectorRow, AvatarSelector
+- AvatarPickerModal, DeleteAccountSection
