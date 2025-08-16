@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
 import api, { setAuthToken, registerInterceptor } from "../lib/api";
+import { API_PREFIX } from "../lib/apiPrefix";
 import { User } from "../types";
 
 type AuthContextType = {
@@ -33,12 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = async (email: string, password: string) => {
         setLoading(true);
-        const { data } = await api.post("/v1/login", { email, password });
+        const { data } = await api.post(`${API_PREFIX}/login`, { email, password });
         const accessToken = data.token;
         setToken(accessToken);
         setAuthToken(accessToken);
         await SecureStore.setItemAsync("token", accessToken);
-        const me = await api.get("/v1/me");
+        const me = await api.get(`${API_PREFIX}/me`);
         setUser(me.data);
         setLoading(false);
     };
@@ -49,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setAuthToken(saved);
             setToken(saved);
             try {
-                const me = await api.get("/v1/me");
+                const me = await api.get(`${API_PREFIX}/me`);
                 setUser(me.data);
             } catch (e) {
                 logout();

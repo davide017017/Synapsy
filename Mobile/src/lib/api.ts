@@ -8,6 +8,7 @@
 import axios, { AxiosError } from "axios";
 import { Platform } from "react-native";
 import { getEnv } from "./env";
+import { API_PREFIX } from "./apiPrefix";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1) Normalizza la BASE URL
@@ -110,7 +111,7 @@ export const registerInterceptor = (logout: () => void) => {
 export async function ping() {
     // se la tua API ha /health oppure /api/health, cambialo qui
     return api
-        .get("/health")
+        .get(`${API_PREFIX}/health`)
         .then((r) => r.data)
         .catch((e) => {
             throw e;
