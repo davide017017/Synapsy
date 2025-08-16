@@ -3,13 +3,10 @@
 // Auth: login/logout/restore con tokenStorage + chiamata /me
 // ─────────────────────────────────────────────────────────────────────────────
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { api } from '../lib/api';
-import {
-  getAccessToken, setAccessToken, removeAccessToken,
-  getRefreshToken, setRefreshToken, removeRefreshToken
-} from '../lib/tokenStorage';
+import { tokenStorage } from '@/lib/api';
+import { login as apiLogin, logout as apiLogout, me } from '@/features/auth/api';
+import type { User } from '@/features/auth/types';
 
-type User = { id: number; name: string; email: string };
 type AuthContextValue = {
   loading: boolean;
   token: string | null;
@@ -21,24 +18,18 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue>({} as AuthContextValue);
 
-// ─── Helper ──────────────────────────────────────────────────────────────────
-async function fetchMe(): Promise<User> {
-  const res = await api.get<User>('/me');
-  return res.data;
-}
-
 export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [loading, setLoading] = useState(true);
-  const [token, setToken]     = useState<string | null>(null);
-  const [user, setUser]       = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   // ─── Restore ───────────────────────────────────────────────────────────────
   useEffect(() => {
     (async () => {
-      const t = await getAccessToken();
+      const t = await tokenStorage.get();
       if (t) {
         setToken(t);
-        try { setUser(await fetchMe()); } catch { await logout(); }
+        try { setUser(await me()); } catch { await apiLogout(); }
       }
       setLoading(false);
     })();
@@ -48,13 +39,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const r = await api.post('/login', { email, password });
-      const access  = r.data?.access_token || r.data?.token;
-      const refresh = r.data?.refresh_token || null;
-      if (access) await setAccessToken(access);
-      if (refresh) await setRefreshToken(refresh);
-      setToken(access ?? null);
-      setUser(await fetchMe());
+      const u = await apiLogin(email, password);
+      setToken(await tokenStorage.get());
+      setUser(u);
     } finally {
       setLoading(false);
     }
@@ -64,9 +51,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   const logout = async () => {
     setLoading(true);
     try {
-      // opzionale: await api.post('/logout').catch(() => {});
-      await removeAccessToken();
-      await removeRefreshToken();
+      await apiLogout();
       setToken(null);
       setUser(null);
     } finally {
@@ -75,7 +60,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   };
 
   // ─── Me manuale ────────────────────────────────────────────────────────────
-  const refreshMe = async () => { setUser(await fetchMe()); };
+  const refreshMe = async () => { setUser(await me()); };
 
   const value = useMemo(() => ({ loading, token, user, login, logout, refreshMe }),
     [loading, token, user]);
