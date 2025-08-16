@@ -1,7 +1,10 @@
 <?php
-// ⚠️ In produzione definitiva lascia solo il dominio reale!
+// ─────────────────────────────────────────────────────────────────────────────
+// config/cors.php — DEV (token/Bearer, niente cookie)
+// ─────────────────────────────────────────────────────────────────────────────
 
 return [
+    // ── Rotte coperte ──
     'paths' => [
         'api/*',
         'v1/*',
@@ -9,21 +12,30 @@ return [
         'sanctum/csrf-cookie',
     ],
 
+    // ── Metodi / Header ──
     'allowed_methods' => ['*'],
+    'allowed_headers' => ['*'],
 
-    // =========================================================================
-    // Accetta chiamate sia da produzione che da sviluppo
-    // =========================================================================
+    // ── Origin del frontend in DEV ──
     'allowed_origins' => [
-        'https://synapsy-frontend.vercel.app', // Frontend produzione (Vercel)
-        'http://localhost:3000',               // Sviluppo locale
-        'http://192.168.0.111:3000',           // Sviluppo su rete LAN (se ti serve)
+        'http://localhost:8083',        // Expo Web
+        'http://192.168.0.111:8083',    // Expo Web via IP
+        // Se usi ancora Next/CRA su 3000, lascia pure:
+        'http://localhost:3000',
+        'http://192.168.0.111:3000',
+        // Produzione:
+        'https://synapsy-frontend.vercel.app',
     ],
 
+    // ── Pattern (non indispensabile qui) ──
     'allowed_origins_patterns' => [],
-    'allowed_headers' => ['*'],
-    'exposed_headers' => [],
-    'max_age' => 0,
-    'supports_credentials' => true,
-];
 
+    // ── Header esposti al browser (se invii token in header) ──
+    'exposed_headers' => ['Authorization'],
+
+    // ── Cache preflight ──
+    'max_age' => 0,
+
+    // ── IMPORTANTE: niente cookie/sessioni cross-site ──
+    'supports_credentials' => false,
+];
