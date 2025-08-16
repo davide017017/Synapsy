@@ -1,8 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
-import api, { setAuthToken, registerInterceptor } from "../lib/api";
-import { API_PREFIX } from "../lib/apiPrefix";
-import { User } from "../types";
+import { setAuthToken, registerInterceptor } from "@/lib/api";
+import { login as loginApi, logout as logoutApi, me as meApi } from "@/features/auth/api";
+import { User } from "@/types";
 
 type AuthContextType = {
     user: User | null;
@@ -26,6 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState(true);
 
     const logout = () => {
+        logoutApi().catch(() => {});
         setToken(null);
         setUser(null);
         setAuthToken(null);
@@ -34,13 +35,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const login = async (email: string, password: string) => {
         setLoading(true);
-        const { data } = await api.post(`${API_PREFIX}/login`, { email, password });
+        const data = await loginApi(email, password);
         const accessToken = data.token;
         setToken(accessToken);
         setAuthToken(accessToken);
         await SecureStore.setItemAsync("token", accessToken);
-        const me = await api.get(`${API_PREFIX}/me`);
-        setUser(me.data);
+        const me = await meApi();
+        setUser(me);
         setLoading(false);
     };
 
@@ -50,8 +51,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setAuthToken(saved);
             setToken(saved);
             try {
-                const me = await api.get(`${API_PREFIX}/me`);
-                setUser(me.data);
+                const me = await meApi();
+                setUser(me);
             } catch (e) {
                 logout();
             }
