@@ -1,14 +1,23 @@
-// Mobile/src/lib/env.ts
-import Constants from "expo-constants";
+// src/lib/env.ts
+// ─────────────────────────────────────────────────────────────────────────────
+// Lettura sicura ENV da Expo config
+// ─────────────────────────────────────────────────────────────────────────────
+import Constants from 'expo-constants';
 
-type Env = { APP_ENV: string; API_BASE_URL: string; TOKEN_HEADER: string };
-
-export const getEnv = (): Env => {
-    const extra = (Constants?.expoConfig?.extra ?? {}) as Record<string, string>;
-    const APP_ENV = extra.APP_ENV || "development";
-    const API_BASE_URL = extra.API_BASE_URL;
-    const TOKEN_HEADER = extra.TOKEN_HEADER || "Authorization";
-
-    if (!API_BASE_URL) throw new Error("API_BASE_URL non configurato");
-    return { APP_ENV, API_BASE_URL, TOKEN_HEADER };
+type Extra = {
+  APP_ENV: string;
+  API_BASE_URL: string;
+  TOKEN_HEADER: string;
 };
+
+const extra = (Constants.expoConfig?.extra ?? {}) as Partial<Extra>;
+
+export const ENV: Extra = {
+  APP_ENV: extra.APP_ENV ?? 'local',
+  API_BASE_URL: extra.API_BASE_URL ?? 'http://localhost:8484/api/v1',
+  TOKEN_HEADER: extra.TOKEN_HEADER ?? 'Authorization',
+};
+
+// ── util ─────────────────────────────────────────────────────────────────────
+export const isProd = ENV.APP_ENV === 'production';
+export const isDev  = !isProd;

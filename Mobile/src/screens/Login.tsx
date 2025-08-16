@@ -1,9 +1,13 @@
+// src/screens/Login.tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// Schermata di login semplice
+// ─────────────────────────────────────────────────────────────────────────────
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import Button from '../../components/shared/Button';
-import { useAuth } from '../../context/AuthContext';
+import Button from '../components/shared/Button';
+import { useAuth } from '../context/AuthContext';
 
 const schema = z.object({
   email: z.string().email(),
@@ -12,9 +16,9 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function LoginScreen() {
+export default function Login() {
   const { login } = useAuth();
-  const { register, handleSubmit, setValue } = useForm<FormData>();
+  const { handleSubmit, setValue } = useForm<FormData>();
 
   const onSubmit = handleSubmit(async (data) => {
     const parsed = schema.safeParse(data);
@@ -53,3 +57,4 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 });
+
