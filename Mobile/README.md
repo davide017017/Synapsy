@@ -30,9 +30,8 @@ Modifica `APP_ENV` e `API_BASE_URL` nel `.env` per dev/beta/prod.
 - Se l'API risponde 401 il token viene rimosso e l'utente torna al login.
 
 ## Struttura Cartelle
-- `src/app` – entry points (login, tabs)
 - `src/navigation` – stack + bottom tabs
-- `src/screens` – schermate principali
+- `src/screens` – schermate principali (Login, Home, ecc.)
 - `src/context` – contesti React (Auth)
 - `src/lib` – helper (api, env)
 - `src/components` – componenti riutilizzabili

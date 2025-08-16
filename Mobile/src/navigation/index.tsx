@@ -1,13 +1,18 @@
+// src/navigation/index.tsx
+// ─────────────────────────────────────────────────────────────────────────────
+// React Navigation: AuthStack + AppTabs
+// ─────────────────────────────────────────────────────────────────────────────
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import LoginScreen from '../app/auth/login';
-import HomeScreen from '../screens/Home';
-import TransactionsScreen from '../screens/Transactions';
-import CategoriesScreen from '../screens/Categories';
-import ProfileScreen from '../screens/Profile';
 import { useAuth } from '../context/AuthContext';
+
+import Home from '../screens/Home';
+import Transactions from '../screens/Transactions';
+import Categories from '../screens/Categories';
+import Profile from '../screens/Profile';
+import Login from '../screens/Login';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -15,25 +20,26 @@ const Tab = createBottomTabNavigator();
 function AppTabs() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Transactions" component={TransactionsScreen} />
-      <Tab.Screen name="Categories" component={CategoriesScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Transactions" component={Transactions} />
+      <Tab.Screen name="Categories" component={Categories} />
+      <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
 }
 
 export default function Navigation() {
   const { token } = useAuth();
+
   return (
     <NavigationContainer>
-      {token ? (
-        <AppTabs />
-      ) : (
-        <Stack.Navigator>
-          <Stack.Screen name="Login" component={LoginScreen} />
-        </Stack.Navigator>
-      )}
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {token ? (
+          <Stack.Screen name="AppTabs" component={AppTabs} />
+        ) : (
+          <Stack.Screen name="Login" component={Login} />
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
