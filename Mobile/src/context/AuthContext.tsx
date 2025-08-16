@@ -1,13 +1,15 @@
 // src/context/AuthContext.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Gestione auth: token + profilo
+// Auth: login/logout/restore con tokenStorage + chiamata /me
 // ─────────────────────────────────────────────────────────────────────────────
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import * as SecureStore from 'expo-secure-store';
-import { api, TOKEN_KEY } from '../lib/api';
+import { api } from '../lib/api';
+import {
+  getAccessToken, setAccessToken, removeAccessToken,
+  getRefreshToken, setRefreshToken, removeRefreshToken
+} from '../lib/tokenStorage';
 
 type User = { id: number; name: string; email: string };
-
 type AuthContextValue = {
   loading: boolean;
   token: string | null;
@@ -19,46 +21,52 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue>({} as AuthContextValue);
 
+// ─── Helper ──────────────────────────────────────────────────────────────────
+async function fetchMe(): Promise<User> {
+  const res = await api.get<User>('/me');
+  return res.data;
+}
+
 export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken]     = useState<string | null>(null);
+  const [user, setUser]       = useState<User | null>(null);
 
-  // ── boot ───────────────────────────────────────────────────────────────────
+  // ─── Restore ───────────────────────────────────────────────────────────────
   useEffect(() => {
     (async () => {
-      const t = await SecureStore.getItemAsync(TOKEN_KEY);
+      const t = await getAccessToken();
       if (t) {
         setToken(t);
-        await refreshMeInternal(t);
+        try { setUser(await fetchMe()); } catch { await logout(); }
       }
       setLoading(false);
     })();
   }, []);
 
-  // ── helpers ────────────────────────────────────────────────────────────────
-  const refreshMeInternal = async (t: string) => {
-    const res = await api.get<User>('/me', { headers: { Authorization: `Bearer ${t}` } });
-    setUser(res.data);
-  };
-
+  // ─── Login ─────────────────────────────────────────────────────────────────
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      const res = await api.post<{ token: string }>('/login', { email, password });
-      const t = res.data.token;
-      await SecureStore.setItemAsync(TOKEN_KEY, t);
-      setToken(t);
-      await refreshMeInternal(t);
+      const r = await api.post('/login', { email, password });
+      const access  = r.data?.access_token || r.data?.token;
+      const refresh = r.data?.refresh_token || null;
+      if (access) await setAccessToken(access);
+      if (refresh) await setRefreshToken(refresh);
+      setToken(access ?? null);
+      setUser(await fetchMe());
     } finally {
       setLoading(false);
     }
   };
 
+  // ─── Logout ────────────────────────────────────────────────────────────────
   const logout = async () => {
     setLoading(true);
     try {
-      await SecureStore.deleteItemAsync(TOKEN_KEY);
+      // opzionale: await api.post('/logout').catch(() => {});
+      await removeAccessToken();
+      await removeRefreshToken();
       setToken(null);
       setUser(null);
     } finally {
@@ -66,7 +74,8 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     }
   };
 
-  const refreshMe = async () => { if (token) await refreshMeInternal(token); };
+  // ─── Me manuale ────────────────────────────────────────────────────────────
+  const refreshMe = async () => { setUser(await fetchMe()); };
 
   const value = useMemo(() => ({ loading, token, user, login, logout, refreshMe }),
     [loading, token, user]);
