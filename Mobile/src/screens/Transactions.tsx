@@ -2,19 +2,21 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import Button from '../components/shared/Button';
 import EmptyState from '../components/shared/EmptyState';
-
-const mock = [] as any[];
+import { useTransactions } from '../context/TransactionsContext';
 
 export default function TransactionsScreen() {
+  const { items } = useTransactions();
   return (
     <View style={styles.container}>
-      {mock.length === 0 ? (
+      {items.length === 0 ? (
         <EmptyState message="Nessuna transazione" />
       ) : (
         <FlatList
-          data={mock}
+          data={items}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <Text>{item.label}</Text>}
+          renderItem={({ item }) => (
+            <Text>{item.description} - {item.amount}</Text>
+          )}
         />
       )}
       <Button title="Aggiungi" onPress={() => {}} />

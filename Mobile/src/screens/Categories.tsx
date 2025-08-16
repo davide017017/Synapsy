@@ -2,17 +2,17 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import Button from '../components/shared/Button';
 import EmptyState from '../components/shared/EmptyState';
-
-const mock = [] as any[];
+import { useCategories } from '../context/CategoriesContext';
 
 export default function CategoriesScreen() {
+  const { items } = useCategories();
   return (
     <View style={styles.container}>
-      {mock.length === 0 ? (
+      {items.length === 0 ? (
         <EmptyState message="Nessuna categoria" />
       ) : (
         <FlatList
-          data={mock}
+          data={items}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <Text>{item.name}</Text>}
         />
