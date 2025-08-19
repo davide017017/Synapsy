@@ -1,6 +1,7 @@
 // src/screens/Login.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Login stile "glass card" con sfondo centrato, gradient buttons e icone
+// Login stile "glass card" — fix: sfondo/overlay non intercettano i tocchi
+// + Toggle visibilità password con icona "occhio"
 // ─────────────────────────────────────────────────────────────────────────────
 import React, { useRef, useState } from "react";
 import {
@@ -20,16 +21,20 @@ import { useForm, Controller } from "react-hook-form";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { shadowLg, shadowMd, shadowSm } from "../ui/shadow";
-
 import { useAuth } from "../context/AuthContext";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Tipi
+// ─────────────────────────────────────────────────────────────────────────────
 type FormData = { email: string; password: string };
-
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
-// ── Bottone gradient con icona ───────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bottone gradient con icona
+// ─────────────────────────────────────────────────────────────────────────────
 type GButtonProps = {
     title: string;
-    icon: IoniconName; // <— invece di keyof typeof Ionicons.glyphMap
+    icon: IoniconName;
     colors?: [string, string];
     onPress: () => void;
     disabled?: boolean;
@@ -42,6 +47,8 @@ function GradientButton({ title, icon, colors = ["#0d8f6e", "#49c0a2"], onPress,
                 if (!disabled) onPress();
             }}
             style={({ pressed }) => [{ opacity: disabled ? 0.7 : pressed ? 0.9 : 1 }, style]}
+            accessibilityRole="button"
+            accessibilityLabel={title}
         >
             <LinearGradient colors={colors} start={{ x: 0.05, y: 0 }} end={{ x: 1, y: 1 }} style={styles.gbtn}>
                 <Ionicons name={icon} size={18} color="#fff" />
@@ -51,53 +58,66 @@ function GradientButton({ title, icon, colors = ["#0d8f6e", "#49c0a2"], onPress,
     );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Screen
+// ─────────────────────────────────────────────────────────────────────────────
 export default function Login() {
     const { login } = useAuth();
     const pwdRef = useRef<TextInput>(null);
+
     const [serverError, setServerError] = useState<string | null>(null);
     const [showReg, setShowReg] = useState(false);
     const [showForgot, setShowForgot] = useState(false);
-    const [remember, setRemember] = useState(true); // solo UI; puoi persistere in futuro
+    const [remember, setRemember] = useState(true);
+
+    // ── Stato: mostra/nascondi password ──
+    const [showPwd, setShowPwd] = useState(false);
+    const eyeIcon: IoniconName = showPwd ? "eye-off-outline" : "eye-outline";
 
     const {
         control,
         handleSubmit,
         formState: { errors, isSubmitting },
-        getValues,
     } = useForm<FormData>({
         defaultValues: { email: "test@example.com", password: "" },
         mode: "onChange",
     });
 
+    // ── Submit ────────────────────────────────────────────────────────────────
     const onSubmit = handleSubmit(async (data) => {
         setServerError(null);
         Keyboard.dismiss();
         try {
             await login(data.email.trim(), data.password);
-            // Se vuoi ricordare l'email, qui puoi salvarla in AsyncStorage
-            // if (remember) await AsyncStorage.setItem("rememberedEmail", data.email.trim());
+            // TODO: persist email se remember === true (AsyncStorage)
         } catch (e: any) {
             setServerError(e?.message ?? "Credenziali non valide");
         }
     });
 
+    // ── Demo login ────────────────────────────────────────────────────────────
     async function handleDemoLogin() {
         await login("demo@synapsy.app", "demo");
     }
 
     return (
-        <View style={styles.root}>
-            {/* SFONDO CENTRATO */}
-            <Image source={require("../../assets/images/bg-login.webp")} style={styles.bgImg} resizeMode="cover" />
-            <View style={styles.overlay} />
+        // Nota: box-none per non far “mangiare” tocchi a wrapper non interattivi
+        <View style={styles.root} pointerEvents="box-none">
+            {/* SFONDO (non intercetta tocchi) */}
+            <View style={styles.bgWrap} pointerEvents="none">
+                <Image source={require("../../assets/images/bg-login.webp")} style={styles.bgImg} resizeMode="cover" />
+            </View>
 
-            {/* CARD CENTRALE */}
+            {/* OVERLAY SCURO (non intercetta tocchi) */}
+            <View style={styles.overlay} pointerEvents="none" />
+
+            {/* ── CARD CENTRALE ──────────────────────────────────────────────────── */}
             <View style={styles.card}>
                 <Text style={styles.title}>Accedi a Synapsi</Text>
 
-                {/* EMAIL */}
+                {/* EMAIL ───────────────────────────────────────────────────────────── */}
                 <View style={styles.inputWrap}>
-                    <Ionicons name="mail-outline" size={18} color="#6b7280" style={styles.inputIcon} />
+                    <Ionicons name="mail-outline" size={18} color="#111827" style={styles.inputIcon} />
                     <Controller
                         control={control}
                         name="email"
@@ -124,9 +144,11 @@ export default function Login() {
                 </View>
                 {errors.email ? <Text style={styles.error}>{errors.email.message}</Text> : null}
 
-                {/* PASSWORD */}
+                {/* PASSWORD + TOGGLE OCCHIO ────────────────────────────────────────── */}
                 <View style={styles.inputWrap}>
-                    <Ionicons name="lock-closed-outline" size={18} color="#6b7280" style={styles.inputIcon} />
+                    <Ionicons name="lock-closed-outline" size={18} color="#111827" style={styles.inputIcon} />
+
+                    {/* ── TextInput password ── */}
                     <Controller
                         control={control}
                         name="password"
@@ -140,19 +162,37 @@ export default function Login() {
                                 value={value}
                                 onChangeText={onChange}
                                 onBlur={onBlur}
-                                secureTextEntry
+                                autoCapitalize="none"
+                                autoComplete="password"
+                                textContentType="password"
+                                secureTextEntry={!showPwd}
                                 placeholder="Password"
                                 placeholderTextColor="#9aa1aa"
                                 returnKeyType="done"
                                 onSubmitEditing={onSubmit}
-                                style={[styles.input, { paddingLeft: 42 }, errors.password && styles.inputError]}
+                                style={[
+                                    styles.input,
+                                    { paddingLeft: 42, paddingRight: 42 }, // spazio per icona destra
+                                    errors.password && styles.inputError,
+                                ]}
                             />
                         )}
                     />
+
+                    {/* ── Toggle visibilità (occhio) ── */}
+                    <Pressable
+                        onPress={() => setShowPwd((v) => !v)}
+                        hitSlop={12}
+                        style={styles.inputIconRight}
+                        accessibilityRole="button"
+                        accessibilityLabel={showPwd ? "Nascondi password" : "Mostra password"}
+                    >
+                        <Ionicons name={eyeIcon} size={18} color="#6b7280" />
+                    </Pressable>
                 </View>
                 {errors.password ? <Text style={styles.error}>{errors.password.message}</Text> : null}
 
-                {/* SWITCH RICORDA EMAIL */}
+                {/* RICORDA EMAIL ───────────────────────────────────────────────────── */}
                 <View style={styles.rememberRow}>
                     <Switch
                         value={remember}
@@ -163,10 +203,10 @@ export default function Login() {
                     <Text style={styles.rememberText}>Ricorda la mia e-mail</Text>
                 </View>
 
-                {/* ERRORE SERVER */}
+                {/* ERRORE SERVER ───────────────────────────────────────────────────── */}
                 {serverError ? <Text style={[styles.error, { marginTop: 6 }]}>{serverError}</Text> : null}
 
-                {/* CTA LOGIN */}
+                {/* CTA LOGIN ───────────────────────────────────────────────────────── */}
                 <GradientButton
                     title={isSubmitting ? "Accesso…" : "Accedi"}
                     icon="enter-outline"
@@ -178,9 +218,13 @@ export default function Login() {
                 />
                 {isSubmitting ? <ActivityIndicator color="#fff" style={{ marginTop: 10 }} /> : null}
 
-                {/* LINKS SECONDARI */}
+                {/* LINK SECONDARI ─────────────────────────────────────────────────── */}
                 <View style={styles.secondaryRow}>
-                    <Pressable onPress={() => setShowForgot(true)} style={styles.secondaryLinkRow}>
+                    <Pressable
+                        onPress={() => setShowForgot(true)}
+                        style={styles.secondaryLinkRow}
+                        accessibilityRole="button"
+                    >
                         <Ionicons name="lock-closed" size={14} color="#22c08a" />
                         <Text style={styles.secondaryLink}> Password dimenticata?</Text>
                     </Pressable>
@@ -196,7 +240,7 @@ export default function Login() {
                 </View>
             </View>
 
-            {/* BOTTONE DEMO GRANDE */}
+            {/* ── BOTTONE DEMO ───────────────────────────────────────────────────── */}
             <GradientButton
                 title="Accedi come demo"
                 icon="key-outline"
@@ -205,8 +249,8 @@ export default function Login() {
                 style={styles.demoWrapper}
             />
 
-            {/* LEGALI (pill) */}
-            <View style={styles.legalBar}>
+            {/* ── LEGALI (pill) ──────────────────────────────────────────────────── */}
+            <View style={styles.legalBar} pointerEvents="box-none">
                 <Pressable style={styles.pill}>
                     <Ionicons name="shield-checkmark-outline" size={14} color="#d1d5db" />
                     <Text style={styles.pillText}> Privacy</Text>
@@ -217,9 +261,9 @@ export default function Login() {
                 </Pressable>
             </View>
 
-            {/* MODAL REGISTRAZIONE */}
+            {/* ── MODAL REGISTRAZIONE ────────────────────────────────────────────── */}
             <Modal visible={showReg} transparent animationType="fade" onRequestClose={() => setShowReg(false)}>
-                <View style={styles.modalBackdrop}>
+                <View style={styles.modalBackdrop} pointerEvents="box-none">
                     <View style={styles.modalCard}>
                         <Text style={styles.modalTitle}>Registrazione</Text>
                         <Text style={styles.modalBody}>TODO: form di registrazione</Text>
@@ -228,9 +272,9 @@ export default function Login() {
                 </View>
             </Modal>
 
-            {/* MODAL PASSWORD DIMENTICATA */}
+            {/* ── MODAL PASSWORD DIMENTICATA ─────────────────────────────────────── */}
             <Modal visible={showForgot} transparent animationType="fade" onRequestClose={() => setShowForgot(false)}>
-                <View style={styles.modalBackdrop}>
+                <View style={styles.modalBackdrop} pointerEvents="box-none">
                     <View style={styles.modalCard}>
                         <Text style={styles.modalTitle}>Recupero password</Text>
                         <Text style={styles.modalBody}>
@@ -245,29 +289,30 @@ export default function Login() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STILI
+// Stili
 // ─────────────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
     root: { flex: 1, alignItems: "center", justifyContent: "center" },
 
-    // immagine di sfondo centrata e coperta
+    bgWrap: {
+        ...StyleSheet.absoluteFillObject, // wrapper assoluto non interattivo
+    },
+
+    // sfondo pieno — non interattivo
     bgImg: {
-        ...StyleSheet.absoluteFillObject,
         width: "100%",
         height: "100%",
         ...(Platform.OS === "web" ? ({ objectPosition: "50% 50%" } as any) : null),
     },
 
-    // overlay scuro globale
+    // overlay scuro pieno — non interattivo
     overlay: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: "rgba(0,0,0,0.6)",
-        ...(Platform.OS === "web" ? ({ pointerEvents: "none" } as any) : null), // web ok, native ignora
     },
 
-    // card centrale (effetto glass dark)
+    // card centrale (glass dark)
     card: {
-        zIndex: 2,
         width: "92%",
         maxWidth: 520,
         padding: 18,
@@ -288,7 +333,16 @@ const styles = StyleSheet.create({
 
     // input + icona
     inputWrap: { position: "relative", marginTop: 8 },
-    inputIcon: { position: "absolute", left: 14, top: 14 },
+
+    // icona sinistra sopra l'input
+    inputIcon: {
+        position: "absolute",
+        left: 14,
+        top: 14,
+        zIndex: 2, // ★ sopra
+        pointerEvents: "none", // ★ non blocca i tap sull'input
+    },
+
     input: {
         borderWidth: 1,
         borderColor: "rgba(255,255,255,0.14)",
@@ -298,17 +352,21 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 12,
         fontSize: 14,
+        zIndex: 1,
     },
+    // icona destra (occhio) sopra l'input
+    inputIconRight: {
+        position: "absolute",
+        right: 14,
+        top: 14,
+        zIndex: 2, // ★
+    },
+
     inputError: { borderColor: "#ef4444" },
     error: { color: "#fca5a5", fontSize: 12, marginTop: 4 },
 
     // remember
-    rememberRow: {
-        marginTop: 10,
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-    },
+    rememberRow: { marginTop: 10, flexDirection: "row", alignItems: "center", gap: 10 },
     rememberText: { color: "#d1fae5", fontSize: 12 },
 
     // bottone gradient
@@ -330,18 +388,12 @@ const styles = StyleSheet.create({
     secondaryLink: { color: "#22c08a", fontWeight: "700" },
 
     // bottone demo sotto la card
-    demoWrapper: {
-        zIndex: 2,
-        width: "92%",
-        maxWidth: 520,
-        marginTop: 16,
-    },
+    demoWrapper: { width: "92%", maxWidth: 520, marginTop: 16 },
 
     // barra legale in basso
     legalBar: {
         position: "absolute",
         bottom: 20,
-        zIndex: 2,
         flexDirection: "row",
         gap: 12,
     },

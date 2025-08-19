@@ -1,37 +1,36 @@
-// src/lib/api.ts
-// ── Axios + token cross-platform ────────────────────────────────────────
-import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
-import { ENV } from './env';
+// ─────────────────────────────────────────────────────────────────────────────
+// API client — Axios + token cross-platform (usa storage adapter)
+// ─────────────────────────────────────────────────────────────────────────────
 
-const TOKEN_KEY = 'synapsi_access';
+import axios from "axios";
+import { ENV } from "./env";
+import { storage } from "@/utils/storage";
 
-// Web fallback: sessionStorage (RN-web) + in-memory
-let memToken: string | null = null;
-const web = typeof window !== 'undefined';
-const storage = {
-  get: async () => (web ? sessionStorage.getItem(TOKEN_KEY) : (await SecureStore.getItemAsync(TOKEN_KEY)) ?? memToken),
-  set: async (t: string) => {
-    memToken = t;
-    if (web) sessionStorage.setItem(TOKEN_KEY, t);
-    else await SecureStore.setItemAsync(TOKEN_KEY, t);
-  },
-  del: async () => {
-    memToken = null;
-    if (web) sessionStorage.removeItem(TOKEN_KEY);
-    else await SecureStore.deleteItemAsync(TOKEN_KEY);
-  },
+// ── Chiave token condivisa ───────────────────────────────────────────────────
+export const TOKEN_KEY = "auth:token";
+
+// ── Token storage wrapper (unico punto di accesso) ───────────────────────────
+export const tokenStorage = {
+    get: () => storage.get(TOKEN_KEY),
+    set: (t: string) => storage.set(TOKEN_KEY, t),
+    del: () => storage.remove(TOKEN_KEY),
 };
 
-export { storage as tokenStorage, TOKEN_KEY };
-
-export const api = axios.create({ baseURL: ENV.API_BASE_URL, timeout: 15000 });
-
-api.interceptors.request.use(async (cfg) => {
-  const t = await storage.get();
-  if (t) {
-    cfg.headers = cfg.headers ?? {};
-    cfg.headers[ENV.TOKEN_HEADER] = `Bearer ${t}`;
-  }
-  return cfg;
+// ── Istanza Axios ────────────────────────────────────────────────────────────
+export const api = axios.create({
+    baseURL: ENV.API_BASE_URL,
+    timeout: 15000,
 });
+
+// ── Interceptor: aggiunge header di autenticazione se presente ──────────────
+api.interceptors.request.use(async (cfg) => {
+    const t = await tokenStorage.get();
+    if (t) {
+        cfg.headers = cfg.headers ?? {};
+        // es. ENV.TOKEN_HEADER = "Authorization"
+        cfg.headers[ENV.TOKEN_HEADER] = t.startsWith("Bearer ") ? t : `Bearer ${t}`;
+    }
+    return cfg;
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
