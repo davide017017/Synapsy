@@ -10,6 +10,7 @@ import React, { useMemo, useCallback, useRef, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Image, Pressable, Alert, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { useNavigation } from "@react-navigation/native";
 
 import { useAuth } from "../context/AuthContext";
 import { useTransactions } from "../context/TransactionsContext";
@@ -229,6 +230,7 @@ export default function HomeScreen() {
     const refreshUser = userCtx?.refresh ?? (() => {});
     const { items: txs, refresh: refreshTxs, loading: loadingTxs } = useTransactions();
     const { items: cats = [], refresh: refreshCats, loading: loadingCats } = useCategories() as any;
+    const navigation = useNavigation<any>();
 
     // ui state
     const [showMoney, setShowMoney] = useState(true);
@@ -291,8 +293,10 @@ export default function HomeScreen() {
 
     // azioni dettaglio
     const handleEdit = () => {
-        console.log("Edit tx", detail?.id);
-        closeDetail(); /* TODO: navigate edit */
+        if (detail) {
+            closeDetail();
+            navigation.navigate('TxEdit', { tx: detail });
+        }
     };
     const handleDelete = () => {
         Alert.alert("Eliminare transazione?", "Questa azione non è reversibile.", [
