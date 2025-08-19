@@ -1,22 +1,22 @@
-// src/screens/EditTransaction.tsx
+// src/screens/EditTransaction/index.tsx
 // ─────────────────────────────────────────────────────────────────────────────
 // Modifica transazione (descrizione / importo / note / categoria / data)
-// - Selettore categoria: BottomSheet (@gorhom/bottom-sheet) con icone/colori da DB
-// - Selettore data: @react-native-community/datetimepicker
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React, { useMemo, useRef, useState } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable, Alert, KeyboardAvoidingView, Platform } from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import { Ionicons } from "@expo/vector-icons";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
+import React, { useMemo, useRef, useState } from 'react';
+import { View, Text, TextInput, Pressable, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { Ionicons } from '@expo/vector-icons';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 
-import { updateTransaction, TxType } from "@/features/transactions/api";
-import { useTransactions } from "@/context/TransactionsContext";
-import { useCategories } from "@/context/CategoriesContext";
-import { renderCategoryIcon } from "@/utils/categoryIcons";
+import { updateTransaction, TxType } from '@/features/transactions/api';
+import { useTransactions } from '@/context/TransactionsContext';
+import { useCategories } from '@/context/CategoriesContext';
+import { renderCategoryIcon } from '@/utils/categoryIcons';
+import { parseAmount, tintFromHex } from './utils';
+import { COLORS, styles } from './styles';
 
 // ── Tipi minimi ──────────────────────────────────────────────────────────────
 type TxCategory = { id: string | number; name: string; icon?: string; color?: string };
@@ -31,39 +31,6 @@ type Transaction = {
 };
 
 type Params = { TxEdit: { tx: Transaction } };
-
-// ── Utils ────────────────────────────────────────────────────────────────────
-function eur(n: number): string {
-    try {
-        return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
-    } catch {
-        return `€ ${(+n || 0).toFixed(2)}`;
-    }
-}
-function parseAmount(input: string): number {
-    // supporta virgola come separatore decimale
-    const normalized = input.replace(/\./g, "").replace(",", ".");
-    const num = parseFloat(normalized);
-    return Number.isFinite(num) ? num : NaN;
-}
-function hexToRgb(hex?: string): { r: number; g: number; b: number } | null {
-    if (!hex) return null;
-    const h = hex.replace("#", "").trim();
-    const n =
-        h.length === 3
-            ? h
-                  .split("")
-                  .map((c) => c + c)
-                  .join("")
-            : h;
-    const int = parseInt(n, 16);
-    if (Number.isNaN(int) || n.length !== 6) return null;
-    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
-}
-function tintFromHex(hex?: string, alpha = 0.12, fallback = "rgba(255,255,255,0.06)") {
-    const rgb = hexToRgb(hex);
-    return rgb ? `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})` : fallback;
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Component
@@ -320,79 +287,3 @@ export default function EditTransaction() {
         </KeyboardAvoidingView>
     );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Stili
-// ─────────────────────────────────────────────────────────────────────────────
-const COLORS = {
-    bg: "#0b1013",
-    card: "#0f1a20",
-    border: "rgba(255,255,255,0.08)",
-    text: "#eaf5ee",
-    muted: "#9fb0a9",
-};
-
-const styles = StyleSheet.create({
-    root: { flex: 1, backgroundColor: COLORS.bg, padding: 12 },
-    card: {
-        backgroundColor: COLORS.card,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        borderRadius: 16,
-        padding: 14,
-        gap: 10,
-    },
-
-    title: { color: COLORS.text, fontWeight: "800", fontSize: 18 },
-    subtitle: { color: COLORS.muted, fontSize: 12 },
-
-    headerRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 },
-    categoryBadge: { width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center" },
-
-    label: { color: COLORS.muted, fontSize: 12, marginTop: 2 },
-
-    input: {
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.12)",
-        borderRadius: 12,
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-        backgroundColor: "rgba(255,255,255,0.96)",
-        color: "#111827",
-        fontSize: 14,
-    },
-
-    selectBtn: {
-        height: 44,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.12)",
-        backgroundColor: "#0f1a20",
-        paddingHorizontal: 12,
-        alignItems: "center",
-        flexDirection: "row",
-        gap: 10,
-    },
-    selectText: { color: COLORS.text, flex: 1 },
-
-    catRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 4,
-        borderRadius: 10,
-    },
-
-    saveBtn: {
-        marginTop: 6,
-        height: 44,
-        borderRadius: 999,
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "row",
-        gap: 8,
-        backgroundColor: "#16a34a",
-    },
-    saveText: { color: "#fff", fontWeight: "800" },
-});
