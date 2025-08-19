@@ -8,6 +8,7 @@ type Ctx = {
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
+  update: (patch: Partial<Profile>) => void;
 };
 
 const UserContext = createContext<Ctx>({} as Ctx);
@@ -30,13 +31,17 @@ export const UserProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     }
   }, []);
 
+  const update = useCallback((patch: Partial<Profile>) => {
+    setProfile((p) => (p ? { ...p, ...patch } : p));
+  }, []);
+
   useEffect(() => {
     if (token) refresh();
     else setProfile(null);
   }, [token, refresh]);
 
   return (
-    <UserContext.Provider value={{ profile, loading, error, refresh }}>
+    <UserContext.Provider value={{ profile, loading, error, refresh, update }}>
       {children}
     </UserContext.Provider>
   );
