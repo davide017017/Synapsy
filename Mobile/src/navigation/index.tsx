@@ -1,5 +1,7 @@
+// src/navigation/index.tsx
 // ─────────────────────────────────────────────────────────────────────────────
 // React Navigation: AuthStack + AppTabs (Home • Panoramica • [+] • Liste • Profilo)
+// + Schermata modale: TxEdit
 // ─────────────────────────────────────────────────────────────────────────────
 import React from "react";
 import { Pressable, Platform } from "react-native";
@@ -16,6 +18,7 @@ import QuickAdd from "../screens/QuickAdd";
 import Liste from "../screens/Liste";
 import Profile from "../screens/Profile";
 import Login from "../screens/Login";
+import EditTransaction from "../screens/EditTransaction";
 
 // ── Bottone centrale “+” ────────────────────────────────────────────────────
 function BigMintAddButton(props: BottomTabBarButtonProps) {
@@ -116,7 +119,15 @@ export default function Navigation() {
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {token ? (
-                    <Stack.Screen name="AppTabs" component={AppTabs} />
+                    <>
+                        <Stack.Screen name="AppTabs" component={AppTabs} />
+                        {/* Modale di edit transazione */}
+                        <Stack.Screen
+                            name="TxEdit"
+                            component={EditTransaction}
+                            options={{ headerShown: true, title: "Modifica transazione", presentation: "modal" }}
+                        />
+                    </>
                 ) : (
                     <Stack.Screen name="Login" component={Login} />
                 )}

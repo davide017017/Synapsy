@@ -1,19 +1,40 @@
 // src/screens/Home.tsx
 // ─────────────────────────────────────────────────────────────────────────────
-// Dashboard: tutto scrolla usando UNA FlatList con ListHeaderComponent
+// Dashboard: UNA FlatList (header + card + lista)
+// - BottomSheet (@gorhom/bottom-sheet) per dettaglio transazione
+// - Azioni nel dettaglio: Modifica / Elimina
+// - Icone categoria mappate (anche da nomi web) via renderCategoryIcon
 // ─────────────────────────────────────────────────────────────────────────────
-import React, { useMemo, useCallback, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, Pressable } from "react-native";
+
+import React, { useMemo, useCallback, useRef, useState } from "react";
+import { View, Text, StyleSheet, FlatList, Image, Pressable, Alert, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 
 import { useAuth } from "../context/AuthContext";
 import { useTransactions } from "../context/TransactionsContext";
 import { useCategories } from "../context/CategoriesContext";
 import { useUser } from "../context/UserContext";
 import EmptyState from "../components/shared/EmptyState";
+import { renderCategoryIcon } from "../utils/categoryIcons";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Utils
+// Tipi minimi
+// ─────────────────────────────────────────────────────────────────────────────
+type TxType = "entrata" | "spesa";
+type TxCategory = { id: string | number; name: string; icon?: string };
+type Transaction = {
+    id: string | number;
+    type: TxType;
+    description?: string;
+    amount: number;
+    date: string;
+    category?: TxCategory;
+    notes?: string;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Utils formattazione
 // ─────────────────────────────────────────────────────────────────────────────
 function eur(n: number): string {
     try {
@@ -26,14 +47,14 @@ const fmtDate = (d: Date | null) =>
     d ? d.toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" }) : "—";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Bottoni azione (3 su una riga)
+// ActionButton (icona sopra, testo sotto)
 // ─────────────────────────────────────────────────────────────────────────────
 function ActionButton({
     icon,
     label,
     onPress,
-    iconSize = 30, // ★ default
-    iconColor = "#c8ffe2", // opzionale
+    iconSize = 30,
+    iconColor = "#c8ffe2",
 }: {
     icon: React.ComponentProps<typeof Ionicons>["name"];
     label: string;
@@ -57,7 +78,7 @@ function ActionButton({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cards (Saldo, Totali, Riepilogo conteggi, Storico)
+// Cards (Saldo / Totali / Riepilogo / Storico)
 // ─────────────────────────────────────────────────────────────────────────────
 function SaldoCard({ value, visible, onToggle }: { value: number; visible: boolean; onToggle: () => void }) {
     return (
@@ -70,7 +91,6 @@ function SaldoCard({ value, visible, onToggle }: { value: number; visible: boole
         </View>
     );
 }
-
 function TotalsCard({ entrate, spese, visible }: { entrate: number; spese: number; visible: boolean }) {
     return (
         <View style={[styles.cardHalf, styles.centerCard]}>
@@ -84,7 +104,6 @@ function TotalsCard({ entrate, spese, visible }: { entrate: number; spese: numbe
         </View>
     );
 }
-
 function CountsCard({
     txCount,
     catCount,
@@ -99,7 +118,6 @@ function CountsCard({
     return (
         <View style={[styles.centerCard, { alignItems: "stretch" }]}>
             <Text style={[styles.cardTitle, { textAlign: "center" }]}>Riepilogo (n°)</Text>
-
             <View style={styles.quadWrap}>
                 <View style={[styles.quadCell, styles.quadTL]}>
                     <Text style={styles.mutedSmall}>Transazioni</Text>
@@ -121,10 +139,9 @@ function CountsCard({
         </View>
     );
 }
-
 function OldestTxCard({ oldest, latest }: { oldest: string; latest: string }) {
     return (
-        <View style={[styles.centerCard]}>
+        <View style={styles.centerCard}>
             <Text style={styles.cardTitle}>Storico transazioni</Text>
             <View style={{ alignItems: "center", marginTop: 6 }}>
                 <Text style={styles.mutedSmall}>Ultima transazione</Text>
@@ -138,36 +155,103 @@ function OldestTxCard({ oldest, latest }: { oldest: string; latest: string }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+/* Row lista (icona categoria, testi, importo pill) — apre sheet */
+// ─────────────────────────────────────────────────────────────────────────────
+const TransactionRow = React.memo(function TransactionRow({
+    item,
+    onPress,
+}: {
+    item: Transaction;
+    onPress?: () => void;
+}) {
+    const isExpense = item.type === "spesa";
+    const sign = isExpense ? "−" : "+";
+    const tintBg = isExpense ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)";
+
+    return (
+        <Pressable
+            onPress={onPress}
+            android_ripple={{ color: "rgba(255,255,255,0.06)" }}
+            style={({ pressed }) => [styles.rowCard, pressed && { opacity: 0.98 }]}
+        >
+            {/* icona categoria */}
+            <View style={[styles.leadIconWrap, { backgroundColor: tintBg }]}>
+                {renderCategoryIcon(item?.category?.icon, {
+                    size: 18,
+                    color: isExpense ? "#ef4444" : "#22c55e",
+                    nameHint: item?.category?.name,
+                })}
+            </View>
+
+            {/* testi */}
+            <View style={styles.rowTexts}>
+                <Text style={styles.rowTitle} numberOfLines={1} ellipsizeMode="tail">
+                    {item.description || (isExpense ? "Spesa" : "Entrata")}
+                </Text>
+                <Text style={styles.rowMeta} numberOfLines={1} ellipsizeMode="tail">
+                    {new Date(item.date).toLocaleDateString("it-IT")} · {item.category?.name ?? "—"}
+                </Text>
+            </View>
+
+            {/* importo */}
+            <View style={[styles.amountPill, isExpense ? styles.amountPillNeg : styles.amountPillPos]}>
+                <Text style={styles.amountText} numberOfLines={1}>
+                    {sign} {eur(item.amount)}
+                </Text>
+            </View>
+        </Pressable>
+    );
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+/* Row helper per contenuto sheet (label: value) */
+// ─────────────────────────────────────────────────────────────────────────────
+function InfoRow({ label, value }: { label: string; value: string }) {
+    return (
+        <View style={{ flexDirection: "row", gap: 8 }}>
+            <Text style={{ width: 96, color: COLORS.muted, fontSize: 12 }}>{label}</Text>
+            <Text style={{ flex: 1, color: COLORS.text, fontSize: 14 }} numberOfLines={3}>
+                {value}
+            </Text>
+        </View>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Screen
 // ─────────────────────────────────────────────────────────────────────────────
 export default function HomeScreen() {
+    // user & data
     const { user: authUser } = useAuth();
     const userCtx: any = useUser();
     const user = userCtx?.user ?? authUser;
     const loadingUser = Boolean(userCtx?.loading);
     const refreshUser = userCtx?.refresh ?? (() => {});
-
     const { items: txs, refresh: refreshTxs, loading: loadingTxs } = useTransactions();
     const { items: cats = [], refresh: refreshCats, loading: loadingCats } = useCategories() as any;
 
-    const refreshing = loadingUser || loadingTxs || loadingCats;
+    // ui state
     const [showMoney, setShowMoney] = useState(true);
+    const [detail, setDetail] = useState<Transaction | null>(null);
 
+    // refresh
+    const refreshing = loadingUser || loadingTxs || loadingCats;
     const onRefresh = useCallback(() => {
         refreshUser();
         refreshCats();
         refreshTxs();
     }, [refreshUser, refreshCats, refreshTxs]);
 
+    // metriche
     const { entrate, spese, saldo, latestList, oldestStr, latestStr, inCount, outCount } = useMemo(() => {
         let e = 0,
-            s = 0;
-        let minTs = Number.POSITIVE_INFINITY;
-        let maxTs = Number.NEGATIVE_INFINITY;
-        let inC = 0,
+            s = 0,
+            inC = 0,
             outC = 0;
+        let minTs = Number.POSITIVE_INFINITY,
+            maxTs = Number.NEGATIVE_INFINITY;
 
-        for (const t of txs) {
+        for (const t of txs as Transaction[]) {
             const ts = Date.parse(t.date);
             if (!Number.isNaN(ts)) {
                 if (ts < minTs) minTs = ts;
@@ -181,11 +265,9 @@ export default function HomeScreen() {
                 outC++;
             }
         }
-
         const oldest = minTs === Number.POSITIVE_INFINITY ? null : new Date(minTs);
         const latest = maxTs === Number.NEGATIVE_INFINITY ? null : new Date(maxTs);
-        const l = [...txs].sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, 10);
-
+        const l = [...(txs as Transaction[])].sort((a, b) => Date.parse(b.date) - Date.parse(a.date)).slice(0, 10);
         return {
             entrate: e,
             spese: s,
@@ -198,10 +280,37 @@ export default function HomeScreen() {
         };
     }, [txs]);
 
-    // ── Header componibile per la FlatList ─────────────────────────────────────
+    // ── BottomSheet setup ──────────────────────────────────────────────────────
+    const sheetRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => (Platform.OS === "ios" ? ["40%", "75%"] : ["50%"]), []);
+    const openDetail = (tx: Transaction) => {
+        setDetail(tx);
+        sheetRef.current?.present();
+    };
+    const closeDetail = () => sheetRef.current?.dismiss();
+
+    // azioni dettaglio
+    const handleEdit = () => {
+        console.log("Edit tx", detail?.id);
+        closeDetail(); /* TODO: navigate edit */
+    };
+    const handleDelete = () => {
+        Alert.alert("Eliminare transazione?", "Questa azione non è reversibile.", [
+            { text: "Annulla", style: "cancel" },
+            {
+                text: "Elimina",
+                style: "destructive",
+                onPress: () => {
+                    console.log("Delete tx", detail?.id);
+                    closeDetail(); /* TODO: API + refresh */
+                },
+            },
+        ]);
+    };
+
+    // header lista
     const ListHeader = (
         <View>
-            {/* Header con logo + benvenuto centrato */}
             <View style={styles.header}>
                 <Image
                     source={require("../../assets/images/icon_1024x1024.webp")}
@@ -214,20 +323,17 @@ export default function HomeScreen() {
                 <Text style={styles.subtitle}>Monitora spese ed entrate e tieni d’occhio il saldo.</Text>
             </View>
 
-            {/* Bottoni azione */}
             <View style={styles.actionsRow}>
                 <ActionButton icon="add-circle-outline" label="Nuova Transazione" onPress={() => {}} />
                 <ActionButton icon="refresh-circle-outline" label="Nuova Ricorrenza" onPress={() => {}} />
                 <ActionButton icon="albums-outline" label="Nuova Categoria" onPress={() => {}} />
             </View>
 
-            {/* Riga 1: Saldo + Totali € */}
             <View style={styles.grid2}>
                 <SaldoCard value={saldo} visible={showMoney} onToggle={() => setShowMoney((v) => !v)} />
                 <TotalsCard entrate={entrate} spese={spese} visible={showMoney} />
             </View>
 
-            {/* Riga 2: Conteggi (Tx+Cat) + Storico */}
             <View style={styles.grid2}>
                 <View style={styles.cardHalf}>
                     <CountsCard txCount={txs.length} catCount={cats.length} inCount={inCount} outCount={outCount} />
@@ -237,96 +343,140 @@ export default function HomeScreen() {
                 </View>
             </View>
 
-            {/* Prossimo pagamento – full width */}
             <View style={[styles.cardFull, { marginTop: 8, marginBottom: 10 }]}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     <Ionicons name="notifications-outline" size={16} color="#c7ffea" />
                     <Text style={styles.cardTitle}>Prossimo pagamento</Text>
                 </View>
                 <Text style={styles.muted} numberOfLines={3}>
-                    {"\n"}Nessun pagamento in agenda{"\n"}
-                    -----TODO
+                    {"\n"}Nessun pagamento in agenda{"\n"}-----TODO
                 </Text>
             </View>
 
-            {/* Titolo lista */}
             <Text style={styles.section}>Ultime transazioni</Text>
         </View>
     );
 
-    // ── Render item per la FlatList ────────────────────────────────────────────
-    const renderItem = ({ item }: any) => (
-        <TransactionRow
-            item={item}
-            onPress={() => {
-                /* TODO: navigate to detail */
-            }}
-        />
+    // renderer item
+    const renderItem = ({ item }: { item: Transaction }) => (
+        <TransactionRow item={item} onPress={() => openDetail(item)} />
     );
+
     // ─────────────────────────────────────────────────────────────────────────────
-    // TransactionRow — card con icona (sx), titolo/meta (centro), amount (dx)
+    // Render
     // ─────────────────────────────────────────────────────────────────────────────
-    const TransactionRow = React.memo(function TransactionRow({
-        item,
-        onPress,
-    }: {
-        item: any; // usa il tuo tipo Transaction se ce l'hai
-        onPress?: () => void;
-    }) {
-        const isExpense = item.type === "spesa";
-        const sign = isExpense ? "−" : "+";
-
-        // ── Icona e colori per tipo ──
-        const iconName = isExpense ? "trending-down" : "trending-up";
-        const tintBg = isExpense ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)";
-
-        return (
-            <Pressable
-                onPress={onPress}
-                android_ripple={{ color: "rgba(255,255,255,0.06)" }}
-                style={({ pressed }) => [styles.rowCard, pressed && { opacity: 0.98 }]}
-            >
-                {/* ── Icona tonda sinistra ── */}
-                <View style={[styles.leadIconWrap, { backgroundColor: tintBg }]}>
-                    <Ionicons name={iconName as any} size={18} color={isExpense ? "#ef4444" : "#22c55e"} />
-                </View>
-
-                {/* ── Testi centro ── */}
-                <View style={styles.rowTexts}>
-                    <Text style={styles.rowTitle} numberOfLines={1} ellipsizeMode="tail">
-                        {item.description || (isExpense ? "Spesa" : "Entrata")}
-                    </Text>
-                    <Text style={styles.rowMeta} numberOfLines={1} ellipsizeMode="tail">
-                        {new Date(item.date).toLocaleDateString("it-IT")} · {item.category?.name ?? "—"}
-                    </Text>
-                </View>
-
-                {/* ── Amount pill destra ── */}
-                <View style={[styles.amountPill, isExpense ? styles.amountPillNeg : styles.amountPillPos]}>
-                    <Text style={styles.amountText} numberOfLines={1}>
-                        {sign} {eur(item.amount)}
-                    </Text>
-                </View>
-            </Pressable>
-        );
-    });
-
-    // ── FlatList come root: scorre tutto (header + lista) ──────────────────────
     return (
-        <FlatList
-            style={styles.list}
-            data={latestList}
-            keyExtractor={(t: any) => `${t.type}-${t.id}-${t.date}`}
-            ListHeaderComponent={ListHeader}
-            ListEmptyComponent={<EmptyState message="Nessuna transazione" />}
-            ItemSeparatorComponent={() => <View style={styles.sep} />}
-            renderItem={renderItem}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            keyboardShouldPersistTaps="handled"
-            contentContainerStyle={styles.containerContent}
-            ListFooterComponent={<View style={{ height: 16 }} />}
-        />
+        // Nota: hai già il Provider in App.tsx; tenerlo qui è ok se vuoi isolare lo scope
+        <BottomSheetModalProvider>
+            <View style={{ flex: 1 }}>
+                <FlatList
+                    style={styles.list}
+                    data={latestList}
+                    keyExtractor={(t) => `${t.type}-${t.id}-${t.date}`}
+                    ListHeaderComponent={ListHeader}
+                    ListEmptyComponent={<EmptyState message="Nessuna transazione" />}
+                    ItemSeparatorComponent={() => <View style={styles.sep} />}
+                    renderItem={renderItem}
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={styles.containerContent}
+                    ListFooterComponent={<View style={{ height: 16 }} />}
+                />
+
+                {/* Bottom Sheet Dettaglio */}
+                <BottomSheetModal
+                    ref={sheetRef}
+                    index={0}
+                    snapPoints={snapPoints}
+                    backdropComponent={(p) => (
+                        <BottomSheetBackdrop {...p} appearsOnIndex={0} disappearsOnIndex={-1} opacity={0.45} />
+                    )}
+                    backgroundStyle={{
+                        backgroundColor: COLORS.card,
+                        borderTopLeftRadius: 16,
+                        borderTopRightRadius: 16,
+                        borderWidth: 1,
+                        borderColor: COLORS.border,
+                    }}
+                    handleIndicatorStyle={{ backgroundColor: "#6b7280" }}
+                >
+                    <BottomSheetView style={{ padding: 16, gap: 8 }}>
+                        {/* Header icona + categoria + close */}
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                <View
+                                    style={[
+                                        styles.leadIconWrap,
+                                        {
+                                            backgroundColor:
+                                                detail?.type === "spesa"
+                                                    ? "rgba(239,68,68,0.15)"
+                                                    : "rgba(34,197,94,0.15)",
+                                        },
+                                    ]}
+                                >
+                                    {renderCategoryIcon(detail?.category?.icon, {
+                                        size: 18,
+                                        color: detail?.type === "spesa" ? "#ef4444" : "#22c55e",
+                                        nameHint: detail?.category?.name,
+                                    })}
+                                </View>
+                                <Text style={{ color: COLORS.text, fontWeight: "800" }}>
+                                    {detail?.category?.name ?? "Senza categoria"}
+                                </Text>
+                            </View>
+                            <Pressable onPress={closeDetail} style={styles.closeBtn}>
+                                <Ionicons name="close" size={18} color="#e5e7eb" />
+                            </Pressable>
+                        </View>
+
+                        {/* Info */}
+                        <View style={{ marginTop: 8, gap: 8 }}>
+                            <InfoRow
+                                label="Descrizione"
+                                value={detail?.description || (detail?.type === "spesa" ? "Spesa" : "Entrata") || "—"}
+                            />
+                            <InfoRow
+                                label="Importo"
+                                value={`${detail?.type === "spesa" ? "−" : "+"} ${eur(detail?.amount || 0)}`}
+                            />
+                            <InfoRow
+                                label="Data"
+                                value={detail?.date ? new Date(detail?.date).toLocaleString("it-IT") : "—"}
+                            />
+                            <InfoRow label="Tipo" value={detail?.type ?? "—"} />
+                            <InfoRow label="Note" value={detail?.notes || "—"} />
+                            <InfoRow label="ID" value={String(detail?.id ?? "—")} />
+                        </View>
+
+                        {/* Azioni */}
+                        <View style={{ flexDirection: "row", gap: 10, marginTop: 12 }}>
+                            <Pressable
+                                onPress={handleEdit}
+                                style={[
+                                    styles.actionSheetBtn,
+                                    { backgroundColor: "rgba(59,130,246,0.12)", borderColor: "rgba(59,130,246,0.35)" },
+                                ]}
+                            >
+                                <Ionicons name="pencil" size={16} color="#93c5fd" />
+                                <Text style={[styles.actionSheetText, { color: "#93c5fd" }]}>Modifica</Text>
+                            </Pressable>
+                            <Pressable
+                                onPress={handleDelete}
+                                style={[
+                                    styles.actionSheetBtn,
+                                    { backgroundColor: "rgba(239,68,68,0.12)", borderColor: "rgba(239,68,68,0.35)" },
+                                ]}
+                            >
+                                <Ionicons name="trash" size={16} color="#fca5a5" />
+                                <Text style={[styles.actionSheetText, { color: "#fca5a5" }]}>Elimina</Text>
+                            </Pressable>
+                        </View>
+                    </BottomSheetView>
+                </BottomSheetModal>
+            </View>
+        </BottomSheetModalProvider>
     );
 }
 
@@ -344,6 +494,7 @@ const COLORS = {
 };
 
 const styles = StyleSheet.create({
+    // Lista
     list: { flex: 1, backgroundColor: COLORS.bg },
     containerContent: { padding: 12, flexGrow: 1 },
 
@@ -355,13 +506,11 @@ const styles = StyleSheet.create({
 
     // Azioni
     actionsRow: { flexDirection: "row", gap: 8, marginTop: 10, marginBottom: 8 },
-
     actionBtn: {
         flex: 1,
         minWidth: 0,
         alignItems: "center",
         justifyContent: "center",
-        // layout verticale
         paddingVertical: 12,
         paddingHorizontal: 10,
         minHeight: 72,
@@ -370,18 +519,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 12,
     },
+    actionIcon: { marginBottom: 6 },
+    actionText: { color: "#c8ffe2", fontWeight: "700", fontSize: 12, textAlign: "center", lineHeight: 14 },
 
-    actionIcon: { marginBottom: 6 }, // spazio tra icona e testo
-
-    actionText: {
-        color: "#c8ffe2",
-        fontWeight: "700",
-        fontSize: 12,
-        textAlign: "center",
-        lineHeight: 14,
-    },
-
-    // Griglia 2x2
+    // Cards
     grid2: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 },
     cardHalf: {
         backgroundColor: COLORS.card,
@@ -404,8 +545,6 @@ const styles = StyleSheet.create({
         borderColor: COLORS.border,
         backgroundColor: "rgba(255,255,255,0.06)",
     },
-
-    // Card full comune
     cardFull: {
         backgroundColor: COLORS.card,
         borderColor: COLORS.border,
@@ -413,19 +552,37 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 12,
     },
-
-    // Testi card
     cardTitle: { color: COLORS.muted, fontSize: 12, fontWeight: "700", textAlign: "center" },
-    cardValueCentered: { color: COLORS.text, fontSize: 10, fontWeight: "900", marginTop: 6, textAlign: "center" },
+    cardValueCentered: { color: COLORS.text, fontSize: 20, fontWeight: "900", marginTop: 6, textAlign: "center" },
     cardValueXS: { color: COLORS.text, fontSize: 14, fontWeight: "800", marginTop: 4, textAlign: "center" },
     splitValue: { color: COLORS.text, fontSize: 20, fontWeight: "900", textAlign: "center" },
-    mutedSmall: { color: COLORS.muted, fontSize: 9, textAlign: "center" },
+    mutedSmall: { color: COLORS.muted, fontSize: 11, textAlign: "center" },
 
-    // Sezioni / titoli
+    // Sezioni
     section: { marginTop: 4, marginBottom: 6, color: COLORS.text, fontWeight: "800" },
     muted: { color: COLORS.muted, marginTop: 4 },
 
-    // Lista
+    // Griglia interna per Counts
+    quadWrap: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        marginTop: 8,
+        borderRadius: 10,
+        overflow: "hidden",
+    },
+    quadCell: {
+        width: "50%",
+        paddingVertical: 12,
+        alignItems: "center",
+        justifyContent: "center",
+        borderColor: "rgba(255,255,255,0.07)",
+    },
+    quadTL: { borderRightWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth },
+    quadTR: { borderBottomWidth: StyleSheet.hairlineWidth },
+    quadBL: { borderRightWidth: StyleSheet.hairlineWidth },
+    quadBR: {},
+
+    // Riga lista
     rowCard: {
         flexDirection: "row",
         alignItems: "center",
@@ -437,52 +594,41 @@ const styles = StyleSheet.create({
         borderColor: COLORS.border,
         borderRadius: 12,
     },
-    leadIconWrap: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        alignItems: "center",
-        justifyContent: "center",
-    },
+    leadIconWrap: { width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" },
     rowTexts: { flex: 1, minWidth: 0, paddingRight: 8 },
     rowTitle: { color: COLORS.text, fontSize: 14, fontWeight: "700" },
     rowMeta: { color: COLORS.muted, fontSize: 12, marginTop: 2 },
 
-    amountPill: {
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 999,
-        minWidth: 96,
-        alignItems: "flex-end",
-    },
+    // Importo pill
+    amountPill: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, minWidth: 96, alignItems: "flex-end" },
     amountPillPos: { backgroundColor: "rgba(34,197,94,0.10)", borderWidth: 1, borderColor: "rgba(34,197,94,0.25)" },
     amountPillNeg: { backgroundColor: "rgba(239,68,68,0.10)", borderWidth: 1, borderColor: "rgba(239,68,68,0.25)" },
     amountText: { fontWeight: "900", color: COLORS.text, fontSize: 13 },
 
-    // Separatore più “spazioso” tra card (sostituisci la tua sep se vuoi)
-    sep: { height: 8 },
-
-    // Segni +/-
+    // Segni colore (testo)
     pos: { color: COLORS.green },
     neg: { color: COLORS.red },
 
-    // Griglia 2×2 della card conteggi
-    quadWrap: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        marginTop: 8,
-        borderRadius: 10,
-        overflow: "hidden",
-    },
-    quadCell: {
-        width: "50%",
-        paddingVertical: 5,
+    // Sheet: bottoni azione + close
+    actionSheetBtn: {
+        flex: 1,
+        minHeight: 44,
+        borderRadius: 12,
+        borderWidth: 1,
         alignItems: "center",
         justifyContent: "center",
-        borderColor: "rgba(255,255,255,0.07)",
+        flexDirection: "row",
+        gap: 8,
     },
-    quadTL: { borderRightWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth },
-    quadTR: { borderBottomWidth: StyleSheet.hairlineWidth },
-    quadBL: { borderRightWidth: StyleSheet.hairlineWidth },
-    quadBR: {},
+    actionSheetText: { fontWeight: "800", fontSize: 14 },
+    closeBtn: {
+        padding: 6,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.1)",
+        backgroundColor: "rgba(255,255,255,0.06)",
+    },
+
+    // Separatore lista
+    sep: { height: 8 },
 });
