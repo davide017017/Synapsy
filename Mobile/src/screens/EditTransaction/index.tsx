@@ -11,24 +11,14 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { BottomSheetModal, BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 
-import { updateTransaction, TxType } from '@/features/transactions/api';
+import { updateTransaction } from '@/features/transactions/api';
 import { useTransactions } from '@/context/TransactionsContext';
 import { useCategories } from '@/context/CategoriesContext';
+import type { Transaction } from '@/features/transactions/types';
+import type { Category } from '@/features/categories/types';
 import { renderCategoryIcon } from '@/utils/categoryIcons';
-import { parseAmount, tintFromHex } from './utils';
+import { parseAmount, tintFromHex, fmtDate } from './utils';
 import { COLORS, styles } from './styles';
-
-// ── Tipi minimi ──────────────────────────────────────────────────────────────
-type TxCategory = { id: string | number; name: string; icon?: string; color?: string };
-type Transaction = {
-    id: string | number;
-    type: TxType;
-    description?: string;
-    amount: number;
-    date: string; // ISO
-    category?: TxCategory;
-    notes?: string;
-};
 
 type Params = { TxEdit: { tx: Transaction } };
 
@@ -39,7 +29,7 @@ export default function EditTransaction() {
     const route = useRoute<RouteProp<Params, "TxEdit">>();
     const navigation = useNavigation<any>();
     const { refresh } = useTransactions();
-    const { items: categories = [] } = useCategories() as { items: TxCategory[] };
+    const { items: categories = [] } = useCategories();
 
     const tx = route.params?.tx;
 
@@ -60,7 +50,7 @@ export default function EditTransaction() {
         },
     });
 
-    const pickedCategoryId = watch("category_id") as TxCategory["id"] | undefined;
+    const pickedCategoryId = watch("category_id") as Category["id"] | undefined;
     const pickedDateIso = watch("date") as string;
 
     const pickedCategory = useMemo(
@@ -94,7 +84,7 @@ export default function EditTransaction() {
                 amount: amountNum,
                 notes: (data.notes as string)?.trim(),
                 date: (data.date as string) || tx.date,
-                category_id: data.category_id as any, // opzionale
+                category_id: data.category_id as Category['id'] | undefined,
             });
             await refresh();
             navigation.goBack();
@@ -107,17 +97,11 @@ export default function EditTransaction() {
     const catColor = pickedCategory?.color || (tx?.type === "spesa" ? "#ef4444" : "#22c55e");
     const catBg = tintFromHex(
         pickedCategory?.color,
-        0.12,
-        tx?.type === "spesa" ? "rgba(239,68,68,0.12)" : "rgba(34,197,94,0.12)",
+        0.15,
+        tx?.type === "spesa" ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)",
     );
 
-    const dateLabel = (() => {
-        try {
-            return new Date(pickedDateIso).toLocaleString("it-IT");
-        } catch {
-            return pickedDateIso || "—";
-        }
-    })();
+    const dateLabel = fmtDate(pickedDateIso);
 
     return (
         <KeyboardAvoidingView style={styles.root} behavior={Platform.OS === "ios" ? "padding" : undefined}>
@@ -194,20 +178,44 @@ export default function EditTransaction() {
 
                 {/* ── Data (DateTimePicker) ─────────────────────────────────────────── */}
                 <Text style={styles.label}>Data</Text>
-                <Pressable
-                    onPress={() => setShowDatePicker(true)}
-                    style={({ pressed }) => [styles.selectBtn, pressed && { opacity: 0.96 }]}
-                >
-                    <Ionicons name="calendar-outline" size={16} color="#9fb0a9" />
-                    <Text style={styles.selectText}>{dateLabel}</Text>
-                </Pressable>
-                {showDatePicker && (
-                    <DateTimePicker
-                        mode="datetime"
-                        display={Platform.OS === "ios" ? "inline" : "default"}
-                        value={pickedDateIso ? new Date(pickedDateIso) : new Date()}
-                        onChange={onChangeDate}
+                {Platform.OS === 'web' ? (
+                    <Controller
+                        control={control}
+                        name="date"
+                        render={({ field: { value, onChange, onBlur } }) => (
+                            <>
+                                <TextInput
+                                    value={value}
+                                    onChangeText={onChange}
+                                    onBlur={onBlur}
+                                    placeholder="2024-01-01T12:00:00"
+                                    placeholderTextColor="#9aa1aa"
+                                    style={styles.input}
+                                />
+                                <Text style={{ color: COLORS.muted, fontSize: 11, marginTop: 2 }}>
+                                    {fmtDate(value)}
+                                </Text>
+                            </>
+                        )}
                     />
+                ) : (
+                    <>
+                        <Pressable
+                            onPress={() => setShowDatePicker(true)}
+                            style={({ pressed }) => [styles.selectBtn, pressed && { opacity: 0.96 }]}
+                        >
+                            <Ionicons name="calendar-outline" size={16} color="#9fb0a9" />
+                            <Text style={styles.selectText}>{dateLabel}</Text>
+                        </Pressable>
+                        {showDatePicker && (
+                            <DateTimePicker
+                                mode="datetime"
+                                display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                                value={pickedDateIso ? new Date(pickedDateIso) : new Date()}
+                                onChange={onChangeDate}
+                            />
+                        )}
+                    </>
                 )}
 
                 {/* ── Note ──────────────────────────────────────────────────────────── */}
@@ -260,7 +268,7 @@ export default function EditTransaction() {
                     <Text style={{ color: COLORS.text, fontWeight: "800", marginBottom: 6 }}>Seleziona categoria</Text>
                     {categories.map((c) => {
                         const color = c.color || "#22c55e";
-                        const bg = tintFromHex(c.color, 0.12, "rgba(255,255,255,0.06)");
+                        const bg = tintFromHex(c.color, 0.15, "rgba(255,255,255,0.06)");
                         const selected = String(c.id) === String(pickedCategoryId);
                         return (
                             <Pressable

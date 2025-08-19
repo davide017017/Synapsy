@@ -1,6 +1,8 @@
+// src/screens/Liste/utils.ts
 // ─────────────────────────────────────────────────────────────────────────────
-// Utils for EditTransaction
+// Utility helpers per schermate Liste
 // ─────────────────────────────────────────────────────────────────────────────
+
 export function eur(n: number): string {
     try {
         return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(n);
@@ -9,17 +11,9 @@ export function eur(n: number): string {
     }
 }
 
-// Parse string amount supporting comma or dot
-export function parseAmount(input: string): number {
-    const normalized = input.replace(/\./g, '').replace(',', '.');
-    const num = parseFloat(normalized);
-    return Number.isFinite(num) ? num : NaN;
-}
-
-// Format ISO date string to locale string
 export function fmtDate(iso: string): string {
     try {
-        return new Date(iso).toLocaleString('it-IT');
+        return new Date(iso).toLocaleDateString('it-IT');
     } catch {
         return iso;
     }
@@ -34,7 +28,8 @@ function hexToRgb(hex?: string): { r: number; g: number; b: number } | null {
     return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 };
 }
 
-export function tintFromHex(hex?: string, alpha = 0.12, fallback = 'rgba(255,255,255,0.06)') {
+export function tintFromHex(hex?: string, alpha = 0.15, fallback = 'rgba(255,255,255,0.06)') {
     const rgb = hexToRgb(hex);
     return rgb ? `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})` : fallback;
 }
+

@@ -16,6 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTransactions } from "../context/TransactionsContext";
 import { useCategories } from "../context/CategoriesContext";
 import { useUser } from "../context/UserContext";
+import { deleteTransaction } from "@/features/transactions/api";
 import EmptyState from "../components/shared/EmptyState";
 import { renderCategoryIcon } from "../utils/categoryIcons";
 
@@ -304,9 +305,16 @@ export default function HomeScreen() {
             {
                 text: "Elimina",
                 style: "destructive",
-                onPress: () => {
-                    console.log("Delete tx", detail?.id);
-                    closeDetail(); /* TODO: API + refresh */
+                onPress: async () => {
+                    if (detail) {
+                        try {
+                            await deleteTransaction(detail.id, detail.type);
+                            await refresh();
+                        } catch (e: any) {
+                            Alert.alert("Errore", e?.message ?? "Impossibile eliminare");
+                        }
+                    }
+                    closeDetail();
                 },
             },
         ]);

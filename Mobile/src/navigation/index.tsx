@@ -17,6 +17,7 @@ import Panoramica from "../screens/Panoramica";
 import QuickAdd from "../screens/QuickAdd";
 import Liste from "../screens/Liste";
 import Profile from "../screens/Profile";
+import TransactionsList from "../screens/Liste/TransactionsList";
 import Login from "../screens/Login";
 import EditTransaction from "../screens/EditTransaction";
 
@@ -121,6 +122,11 @@ export default function Navigation() {
                 {token ? (
                     <>
                         <Stack.Screen name="AppTabs" component={AppTabs} />
+                        <Stack.Screen
+                            name="TransactionsList"
+                            component={TransactionsList}
+                            options={{ headerShown: true, title: 'Transazioni' }}
+                        />
                         {/* Modale di edit transazione */}
                         <Stack.Screen
                             name="TxEdit"
