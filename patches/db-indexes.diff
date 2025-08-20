@@ -1,0 +1,23 @@
+diff --git a/Backend/Modules/Spese/Database/Migrations/2025_05_01_100200_create_spese_table.php b/Backend/Modules/Spese/Database/Migrations/2025_05_01_100200_create_spese_table.php
+@@
+-            $table->index('date');
+-            $table->unique(['user_id', 'date', 'description']); // \xf0\x9f\x94\x90 Vincolo unico per test
++            $table->index(['user_id', 'date']);
++            $table->index(['user_id', 'category_id', 'date']);
++            $table->unique(['user_id', 'date', 'description']); // \xf0\x9f\x94\x90 Vincolo unico per test
+         });
+     }
+@@
+diff --git a/Backend/Modules/Entrate/Database/Migrations/2025_05_01_100100_create_entrate_table.php b/Backend/Modules/Entrate/Database/Migrations/2025_05_01_100100_create_entrate_table.php
+@@
+-            $table->timestamps();
+-            $table->index('date');
+-
+-            $table->unique(['user_id', 'date', 'description']);
++            $table->timestamps();
++            $table->index(['user_id', 'date']);
++            $table->index(['user_id', 'category_id', 'date']);
++
++            $table->unique(['user_id', 'date', 'description']);
+         });
+     }
