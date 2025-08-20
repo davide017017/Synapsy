@@ -54,17 +54,30 @@ class FinancialOverviewController extends Controller
      */
     public function indexApi(Request $request)
     {
-        $user = $request->user();
-        // Filtri e parametri ordinamento (personalizza se vuoi)
-        $filters = $request->only(['start_date', 'end_date']);
-        $sortBy = $request->query('sort_by', 'date');
-        $sortDirection = $request->query('sort_direction', 'desc');
+        // ── valida query ─────────────────────────────────────────────────────
+        $validated = $request->validate([
+            'start_date'  => 'date|nullable',
+            'end_date'    => 'date|nullable',
+            'description' => 'string|nullable',
+            'category_id' => 'integer|nullable',
+            'sort'        => 'string|nullable',   // es: "-date,amount"
+            'page'        => 'integer|min:1|nullable',
+            'per_page'    => 'integer|min:1|max:100|nullable',
+        ]);
+        // ── compat sort legacy ───────────────────────────────────────────────
+        $sort = $validated['sort'] ?? null;
+        if ($sort === null) {
+            $legacyCol = $request->query('sort_by');
+            $legacyDir = $request->query('sort_direction', 'desc');
+            if ($legacyCol) $sort = ($legacyDir === 'desc' ? '-' : '') . $legacyCol;
+        }
+        $sort    = $sort ?: '-date';
+        $page    = (int)($validated['page'] ?? 1);
+        $perPage = (int)($validated['per_page'] ?? 50);
 
-        // Calcolo overview
-        $overviewData = $this->service->getOverviewData($user, $filters, $sortBy, $sortDirection);
-
-        // Restituisci solo i dati in JSON
-        return response()->json($overviewData['financialEntries']);
+        $filters = $request->only(['start_date','end_date','description','category_id']);
+        $pageData = $this->service->getOverviewEntriesPaginated($request->user(), $filters, $sort, $page, $perPage);
+        return response()->json($pageData);
     }
 }
 

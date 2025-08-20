@@ -78,12 +78,36 @@ class EntrateController extends Controller
     // Lista (API JSON)
     public function indexApi(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $filters = $request->only(['start_date', 'end_date', 'description', 'category_id']);
-        $sortBy = $request->query('sort_by', 'date');
-        $sortDirection = $request->query('sort_direction', 'desc');
+        // ── valida query ─────────────────────────────────────────────────────
+        $validated = $request->validate([
+            'start_date'  => 'date|nullable',
+            'end_date'    => 'date|nullable',
+            'description' => 'string|nullable',
+            'category_id' => 'integer|nullable',
+            'sort'        => 'string|nullable',   // es: "-date,amount"
+            'page'        => 'integer|min:1|nullable',
+            'per_page'    => 'integer|min:1|max:100|nullable',
+        ]);
+        // ── compat sort legacy → sort string ────────────────────────────────
+        $sort = $validated['sort'] ?? null;
+        if ($sort === null) {
+            $legacyCol = $request->query('sort_by');
+            $legacyDir = $request->query('sort_direction', 'desc');
+            if ($legacyCol) $sort = ($legacyDir === 'desc' ? '-' : '') . $legacyCol;
+        }
+        $sort    = $sort ?: '-date';
+        $page    = (int)($validated['page'] ?? 1);
+        $perPage = (int)($validated['per_page'] ?? 50);
 
-        $entrate = $this->service->getFilteredAndSortedForUser($user, $filters, $sortBy, $sortDirection);
+        // ── filtri ──────────────────────────────────────────────────────────
+        $filters = [
+            'start_date'  => $validated['start_date']  ?? null,
+            'end_date'    => $validated['end_date']    ?? null,
+            'description' => $validated['description'] ?? null,
+            'category_id' => $validated['category_id'] ?? null,
+        ];
+
+        $entrate = $this->service->listForUserPaginated($request->user(), $filters, $sort, $page, $perPage);
 
         return response()->json($entrate);
     }
