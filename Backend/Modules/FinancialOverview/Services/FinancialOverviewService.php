@@ -24,34 +24,63 @@ class FinancialOverviewService
         $uid = $user->id;
 
         $spese = DB::table('spese')->select([
-                'id','user_id','date','amount','category_id','description',
-                DB::raw("'spesa' as type"),
-            ])->where('user_id',$uid);
+            'id',
+            'user_id',
+            'date',
+            'amount',
+            'category_id',
+            'description',
+            DB::raw("'spesa' as type"),
+        ])->where('user_id', $uid);
 
         $entrate = DB::table('entrate')->select([
-                'id','user_id','date','amount','category_id','description',
-                DB::raw("'entrata' as type"),
-            ])->where('user_id',$uid);
+            'id',
+            'user_id',
+            'date',
+            'amount',
+            'category_id',
+            'description',
+            DB::raw("'entrata' as type"),
+        ])->where('user_id', $uid);
 
-        $apply = function($q) use ($filters) {
-            if (!empty($filters['start_date'])) $q->whereDate('date','>=',$filters['start_date']);
-            if (!empty($filters['end_date']))   $q->whereDate('date','<=',$filters['end_date']);
-            if (!empty($filters['category_id'])) $q->where('category_id',$filters['category_id']);
-            if (!empty($filters['description'])) $q->where('description','like',"%{$filters['description']}%");
+        $apply = function ($q) use ($filters) {
+            if (!empty($filters['start_date'])) $q->whereDate('date', '>=', $filters['start_date']);
+            if (!empty($filters['end_date']))   $q->whereDate('date', '<=', $filters['end_date']);
+            if (!empty($filters['category_id'])) $q->where('category_id', $filters['category_id']);
+            if (!empty($filters['description'])) $q->where('description', 'like', "%{$filters['description']}%");
         };
-        $apply($spese); $apply($entrate);
+        $apply($spese);
+        $apply($entrate);
 
         $union = $spese->unionAll($entrate);
         $q = DB::query()->fromSub($union, 't');
+        // ── unisci categorie per avere campi name/type/color ───────────────
+        $q = DB::query()
+            ->fromSub($union, 't')
+            ->leftJoin('categories as c', 'c.id', '=', 't.category_id')
+            ->select(
+                't.id',
+                't.user_id',
+                't.date',
+                't.amount',
+                't.category_id',
+                't.description',
+                't.type',
+                // ── campi categoria (aggiunto icon) ─────────────────────────
+                'c.name  as category_name',
+                'c.type  as category_type',
+                'c.color as category_color',
+                'c.icon  as category_icon'
+            );
 
-        $allowed = ['date','amount','type'];
+        $allowed = ['date', 'amount', 'type'];
         $parts = array_filter(explode(',', $sort ?: '-date'));
         foreach ($parts as $s) {
-            $dir = str_starts_with($s,'-') ? 'desc' : 'asc';
-            $col = ltrim($s,'-');
-            if (in_array($col,$allowed,true)) $q->orderBy($col,$dir);
+            $dir = str_starts_with($s, '-') ? 'desc' : 'asc';
+            $col = ltrim($s, '-');
+            if (in_array($col, $allowed, true)) $q->orderBy($col, $dir);
         }
-        if (empty($parts)) $q->orderBy('date','desc');
+        if (empty($parts)) $q->orderBy('date', 'desc');
 
         return $q->paginate($perPage, ['*'], 'page', $page);
     }
@@ -189,4 +218,3 @@ class FinancialOverviewService
         );
     }
 }
-

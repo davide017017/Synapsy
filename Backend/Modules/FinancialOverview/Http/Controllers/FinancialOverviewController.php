@@ -75,9 +75,29 @@ class FinancialOverviewController extends Controller
         $page    = (int)($validated['page'] ?? 1);
         $perPage = (int)($validated['per_page'] ?? 50);
 
-        $filters = $request->only(['start_date','end_date','description','category_id']);
+        $filters = $request->only(['start_date', 'end_date', 'description', 'category_id']);
         $pageData = $this->service->getOverviewEntriesPaginated($request->user(), $filters, $sort, $page, $perPage);
-        return response()->json($pageData);
+        // ── rimodella: category come oggetto {id,name,type,color} ───────────
+        $pageData->setCollection(
+            $pageData->getCollection()->map(function ($row) {
+                return [
+                    'id'          => $row->id,
+                    'type'        => $row->type,
+                    'date'        => $row->date,
+                    'amount'      => $row->amount,
+                    'description' => $row->description,
+                    'category'    => [
+                        'id'    => $row->category_id,
+                        'name'  => $row->category_name,
+                        'type'  => $row->category_type,
+                        'color' => $row->category_color,
+                        'icon'  => $row->category_icon,
+                    ],
+                ];
+            })
+        );
+        // ── compat legacy: se non passi page/per_page → lista flat ──────────
+        $legacy = !$request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
+        return response()->json($legacy ? $pageData->items() : $pageData);
     }
 }
-

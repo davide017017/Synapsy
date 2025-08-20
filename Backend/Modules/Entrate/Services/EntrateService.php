@@ -31,14 +31,14 @@ class EntrateService
                 ->orWhere('notes', 'like', "%{$term}%"));
         }
 
-        $allowed = ['date','amount','created_at'];
+        $allowed = ['date', 'amount', 'created_at'];
         $parts = array_filter(explode(',', $sort ?: '-date'));
         foreach ($parts as $s) {
-            $dir = str_starts_with($s,'-') ? 'desc' : 'asc';
-            $col = ltrim($s,'-');
+            $dir = str_starts_with($s, '-') ? 'desc' : 'asc';
+            $col = ltrim($s, '-');
             if (in_array($col, $allowed, true)) $q->orderBy($col, $dir);
         }
-        if (empty($parts)) $q->orderBy('date','desc');
+        if (empty($parts)) $q->orderBy('date', 'desc');
 
         return $q->paginate($perPage, ['*'], 'page', $page);
     }
@@ -143,4 +143,3 @@ class EntrateService
         return $entrata->delete();
     }
 }
-

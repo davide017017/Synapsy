@@ -108,8 +108,9 @@ class EntrateController extends Controller
         ];
 
         $entrate = $this->service->listForUserPaginated($request->user(), $filters, $sort, $page, $perPage);
-
-        return response()->json($entrate);
+        // ── compat legacy: se non passi page/per_page → lista flat ──────────
+        $legacy = !$request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
+        return response()->json($legacy ? $entrate->items() : $entrate);
     }
 
     // Dettaglio (API JSON)
@@ -185,4 +186,3 @@ class EntrateController extends Controller
         return redirect()->route('entrate.web.index')->with('status', 'Entrata eliminata con successo!');
     }
 }
-

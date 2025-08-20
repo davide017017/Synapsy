@@ -132,7 +132,9 @@ class SpeseController extends Controller
         ];
         // ── chiama service paginata (sort whitelist inside) ─────────────────
         $spese = $this->service->listForUserPaginated($request->user(), $filters, $sort, $page, $perPage);
-        return response()->json($spese);
+        // ── compat legacy: se non passi page/per_page → lista flat ──────────
+        $legacy = !$request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
+        return response()->json($legacy ? $spese->items() : $spese);
     }
 
     // Show (API)
@@ -182,4 +184,3 @@ class SpeseController extends Controller
         return response()->json(['status' => 'ok']);
     }
 }
-
