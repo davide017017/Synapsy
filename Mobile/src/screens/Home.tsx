@@ -296,7 +296,7 @@ export default function HomeScreen() {
     const handleEdit = () => {
         if (detail) {
             closeDetail();
-            navigation.navigate('TxEdit', { tx: detail });
+            navigation.navigate("TxEdit", { tx: detail });
         }
     };
     const handleDelete = () => {
@@ -309,7 +309,7 @@ export default function HomeScreen() {
                     if (detail) {
                         try {
                             await deleteTransaction(detail.id, detail.type);
-                            await refresh();
+                            await onRefresh();
                         } catch (e: any) {
                             Alert.alert("Errore", e?.message ?? "Impossibile eliminare");
                         }
@@ -546,7 +546,12 @@ const styles = StyleSheet.create({
         maxWidth: "48%",
         position: "relative",
     },
-    centerCard: { alignItems: "center", justifyContent: "center" },
+
+    centerCard: {
+        flex: 1,
+        justifyContent: "center", // centra verticalmente i figli
+    },
+
     eyeBtn: {
         position: "absolute",
         top: 8,
@@ -565,10 +570,10 @@ const styles = StyleSheet.create({
         padding: 12,
     },
     cardTitle: { color: COLORS.muted, fontSize: 12, fontWeight: "700", textAlign: "center" },
-    cardValueCentered: { color: COLORS.text, fontSize: 20, fontWeight: "900", marginTop: 6, textAlign: "center" },
+    cardValueCentered: { color: COLORS.text, fontSize: 12, fontWeight: "900", marginTop: 6, textAlign: "center" },
     cardValueXS: { color: COLORS.text, fontSize: 14, fontWeight: "800", marginTop: 4, textAlign: "center" },
     splitValue: { color: COLORS.text, fontSize: 20, fontWeight: "900", textAlign: "center" },
-    mutedSmall: { color: COLORS.muted, fontSize: 11, textAlign: "center" },
+    mutedSmall: { color: COLORS.muted, fontSize: 8, textAlign: "center" },
 
     // Sezioni
     section: { marginTop: 4, marginBottom: 6, color: COLORS.text, fontWeight: "800" },
@@ -581,10 +586,15 @@ const styles = StyleSheet.create({
         marginTop: 8,
         borderRadius: 10,
         overflow: "hidden",
+
+        // ── centratura contenuto ──
+        justifyContent: "center", // centro orizzontale (asse principale: row)
+        alignItems: "center", // centro verticale (asse trasversale)
+        alignContent: "center", // centra le RIGHE quando c’è wrap e spazio extra
     },
     quadCell: {
         width: "50%",
-        paddingVertical: 12,
+        paddingVertical: 8,
         alignItems: "center",
         justifyContent: "center",
         borderColor: "rgba(255,255,255,0.07)",
