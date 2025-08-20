@@ -5,6 +5,8 @@ namespace Modules\FinancialOverview\Services;
 use Carbon\Carbon;
 use Modules\FinancialOverview\Models\FinancialSnapshot;
 use Modules\User\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
 /**
@@ -13,6 +15,47 @@ use Modules\User\Models\User;
  */
 class FinancialOverviewService
 {
+    // ─────────────────────────────────────────────────────────────────────────
+    // Entries paginati (UNION ALL spese+entrate) con filtri e sort whitelist
+    // sort es: "-date,amount" | allowed: date, amount, type
+    // ─────────────────────────────────────────────────────────────────────────
+    public function getOverviewEntriesPaginated($user, array $filters, string $sort, int $page, int $perPage): LengthAwarePaginator
+    {
+        $uid = $user->id;
+
+        $spese = DB::table('spese')->select([
+                'id','user_id','date','amount','category_id','description',
+                DB::raw("'spesa' as type"),
+            ])->where('user_id',$uid);
+
+        $entrate = DB::table('entrate')->select([
+                'id','user_id','date','amount','category_id','description',
+                DB::raw("'entrata' as type"),
+            ])->where('user_id',$uid);
+
+        $apply = function($q) use ($filters) {
+            if (!empty($filters['start_date'])) $q->whereDate('date','>=',$filters['start_date']);
+            if (!empty($filters['end_date']))   $q->whereDate('date','<=',$filters['end_date']);
+            if (!empty($filters['category_id'])) $q->where('category_id',$filters['category_id']);
+            if (!empty($filters['description'])) $q->where('description','like',"%{$filters['description']}%");
+        };
+        $apply($spese); $apply($entrate);
+
+        $union = $spese->unionAll($entrate);
+        $q = DB::query()->fromSub($union, 't');
+
+        $allowed = ['date','amount','type'];
+        $parts = array_filter(explode(',', $sort ?: '-date'));
+        foreach ($parts as $s) {
+            $dir = str_starts_with($s,'-') ? 'desc' : 'asc';
+            $col = ltrim($s,'-');
+            if (in_array($col,$allowed,true)) $q->orderBy($col,$dir);
+        }
+        if (empty($parts)) $q->orderBy('date','desc');
+
+        return $q->paginate($perPage, ['*'], 'page', $page);
+    }
+
     // ============================
     // Query methods
     // ============================
