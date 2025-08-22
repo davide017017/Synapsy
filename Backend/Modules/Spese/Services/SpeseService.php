@@ -1,12 +1,17 @@
 <?php
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Servizio Spese
+// Dettagli: logica di business per la gestione delle spese
+// ─────────────────────────────────────────────────────────────────────────────
+
 namespace Modules\Spese\Services;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Spese\Models\Spesa;
 use Modules\User\Models\User;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Servizio per la gestione delle Spese utente.
@@ -19,26 +24,36 @@ class SpeseService
     // ─────────────────────────────────────────────────────────────────────────
     public function listForUserPaginated($user, array $filters, string $sort, int $page, int $perPage): LengthAwarePaginator
     {
-        $q = Spesa::query()->where('user_id', $user->id);
+        $q = Spesa::query()->with('category')->where('user_id', $user->id);
 
-        if (!empty($filters['start_date'])) $q->whereDate('date', '>=', $filters['start_date']);
-        if (!empty($filters['end_date']))   $q->whereDate('date', '<=', $filters['end_date']);
-        if (!empty($filters['category_id'])) $q->where('category_id', $filters['category_id']);
-        if (!empty($filters['description'])) {
+        if (! empty($filters['start_date'])) {
+            $q->whereDate('date', '>=', $filters['start_date']);
+        }
+        if (! empty($filters['end_date'])) {
+            $q->whereDate('date', '<=', $filters['end_date']);
+        }
+        if (! empty($filters['category_id'])) {
+            $q->where('category_id', $filters['category_id']);
+        }
+        if (! empty($filters['description'])) {
             $term = $filters['description'];
-            $q->where(fn(Builder $qq) => $qq
+            $q->where(fn (Builder $qq) => $qq
                 ->where('description', 'like', "%{$term}%")
                 ->orWhere('notes', 'like', "%{$term}%"));
         }
 
-        $allowed = ['date','amount','created_at'];
+        $allowed = ['date', 'amount', 'created_at'];
         $parts = array_filter(explode(',', $sort ?: '-date'));
         foreach ($parts as $s) {
-            $dir = str_starts_with($s,'-') ? 'desc' : 'asc';
-            $col = ltrim($s,'-');
-            if (in_array($col, $allowed, true)) $q->orderBy($col, $dir);
+            $dir = str_starts_with($s, '-') ? 'desc' : 'asc';
+            $col = ltrim($s, '-');
+            if (in_array($col, $allowed, true)) {
+                $q->orderBy($col, $dir);
+            }
         }
-        if (empty($parts)) $q->orderBy('date','desc');
+        if (empty($parts)) {
+            $q->orderBy('date', 'desc');
+        }
 
         return $q->paginate($perPage, ['*'], 'page', $page);
     }
@@ -54,19 +69,19 @@ class SpeseService
     {
         $query = $user->spese()->with('category');
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $query->whereDate('date', '>=', $filters['start_date']);
         }
 
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $query->whereDate('date', '<=', $filters['end_date']);
         }
 
-        if (!empty($filters['description'])) {
-            $query->where('description', 'like', '%' . $filters['description'] . '%');
+        if (! empty($filters['description'])) {
+            $query->where('description', 'like', '%'.$filters['description'].'%');
         }
 
-        if (!empty($filters['category_id'])) {
+        if (! empty($filters['category_id'])) {
             $validCategory = $user->categories()
                 ->where('type', 'spesa')
                 ->find($filters['category_id']);
@@ -106,10 +121,10 @@ class SpeseService
     {
         return $user->spese()->create([
             'description' => $data['description'],
-            'amount'      => $data['amount'],
-            'date'        => $data['date'],
+            'amount' => $data['amount'],
+            'date' => $data['date'],
             'category_id' => $data['category_id'] ?? null,
-            'notes'       => $data['notes'] ?? null,
+            'notes' => $data['notes'] ?? null,
         ]);
     }
 
@@ -128,10 +143,10 @@ class SpeseService
     {
         return $spesa->update([
             'description' => $data['description'],
-            'amount'      => $data['amount'],
-            'date'        => $data['date'],
+            'amount' => $data['amount'],
+            'date' => $data['date'],
             'category_id' => $data['category_id'] ?? null,
-            'notes'       => $data['notes'] ?? null,
+            'notes' => $data['notes'] ?? null,
         ]);
     }
 
@@ -143,4 +158,3 @@ class SpeseService
         return $spesa->delete();
     }
 }
-
