@@ -4,12 +4,11 @@ namespace Modules\DBCore\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Modules\DBCore\Console\Commands\DropDatabaseCommand;
-use Modules\DBCore\Console\Commands\CreateDatabaseCommand;
 
 class ResetDatabaseCommand extends Command
 {
     protected $signature = 'custom:database-reset';
+
     protected $description = 'Drop, recreate and reseed the database';
 
     public function handle()
@@ -29,5 +28,3 @@ class ResetDatabaseCommand extends Command
         $this->info(Artisan::output());
     }
 }
-
-

@@ -49,19 +49,19 @@ return [
 
         // Generatori attivi personalizzati (usati nei tuoi moduli)
         'generator' => [
-            'config'     => ['path' => 'Config',             'generate' => true],
-            'command'    => ['path' => 'Console',            'generate' => true],
-            'migration'  => ['path' => 'Database/Migrations','generate' => true],
-            'model'      => ['path' => 'Models',             'generate' => true],
+            'config' => ['path' => 'Config',             'generate' => true],
+            'command' => ['path' => 'Console',            'generate' => true],
+            'migration' => ['path' => 'Database/Migrations', 'generate' => true],
+            'model' => ['path' => 'Models',             'generate' => true],
             'controller' => ['path' => 'Http/Controllers',   'generate' => true],
-            'provider'   => ['path' => 'Providers',          'generate' => true],
-            'request'    => ['path' => 'Http/Requests',      'generate' => true],
-            'routes'     => ['path' => 'Routes',             'generate' => true],
-            'views'      => ['path' => 'Resources/views',    'generate' => true],
-            'lang'       => ['path' => 'Resources/lang',     'generate' => true],
-            'policy'     => ['path' => 'Policies',           'generate' => true],
-            'job'        => ['path' => 'Jobs',               'generate' => true],
-            'service'    => ['path' => 'Services',           'generate' => true],
+            'provider' => ['path' => 'Providers',          'generate' => true],
+            'request' => ['path' => 'Http/Requests',      'generate' => true],
+            'routes' => ['path' => 'Routes',             'generate' => true],
+            'views' => ['path' => 'Resources/views',    'generate' => true],
+            'lang' => ['path' => 'Resources/lang',     'generate' => true],
+            'policy' => ['path' => 'Policies',           'generate' => true],
+            'job' => ['path' => 'Jobs',               'generate' => true],
+            'service' => ['path' => 'Services',           'generate' => true],
         ],
 
         /*
@@ -113,7 +113,7 @@ return [
     'composer' => [
         'vendor' => env('MODULE_VENDOR', 'nwidart'),
         'author' => [
-            'name'  => env('MODULE_AUTHOR_NAME', 'Nicolas Widart'),
+            'name' => env('MODULE_AUTHOR_NAME', 'Nicolas Widart'),
             'email' => env('MODULE_AUTHOR_EMAIL', 'n.widart@gmail.com'),
         ],
         'composer-output' => false,
@@ -133,4 +133,3 @@ return [
 
     'activator' => 'file',
 ];
-

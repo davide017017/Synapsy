@@ -2,11 +2,11 @@
 
 namespace Modules\RecurringOperations\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\RecurringOperations\Jobs\ProcessRecurringOperation;
+use Modules\RecurringOperations\Models\RecurringOperation;
 
 /**
  * Comando per generare operazioni ricorrenti in base alle regole configurate.
@@ -29,12 +29,10 @@ class GenerateRecurringOperationsCommand extends Command
 
     /**
      * Esecuzione del comando.
-     *
-     * @return int
      */
     public function handle(): int
     {
-        Log::channel('recurring_operations')->info('Inizio comando custom:generate-recurring-operations alle ' . now());
+        Log::channel('recurring_operations')->info('Inizio comando custom:generate-recurring-operations alle '.now());
 
         $this->info('🔍 Cerco regole ricorrenti scadute...');
 
@@ -46,6 +44,7 @@ class GenerateRecurringOperationsCommand extends Command
 
         if ($count === 0) {
             $this->info('✅ Nessuna regola ricorrente scaduta trovata.');
+
             return Command::SUCCESS;
         }
 
@@ -61,4 +60,3 @@ class GenerateRecurringOperationsCommand extends Command
         return Command::SUCCESS;
     }
 }
-

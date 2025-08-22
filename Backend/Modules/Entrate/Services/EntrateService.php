@@ -22,7 +22,7 @@ class EntrateService
     // API: lista paginata con filtri + sort whitelist
     // sort es: "-date,amount"  | allowed: date, amount, created_at
     // ─────────────────────────────────────────────────────────────────────────
-    public function listForUserPaginated($user, array $filters, string $sort, int $page, int $perPage): LengthAwarePaginator
+    public function listForUserPaginated(User $user, array $filters, ?string $sort, int $page, int $perPage): LengthAwarePaginator
     {
         $q = Entrata::query()->with('category')->where('user_id', $user->id);
 

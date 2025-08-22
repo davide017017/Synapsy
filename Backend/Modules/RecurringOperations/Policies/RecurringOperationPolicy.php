@@ -2,8 +2,8 @@
 
 namespace Modules\RecurringOperations\Policies;
 
-use Modules\User\Models\User;
 use Modules\RecurringOperations\Models\RecurringOperation;
+use Modules\User\Models\User;
 
 /**
  * Policy per l'entità RecurringOperation.
@@ -61,4 +61,3 @@ class RecurringOperationPolicy
         return false;
     }
 }
-

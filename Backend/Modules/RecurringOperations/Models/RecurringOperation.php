@@ -2,11 +2,11 @@
 
 namespace Modules\RecurringOperations\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\User\Models\User;
 use Modules\Categories\Models\Category;
+use Modules\User\Models\User;
 
 /**
  * Modello per le operazioni ricorrenti (entrata o spesa).
@@ -26,7 +26,6 @@ use Modules\Categories\Models\Category;
  * @property string|null $notes
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
  * @property-read User $user
  * @property-read Category|null $category
  *
@@ -78,11 +77,11 @@ class RecurringOperation extends Model
     protected function casts(): array
     {
         return [
-            'amount'                => 'decimal:2',
-            'start_date'            => 'date',
-            'end_date'              => 'date',
+            'amount' => 'decimal:2',
+            'start_date' => 'date',
+            'end_date' => 'date',
             'next_occurrence_date' => 'date',
-            'is_active'             => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -123,4 +122,3 @@ class RecurringOperation extends Model
         return $this->type === 'spesa';
     }
 }
-

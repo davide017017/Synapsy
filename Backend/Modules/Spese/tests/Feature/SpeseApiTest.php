@@ -2,10 +2,10 @@
 
 namespace Modules\Spese\tests\Feature;
 
-use Modules\Spese\Models\Spesa;
 use Modules\Categories\Models\Category;
-use Tests\AuthenticatedTestCase;
+use Modules\Spese\Models\Spesa;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\AuthenticatedTestCase;
 
 class SpeseApiTest extends AuthenticatedTestCase
 {
@@ -35,9 +35,9 @@ class SpeseApiTest extends AuthenticatedTestCase
             ->create(['user_id' => $this->user->id]);
 
         $payload = [
-            'date'        => now()->toDateString(),
+            'date' => now()->toDateString(),
             'description' => 'Test Spesa',
-            'amount'      => 50.75,
+            'amount' => 50.75,
             'category_id' => $category->id,
         ];
 
@@ -71,8 +71,8 @@ class SpeseApiTest extends AuthenticatedTestCase
 
         $payload = [
             'description' => 'Spesa Aggiornata',
-            'amount'      => 120.00,
-            'date'        => now()->toDateString(),
+            'amount' => 120.00,
+            'date' => now()->toDateString(),
             'category_id' => $spesa->category_id,
         ];
 
@@ -96,4 +96,3 @@ class SpeseApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('spese', ['id' => $spesa->id]);
     }
 }
-

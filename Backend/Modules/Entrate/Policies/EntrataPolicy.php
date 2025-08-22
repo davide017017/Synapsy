@@ -2,8 +2,8 @@
 
 namespace Modules\Entrate\Policies;
 
-use Modules\User\Models\User;
 use Modules\Entrate\Models\Entrata;
+use Modules\User\Models\User;
 
 /**
  * Policy per l'entità Entrata.
@@ -61,4 +61,3 @@ class EntrataPolicy
         return false;
     }
 }
-

@@ -3,9 +3,9 @@
 namespace Modules\User\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Support\Carbon;
 use Modules\User\Models\User;
 
 class UserFactory extends Factory
@@ -66,7 +66,7 @@ class UserFactory extends Factory
 
         // Username generato (senza spazi, minuscolo, oppure random se già esiste)
         $username = Str::slug($identity['full_name'], '.')
-            . $this->faker->unique()->randomNumber(3);
+            .$this->faker->unique()->randomNumber(3);
 
         // Temi possibili
         $themes = ['light', 'dark', 'emerald', 'solarized'];
@@ -74,16 +74,16 @@ class UserFactory extends Factory
         $isVerified = $this->faker->boolean(70);
 
         return [
-            'name'              => $name,
-            'surname'           => $surname,
-            'username'          => $username, // NEW
-            'theme'             => $this->faker->randomElement($themes), // NEW
-            'avatar'            => $this->faker->randomElement($avatarChoices),
-            'email'             => $identity['email_base'] . '@' . $this->faker->unique()->domainWord() . '.' . $this->faker->tld(),
+            'name' => $name,
+            'surname' => $surname,
+            'username' => $username, // NEW
+            'theme' => $this->faker->randomElement($themes), // NEW
+            'avatar' => $this->faker->randomElement($avatarChoices),
+            'email' => $identity['email_base'].'@'.$this->faker->unique()->domainWord().'.'.$this->faker->tld(),
             'email_verified_at' => $isVerified ? Carbon::now() : null,
-            'password'          => Hash::make('password1234'),
-            'remember_token'    => Str::random(10),
-            'is_admin'          => false,
+            'password' => Hash::make('password1234'),
+            'remember_token' => Str::random(10),
+            'is_admin' => false,
             'has_accepted_terms' => true,
         ];
     }
@@ -93,7 +93,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn() => ['email_verified_at' => null]);
+        return $this->state(fn () => ['email_verified_at' => null]);
     }
 
     /**
@@ -101,7 +101,7 @@ class UserFactory extends Factory
      */
     public function verified(): static
     {
-        return $this->state(fn() => ['email_verified_at' => now()]);
+        return $this->state(fn () => ['email_verified_at' => now()]);
     }
 
     /**
@@ -109,6 +109,6 @@ class UserFactory extends Factory
      */
     public function admin(): static
     {
-        return $this->state(fn() => ['is_admin' => true]);
+        return $this->state(fn () => ['is_admin' => true]);
     }
 }

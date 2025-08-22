@@ -45,6 +45,7 @@ class AuditTrailController extends Controller
     public function show($id)
     {
         $log = AuditLog::with('user')->findOrFail($id);
+
         return view('audittrail::show', compact('log'));
         // return response()->json($log);
     }
@@ -55,18 +56,22 @@ class AuditTrailController extends Controller
     {
         abort(404);
     }
+
     public function store(Request $request)
     {
         abort(404);
     }
+
     public function edit($id)
     {
         abort(404);
     }
+
     public function update(Request $request, $id)
     {
         abort(404);
     }
+
     public function destroy($id)
     {
         abort(404);

@@ -2,12 +2,12 @@
 
 namespace Modules\User\Http\Controllers\Auth;
 
-use Modules\User\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Modules\User\Http\Controllers\Controller;
 
 class ConfirmablePasswordController extends Controller
 {
@@ -38,4 +38,3 @@ class ConfirmablePasswordController extends Controller
         return redirect()->intended(route('dashboard', absolute: false));
     }
 }
-

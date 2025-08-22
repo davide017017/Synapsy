@@ -2,16 +2,16 @@
 
 namespace Modules\Entrate\Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
-use Modules\User\Models\User;
-use Modules\Entrate\Models\Entrata;
-use App\Traits\TruncatesTable;
 use App\Traits\LogsSeederOutput;
+use App\Traits\TruncatesTable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
+use Modules\Entrate\Models\Entrata;
+use Modules\User\Models\User;
 
 class EntrateDBSeeder extends Seeder
 {
-    use TruncatesTable, LogsSeederOutput;
+    use LogsSeederOutput, TruncatesTable;
 
     public function run(): void
     {
@@ -24,13 +24,14 @@ class EntrateDBSeeder extends Seeder
             $users = User::all();
             if ($users->isEmpty()) {
                 $this->logSkip('Entrate', 'Nessun utente trovato. Seeder ignorato.');
+
                 return;
             }
 
             $totali = 0;
             $now = now();
             $currentMonth = $now->month;
-            $currentDay   = $now->day;
+            $currentDay = $now->day;
 
             foreach ($users as $user) {
                 $categories = $user->categories()->where('type', 'entrata')->get()->keyBy('name');
@@ -38,12 +39,14 @@ class EntrateDBSeeder extends Seeder
 
                 // Stipendio
                 for ($i = 1; $i <= $currentMonth; $i++) {
-                    $descrizione = "Stipendio mensile";
+                    $descrizione = 'Stipendio mensile';
                     $date = ($i == $currentMonth)
                         ? $now->copy()->startOfMonth()->addDays($currentDay - 1)
                         : $now->copy()->startOfYear()->addMonths($i - 1)->endOfMonth();
-                    $key = $date->format('Y-m-d') . '-' . $descrizione;
-                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $key = $date->format('Y-m-d').'-'.$descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) {
+                        continue;
+                    }
                     $usedDates[$key] = true;
                     Entrata::factory()
                         ->stipendio()
@@ -57,13 +60,17 @@ class EntrateDBSeeder extends Seeder
 
                 // Regalo
                 foreach ([2, 7, 12] as $month) {
-                    if ($month > $currentMonth) continue;
-                    $descrizione = "Regalo di compleanno";
+                    if ($month > $currentMonth) {
+                        continue;
+                    }
+                    $descrizione = 'Regalo di compleanno';
                     $maxDay = ($month == $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($month - 1)->daysInMonth;
                     $day = rand(1, $maxDay);
                     $date = $now->copy()->startOfYear()->addMonths($month - 1)->startOfMonth()->addDays($day - 1);
-                    $key = $date->format('Y-m-d') . '-' . $descrizione;
-                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $key = $date->format('Y-m-d').'-'.$descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) {
+                        continue;
+                    }
                     $usedDates[$key] = true;
                     Entrata::factory()
                         ->regalo()
@@ -77,14 +84,18 @@ class EntrateDBSeeder extends Seeder
 
                 // Investimenti/Vinted
                 foreach ([3, 6, 9, 11] as $month) {
-                    if ($month > $currentMonth) continue;
-                    $descrizione = "Vendita Vinted";
+                    if ($month > $currentMonth) {
+                        continue;
+                    }
+                    $descrizione = 'Vendita Vinted';
                     $maxDay = ($month == $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($month - 1)->daysInMonth;
                     $day = rand(5, $maxDay);
                     $day = min($day, $maxDay);
                     $date = $now->copy()->startOfYear()->addMonths($month - 1)->startOfMonth()->addDays($day - 1);
-                    $key = $date->format('Y-m-d') . '-' . $descrizione;
-                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $key = $date->format('Y-m-d').'-'.$descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) {
+                        continue;
+                    }
                     $usedDates[$key] = true;
                     Entrata::factory()
                         ->vinted()
@@ -98,14 +109,18 @@ class EntrateDBSeeder extends Seeder
 
                 // Rimborso
                 foreach ([4, 10] as $month) {
-                    if ($month > $currentMonth) continue;
-                    $descrizione = "Rimborso spese";
+                    if ($month > $currentMonth) {
+                        continue;
+                    }
+                    $descrizione = 'Rimborso spese';
                     $maxDay = ($month == $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($month - 1)->daysInMonth;
                     $day = rand(10, $maxDay);
                     $day = min($day, $maxDay);
                     $date = $now->copy()->startOfYear()->addMonths($month - 1)->startOfMonth()->addDays($day - 1);
-                    $key = $date->format('Y-m-d') . '-' . $descrizione;
-                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $key = $date->format('Y-m-d').'-'.$descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) {
+                        continue;
+                    }
                     $usedDates[$key] = true;
                     Entrata::factory()
                         ->rimborso()
@@ -119,12 +134,12 @@ class EntrateDBSeeder extends Seeder
 
                 // Gratta e Vinci
                 $grattaMonth = rand(1, $currentMonth);
-                $descrizione = "Vincita Gratta e Vinci";
+                $descrizione = 'Vincita Gratta e Vinci';
                 $maxDay = ($grattaMonth == $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($grattaMonth - 1)->daysInMonth;
                 $day = rand(1, $maxDay);
                 $date = $now->copy()->startOfYear()->addMonths($grattaMonth - 1)->startOfMonth()->addDays($day - 1);
-                $key = $date->format('Y-m-d') . '-' . $descrizione;
-                if (!$date->isFuture() && !isset($usedDates[$key])) {
+                $key = $date->format('Y-m-d').'-'.$descrizione;
+                if (! $date->isFuture() && ! isset($usedDates[$key])) {
                     $usedDates[$key] = true;
                     Entrata::factory()
                         ->grattaEVinci()
@@ -144,4 +159,3 @@ class EntrateDBSeeder extends Seeder
         });
     }
 }
-

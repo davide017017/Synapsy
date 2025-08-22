@@ -2,15 +2,15 @@
 
 namespace Modules\Categories\Database\Seeders;
 
+use App\Traits\LogsSeederOutput;
+use App\Traits\TruncatesTable;
 use Illuminate\Database\Seeder;
 use Modules\Categories\Models\Category;
 use Modules\User\Models\User;
-use App\Traits\TruncatesTable;
-use App\Traits\LogsSeederOutput;
 
 class CategoriesDBSeeder extends Seeder
 {
-    use TruncatesTable, LogsSeederOutput;
+    use LogsSeederOutput, TruncatesTable;
 
     public function run(): void
     {
@@ -26,20 +26,20 @@ class CategoriesDBSeeder extends Seeder
         // 📋 Categorie standard
         // =========================================================================
         $categorieStandard = [
-            'Alimentazione'     => 'spesa',
-            'Trasporti'         => 'spesa',
-            'Casa'              => 'spesa',
-            'Utenze'            => 'spesa',
-            'Svago'             => 'spesa',
-            'Salute'            => 'spesa',
-            'Istruzione'        => 'spesa',
-            'Viaggi'            => 'spesa',
-            'Regali'            => 'spesa',
-            'Altro (Spesa)'     => 'spesa',
-            'Stipendio'         => 'entrata',
-            'Investimenti'      => 'entrata',
-            'Regalo'            => 'entrata',
-            'Altro (Entrata)'   => 'entrata',
+            'Alimentazione' => 'spesa',
+            'Trasporti' => 'spesa',
+            'Casa' => 'spesa',
+            'Utenze' => 'spesa',
+            'Svago' => 'spesa',
+            'Salute' => 'spesa',
+            'Istruzione' => 'spesa',
+            'Viaggi' => 'spesa',
+            'Regali' => 'spesa',
+            'Altro (Spesa)' => 'spesa',
+            'Stipendio' => 'entrata',
+            'Investimenti' => 'entrata',
+            'Regalo' => 'entrata',
+            'Altro (Entrata)' => 'entrata',
         ];
 
         // =========================================================================
@@ -47,21 +47,21 @@ class CategoriesDBSeeder extends Seeder
         // =========================================================================
         $categoryMeta = [
             // Spesa
-            'Alimentazione'   => ['color' => '#e17055', 'icon' => 'GiKnifeFork'],
-            'Trasporti'       => ['color' => '#2980b9', 'icon' => 'FaCar'],
-            'Casa'            => ['color' => '#92400e', 'icon' => 'FiHome'],
-            'Utenze'          => ['color' => '#00cec9', 'icon' => 'MdOutlineLightbulb'],
-            'Svago'           => ['color' => '#e84393', 'icon' => 'FaGamepad'],
-            'Salute'          => ['color' => '#8a1022', 'icon' => 'MdLocalHospital'],
-            'Istruzione'      => ['color' => '#262693', 'icon' => 'PiStudentBold'],
-            'Viaggi'          => ['color' => '#f39c12', 'icon' => 'FaPlane'],
-            'Regali'          => ['color' => '#fd79a8', 'icon' => 'FaGift'],
-            'Altro (Spesa)'   => ['color' => '#988282', 'icon' => 'FaEllipsisH'],
+            'Alimentazione' => ['color' => '#e17055', 'icon' => 'GiKnifeFork'],
+            'Trasporti' => ['color' => '#2980b9', 'icon' => 'FaCar'],
+            'Casa' => ['color' => '#92400e', 'icon' => 'FiHome'],
+            'Utenze' => ['color' => '#00cec9', 'icon' => 'MdOutlineLightbulb'],
+            'Svago' => ['color' => '#e84393', 'icon' => 'FaGamepad'],
+            'Salute' => ['color' => '#8a1022', 'icon' => 'MdLocalHospital'],
+            'Istruzione' => ['color' => '#262693', 'icon' => 'PiStudentBold'],
+            'Viaggi' => ['color' => '#f39c12', 'icon' => 'FaPlane'],
+            'Regali' => ['color' => '#fd79a8', 'icon' => 'FaGift'],
+            'Altro (Spesa)' => ['color' => '#988282', 'icon' => 'FaEllipsisH'],
 
             // Entrata
-            'Stipendio'       => ['color' => '#27ae60', 'icon' => 'FaMoneyBillWave'],
-            'Investimenti'    => ['color' => '#1e583b', 'icon' => 'FaChartLine'],
-            'Regalo'          => ['color' => '#888848', 'icon' => 'FaGift'],
+            'Stipendio' => ['color' => '#27ae60', 'icon' => 'FaMoneyBillWave'],
+            'Investimenti' => ['color' => '#1e583b', 'icon' => 'FaChartLine'],
+            'Regalo' => ['color' => '#888848', 'icon' => 'FaGift'],
             'Altro (Entrata)' => ['color' => '#4e5a54', 'icon' => 'FaEllipsisH'],
         ];
 
@@ -73,9 +73,9 @@ class CategoriesDBSeeder extends Seeder
             $this->logWarning('Categories', 'Nessun utente trovato. Creazione utente seed...', '⚠️');
             $utenti = collect([
                 User::factory()->create([
-                    'email'    => 'seed@example.com',
+                    'email' => 'seed@example.com',
                     'password' => bcrypt('password123'),
-                ])
+                ]),
             ]);
         }
 
@@ -86,11 +86,11 @@ class CategoriesDBSeeder extends Seeder
             foreach ($categorieStandard as $nomeCategoria => $tipo) {
                 $meta = $categoryMeta[$nomeCategoria] ?? ['color' => null, 'icon' => null];
                 Category::factory()->create([
-                    'name'    => $nomeCategoria,
-                    'type'    => $tipo,
+                    'name' => $nomeCategoria,
+                    'type' => $tipo,
                     'user_id' => $utente->id,
-                    'color'   => $meta['color'],
-                    'icon'    => $meta['icon'],
+                    'color' => $meta['color'],
+                    'icon' => $meta['icon'],
                 ]);
             }
             $this->logInfo('Categories', "Categorie standard generate per utente ID {$utente->id}", '➕');
@@ -103,4 +103,3 @@ class CategoriesDBSeeder extends Seeder
         $this->logNewLine();
     }
 }
-

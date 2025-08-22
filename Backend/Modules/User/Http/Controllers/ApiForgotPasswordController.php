@@ -6,8 +6,6 @@ use App\Helpers\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Modules\User\Models\User;
-use Modules\User\Notifications\CustomResetPassword;
 
 class ApiForgotPasswordController extends Controller
 {
@@ -23,4 +21,3 @@ class ApiForgotPasswordController extends Controller
         return ApiResponse::success("Se l'email esiste riceverai un messaggio con le istruzioni per il reset");
     }
 }
-

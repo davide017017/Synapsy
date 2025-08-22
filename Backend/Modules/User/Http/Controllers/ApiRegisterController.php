@@ -2,10 +2,10 @@
 
 namespace Modules\User\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
-use Modules\User\Models\User;
-use Modules\User\Http\Requests\Auth\RegisterRequest;
 use App\Helpers\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Modules\User\Http\Requests\Auth\RegisterRequest;
+use Modules\User\Models\User;
 
 class ApiRegisterController extends Controller
 {

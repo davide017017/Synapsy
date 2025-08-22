@@ -5,8 +5,8 @@ namespace Modules\FinancialOverview\Tests\Feature;
 use Modules\Categories\Models\Category;
 use Modules\Entrate\Models\Entrata;
 use Modules\Spese\Models\Spesa;
-use Tests\AuthenticatedTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\AuthenticatedTestCase;
 
 class TransactionsCategoryTest extends AuthenticatedTestCase
 {
@@ -15,15 +15,15 @@ class TransactionsCategoryTest extends AuthenticatedTestCase
     {
         $incomeCat = Category::factory()->create([
             'user_id' => $this->user->id,
-            'type'    => 'entrata',
-            'color'   => '#fff',
-            'icon'    => 'FaMoneyBillWave',
+            'type' => 'entrata',
+            'color' => '#fff',
+            'icon' => 'FaMoneyBillWave',
         ]);
 
         $expenseCat = Category::factory()->expense()->create([
             'user_id' => $this->user->id,
-            'color'   => '#000',
-            'icon'    => 'FaCar',
+            'color' => '#000',
+            'icon' => 'FaCar',
         ]);
 
         Entrata::factory()->forUser($this->user)->forCategory($incomeCat)->create();
@@ -42,5 +42,3 @@ class TransactionsCategoryTest extends AuthenticatedTestCase
         }
     }
 }
-
-

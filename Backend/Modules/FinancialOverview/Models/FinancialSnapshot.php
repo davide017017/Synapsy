@@ -2,9 +2,9 @@
 
 namespace Modules\FinancialOverview\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\User\Models\User;
 
 /**
@@ -20,7 +20,6 @@ use Modules\User\Models\User;
  * @property float $balance
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
  * @property-read User $user
  *
  * @method static \Modules\FinancialOverview\Database\Factories\FinancialSnapshotFactory factory($count = null, $state = [])
@@ -61,10 +60,10 @@ class FinancialSnapshot extends Model
     {
         return [
             'period_start_date' => 'date',
-            'period_end_date'   => 'date',
-            'total_income'      => 'float',
-            'total_expense'     => 'float',
-            'balance'           => 'float',
+            'period_end_date' => 'date',
+            'total_income' => 'float',
+            'total_expense' => 'float',
+            'balance' => 'float',
         ];
     }
 
@@ -86,4 +85,3 @@ class FinancialSnapshot extends Model
         return \Modules\FinancialOverview\Database\Factories\FinancialSnapshotFactory::new();
     }
 }
-

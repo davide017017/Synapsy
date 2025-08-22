@@ -66,6 +66,7 @@ class Entrata extends Model
     {
         return [
             'amount' => 'float',
+            'amount' => 'decimal:2',
             'date' => 'date',
         ];
     }

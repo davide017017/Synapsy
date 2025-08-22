@@ -28,7 +28,7 @@ class StoreCategoryRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('categories')->where(fn($q) => $q->where('user_id', $userId)),
+                Rule::unique('categories')->where(fn ($q) => $q->where('user_id', $userId)),
             ],
             'type' => [
                 'required',
@@ -36,7 +36,7 @@ class StoreCategoryRequest extends FormRequest
                 Rule::in(['entrata', 'spesa']),
             ],
             'color' => ['nullable', 'string', 'max:32'],
-            'icon'  => ['nullable', 'string', 'max:64'],
+            'icon' => ['nullable', 'string', 'max:64'],
         ];
     }
 
@@ -47,12 +47,11 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name.required' => 'Il nome della categoria è obbligatorio.',
-            'name.unique'   => 'Hai già una categoria con questo nome.',
+            'name.unique' => 'Hai già una categoria con questo nome.',
             'type.required' => 'Il tipo della categoria è obbligatorio.',
-            'type.in'       => 'Il tipo deve essere "entrata" o "spesa".',
-            'color.string'  => 'Il colore deve essere una stringa valida.',
-            'icon.string'   => "L'icona deve essere una stringa valida.",
+            'type.in' => 'Il tipo deve essere "entrata" o "spesa".',
+            'color.string' => 'Il colore deve essere una stringa valida.',
+            'icon.string' => "L'icona deve essere una stringa valida.",
         ];
     }
 }
-

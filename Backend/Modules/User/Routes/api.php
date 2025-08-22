@@ -1,17 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-
-use Modules\User\Http\Controllers\UserController;
-use Modules\User\Http\Controllers\ProfileController;
-use Modules\User\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Route;
+use Modules\User\Http\Controllers\ApiForgotPasswordController;
 use Modules\User\Http\Controllers\ApiLoginController;
 use Modules\User\Http\Controllers\ApiRegisterController;
-use Modules\User\Http\Controllers\VerifyPendingEmailController;
-use Modules\User\Http\Controllers\ApiVerifyEmailController;
-use Modules\User\Http\Controllers\ApiForgotPasswordController;
 use Modules\User\Http\Controllers\ApiResetPasswordController;
+use Modules\User\Http\Controllers\ApiVerifyEmailController;
+use Modules\User\Http\Controllers\DashboardController;
+use Modules\User\Http\Controllers\ProfileController;
+use Modules\User\Http\Controllers\UserController;
+use Modules\User\Http\Controllers\VerifyPendingEmailController;
 
 Route::prefix('v1')->group(function () {
     // =========================================================================
@@ -37,7 +36,6 @@ Route::prefix('v1')->group(function () {
         ]);
     });
 
-
     // =========================================================================
     // 🔐 Auth / Registrazione
     // =========================================================================
@@ -54,7 +52,7 @@ Route::prefix('v1')->group(function () {
     // =========================================================================
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [ApiLoginController::class, 'logout']);
-        Route::get('me', fn(Request $r) => $r->user())->name('me.show');
+        Route::get('me', fn (Request $r) => $r->user())->name('me.show');
         Route::middleware('block-demo-user')->group(function () {
             Route::apiResource('users', UserController::class)->names('users');
             Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');

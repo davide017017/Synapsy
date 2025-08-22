@@ -17,4 +17,3 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->name('api.financialoverview.index');
     // Puoi aggiungere qui altre rotte API (store, update, ecc) se servono
 });
-

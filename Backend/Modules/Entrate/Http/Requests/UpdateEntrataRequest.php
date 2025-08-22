@@ -25,8 +25,8 @@ class UpdateEntrataRequest extends FormRequest
 
         return [
             'description' => 'required|string|max:255',
-            'amount'      => 'required|numeric|between:0.01,999999.99',
-            'date'        => 'required|date',
+            'amount' => 'required|numeric|between:0.01,999999.99',
+            'date' => 'required|date',
 
             'category_id' => [
                 'nullable',
@@ -48,8 +48,7 @@ class UpdateEntrataRequest extends FormRequest
     {
         return [
             'category_id.required' => 'La categoria è obbligatoria.',
-            'category_id.exists'   => 'La categoria selezionata non è valida.',
+            'category_id.exists' => 'La categoria selezionata non è valida.',
         ];
     }
 }
-

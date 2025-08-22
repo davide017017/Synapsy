@@ -2,11 +2,11 @@
 
 namespace Modules\User\Http\Controllers\Auth;
 
-use Modules\User\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
+use Modules\User\Http\Controllers\Controller;
 
 class PasswordResetLinkController extends Controller
 {
@@ -42,4 +42,3 @@ class PasswordResetLinkController extends Controller
                         ->withErrors(['email' => __($status)]);
     }
 }
-

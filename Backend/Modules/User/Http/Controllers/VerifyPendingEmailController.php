@@ -2,10 +2,10 @@
 
 namespace Modules\User\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Helpers\ApiResponse;
-use Modules\User\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Modules\User\Models\User;
 
 class VerifyPendingEmailController extends Controller
 {
@@ -24,8 +24,8 @@ class VerifyPendingEmailController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
         $frontend = config('app.frontend_url', 'http://localhost:3000');
+
         return redirect()->to($frontend.'/login?verified=1&token='.$token);
 
     }
 }
-

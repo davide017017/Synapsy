@@ -25,8 +25,8 @@ class UpdateSpesaRequest extends FormRequest
 
         return [
             'description' => 'required|string|max:255',
-            'amount'      => 'required|numeric|between:0.01,999999.99',
-            'date'        => 'required|date',
+            'amount' => 'required|numeric|between:0.01,999999.99',
+            'date' => 'required|date',
             'category_id' => [
                 'nullable',
                 Rule::exists('categories', 'id')
@@ -46,13 +46,12 @@ class UpdateSpesaRequest extends FormRequest
     {
         return [
             'description.required' => 'La descrizione è obbligatoria.',
-            'amount.required'      => "L'importo è obbligatorio.",
-            'amount.numeric'       => "L'importo deve essere un numero.",
-            'amount.between'       => "L'importo deve essere compreso tra :min e :max.",
-            'date.required'        => 'La data è obbligatoria.',
-            'date.date'            => 'La data non è valida.',
-            'category_id.exists'   => 'La categoria selezionata non è valida.',
+            'amount.required' => "L'importo è obbligatorio.",
+            'amount.numeric' => "L'importo deve essere un numero.",
+            'amount.between' => "L'importo deve essere compreso tra :min e :max.",
+            'date.required' => 'La data è obbligatoria.',
+            'date.date' => 'La data non è valida.',
+            'category_id.exists' => 'La categoria selezionata non è valida.',
         ];
     }
 }
-

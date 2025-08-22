@@ -2,15 +2,15 @@
 
 namespace Modules\FinancialOverview\Tests\Feature;
 
-use Tests\TestCase;
-use Modules\User\Models\User;
-use Modules\Entrate\Models\Entrata;
-use Modules\Spese\Models\Spesa;
-use Modules\FinancialOverview\Models\FinancialSnapshot;
-use Modules\FinancialOverview\Services\FinancialOverviewService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Modules\Entrate\Models\Entrata;
+use Modules\FinancialOverview\Models\FinancialSnapshot;
+use Modules\FinancialOverview\Services\FinancialOverviewService;
+use Modules\Spese\Models\Spesa;
+use Modules\User\Models\User;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class SnapshotGenerationTest extends TestCase
 {
@@ -40,10 +40,10 @@ class SnapshotGenerationTest extends TestCase
         $this->service->snapshotMonthly($user, $date);
 
         $this->assertDatabaseHas('financial_snapshots', [
-            'user_id'           => $user->id,
-            'period_type'       => 'monthly',
+            'user_id' => $user->id,
+            'period_type' => 'monthly',
             'period_start_date' => '2025-05-01',
-            'balance'           => 700.00,
+            'balance' => 700.00,
         ]);
     }
 
@@ -61,4 +61,3 @@ class SnapshotGenerationTest extends TestCase
         $this->assertEquals(1, FinancialSnapshot::count());
     }
 }
-

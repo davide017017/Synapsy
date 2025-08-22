@@ -2,16 +2,16 @@
 
 namespace Modules\RecurringOperations\Jobs;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\Entrate\Models\Entrata;
+use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\Spese\Models\Spesa;
-use Carbon\Carbon;
 
 /**
  * Job per la generazione delle occorrenze da una regola ricorrente.
@@ -55,8 +55,8 @@ class ProcessRecurringOperation implements ShouldQueue
             try {
                 match ($rule->type) {
                     'entrata' => $this->createEntrata($rule, $currentDate),
-                    'spesa'   => $this->createSpesa($rule, $currentDate),
-                    default   => Log::error("⚠️ Tipo regola non valido: {$rule->type} (ID: {$rule->id})"),
+                    'spesa' => $this->createSpesa($rule, $currentDate),
+                    default => Log::error("⚠️ Tipo regola non valido: {$rule->type} (ID: {$rule->id})"),
                 };
             } catch (\Throwable $e) {
                 Log::error("❌ Errore nella generazione per regola ID {$rule->id}, data {$currentDate->toDateString()}: {$e->getMessage()}");
@@ -85,12 +85,12 @@ class ProcessRecurringOperation implements ShouldQueue
     protected function createEntrata(RecurringOperation $rule, Carbon $date): void
     {
         Entrata::create([
-            'user_id'     => $rule->user_id,
-            'amount'      => $rule->amount,
-            'date'        => $date,
+            'user_id' => $rule->user_id,
+            'amount' => $rule->amount,
+            'date' => $date,
             'description' => $rule->description,
             'category_id' => $rule->category_id,
-            'notes'       => "Generata da regola ricorrente ID: {$rule->id}" . ($rule->notes ? " - {$rule->notes}" : ''),
+            'notes' => "Generata da regola ricorrente ID: {$rule->id}".($rule->notes ? " - {$rule->notes}" : ''),
         ]);
 
         Log::info("Entrata generata da regola ID {$rule->id} per {$date->toDateString()}");
@@ -102,12 +102,12 @@ class ProcessRecurringOperation implements ShouldQueue
     protected function createSpesa(RecurringOperation $rule, Carbon $date): void
     {
         Spesa::create([
-            'user_id'     => $rule->user_id,
-            'amount'      => $rule->amount,
-            'date'        => $date,
+            'user_id' => $rule->user_id,
+            'amount' => $rule->amount,
+            'date' => $date,
             'description' => $rule->description,
             'category_id' => $rule->category_id,
-            'notes'       => "Generata da regola ricorrente ID: {$rule->id}" . ($rule->notes ? " - {$rule->notes}" : ''),
+            'notes' => "Generata da regola ricorrente ID: {$rule->id}".($rule->notes ? " - {$rule->notes}" : ''),
         ]);
 
         Log::info("Spesa generata da regola ID {$rule->id} per {$date->toDateString()}");
@@ -119,14 +119,13 @@ class ProcessRecurringOperation implements ShouldQueue
     protected function calculateNextOccurrence(Carbon $date, string $frequency, int $interval): Carbon
     {
         $nextDate = match ($frequency) {
-            'daily'    => $date->copy()->addDays($interval),
-            'weekly'   => $date->copy()->addWeeks($interval),
-            'monthly'  => $date->copy()->addMonthsNoOverflow($interval),
+            'daily' => $date->copy()->addDays($interval),
+            'weekly' => $date->copy()->addWeeks($interval),
+            'monthly' => $date->copy()->addMonthsNoOverflow($interval),
             'annually' => $date->copy()->addYears($interval),
-            default    => throw new \InvalidArgumentException("Frequenza non valida: {$frequency}"),
+            default => throw new \InvalidArgumentException("Frequenza non valida: {$frequency}"),
         };
 
         return $nextDate->startOfDay();
     }
 }
-

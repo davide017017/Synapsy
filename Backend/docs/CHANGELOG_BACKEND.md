@@ -1,6 +1,18 @@
+<!-- ─────────────────────────────────────────────────────────────────────────────
+  Documento: CHANGELOG_BACKEND.md
+  Scopo: registro modifiche backend (formato sintetico)
+────────────────────────────────────────────────────────────────────────────── -->
+
 # Backend Changelog
 
 ## [Unreleased]
-- Added database documentation (ERD, tables overview, renaming plan, constraints, unused tables).
-- Introduced local query scopes and PSR-12 cleanup for Category, Entrata, Spesa models.
-- Added eager loading in EntrateService and SpeseService to mitigate N+1 queries.
+
+-   Docs riorganizzate (alias per Auth e Data Models; guida migrazioni in `db/`).
+-   ERD/relazioni consolidate sotto `docs/db/`.
+-   Migliorie commenti e coerenza sezioni.
+
+## 2025-08-22
+
+-   Aggiunta documentazione DB (ERD, overview, renaming plan, constraints, unused).
+-   Local scopes e cleanup PSR-12 in Category/Entrata/Spesa.
+-   Eager loading in servizi per ridurre N+1.

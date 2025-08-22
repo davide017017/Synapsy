@@ -2,16 +2,15 @@
 
 namespace Modules\User\Http\Controllers;
 
+use ApiResponse;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Modules\User\Http\Requests\ProfileUpdateRequest;
-use ApiResponse;
 use Illuminate\Support\Facades\Storage;
+use Modules\User\Http\Requests\ProfileUpdateRequest;
 
 class ProfileController extends Controller
 {
@@ -41,22 +40,21 @@ class ProfileController extends Controller
         $avatarUrl = null;
         $avatarPath = $user->avatar;
         if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-            $avatarUrl = asset('storage/' . $avatarPath);
+            $avatarUrl = asset('storage/'.$avatarPath);
         }
 
         return ApiResponse::success('Profilo corrente.', [
             'id' => $user->id,
-            'name'        => $user->name,
-            'surname'     => $user->surname,
-            'username'    => $user->username,
-            'email'       => $user->email,
+            'name' => $user->name,
+            'surname' => $user->surname,
+            'username' => $user->username,
+            'email' => $user->email,
             'pending_email' => $user->pending_email,
-            'theme'       => $user->theme,
-            'avatar'      => $avatarPath,
-            'avatar_url'  => $avatarUrl,
+            'theme' => $user->theme,
+            'avatar' => $avatarPath,
+            'avatar_url' => $avatarUrl,
         ]);
     }
-
 
     // ============================
     // Update - Update Profile Info
@@ -112,20 +110,20 @@ class ProfileController extends Controller
         $avatarUrl = null;
         $avatarPath = $user->avatar;
         if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-            $avatarUrl = asset('storage/' . $avatarPath);
+            $avatarUrl = asset('storage/'.$avatarPath);
         }
 
         return $request->wantsJson()
             ? ApiResponse::success('Profilo aggiornato.', [
 
-                'id'         => $user->id,
-                'name'       => $user->name,
-                'surname'    => $user->surname,
-                'username'   => $user->username,
-                'email'      => $user->email,
+                'id' => $user->id,
+                'name' => $user->name,
+                'surname' => $user->surname,
+                'username' => $user->username,
+                'email' => $user->email,
                 'pending_email' => $user->pending_email,
-                'theme'      => $user->theme,
-                'avatar'     => $avatarPath,
+                'theme' => $user->theme,
+                'avatar' => $avatarPath,
                 'avatar_url' => $avatarUrl,
             ])
             : Redirect::route('profile.edit')->with('status', 'profile-updated');
@@ -147,19 +145,19 @@ class ProfileController extends Controller
         $avatarUrl = null;
         $avatarPath = $user->avatar;
         if ($avatarPath && Storage::disk('public')->exists($avatarPath)) {
-            $avatarUrl = asset('storage/' . $avatarPath);
+            $avatarUrl = asset('storage/'.$avatarPath);
         }
 
         return ApiResponse::success('Richiesta annullata.', [
-            'id'            => $user->id,
-            'name'          => $user->name,
-            'surname'       => $user->surname,
-            'username'      => $user->username,
-            'email'         => $user->email,
+            'id' => $user->id,
+            'name' => $user->name,
+            'surname' => $user->surname,
+            'username' => $user->username,
+            'email' => $user->email,
             'pending_email' => $user->pending_email,
-            'theme'         => $user->theme,
-            'avatar'        => $avatarPath,
-            'avatar_url'    => $avatarUrl,
+            'theme' => $user->theme,
+            'avatar' => $avatarPath,
+            'avatar_url' => $avatarUrl,
         ]);
     }
 
@@ -203,4 +201,3 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 }
-

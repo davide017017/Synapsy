@@ -34,7 +34,7 @@ class LoginRequest extends FormRequest
      * Regole di validazione per il login.
      *
      * Puoi accettare anche username (scommenta e modifica in base alle tue rotte/API):
-     * 
+     *
      * return [
      *   'login' => ['required', 'string'], // email **o** username
      *   'password' => ['required', 'string'],
@@ -43,7 +43,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email'    => ['required', 'string', 'email'],
+            'email' => ['required', 'string', 'email'],
             // 'login' => ['required', 'string'], // se vuoi login anche con username/email
             'password' => ['required', 'string'],
         ];
@@ -120,10 +120,9 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         // --- Variante email ---
-        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
+        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
 
         // --- Variante login (username o email) ---
         // return Str::transliterate(Str::lower($this->string('login')) . '|' . $this->ip());
     }
 }
-

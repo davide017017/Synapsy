@@ -10,7 +10,7 @@ trait LogsSeederOutput
 
     protected function initOutput(): void
     {
-        $this->out = new ConsoleOutput();
+        $this->out = new ConsoleOutput;
     }
 
     protected function logInfo(string $context, string $message, string $emoji = 'ℹ️'): void
@@ -38,4 +38,3 @@ trait LogsSeederOutput
         $this->out->writeln('');
     }
 }
-

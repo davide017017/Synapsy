@@ -3,14 +3,14 @@
 namespace Modules\Spese\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Modules\Spese\Models\Spesa;
-use Modules\Spese\Services\SpeseService;
 use Modules\Spese\Http\Requests\StoreSpesaRequest;
 use Modules\Spese\Http\Requests\UpdateSpesaRequest;
+use Modules\Spese\Models\Spesa;
+use Modules\Spese\Services\SpeseService;
 
 // ─────────────────────────────────────────────
 // Controller unico per Web (Blade) + API (JSON)
@@ -58,6 +58,7 @@ class SpeseController extends Controller
     public function createWeb(Request $request): View
     {
         $categories = $this->service->getCategoriesForUser($request->user());
+
         return view('spese::spese.create', compact('categories'));
     }
 
@@ -65,6 +66,7 @@ class SpeseController extends Controller
     public function editWeb(Request $request, Spesa $spesa): View
     {
         $categories = $this->service->getCategoriesForUser($request->user());
+
         return view('spese::spese.edit', compact('spesa', 'categories'));
     }
 
@@ -78,6 +80,7 @@ class SpeseController extends Controller
     public function storeWeb(StoreSpesaRequest $request): RedirectResponse
     {
         $spesa = $this->service->createForUser($request->validated(), $request->user());
+
         return redirect()->route('spese.web.index')->with('status', 'Spesa aggiunta con successo!');
     }
 
@@ -85,6 +88,7 @@ class SpeseController extends Controller
     public function updateWeb(UpdateSpesaRequest $request, Spesa $spesa): RedirectResponse
     {
         $this->service->update($spesa, $request->validated());
+
         return redirect()->route('spese.web.index')->with('status', 'Spesa aggiornata con successo!');
     }
 
@@ -92,6 +96,7 @@ class SpeseController extends Controller
     public function destroyWeb(Request $request, Spesa $spesa): RedirectResponse
     {
         $this->service->delete($spesa);
+
         return redirect()->route('spese.web.index')->with('status', 'Spesa eliminata con successo!');
     }
 
@@ -104,36 +109,39 @@ class SpeseController extends Controller
     {
         // ── valida query ─────────────────────────────────────────────────────
         $validated = $request->validate([
-            'start_date'  => 'date|nullable',
-            'end_date'    => 'date|nullable',
+            'start_date' => 'date|nullable',
+            'end_date' => 'date|nullable',
             'description' => 'string|nullable',
             'category_id' => 'integer|nullable',
-            'sort'        => 'string|nullable',   // es: "-date,amount"
-            'page'        => 'integer|min:1|nullable',
-            'per_page'    => 'integer|min:1|max:100|nullable',
+            'sort' => 'string|nullable',   // es: "-date,amount"
+            'page' => 'integer|min:1|nullable',
+            'per_page' => 'integer|min:1|max:100|nullable',
         ]);
         // ── compat sort legacy → sort string ────────────────────────────────
         $sort = $validated['sort'] ?? null;
         if ($sort === null) {
             $legacyCol = $request->query('sort_by');
             $legacyDir = $request->query('sort_direction', 'desc');
-            if ($legacyCol) $sort = ($legacyDir === 'desc' ? '-' : '') . $legacyCol;
+            if ($legacyCol) {
+                $sort = ($legacyDir === 'desc' ? '-' : '').$legacyCol;
+            }
         }
-        $sort    = $sort ?: '-date';
-        $page    = (int)($validated['page'] ?? 1);
-        $perPage = (int)($validated['per_page'] ?? 50);
+        $sort = $sort ?: '-date';
+        $page = (int) ($validated['page'] ?? 1);
+        $perPage = (int) ($validated['per_page'] ?? 50);
 
         // ── filtri ──────────────────────────────────────────────────────────
         $filters = [
-            'start_date'  => $validated['start_date']  ?? null,
-            'end_date'    => $validated['end_date']    ?? null,
+            'start_date' => $validated['start_date'] ?? null,
+            'end_date' => $validated['end_date'] ?? null,
             'description' => $validated['description'] ?? null,
             'category_id' => $validated['category_id'] ?? null,
         ];
         // ── chiama service paginata (sort whitelist inside) ─────────────────
         $spese = $this->service->listForUserPaginated($request->user(), $filters, $sort, $page, $perPage);
         // ── compat legacy: se non passi page/per_page → lista flat ──────────
-        $legacy = !$request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
+        $legacy = ! $request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
+
         return response()->json($legacy ? $spese->items() : $spese);
     }
 
@@ -147,6 +155,7 @@ class SpeseController extends Controller
     public function storeApi(StoreSpesaRequest $request): JsonResponse
     {
         $spesa = $this->service->createForUser($request->validated(), $request->user());
+
         return response()->json($spesa, 201);
     }
 
@@ -154,6 +163,7 @@ class SpeseController extends Controller
     public function updateApi(UpdateSpesaRequest $request, Spesa $spesa): JsonResponse
     {
         $this->service->update($spesa, $request->validated());
+
         return response()->json($spesa);
     }
 
@@ -161,15 +171,13 @@ class SpeseController extends Controller
     public function destroyApi(Request $request, Spesa $spesa): JsonResponse
     {
         $this->service->delete($spesa);
+
         return response()->json(['success' => true], 204);
     }
 
     // PATCH /api/v1/spese/move-category
     /**
      * Move all expenses from one category to another.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function moveCategory(Request $request): JsonResponse
     {

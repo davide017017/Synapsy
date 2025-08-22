@@ -10,4 +10,3 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::get('recurring-operations/next-occurrences', [RecurringOperationController::class, 'getNextOccurrences'])
         ->name('recurring-operations.next-occurrences');
 });
-

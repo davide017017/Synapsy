@@ -16,4 +16,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/financial-overview', [FinancialOverviewController::class, 'indexWeb'])
         ->name('financial-overview.index');
 });
-

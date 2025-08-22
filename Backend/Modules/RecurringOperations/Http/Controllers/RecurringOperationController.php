@@ -2,17 +2,17 @@
 
 namespace Modules\RecurringOperations\Http\Controllers;
 
+use ApiResponse;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Modules\RecurringOperations\Models\RecurringOperation;
-use Modules\RecurringOperations\Services\RecurringOperationService;
-use Modules\RecurringOperations\Jobs\ProcessRecurringOperation;
-use ApiResponse;
 use Modules\RecurringOperations\Http\Requests\StoreRecurringOperationRequest;
 use Modules\RecurringOperations\Http\Requests\UpdateRecurringOperationRequest;
+use Modules\RecurringOperations\Jobs\ProcessRecurringOperation;
+use Modules\RecurringOperations\Models\RecurringOperation;
+use Modules\RecurringOperations\Services\RecurringOperationService;
 
 class RecurringOperationController extends Controller
 {
@@ -50,7 +50,7 @@ class RecurringOperationController extends Controller
             'type',
             'start_date',
             'next_occurrence_date',
-            'is_active'
+            'is_active',
         ]) ? $request->query('sort_by') : 'next_occurrence_date';
 
         $sortDirection = in_array($request->query('sort_direction'), ['asc', 'desc'])
@@ -91,7 +91,7 @@ class RecurringOperationController extends Controller
 
         $operationType = $request->query('type', 'entrata'); // fallback su 'entrata' se non specificato
 
-        if (!in_array($operationType, ['entrata', 'spesa'])) {
+        if (! in_array($operationType, ['entrata', 'spesa'])) {
             abort(404);
         }
 
@@ -173,14 +173,11 @@ class RecurringOperationController extends Controller
             ? ApiResponse::success('Operazione eliminata.', null, 204)
             : redirect()->route('recurring-operations.index')->with('status', 'Operazione ricorrente eliminata con successo!');
     }
+
     // PATCH /api/v1/recurring-operations/move-category
     /**
      * Move recurring operations from one category to another.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-
     public function moveCategory(Request $request): JsonResponse
     {
         $request->validate([
@@ -194,4 +191,3 @@ class RecurringOperationController extends Controller
         return response()->json(['status' => 'ok']);
     }
 }
-

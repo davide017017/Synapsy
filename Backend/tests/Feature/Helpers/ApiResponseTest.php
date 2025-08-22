@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Helpers;
 
-use Tests\TestCase;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class ApiResponseTest extends TestCase
 {
@@ -23,7 +23,7 @@ class ApiResponseTest extends TestCase
         $this->assertEquals([
             'success' => true,
             'message' => 'OK',
-            'data'    => null,
+            'data' => null,
         ], $response->getData(true));
     }
 
@@ -40,7 +40,7 @@ class ApiResponseTest extends TestCase
         $this->assertEquals([
             'success' => true,
             'message' => 'Tutto a posto',
-            'data'    => ['foo' => 'bar'],
+            'data' => ['foo' => 'bar'],
         ], $response->getData(true));
     }
 
@@ -57,7 +57,7 @@ class ApiResponseTest extends TestCase
         $this->assertEquals([
             'success' => false,
             'message' => 'Errore',
-            'errors'  => null,
+            'errors' => null,
         ], $response->getData(true));
     }
 
@@ -74,8 +74,7 @@ class ApiResponseTest extends TestCase
         $this->assertEquals([
             'success' => false,
             'message' => 'Errore grave',
-            'errors'  => ['campo' => 'obbligatorio'],
+            'errors' => ['campo' => 'obbligatorio'],
         ], $response->getData(true));
     }
 }
-

@@ -2,8 +2,8 @@
 
 namespace Modules\RecurringOperations\Observers;
 
-use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\AuditTrail\Services\AuditTrailService;
+use Modules\RecurringOperations\Models\RecurringOperation;
 
 // =====================================
 // Observer: traccia tutte le modifiche

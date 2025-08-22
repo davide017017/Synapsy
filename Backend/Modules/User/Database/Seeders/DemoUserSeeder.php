@@ -2,11 +2,11 @@
 
 namespace Modules\User\Database\Seeders;
 
+use App\Traits\LogsSeederOutput;
 use Illuminate\Database\Seeder;
-use Modules\User\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Traits\LogsSeederOutput;
+use Modules\User\Models\User;
 
 class DemoUserSeeder extends Seeder
 {
@@ -24,15 +24,15 @@ class DemoUserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'demo@synapsy.app'],
             [
-                'name'              => 'Demo',
-                'surname'           => 'User',
-                'username'          => 'demo',
-                'password'          => Hash::make('demo'),
-                'theme'             => 'dark',
-                'avatar'            => 'avatar_12_pink_beta.webp',
-                'is_admin'          => false,
+                'name' => 'Demo',
+                'surname' => 'User',
+                'username' => 'demo',
+                'password' => Hash::make('demo'),
+                'theme' => 'dark',
+                'avatar' => 'avatar_12_pink_beta.webp',
+                'is_admin' => false,
                 'email_verified_at' => now(),
-                'remember_token'    => Str::random(10),
+                'remember_token' => Str::random(10),
                 'has_accepted_terms' => true,
             ]
         );

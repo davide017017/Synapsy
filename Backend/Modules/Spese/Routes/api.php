@@ -14,4 +14,3 @@ Route::middleware(['auth:sanctum'])
         Route::patch('/spese/move-category', [SpeseController::class, 'moveCategory']);
         Route::get('spese/next-occurrences', [SpeseController::class, 'getNextOccurrences']);
     });
-

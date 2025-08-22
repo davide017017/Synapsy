@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Auth;
 
-use Modules\User\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Modules\User\Models\User;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
@@ -37,7 +37,7 @@ class PasswordResetTest extends TestCase
         $this->withSession(['_token' => 'test_csrf_token'])
             ->post('/forgot-password', [
                 '_token' => 'test_csrf_token',
-                'email'  => $user->email,
+                'email' => $user->email,
             ]);
 
         Notification::assertSentTo($user, ResetPassword::class);
@@ -56,12 +56,13 @@ class PasswordResetTest extends TestCase
         $this->withSession(['_token' => 'test_csrf_token'])
             ->post('/forgot-password', [
                 '_token' => 'test_csrf_token',
-                'email'  => $user->email,
+                'email' => $user->email,
             ]);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-            $response = $this->get('/reset-password/' . $notification->token);
+            $response = $this->get('/reset-password/'.$notification->token);
             $response->assertStatus(200);
+
             return true;
         });
     }
@@ -81,17 +82,17 @@ class PasswordResetTest extends TestCase
         $this->withSession(['_token' => 'test_csrf_token'])
             ->post('/forgot-password', [
                 '_token' => 'test_csrf_token',
-                'email'  => $user->email,
+                'email' => $user->email,
             ]);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
             $response = $this
                 ->withSession(['_token' => 'test_csrf_token'])
                 ->post('/reset-password', [
-                    '_token'                 => 'test_csrf_token',
-                    'token'                  => $notification->token,
-                    'email'                  => $user->email,
-                    'password'               => 'new-password',
+                    '_token' => 'test_csrf_token',
+                    'token' => $notification->token,
+                    'email' => $user->email,
+                    'password' => 'new-password',
                     'password_confirmation' => 'new-password',
                 ]);
 
@@ -103,4 +104,3 @@ class PasswordResetTest extends TestCase
         });
     }
 }
-

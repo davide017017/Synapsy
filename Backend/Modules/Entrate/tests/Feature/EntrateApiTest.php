@@ -2,10 +2,10 @@
 
 namespace Modules\Entrate\Tests\Feature;
 
-use Modules\Entrate\Models\Entrata;
 use Modules\Categories\Models\Category;
-use Tests\AuthenticatedTestCase;
+use Modules\Entrate\Models\Entrata;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\AuthenticatedTestCase;
 
 class EntrateApiTest extends AuthenticatedTestCase
 {
@@ -35,9 +35,9 @@ class EntrateApiTest extends AuthenticatedTestCase
             ->create(['user_id' => $this->user->id]);
 
         $payload = [
-            'date'        => now()->toDateString(),
+            'date' => now()->toDateString(),
             'description' => 'Test Entrata',
-            'amount'      => 100.50,
+            'amount' => 100.50,
             'category_id' => $category->id,
         ];
 
@@ -71,8 +71,8 @@ class EntrateApiTest extends AuthenticatedTestCase
 
         $payload = [
             'description' => 'Entrata Aggiornata',
-            'amount'      => 200.00,
-            'date'        => now()->toDateString(),
+            'amount' => 200.00,
+            'date' => now()->toDateString(),
             'category_id' => $entrata->category_id,
         ];
 
@@ -96,4 +96,3 @@ class EntrateApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('entrate', ['id' => $entrata->id]);
     }
 }
-

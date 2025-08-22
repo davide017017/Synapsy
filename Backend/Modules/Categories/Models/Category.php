@@ -56,6 +56,8 @@ class Category extends Model
 
     protected $casts = [
         'type' => 'string',
+        'color' => 'string',
+        'icon' => 'string',
     ];
 
     // ============================

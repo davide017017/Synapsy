@@ -2,12 +2,12 @@
 
 namespace Modules\FinancialOverview\Tests\Unit;
 
-use Tests\TestCase;
-use Modules\User\Models\User;
-use Modules\FinancialOverview\Models\FinancialSnapshot;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Modules\FinancialOverview\Models\FinancialSnapshot;
+use Modules\User\Models\User;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class FinancialSnapshotTest extends TestCase
 {
@@ -23,21 +23,21 @@ class FinancialSnapshotTest extends TestCase
         $user = User::factory()->create();
 
         $snapshot = FinancialSnapshot::factory()->forUser($user)->create([
-            'period_type'       => 'monthly',
+            'period_type' => 'monthly',
             'period_start_date' => '2025-05-01',
-            'period_end_date'   => '2025-05-31',
-            'total_income'      => 1500.00,
-            'total_expense'     => 500.00,
-            'balance'           => 1000.00,
+            'period_end_date' => '2025-05-31',
+            'total_income' => 1500.00,
+            'total_expense' => 500.00,
+            'balance' => 1000.00,
         ]);
-        
+
         $this->assertIsFloat($snapshot->balance);
 
         $this->assertDatabaseHas('financial_snapshots', [
-            'user_id'           => $user->id,
-            'period_type'       => 'monthly',
+            'user_id' => $user->id,
+            'period_type' => 'monthly',
             'period_start_date' => '2025-05-01',
-            'balance'           => 1000.00,
+            'balance' => 1000.00,
         ]);
     }
 
@@ -50,9 +50,9 @@ class FinancialSnapshotTest extends TestCase
     {
         $snapshot = FinancialSnapshot::factory()->create([
             'period_start_date' => '2025-05-01',
-            'period_end_date'   => '2025-05-31',
-            'total_income'      => 1000.456,
-            'total_expense'     => 250.12,
+            'period_end_date' => '2025-05-31',
+            'total_income' => 1000.456,
+            'total_expense' => 250.12,
         ]);
 
         $this->assertInstanceOf(Carbon::class, $snapshot->period_start_date);
@@ -70,4 +70,3 @@ class FinancialSnapshotTest extends TestCase
         $this->assertInstanceOf(User::class, $snapshot->user);
     }
 }
-

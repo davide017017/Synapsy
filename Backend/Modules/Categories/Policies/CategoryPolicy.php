@@ -2,8 +2,8 @@
 
 namespace Modules\Categories\Policies;
 
-use Modules\User\Models\User;
 use Modules\Categories\Models\Category;
+use Modules\User\Models\User;
 
 /**
  * Policy per l'entità Category.
@@ -61,4 +61,3 @@ class CategoryPolicy
         return false;
     }
 }
-

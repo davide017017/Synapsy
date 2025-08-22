@@ -3,14 +3,14 @@
 namespace Modules\Entrate\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Modules\Entrate\Models\Entrata;
-use Modules\Entrate\Services\EntrateService;
 use Modules\Entrate\Http\Requests\StoreEntrataRequest;
 use Modules\Entrate\Http\Requests\UpdateEntrataRequest;
+use Modules\Entrate\Models\Entrata;
+use Modules\Entrate\Services\EntrateService;
 
 class EntrateController extends Controller
 {
@@ -55,6 +55,7 @@ class EntrateController extends Controller
     public function createWeb(Request $request): View
     {
         $categories = $this->service->getCategoriesForUser($request->user());
+
         return view('entrate::entrate.create', compact('categories'));
     }
 
@@ -62,6 +63,7 @@ class EntrateController extends Controller
     public function editWeb(Request $request, Entrata $entrata): View
     {
         $categories = $this->service->getCategoriesForUser($request->user());
+
         return view('entrate::entrate.edit', compact('entrata', 'categories'));
     }
 
@@ -80,36 +82,39 @@ class EntrateController extends Controller
     {
         // ── valida query ─────────────────────────────────────────────────────
         $validated = $request->validate([
-            'start_date'  => 'date|nullable',
-            'end_date'    => 'date|nullable',
+            'start_date' => 'date|nullable',
+            'end_date' => 'date|nullable',
             'description' => 'string|nullable',
             'category_id' => 'integer|nullable',
-            'sort'        => 'string|nullable',   // es: "-date,amount"
-            'page'        => 'integer|min:1|nullable',
-            'per_page'    => 'integer|min:1|max:100|nullable',
+            'sort' => 'string|nullable',   // es: "-date,amount"
+            'page' => 'integer|min:1|nullable',
+            'per_page' => 'integer|min:1|max:100|nullable',
         ]);
         // ── compat sort legacy → sort string ────────────────────────────────
         $sort = $validated['sort'] ?? null;
         if ($sort === null) {
             $legacyCol = $request->query('sort_by');
             $legacyDir = $request->query('sort_direction', 'desc');
-            if ($legacyCol) $sort = ($legacyDir === 'desc' ? '-' : '') . $legacyCol;
+            if ($legacyCol) {
+                $sort = ($legacyDir === 'desc' ? '-' : '').$legacyCol;
+            }
         }
-        $sort    = $sort ?: '-date';
-        $page    = (int)($validated['page'] ?? 1);
-        $perPage = (int)($validated['per_page'] ?? 50);
+        $sort = $sort ?: '-date';
+        $page = (int) ($validated['page'] ?? 1);
+        $perPage = (int) ($validated['per_page'] ?? 50);
 
         // ── filtri ──────────────────────────────────────────────────────────
         $filters = [
-            'start_date'  => $validated['start_date']  ?? null,
-            'end_date'    => $validated['end_date']    ?? null,
+            'start_date' => $validated['start_date'] ?? null,
+            'end_date' => $validated['end_date'] ?? null,
             'description' => $validated['description'] ?? null,
             'category_id' => $validated['category_id'] ?? null,
         ];
 
         $entrate = $this->service->listForUserPaginated($request->user(), $filters, $sort, $page, $perPage);
         // ── compat legacy: se non passi page/per_page → lista flat ──────────
-        $legacy = !$request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
+        $legacy = ! $request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
+
         return response()->json($legacy ? $entrate->items() : $entrate);
     }
 
@@ -123,6 +128,7 @@ class EntrateController extends Controller
     public function storeApi(StoreEntrataRequest $request): JsonResponse
     {
         $entrata = $this->service->createForUser($request->validated(), $request->user());
+
         return response()->json($entrata, 201);
     }
 
@@ -130,6 +136,7 @@ class EntrateController extends Controller
     public function updateApi(UpdateEntrataRequest $request, Entrata $entrata): JsonResponse
     {
         $this->service->update($entrata, $request->validated());
+
         return response()->json($entrata);
     }
 
@@ -137,17 +144,14 @@ class EntrateController extends Controller
     public function destroyApi(Request $request, Entrata $entrata): JsonResponse
     {
         $this->service->delete($entrata);
+
         return response()->json(['success' => true], 204);
     }
 
     // PATCH /api/v1/entrate/move-category
     /**
      * Move entries from one category to another.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-
     public function moveCategory(Request $request): JsonResponse
     {
         $request->validate([
@@ -169,6 +173,7 @@ class EntrateController extends Controller
     public function storeWeb(StoreEntrataRequest $request): RedirectResponse
     {
         $entrata = $this->service->createForUser($request->validated(), $request->user());
+
         return redirect()->route('entrate.web.index')->with('status', 'Entrata aggiunta con successo!');
     }
 
@@ -176,6 +181,7 @@ class EntrateController extends Controller
     public function updateWeb(UpdateEntrataRequest $request, Entrata $entrata): RedirectResponse
     {
         $this->service->update($entrata, $request->validated());
+
         return redirect()->route('entrate.web.index')->with('status', 'Entrata aggiornata con successo!');
     }
 
@@ -183,6 +189,7 @@ class EntrateController extends Controller
     public function destroyWeb(Request $request, Entrata $entrata): RedirectResponse
     {
         $this->service->delete($entrata);
+
         return redirect()->route('entrate.web.index')->with('status', 'Entrata eliminata con successo!');
     }
 }

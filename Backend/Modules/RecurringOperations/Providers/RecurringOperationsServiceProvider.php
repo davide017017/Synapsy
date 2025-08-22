@@ -3,13 +3,14 @@
 namespace Modules\RecurringOperations\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\RecurringOperations\Console\Commands\GenerateRecurringOperationsCommand;
 use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\RecurringOperations\Observers\RecurringOperationObserver;
-use Modules\RecurringOperations\Console\Commands\GenerateRecurringOperationsCommand;
 
 class RecurringOperationsServiceProvider extends ServiceProvider
 {
     protected string $moduleName = 'RecurringOperations';
+
     protected string $moduleNameLower = 'recurringoperations';
 
     // =========================================================================
@@ -51,19 +52,23 @@ class RecurringOperationsServiceProvider extends ServiceProvider
         $relativePath = config('modules.paths.generator.config.path');
         $configPath = module_path($this->moduleName, $relativePath);
 
-        if (!is_dir($configPath)) return;
+        if (! is_dir($configPath)) {
+            return;
+        }
 
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($configPath));
         foreach ($iterator as $file) {
-            if (!$file->isFile() || $file->getExtension() !== 'php') continue;
+            if (! $file->isFile() || $file->getExtension() !== 'php') {
+                continue;
+            }
 
-            $relative = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $relative = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
             $key = ($relative === 'config.php')
                 ? $this->moduleNameLower
-                : $this->moduleNameLower . '.' . str_replace(['/', '\\', '.php'], ['.', '.', ''], $relative);
+                : $this->moduleNameLower.'.'.str_replace(['/', '\\', '.php'], ['.', '.', ''], $relative);
 
             $this->publishes([
-                $file->getPathname() => config_path($relative)
+                $file->getPathname() => config_path($relative),
             ], 'config');
 
             $this->mergeConfigFrom($file->getPathname(), $key);
@@ -96,7 +101,7 @@ class RecurringOperationsServiceProvider extends ServiceProvider
         $sourcePath = module_path($this->moduleName, 'Resources/views');
 
         $this->publishes([
-            $sourcePath => $viewPath
+            $sourcePath => $viewPath,
         ], ['views', "{$this->moduleNameLower}-views"]);
 
         $this->loadViewsFrom(
@@ -114,6 +119,7 @@ class RecurringOperationsServiceProvider extends ServiceProvider
                 $paths[] = $fullPath;
             }
         }
+
         return $paths;
     }
 
@@ -142,4 +148,3 @@ class RecurringOperationsServiceProvider extends ServiceProvider
         return [];
     }
 }
-

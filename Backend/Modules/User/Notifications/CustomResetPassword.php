@@ -2,10 +2,10 @@
 
 namespace Modules\User\Notifications;
 
+use Illuminate\Auth\Notifications\ResetPassword as BaseResetPassword;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Auth\Notifications\ResetPassword as BaseResetPassword;
 
 class CustomResetPassword extends BaseResetPassword implements ShouldQueue
 {
@@ -14,12 +14,14 @@ class CustomResetPassword extends BaseResetPassword implements ShouldQueue
     protected function resetUrl($notifiable)
     {
         $frontend = config('app.frontend_url', 'http://localhost:3000');
+
         return $frontend.'/reset-password?token='.$this->token.'&email='.urlencode($notifiable->getEmailForPasswordReset());
     }
 
     public function toMail($notifiable): MailMessage
     {
         $url = $this->resetUrl($notifiable);
+
         return (new MailMessage)
             ->subject(__('Reimposta la tua password'))
             ->view('user::emails.verify', [
@@ -30,4 +32,3 @@ class CustomResetPassword extends BaseResetPassword implements ShouldQueue
             ]);
     }
 }
-

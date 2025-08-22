@@ -4,8 +4,8 @@ namespace Modules\Categories\Tests\Feature;
 
 use Modules\Categories\Models\Category;
 use Modules\User\Models\User;
-use Tests\AuthenticatedTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\AuthenticatedTestCase;
 
 class CategoriesAuthorizationTest extends AuthenticatedTestCase
 {
@@ -53,4 +53,3 @@ class CategoriesAuthorizationTest extends AuthenticatedTestCase
         ]);
     }
 }
-

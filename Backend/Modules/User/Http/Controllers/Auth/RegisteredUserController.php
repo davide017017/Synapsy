@@ -2,16 +2,16 @@
 
 namespace Modules\User\Http\Controllers\Auth;
 
-use Modules\User\Http\Controllers\Controller;
-use Modules\User\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Modules\User\Http\Controllers\Controller;
+use Modules\User\Models\User;
 
 class RegisteredUserController extends Controller
 {
@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'username' => ['required', 'string', 'max:64', 'unique:'.User::class],
             'has_accepted_terms' => ['accepted'],
-            'theme' => ['nullable', 'string', Rule::in(['system','light','dark','emerald','solarized'])],
+            'theme' => ['nullable', 'string', Rule::in(['system', 'light', 'dark', 'emerald', 'solarized'])],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -57,4 +57,3 @@ class RegisteredUserController extends Controller
         return redirect(route('dashboard', absolute: false));
     }
 }
-

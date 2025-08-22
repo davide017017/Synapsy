@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Auth;
 
-use Modules\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\User\Models\User;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -44,7 +44,7 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $this->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
@@ -70,4 +70,3 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 }
-

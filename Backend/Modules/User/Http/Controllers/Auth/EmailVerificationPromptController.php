@@ -2,10 +2,10 @@
 
 namespace Modules\User\Http\Controllers\Auth;
 
-use Modules\User\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Modules\User\Http\Controllers\Controller;
 
 class EmailVerificationPromptController extends Controller
 {
@@ -19,4 +19,3 @@ class EmailVerificationPromptController extends Controller
                     : view('auth.verify-email');
     }
 }
-

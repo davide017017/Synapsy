@@ -2,8 +2,6 @@
 
 namespace Modules\User\Http\Controllers\Auth;
 
-use Modules\User\Http\Controllers\Controller;
-use Modules\User\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,6 +10,8 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Modules\User\Http\Controllers\Controller;
+use Modules\User\Models\User;
 
 class NewPasswordController extends Controller
 {
@@ -60,4 +60,3 @@ class NewPasswordController extends Controller
                         ->withErrors(['email' => __($status)]);
     }
 }
-

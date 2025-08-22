@@ -2,9 +2,9 @@
 
 namespace Modules\User\Http\Controllers\Auth;
 
-use Modules\User\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Modules\User\Http\Controllers\Controller;
 
 class EmailVerificationNotificationController extends Controller
 {
@@ -22,4 +22,3 @@ class EmailVerificationNotificationController extends Controller
         return back()->with('status', 'verification-link-sent');
     }
 }
-

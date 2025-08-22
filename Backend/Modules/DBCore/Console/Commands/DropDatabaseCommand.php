@@ -24,8 +24,9 @@ class DropDatabaseCommand extends Command
     {
         $dbName = env('DB_DATABASE');
 
-        if (!$dbName) {
+        if (! $dbName) {
             $this->error('❌ Nessun nome di database definito in DB_DATABASE.');
+
             return;
         }
 
@@ -36,7 +37,7 @@ class DropDatabaseCommand extends Command
             DB::statement("DROP DATABASE IF EXISTS \"$dbName\"");
             $this->info("🗑️  Database `$dbName` eliminato (se esiste).");
         } catch (\Exception $e) {
-            $this->error("❌ Errore durante l'eliminazione del database: " . $e->getMessage());
+            $this->error("❌ Errore durante l'eliminazione del database: ".$e->getMessage());
         }
     }
 }

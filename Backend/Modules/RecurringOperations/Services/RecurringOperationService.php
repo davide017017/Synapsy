@@ -2,13 +2,10 @@
 
 namespace Modules\RecurringOperations\Services;
 
-use Illuminate\Support\Collection;
 use Carbon\Carbon;
-use Modules\User\Models\User;
+use Illuminate\Support\Collection;
 use Modules\RecurringOperations\Models\RecurringOperation;
-
-use Illuminate\Support\Facades\Log;
-
+use Modules\User\Models\User;
 
 /**
  * Servizio per la gestione delle operazioni ricorrenti utente.
@@ -26,31 +23,31 @@ class RecurringOperationService
     {
         $query = $user->recurringOperations()->with('category');
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $query->whereDate('start_date', '>=', $filters['start_date']);
         }
 
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $query->whereDate('start_date', '<=', $filters['end_date']);
         }
 
-        if (!empty($filters['next_occurrence_start_date'])) {
+        if (! empty($filters['next_occurrence_start_date'])) {
             $query->whereDate('next_occurrence_date', '>=', $filters['next_occurrence_start_date']);
         }
 
-        if (!empty($filters['next_occurrence_end_date'])) {
+        if (! empty($filters['next_occurrence_end_date'])) {
             $query->whereDate('next_occurrence_date', '<=', $filters['next_occurrence_end_date']);
         }
 
-        if (!empty($filters['description'])) {
-            $query->where('description', 'like', '%' . $filters['description'] . '%');
+        if (! empty($filters['description'])) {
+            $query->where('description', 'like', '%'.$filters['description'].'%');
         }
 
-        if (!empty($filters['category_id'])) {
+        if (! empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
 
-        if (!empty($filters['type']) && in_array($filters['type'], ['entrata', 'spesa'])) {
+        if (! empty($filters['type']) && in_array($filters['type'], ['entrata', 'spesa'])) {
             $query->where('type', $filters['type']);
         }
 

@@ -3,8 +3,8 @@
 namespace Modules\Categories\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Modules\User\Models\User;
 use Modules\Categories\Models\Category;
+use Modules\User\Models\User;
 
 /**
  * Factory per il modello Category.
@@ -32,8 +32,8 @@ class CategoryFactory extends Factory
         $usedNames[] = $name;
 
         return [
-            'name'    => $name,
-            'type'    => $this->faker->randomElement(['entrata', 'spesa']),
+            'name' => $name,
+            'type' => $this->faker->randomElement(['entrata', 'spesa']),
             'user_id' => User::inRandomOrder()->value('id') ?? User::factory()->create()->id,
         ];
     }
@@ -52,4 +52,3 @@ class CategoryFactory extends Factory
         return $this->state(fn () => ['type' => 'spesa']);
     }
 }
-

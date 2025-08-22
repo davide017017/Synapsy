@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Modules\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Modules\User\Models\User;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -42,12 +42,12 @@ class ProfileTest extends TestCase
             ->withSession(['_token' => 'test_csrf_token'])
             ->patch('/profile', [
                 '_token' => 'test_csrf_token',
-                'name'   => 'Test User',
-                'email'  => 'test@example.com',
+                'name' => 'Test User',
+                'email' => 'test@example.com',
             ]);
 
         $response->assertSessionHasNoErrors()
-                ->assertRedirect('/profile');
+            ->assertRedirect('/profile');
 
         $user->refresh();
 
@@ -72,12 +72,12 @@ class ProfileTest extends TestCase
             ->withSession(['_token' => 'test_csrf_token'])
             ->patch('/profile', [
                 '_token' => 'test_csrf_token',
-                'name'   => 'Test User',
-                'email'  => $user->email,
+                'name' => 'Test User',
+                'email' => $user->email,
             ]);
 
         $response->assertSessionHasNoErrors()
-                ->assertRedirect('/profile');
+            ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
@@ -134,9 +134,8 @@ class ProfileTest extends TestCase
             ]);
 
         $response->assertSessionHasErrorsIn('userDeletion', 'password')
-                ->assertRedirect('/profile');
+            ->assertRedirect('/profile');
 
         $this->assertNotNull($user->fresh());
     }
 }
-

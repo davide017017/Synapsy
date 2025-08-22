@@ -2,16 +2,16 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Str;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
-use Modules\User\Models\User;
 use Modules\Categories\Models\Category;
 use Modules\Entrate\Models\Entrata;
-use Modules\Spese\Models\Spesa;
 use Modules\RecurringOperations\Models\RecurringOperation;
+use Modules\Spese\Models\Spesa;
+use Modules\User\Models\User;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * Test che esegue una chiamata a tutte le rotte con prefisso `api`.
@@ -45,9 +45,11 @@ class ApiRoutesTest extends TestCase
 
     /**
      * Riepilogo globale dettagliato
+     *
      * @var array<int, array{method: string, uri: string, status: int, msg: string}>
      */
     protected static array $errorDetails = [];
+
     protected static int $totalRoutes = 0;
 
     // ───────────────────────────────
@@ -116,8 +118,8 @@ class ApiRoutesTest extends TestCase
     protected function getApiRoutes()
     {
         return collect(Route::getRoutes()->getRoutes())
-            ->filter(fn($route) => Str::startsWith($route->uri(), 'api'))
-            ->reject(fn($route) => in_array($route->uri(), $this->blacklist));
+            ->filter(fn ($route) => Str::startsWith($route->uri(), 'api'))
+            ->reject(fn ($route) => in_array($route->uri(), $this->blacklist));
     }
 
     protected function fillUriParameters(string $uri): string
@@ -129,12 +131,12 @@ class ApiRoutesTest extends TestCase
 
     protected function requiresAuth($route): bool
     {
-        return collect($route->middleware())->contains(fn($m) => Str::contains($m, 'auth'));
+        return collect($route->middleware())->contains(fn ($m) => Str::contains($m, 'auth'));
     }
 
     protected function getRequestBody($route, string $method): array
     {
-        $pattern = $method . ' ' . $route->uri();
+        $pattern = $method.' '.$route->uri();
 
         return match (true) {
             // Categories
@@ -233,7 +235,7 @@ class ApiRoutesTest extends TestCase
         fwrite(STDOUT, "\n$label:\n");
 
         foreach ($routes as $route) {
-            $uri = '/' . $this->fillUriParameters($route->uri());
+            $uri = '/'.$this->fillUriParameters($route->uri());
 
             foreach ($route->methods() as $method) {
                 if (in_array($method, ['HEAD', 'OPTIONS'])) {
@@ -260,14 +262,14 @@ class ApiRoutesTest extends TestCase
                     self::$errorDetails[] = [
                         'status' => $status,
                         'method' => $method,
-                        'uri'    => $uri,
-                        'msg'    => $shortMsg,
+                        'uri' => $uri,
+                        'msg' => $shortMsg,
                     ];
                 }
             }
         }
 
-        $errorsInGroup = array_filter(self::$errorDetails, fn($e) => $e['status'] >= 400);
+        $errorsInGroup = array_filter(self::$errorDetails, fn ($e) => $e['status'] >= 400);
         fwrite(STDOUT, sprintf("Totali %s: %d, errori: %d\n", strtolower($label), $count, count($errorsInGroup)));
 
         $this->assertTrue(true); // evita il fallimento automatico del test
@@ -278,14 +280,14 @@ class ApiRoutesTest extends TestCase
     // ───────────────────────────────
     public function test_public_api_routes(): void
     {
-        $routes = $this->getApiRoutes()->reject(fn($route) => $this->requiresAuth($route));
+        $routes = $this->getApiRoutes()->reject(fn ($route) => $this->requiresAuth($route));
         $this->exerciseRoutes($routes, 'Rotte pubbliche');
     }
 
     public function test_protected_api_routes(): void
     {
         Sanctum::actingAs($this->user, ['*']);
-        $routes = $this->getApiRoutes()->filter(fn($route) => $this->requiresAuth($route));
+        $routes = $this->getApiRoutes()->filter(fn ($route) => $this->requiresAuth($route));
         $this->exerciseRoutes($routes, 'Rotte protette');
     }
 
@@ -298,21 +300,22 @@ class ApiRoutesTest extends TestCase
 
         if (empty(self::$errorDetails)) {
             fwrite(STDOUT, "\n✅ Tutte le rotte hanno risposto con status 2xx.\n");
+
             return;
         }
 
         // Ordina errori: prima 500, poi 400, 422, 404, ecc
         $ordered = collect(self::$errorDetails)
             ->sortBy([
-                fn($a) => $a['status'] < 500 ? 1 : 0,
-                fn($a) => $a['status'],
-                fn($a) => $a['uri'],
+                fn ($a) => $a['status'] < 500 ? 1 : 0,
+                fn ($a) => $a['status'],
+                fn ($a) => $a['uri'],
             ])
             ->values();
 
         fwrite(STDOUT, "\n🛑 Rotte con errori (ordinate per gravità):\n");
-        fwrite(STDOUT, str_pad("Codice", 8) . str_pad("Metodo", 8) . str_pad("Endpoint", 45) . "Info\n");
-        fwrite(STDOUT, str_repeat('-', 75) . "\n");
+        fwrite(STDOUT, str_pad('Codice', 8).str_pad('Metodo', 8).str_pad('Endpoint', 45)."Info\n");
+        fwrite(STDOUT, str_repeat('-', 75)."\n");
 
         foreach ($ordered as $e) {
             $row = sprintf(
@@ -325,7 +328,7 @@ class ApiRoutesTest extends TestCase
             fwrite(STDOUT, $row);
         }
 
-        fwrite(STDOUT, str_repeat('-', 75) . "\n");
-        fwrite(STDOUT, "Totale errori: " . count($ordered) . " su " . self::$totalRoutes . " rotte testate.\n");
+        fwrite(STDOUT, str_repeat('-', 75)."\n");
+        fwrite(STDOUT, 'Totale errori: '.count($ordered).' su '.self::$totalRoutes." rotte testate.\n");
     }
 }

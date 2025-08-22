@@ -43,7 +43,7 @@ class CreateDatabaseCommand extends Command
             \DB::purge('pgsql');
             \DB::reconnect('pgsql');
         } catch (\Exception $e) {
-            $this->error("❌ Errore nella creazione del database: " . $e->getMessage());
+            $this->error('❌ Errore nella creazione del database: '.$e->getMessage());
         }
     }
 }

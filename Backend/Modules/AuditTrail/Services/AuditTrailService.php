@@ -2,8 +2,8 @@
 
 namespace Modules\AuditTrail\Services;
 
-use Modules\AuditTrail\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
+use Modules\AuditTrail\Models\AuditLog;
 
 // ==========================================
 // Servizio per scrivere audit trail
@@ -13,13 +13,12 @@ class AuditTrailService
     /**
      * Registra una nuova entry nell'audit log.
      *
-     * @param string $action          Azione (created, updated, deleted, moved, ...)
-     * @param Model $model            Modello su cui agisci
-     * @param array|null $oldValues   Stato PRIMA (opzionale)
-     * @param array|null $newValues   Stato DOPO (opzionale)
-     * @param int|null $userId        ID utente (opzionale)
-     * @param string|null $reason     Motivazione (opzionale)
-     * @return AuditLog
+     * @param  string  $action  Azione (created, updated, deleted, moved, ...)
+     * @param  Model  $model  Modello su cui agisci
+     * @param  array|null  $oldValues  Stato PRIMA (opzionale)
+     * @param  array|null  $newValues  Stato DOPO (opzionale)
+     * @param  int|null  $userId  ID utente (opzionale)
+     * @param  string|null  $reason  Motivazione (opzionale)
      */
     public static function log(
         string $action,
@@ -31,13 +30,12 @@ class AuditTrailService
     ): AuditLog {
         return AuditLog::create([
             'user_id' => $userId ?? (function_exists('auth') ? optional(auth())->id() : null),
-            'action'         => $action,
+            'action' => $action,
             'auditable_type' => get_class($model),
-            'auditable_id'   => $model->getKey(),
-            'old_values'     => $oldValues,
-            'new_values'     => $newValues,
-            'reason'         => $reason,
+            'auditable_id' => $model->getKey(),
+            'old_values' => $oldValues,
+            'new_values' => $newValues,
+            'reason' => $reason,
         ]);
     }
 }
-

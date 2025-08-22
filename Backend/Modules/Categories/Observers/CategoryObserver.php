@@ -2,8 +2,8 @@
 
 namespace Modules\Categories\Observers;
 
-use Modules\Categories\Models\Category;
 use Modules\AuditTrail\Services\AuditTrailService;
+use Modules\Categories\Models\Category;
 
 // =====================================
 // Observer: traccia tutte le modifiche

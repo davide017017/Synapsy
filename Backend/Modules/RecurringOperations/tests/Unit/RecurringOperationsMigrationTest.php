@@ -3,8 +3,8 @@
 namespace Modules\RecurringOperations\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class RecurringOperationsMigrationTest extends TestCase
@@ -49,7 +49,7 @@ class RecurringOperationsMigrationTest extends TestCase
         $groupedIndexes = [];
 
         foreach ($indexRows as $row) {
-            $groupedIndexes[$row->Key_name]['unique'] = !$row->Non_unique;
+            $groupedIndexes[$row->Key_name]['unique'] = ! $row->Non_unique;
             $groupedIndexes[$row->Key_name]['columns'][] = $row->Column_name;
         }
 
@@ -62,4 +62,3 @@ class RecurringOperationsMigrationTest extends TestCase
         return false;
     }
 }
-

@@ -2,8 +2,8 @@
 
 namespace Modules\Spese\Observers;
 
-use Modules\Spese\Models\Spesa;
 use Modules\AuditTrail\Services\AuditTrailService;
+use Modules\Spese\Models\Spesa;
 
 // =====================================
 // Observer: traccia tutte le modifiche

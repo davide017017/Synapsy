@@ -20,7 +20,7 @@ class ApiVerifyEmailController extends Controller
         }
         $token = $user->createToken('api-token')->plainTextToken;
         $frontend = config('app.frontend_url', 'http://localhost:3000');
+
         return redirect()->to($frontend.'/login?verified=1&token='.$token);
     }
 }
-

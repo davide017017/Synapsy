@@ -2,19 +2,19 @@
 
 namespace Modules\RecurringOperations\Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
-use Modules\User\Models\User;
-use Modules\RecurringOperations\Models\RecurringOperation;
-use App\Traits\TruncatesTable;
 use App\Traits\LogsSeederOutput;
+use App\Traits\TruncatesTable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
+use Modules\RecurringOperations\Models\RecurringOperation;
+use Modules\User\Models\User;
 
 /**
  * Seeder DEMO — genera ricorrenze credibili per utenti demo (tutte già partite).
  */
 class RecurringOperationsDBSeeder extends Seeder
 {
-    use TruncatesTable, LogsSeederOutput;
+    use LogsSeederOutput, TruncatesTable;
 
     public function run(): void
     {
@@ -33,6 +33,7 @@ class RecurringOperationsDBSeeder extends Seeder
             $users = User::all();
             if ($users->isEmpty()) {
                 $this->logSkip('Recurring', 'Nessun utente trovato. Seeder ignorato.');
+
                 return;
             }
 
@@ -53,6 +54,7 @@ class RecurringOperationsDBSeeder extends Seeder
                     $randomMonth = rand(1, $currentMonth);
                     $maxDay = ($randomMonth === $currentMonth) ? $currentDay : $now->copy()->startOfYear()->addMonths($randomMonth - 1)->daysInMonth;
                     $randomDay = rand(1, $maxDay);
+
                     return $now->copy()->startOfYear()->addMonths($randomMonth - 1)->startOfMonth()->addDays($randomDay - 1)->format('Y-m-d');
                 };
 
@@ -205,4 +207,3 @@ class RecurringOperationsDBSeeder extends Seeder
         });
     }
 }
-

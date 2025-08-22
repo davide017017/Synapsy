@@ -2,8 +2,8 @@
 
 namespace Modules\Spese\Policies;
 
-use Modules\User\Models\User;
 use Modules\Spese\Models\Spesa;
+use Modules\User\Models\User;
 
 /**
  * Policy per l'entità Spesa.
@@ -61,4 +61,3 @@ class SpesaPolicy
         return false;
     }
 }
-

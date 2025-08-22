@@ -3,14 +3,15 @@
 namespace Modules\Categories\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use Modules\Categories\Models\Category;
 use Modules\Categories\Observers\CategoryObserver;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class CategoriesServiceProvider extends ServiceProvider
 {
     protected string $moduleName = 'Categories';
+
     protected string $moduleNameLower = 'categories';
 
     // =========================================================================
@@ -50,16 +51,20 @@ class CategoriesServiceProvider extends ServiceProvider
         $relativePath = config('modules.paths.generator.config.path');
         $configPath = module_path($this->moduleName, $relativePath);
 
-        if (!is_dir($configPath)) return;
+        if (! is_dir($configPath)) {
+            return;
+        }
 
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
         foreach ($iterator as $file) {
-            if (!$file->isFile() || $file->getExtension() !== 'php') continue;
+            if (! $file->isFile() || $file->getExtension() !== 'php') {
+                continue;
+            }
 
-            $relative = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $relative = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
             $key = ($relative === 'config.php')
                 ? $this->moduleNameLower
-                : $this->moduleNameLower . '.' . str_replace(['/', '\\', '.php'], ['.', '.', ''], $relative);
+                : $this->moduleNameLower.'.'.str_replace(['/', '\\', '.php'], ['.', '.', ''], $relative);
 
             $this->publishes([
                 $file->getPathname() => config_path($relative),
@@ -74,7 +79,7 @@ class CategoriesServiceProvider extends ServiceProvider
     // =========================================================================
     protected function registerTranslations(): void
     {
-        $langPath     = resource_path("lang/modules/{$this->moduleNameLower}");
+        $langPath = resource_path("lang/modules/{$this->moduleNameLower}");
         $fallbackPath = module_path($this->moduleName, 'Resources/lang');
 
         if (is_dir($langPath)) {
@@ -91,7 +96,7 @@ class CategoriesServiceProvider extends ServiceProvider
     // =========================================================================
     protected function registerViews(): void
     {
-        $viewPath   = resource_path("views/modules/{$this->moduleNameLower}");
+        $viewPath = resource_path("views/modules/{$this->moduleNameLower}");
         $sourcePath = module_path($this->moduleName, 'Resources/views');
 
         $this->publishes([
@@ -113,6 +118,7 @@ class CategoriesServiceProvider extends ServiceProvider
                 $paths[] = $fullPath;
             }
         }
+
         return $paths;
     }
 
@@ -141,4 +147,3 @@ class CategoriesServiceProvider extends ServiceProvider
         return [];
     }
 }
-

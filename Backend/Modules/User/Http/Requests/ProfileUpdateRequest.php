@@ -2,10 +2,10 @@
 
 namespace Modules\User\Http\Requests;
 
-use Modules\User\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Modules\User\Models\User;
 
 /**
  * Gestisce validazione e autorizzazione per l'aggiornamento del profilo utente.
@@ -40,8 +40,8 @@ class ProfileUpdateRequest extends FormRequest
             // ----------------------------
             // Anagrafica
             // ----------------------------
-            'name'     => ['sometimes', 'string', 'max:255'],
-            'surname'  => ['sometimes', 'nullable', 'string', 'max:255'],
+            'name' => ['sometimes', 'string', 'max:255'],
+            'surname' => ['sometimes', 'nullable', 'string', 'max:255'],
 
             // ----------------------------
             // Username (univoco)
@@ -57,7 +57,7 @@ class ProfileUpdateRequest extends FormRequest
             // ----------------------------
             // Email (univoca)
             // ----------------------------
-            'email'    => [
+            'email' => [
                 'sometimes',
                 'string',
                 'lowercase',
@@ -70,8 +70,8 @@ class ProfileUpdateRequest extends FormRequest
             // ----------------------------
             // Avatar (file o path opzionale)
             // ----------------------------
-            'avatar'   => ['sometimes', function ($attribute, $value, $fail) {
-              
+            'avatar' => ['sometimes', function ($attribute, $value, $fail) {
+
                 if ($this->hasFile($attribute)) {
                     $validator = Validator::make(
                         $this->all(),
@@ -83,7 +83,7 @@ class ProfileUpdateRequest extends FormRequest
                             $fail($msg);
                         }
                     }
-                } elseif ($value !== null && !is_string($value)) {
+                } elseif ($value !== null && ! is_string($value)) {
                     $fail('L\'avatar deve essere un percorso o un file valido.');
                 }
             }],
@@ -91,7 +91,7 @@ class ProfileUpdateRequest extends FormRequest
             // ----------------------------
             // Tema preferito
             // ----------------------------
-            'theme'    => [
+            'theme' => [
                 'sometimes',
                 'nullable',
                 'string',
@@ -110,11 +110,11 @@ class ProfileUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'username.unique'   => 'Questo username è già in uso.',
-            'email.unique'      => 'Questa email è già in uso.',
-            'avatar.image'      => "L'avatar deve essere un'immagine valida.",
-            'avatar.max'        => "L'avatar non può superare i 2MB.",
-            'theme.in'          => 'Tema selezionato non valido.',
+            'username.unique' => 'Questo username è già in uso.',
+            'email.unique' => 'Questa email è già in uso.',
+            'avatar.image' => "L'avatar deve essere un'immagine valida.",
+            'avatar.max' => "L'avatar non può superare i 2MB.",
+            'theme.in' => 'Tema selezionato non valido.',
         ];
     }
 
@@ -131,4 +131,3 @@ class ProfileUpdateRequest extends FormRequest
     //     }
     // }
 }
-

@@ -3,7 +3,6 @@
 namespace Modules\User\Observers;
 
 use Modules\User\Models\User;
-use Modules\Categories\Models\Category;
 
 class UserObserver
 {
@@ -13,7 +12,7 @@ class UserObserver
             return;
         }
         // Set default avatar if not provided
-        if (!$user->avatar) {
+        if (! $user->avatar) {
             $user->avatar = 'images/avatars/avatar_01_boy.webp';
             $user->save();
         }

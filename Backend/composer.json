@@ -42,6 +42,10 @@
         }
     },
     "scripts": {
+        "routes:export": [
+            "php artisan routes:export-api-json --path=docs/API/ROUTES.json --prefix=/api/v1",
+            "php artisan routes:export-api-md --path=docs/API/ROUTES.md --prefix=/api/v1"
+        ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
@@ -85,4 +89,3 @@
     "minimum-stability": "stable",
     "prefer-stable": true
 }
-

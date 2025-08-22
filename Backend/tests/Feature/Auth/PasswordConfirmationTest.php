@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Auth;
 
-use Modules\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\User\Models\User;
 use Tests\TestCase;
 
 class PasswordConfirmationTest extends TestCase
@@ -66,4 +66,3 @@ class PasswordConfirmationTest extends TestCase
         $response->assertSessionHasErrors('password');
     }
 }
-

@@ -3,8 +3,8 @@
 namespace Modules\Categories\Tests\Feature;
 
 use Modules\Categories\Models\Category;
-use Tests\AuthenticatedTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\AuthenticatedTestCase;
 
 class CategoriesApiTest extends AuthenticatedTestCase
 {
@@ -80,4 +80,3 @@ class CategoriesApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
     }
 }
-

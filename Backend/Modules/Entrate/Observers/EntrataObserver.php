@@ -2,8 +2,8 @@
 
 namespace Modules\Entrate\Observers;
 
-use Modules\Entrate\Models\Entrata;
 use Modules\AuditTrail\Services\AuditTrailService;
+use Modules\Entrate\Models\Entrata;
 
 // =====================================
 // Observer: traccia tutte le modifiche

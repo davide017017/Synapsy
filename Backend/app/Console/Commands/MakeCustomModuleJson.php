@@ -8,24 +8,27 @@ use Illuminate\Support\Str;
 class MakeCustomModuleJson extends Command
 {
     protected $signature = 'make:custom-module-json {module}';
+
     protected $description = 'Genera un file module.json standard per un modulo personalizzato';
 
     public function handle(): void
     {
-        $module       = Str::studly($this->argument('module'));    // es: Blog
-        $moduleLower  = Str::kebab($module);                       // es: blog
-        $stubPath     = resource_path('modules/stubs/stubs/custom/CustomModuleJson.stub');
-        $targetPath   = base_path("Modules/{$module}/module.json");
+        $module = Str::studly($this->argument('module'));    // es: Blog
+        $moduleLower = Str::kebab($module);                       // es: blog
+        $stubPath = resource_path('modules/stubs/stubs/custom/CustomModuleJson.stub');
+        $targetPath = base_path("Modules/{$module}/module.json");
 
         // Verifica modulo esistente
-        if (!is_dir(base_path("Modules/{$module}"))) {
+        if (! is_dir(base_path("Modules/{$module}"))) {
             $this->error("❌ Il modulo {$module} non esiste.");
+
             return;
         }
 
         // Verifica stub
-        if (!file_exists($stubPath)) {
+        if (! file_exists($stubPath)) {
             $this->error("❌ Stub non trovato: {$stubPath}");
+
             return;
         }
 
@@ -43,4 +46,3 @@ class MakeCustomModuleJson extends Command
         $this->info("✅ module.json creato in: Modules/{$module}/module.json");
     }
 }
-

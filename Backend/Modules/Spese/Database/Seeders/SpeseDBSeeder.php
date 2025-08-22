@@ -2,19 +2,19 @@
 
 namespace Modules\Spese\Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent\Model;
-use Modules\User\Models\User;
-use Modules\Spese\Models\Spesa;
-use App\Traits\TruncatesTable;
 use App\Traits\LogsSeederOutput;
+use App\Traits\TruncatesTable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Seeder;
+use Modules\Spese\Models\Spesa;
+use Modules\User\Models\User;
 
 /**
  * Seeder DEMO — genera spese realistiche per utenti demo (solo nel passato, senza duplicati per giorno/descrizione/utente).
  */
 class SpeseDBSeeder extends Seeder
 {
-    use TruncatesTable, LogsSeederOutput;
+    use LogsSeederOutput, TruncatesTable;
 
     public function run(): void
     {
@@ -33,13 +33,14 @@ class SpeseDBSeeder extends Seeder
             $users = User::all();
             if ($users->isEmpty()) {
                 $this->logSkip('Spese', 'Nessun utente trovato. Seeder ignorato.');
+
                 return;
             }
 
             $totali = 0;
             $now = now();
             $currentMonth = $now->month;
-            $currentDay   = $now->day;
+            $currentDay = $now->day;
 
             foreach ($users as $user) {
                 // Mappa tutte le categorie spesa per nome
@@ -51,9 +52,11 @@ class SpeseDBSeeder extends Seeder
                 // -------- Affitto (Casa): solo mesi passati --------
                 for ($i = 1; $i <= $currentMonth; $i++) {
                     $date = $now->copy()->startOfYear()->addMonths($i - 1)->startOfMonth()->addDays(2);
-                    $descrizione = "Affitto mensile";
-                    $key = $date->format('Y-m-d') . '-' . $descrizione;
-                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $descrizione = 'Affitto mensile';
+                    $key = $date->format('Y-m-d').'-'.$descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) {
+                        continue;
+                    }
                     $usedDates[$key] = true;
                     Spesa::factory()
                         ->affitto()
@@ -72,11 +75,15 @@ class SpeseDBSeeder extends Seeder
                     shuffle($allDays);
                     $weekIdx = 0;
                     foreach ($allDays as $day) {
-                        if ($weekIdx >= 4) break;
+                        if ($weekIdx >= 4) {
+                            break;
+                        }
                         $date = $firstDayOfMonth->copy()->addDays($day - 1);
-                        $descrizione = "Spesa alimentare";
-                        $key = $date->format('Y-m-d') . '-' . $descrizione;
-                        if ($date->isFuture() || isset($usedDates[$key])) continue;
+                        $descrizione = 'Spesa alimentare';
+                        $key = $date->format('Y-m-d').'-'.$descrizione;
+                        if ($date->isFuture() || isset($usedDates[$key])) {
+                            continue;
+                        }
                         $usedDates[$key] = true;
                         Spesa::factory()
                             ->spesaAlimentare()
@@ -91,14 +98,18 @@ class SpeseDBSeeder extends Seeder
 
                 // -------- Bollette (Utenze): ogni 2 mesi --------
                 foreach ([2, 4, 6, 8, 10, 12] as $month) {
-                    if ($month > $currentMonth) continue;
+                    if ($month > $currentMonth) {
+                        continue;
+                    }
                     $firstDay = $now->copy()->startOfYear()->addMonths($month - 1)->startOfMonth();
                     $maxDay = ($month == $currentMonth) ? $currentDay : $firstDay->daysInMonth;
                     $day = rand(10, $maxDay);
                     $date = $firstDay->copy()->addDays($day - 1);
-                    $descrizione = "Bolletta utenze";
-                    $key = $date->format('Y-m-d') . '-' . $descrizione;
-                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $descrizione = 'Bolletta utenze';
+                    $key = $date->format('Y-m-d').'-'.$descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) {
+                        continue;
+                    }
                     $usedDates[$key] = true;
                     Spesa::factory()
                         ->bolletta()
@@ -115,9 +126,11 @@ class SpeseDBSeeder extends Seeder
                     $maxDay = ($i == $currentMonth) ? $currentDay : $firstDay->daysInMonth;
                     $day = rand(1, min(5, $maxDay));
                     $date = $firstDay->copy()->addDays($day - 1);
-                    $descrizione = "Abbonamento streaming";
-                    $key = $date->format('Y-m-d') . '-' . $descrizione;
-                    if ($date->isFuture() || isset($usedDates[$key])) continue;
+                    $descrizione = 'Abbonamento streaming';
+                    $key = $date->format('Y-m-d').'-'.$descrizione;
+                    if ($date->isFuture() || isset($usedDates[$key])) {
+                        continue;
+                    }
                     $usedDates[$key] = true;
                     Spesa::factory()
                         ->streaming()
@@ -137,12 +150,14 @@ class SpeseDBSeeder extends Seeder
                         do {
                             $day = rand(3, $maxDay);
                             $date = $firstDay->copy()->addDays($day - 1);
-                            $descrizione = "Carburante auto" . ($j > 1 ? " (rifornimento bis)" : "");
-                            $key = $date->format('Y-m-d') . '-' . $descrizione;
+                            $descrizione = 'Carburante auto'.($j > 1 ? ' (rifornimento bis)' : '');
+                            $key = $date->format('Y-m-d').'-'.$descrizione;
                             $tentativi++;
                         } while (($date->isFuture() || isset($usedDates[$key])) && $tentativi < 10);
 
-                        if ($date->isFuture() || isset($usedDates[$key])) continue;
+                        if ($date->isFuture() || isset($usedDates[$key])) {
+                            continue;
+                        }
                         $usedDates[$key] = true;
 
                         Spesa::factory()
@@ -167,4 +182,3 @@ class SpeseDBSeeder extends Seeder
         });
     }
 }
-

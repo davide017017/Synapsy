@@ -2,10 +2,10 @@
 
 namespace Modules\RecurringOperations\tests\Feature;
 
-use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\Categories\Models\Category;
-use Tests\AuthenticatedTestCase;
+use Modules\RecurringOperations\Models\RecurringOperation;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\AuthenticatedTestCase;
 
 class RecurringOperationsApiTest extends AuthenticatedTestCase
 {
@@ -112,4 +112,3 @@ class RecurringOperationsApiTest extends AuthenticatedTestCase
         $this->assertDatabaseMissing('recurring_operations', ['id' => $operation->id]);
     }
 }
-

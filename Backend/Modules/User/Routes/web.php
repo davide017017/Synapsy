@@ -1,15 +1,14 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
-use Modules\User\Http\Controllers\ProfileController;
-use Modules\User\Http\Controllers\DashboardController;
 use Modules\RecurringOperations\Http\Controllers\RecurringOperationController;
-
-
+use Modules\User\Http\Controllers\DashboardController;
+use Modules\User\Http\Controllers\ProfileController;
 
 Route::middleware(['web'])->group(function () {
 
     require __DIR__.'/auth.php';
-    
+
     // Dashboard (solo auth per ora)
     Route::get('/dashboard', DashboardController::class)
         ->middleware('auth')
@@ -25,4 +24,3 @@ Route::middleware(['web'])->group(function () {
             ->name('recurring-operations.index');
     });
 });
-

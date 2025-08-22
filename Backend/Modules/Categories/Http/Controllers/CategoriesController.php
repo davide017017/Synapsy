@@ -3,14 +3,14 @@
 namespace Modules\Categories\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Modules\Categories\Models\Category;
-use Modules\Categories\Services\CategoryService;
 use Modules\Categories\Http\Requests\StoreCategoryRequest;
 use Modules\Categories\Http\Requests\UpdateCategoryRequest;
+use Modules\Categories\Models\Category;
+use Modules\Categories\Services\CategoryService;
 
 // ╔════════════════════════════════════════════════════════════════════════════╗
 // ║         CategoriesController — CRUD + API (ora con color & icon)         ║
@@ -33,13 +33,13 @@ class CategoriesController extends Controller
     // Index (Blade)
     public function indexWeb(Request $request): View
     {
-        $sortBy        = in_array($request->query('sort_by'), ['name', 'type']) ? $request->query('sort_by') : 'type';
+        $sortBy = in_array($request->query('sort_by'), ['name', 'type']) ? $request->query('sort_by') : 'type';
         $sortDirection = in_array($request->query('sort_direction'), ['asc', 'desc']) ? $request->query('sort_direction') : 'asc';
-        $categories    = $this->service->getAllForUser($sortBy, $sortDirection);
+        $categories = $this->service->getAllForUser($sortBy, $sortDirection);
 
         return view('categories::index', [
-            'categories'    => $categories,
-            'sortBy'        => $sortBy,
+            'categories' => $categories,
+            'sortBy' => $sortBy,
             'sortDirection' => $sortDirection,
         ]);
     }
@@ -67,6 +67,7 @@ class CategoriesController extends Controller
     {
         $data = $request->validated(); // Contiene anche color e icon
         $this->service->createForUser($data);
+
         return redirect()->route('categories.web.index')->with('status', 'Categoria aggiunta!');
     }
 
@@ -75,6 +76,7 @@ class CategoriesController extends Controller
     {
         $data = $request->validated();
         $this->service->update($category, $data);
+
         return redirect()->route('categories.web.index')->with('status', 'Categoria aggiornata!');
     }
 
@@ -82,6 +84,7 @@ class CategoriesController extends Controller
     public function destroyWeb(Request $request, Category $category): RedirectResponse
     {
         $this->service->delete($category);
+
         return redirect()->route('categories.web.index')->with('status', 'Categoria eliminata!');
     }
 
@@ -92,9 +95,10 @@ class CategoriesController extends Controller
     // Index (API)
     public function indexApi(Request $request): JsonResponse
     {
-        $sortBy        = in_array($request->query('sort_by'), ['name', 'type']) ? $request->query('sort_by') : 'type';
+        $sortBy = in_array($request->query('sort_by'), ['name', 'type']) ? $request->query('sort_by') : 'type';
         $sortDirection = in_array($request->query('sort_direction'), ['asc', 'desc']) ? $request->query('sort_direction') : 'asc';
-        $categories    = $this->service->getAllForUser($sortBy, $sortDirection);
+        $categories = $this->service->getAllForUser($sortBy, $sortDirection);
+
         return response()->json($categories);
     }
 
@@ -102,6 +106,7 @@ class CategoriesController extends Controller
     public function showApi(Request $request, Category $category): JsonResponse
     {
         $this->authorize('view', $category);
+
         return response()->json($category);
     }
 
@@ -110,6 +115,7 @@ class CategoriesController extends Controller
     {
         $data = $request->validated();
         $category = $this->service->createForUser($data);
+
         return response()->json($category, 201);
     }
 
@@ -119,6 +125,7 @@ class CategoriesController extends Controller
         $this->authorize('update', $category);
         $data = $request->validated();
         $this->service->update($category, $data);
+
         return response()->json($category);
     }
 
@@ -127,7 +134,7 @@ class CategoriesController extends Controller
     {
         $this->authorize('delete', $category);
         $this->service->delete($category);
+
         return response()->json(['success' => true], 204);
     }
 }
-

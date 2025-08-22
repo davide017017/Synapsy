@@ -4,18 +4,17 @@ namespace Modules\User\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Modules\Spese\Models\Spesa;
-use Modules\Entrate\Models\Entrata;
 use Modules\Categories\Models\Category;
+use Modules\Entrate\Models\Entrata;
 use Modules\RecurringOperations\Models\RecurringOperation;
-use Modules\User\Notifications\CustomVerifyEmail;
-use Modules\User\Notifications\VerifyNewEmail;
+use Modules\Spese\Models\Spesa;
 use Modules\User\Database\Factories\UserFactory;
+use Modules\User\Notifications\CustomVerifyEmail;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 /**
@@ -25,7 +24,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
  * @property string $username
  * @property string $email
  * @property string|null $avatar
- * @property string|null $theme      // es: dark, light, solarized, emerald, etc.
+ * @property string|null $theme // es: dark, light, solarized, emerald, etc.
  * @property string|null $password
  * @property bool $is_admin
  * @property \Illuminate\Support\Carbon|null $email_verified_at
@@ -38,7 +37,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
  * @property string|null $locale
  */
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
-{ 
+{
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     // ===================================================================
@@ -103,7 +102,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     // ===================================================================
     public function sendEmailVerificationNotification(): void
     {
-        $this->notify(new CustomVerifyEmail());
+        $this->notify(new CustomVerifyEmail);
     }
 
     public function sendPendingEmailVerificationNotification(): void
@@ -152,4 +151,3 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return UserFactory::new();
     }
 }
-

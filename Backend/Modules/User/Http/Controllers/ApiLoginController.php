@@ -3,8 +3,8 @@
 namespace Modules\User\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class ApiLoginController extends Controller
 {
@@ -15,7 +15,7 @@ class ApiLoginController extends Controller
     {
         // 1. Validazione input
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
@@ -23,7 +23,7 @@ class ApiLoginController extends Controller
         $user = \Modules\User\Models\User::where('email', $credentials['email'])->first();
 
         // 3. Verifica credenziali
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
@@ -33,7 +33,7 @@ class ApiLoginController extends Controller
         // 5. Risposta
         return response()->json([
             'token' => $token,
-            'user'  => $user,
+            'user' => $user,
         ]);
     }
 
@@ -47,4 +47,3 @@ class ApiLoginController extends Controller
         return response()->json(['message' => 'Logout effettuato']);
     }
 }
-

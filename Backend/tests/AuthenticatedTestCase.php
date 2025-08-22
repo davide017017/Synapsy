@@ -2,10 +2,10 @@
 
 namespace Tests;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Modules\User\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 
 abstract class AuthenticatedTestCase extends TestCase
 {
@@ -29,4 +29,3 @@ abstract class AuthenticatedTestCase extends TestCase
         );
     }
 }
-

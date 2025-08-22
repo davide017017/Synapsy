@@ -2,16 +2,16 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\User\Models\User;
-use Modules\Entrate\Models\Entrata;
-use Modules\Spese\Models\Spesa;
-use Modules\Categories\Models\Category;
-use Modules\RecurringOperations\Models\RecurringOperation;
-use Symfony\Component\HttpFoundation\Response;
-use PHPUnit\Framework\Attributes\Test;
 use Illuminate\Support\Facades\Route;
+use Modules\Categories\Models\Category;
+use Modules\Entrate\Models\Entrata;
+use Modules\RecurringOperations\Models\RecurringOperation;
+use Modules\Spese\Models\Spesa;
+use Modules\User\Models\User;
+use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\HttpFoundation\Response;
+use Tests\TestCase;
 
 class RouteBindingTest extends TestCase
 {
@@ -20,11 +20,11 @@ class RouteBindingTest extends TestCase
         parent::setUp();
 
         Route::middleware('web')->group(function () {
-            Route::get('/test-binding/user/{user}', fn(User $user) => ['id' => $user->id]);
-            Route::get('/test-binding/entrata/{entrata}', fn(Entrata $entrata) => ['id' => $entrata->id]);
-            Route::get('/test-binding/spesa/{spesa}', fn(Spesa $spesa) => ['id' => $spesa->id]);
-            Route::get('/test-binding/category/{category}', fn(Category $category) => ['id' => $category->id]);
-            Route::get('/test-binding/recurring/{recurringOperation}', fn(RecurringOperation $recurringOperation) => ['id' => $recurringOperation->id]);
+            Route::get('/test-binding/user/{user}', fn (User $user) => ['id' => $user->id]);
+            Route::get('/test-binding/entrata/{entrata}', fn (Entrata $entrata) => ['id' => $entrata->id]);
+            Route::get('/test-binding/spesa/{spesa}', fn (Spesa $spesa) => ['id' => $spesa->id]);
+            Route::get('/test-binding/category/{category}', fn (Category $category) => ['id' => $category->id]);
+            Route::get('/test-binding/recurring/{recurringOperation}', fn (RecurringOperation $recurringOperation) => ['id' => $recurringOperation->id]);
         });
     }
 
@@ -103,4 +103,3 @@ class RouteBindingTest extends TestCase
             ->assertJsonFragment(['id' => $recurring->id]);
     }
 }
-

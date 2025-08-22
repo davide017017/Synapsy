@@ -2,9 +2,9 @@
 
 namespace Modules\Categories\Services;
 
-use Modules\Categories\Models\Category;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
+use Modules\Categories\Models\Category;
 
 /**
  * Gestione delle categorie per l'utente autenticato.
@@ -43,29 +43,29 @@ class CategoryService
     /**
      * Crea una nuova categoria per l'utente autenticato.
      *
-     * @param array{name: string, type: string, color?: string|null, icon?: string|null} $data
+     * @param  array{name: string, type: string, color?: string|null, icon?: string|null}  $data
      */
     public function createForUser(array $data): Category
     {
         return Auth::user()
             ->categories()
             ->create([
-                'name'  => $data['name'],
-                'type'  => $data['type'],
+                'name' => $data['name'],
+                'type' => $data['type'],
                 'color' => $data['color'] ?? null,
-                'icon'  => $data['icon'] ?? null,
+                'icon' => $data['icon'] ?? null,
             ]);
     }
-
 
     /**
      * Aggiorna e ritorna la categoria aggiornata.
      *
-     * @param array{name: string, type: string} $data
+     * @param  array{name: string, type: string}  $data
      */
     public function update(Category $category, array $data): Category
     {
         $category->update($data);
+
         return $category->fresh();
     }
 
@@ -77,4 +77,3 @@ class CategoryService
         return $category->delete();
     }
 }
-

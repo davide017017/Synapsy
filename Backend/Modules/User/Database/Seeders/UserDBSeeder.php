@@ -2,16 +2,16 @@
 
 namespace Modules\User\Database\Seeders;
 
+use App\Traits\LogsSeederOutput;
+use App\Traits\TruncatesTable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Modules\User\Models\User;
-use App\Traits\TruncatesTable;
-use App\Traits\LogsSeederOutput;
 
 class UserDBSeeder extends Seeder
 {
-    use TruncatesTable, LogsSeederOutput;
+    use LogsSeederOutput, TruncatesTable;
 
     public function run(): void
     {
@@ -30,15 +30,15 @@ class UserDBSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'test@example.com'],
             [
-                'name'              => 'Test',
-                'surname'           => 'Admin',
-                'username'          => 'admin',
-                'theme'             => 'solarized',
-                'avatar'            => 'avatar_15_business.webp',
-                'password'          => Hash::make('password1234'),
+                'name' => 'Test',
+                'surname' => 'Admin',
+                'username' => 'admin',
+                'theme' => 'solarized',
+                'avatar' => 'avatar_15_business.webp',
+                'password' => Hash::make('password1234'),
                 'email_verified_at' => now(),
-                'remember_token'    => Str::random(10),
-                'is_admin'          => true,
+                'remember_token' => Str::random(10),
+                'is_admin' => true,
                 'has_accepted_terms' => true,
             ]
         );

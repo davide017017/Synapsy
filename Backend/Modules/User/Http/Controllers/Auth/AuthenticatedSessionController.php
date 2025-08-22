@@ -2,12 +2,12 @@
 
 namespace Modules\User\Http\Controllers\Auth;
 
-use Modules\User\Http\Controllers\Controller;
-use Modules\User\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Modules\User\Http\Controllers\Controller;
+use Modules\User\Http\Requests\Auth\LoginRequest;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -21,7 +21,6 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
-     * 
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -45,4 +44,3 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 }
-

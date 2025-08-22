@@ -45,4 +45,3 @@ class ApiResetPasswordController extends Controller
         return ApiResponse::error('Link non valido o scaduto', null, 400);
     }
 }
-

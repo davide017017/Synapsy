@@ -2,12 +2,12 @@
 
 namespace Modules\User\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Auth\Notifications\VerifyEmail as BaseVerifyEmail;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Carbon;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\URL;
 
 class VerifyNewEmail extends BaseVerifyEmail implements ShouldQueue
 {
@@ -45,4 +45,3 @@ class VerifyNewEmail extends BaseVerifyEmail implements ShouldQueue
             ]);
     }
 }
-

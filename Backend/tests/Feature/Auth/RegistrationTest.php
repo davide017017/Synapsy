@@ -29,17 +29,16 @@ class RegistrationTest extends TestCase
         $response = $this
             ->withSession(['_token' => 'test_csrf_token'])
             ->post('/register', [
-                '_token'                 => 'test_csrf_token',
-                'name'                   => 'Test User',
-                'username'               => 'testuser',
-                'email'                  => 'test@example.com',
-                'has_accepted_terms'     => '1',
-                'password'               => 'password',
-                'password_confirmation'  => 'password',
+                '_token' => 'test_csrf_token',
+                'name' => 'Test User',
+                'username' => 'testuser',
+                'email' => 'test@example.com',
+                'has_accepted_terms' => '1',
+                'password' => 'password',
+                'password_confirmation' => 'password',
             ]);
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 }
-

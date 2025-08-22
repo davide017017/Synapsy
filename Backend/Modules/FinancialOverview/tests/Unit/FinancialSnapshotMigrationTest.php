@@ -3,8 +3,8 @@
 namespace Modules\FinancialOverview\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class FinancialSnapshotMigrationTest extends TestCase
@@ -98,7 +98,7 @@ class FinancialSnapshotMigrationTest extends TestCase
         $groupedIndexes = [];
 
         foreach ($indexRows as $row) {
-            $groupedIndexes[$row->Key_name]['unique'] = !$row->Non_unique;
+            $groupedIndexes[$row->Key_name]['unique'] = ! $row->Non_unique;
             $groupedIndexes[$row->Key_name]['columns'][] = $row->Column_name;
         }
 
@@ -111,4 +111,3 @@ class FinancialSnapshotMigrationTest extends TestCase
         return false;
     }
 }
-

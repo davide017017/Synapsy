@@ -2,11 +2,11 @@
 
 namespace Modules\User\Http\Controllers\Auth;
 
-use Modules\User\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Modules\User\Http\Controllers\Controller;
 
 class PasswordController extends Controller
 {
@@ -27,4 +27,3 @@ class PasswordController extends Controller
         return back()->with('status', 'password-updated');
     }
 }
-

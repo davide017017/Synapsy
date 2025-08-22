@@ -5,17 +5,18 @@ namespace Modules\User\Providers;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Modules\User\Models\User;
+use Modules\User\Observers\UserObserver;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Modules\User\Models\User;
-use Modules\User\Observers\UserObserver;
 
 class UserServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
     protected string $name = 'User';
+
     protected string $nameLower = 'user';
 
     /**
@@ -36,14 +37,12 @@ class UserServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(module_path($this->name, 'Routes/api.php'));
 
         Factory::guessFactoryNamesUsing(
-            fn(string $modelName) =>
-            "Modules\\User\\Database\\Factories\\" . class_basename($modelName) . 'Factory'
+            fn (string $modelName) => 'Modules\\User\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
 
         // Register model observers
         User::observe(UserObserver::class);
     }
-
 
     /**
      * Register dei service provider interni.
@@ -97,17 +96,21 @@ class UserServiceProvider extends ServiceProvider
     {
         $configPath = module_path($this->name, config('modules.paths.generator.config.path'));
 
-        if (!is_dir($configPath)) return;
+        if (! is_dir($configPath)) {
+            return;
+        }
 
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($configPath));
 
         foreach ($iterator as $file) {
-            if (!$file->isFile() || $file->getExtension() !== 'php') continue;
+            if (! $file->isFile() || $file->getExtension() !== 'php') {
+                continue;
+            }
 
-            $relative = str_replace($configPath . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $relative = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
             $key = ($relative === 'config.php')
                 ? $this->nameLower
-                : $this->nameLower . '.' . str_replace(['/', '\\', '.php'], ['.', '.', ''], $relative);
+                : $this->nameLower.'.'.str_replace(['/', '\\', '.php'], ['.', '.', ''], $relative);
 
             $this->publishes([
                 $file->getPathname() => config_path($relative),
@@ -140,7 +143,7 @@ class UserServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace') . '\\' . $this->name . '\\View\\Components', $this->nameLower);
+        Blade::componentNamespace(config('modules.namespace').'\\'.$this->name.'\\View\\Components', $this->nameLower);
     }
 
     /**
@@ -168,4 +171,3 @@ class UserServiceProvider extends ServiceProvider
         return [];
     }
 }
-

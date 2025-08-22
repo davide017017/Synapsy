@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Auth;
 
-use Modules\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Modules\User\Models\User;
 use Tests\TestCase;
 
 class PasswordUpdateTest extends TestCase
@@ -26,9 +26,9 @@ class PasswordUpdateTest extends TestCase
             ->withSession(['_token' => 'test_csrf_token'])
             ->from('/profile')
             ->put('/password', [
-                '_token'                => 'test_csrf_token',
-                'current_password'      => 'password',
-                'password'              => 'new-password',
+                '_token' => 'test_csrf_token',
+                'current_password' => 'password',
+                'password' => 'new-password',
                 'password_confirmation' => 'new-password',
             ]);
 
@@ -54,9 +54,9 @@ class PasswordUpdateTest extends TestCase
             ->withSession(['_token' => 'test_csrf_token'])
             ->from('/profile')
             ->put('/password', [
-                '_token'                => 'test_csrf_token',
-                'current_password'      => 'wrong-password',
-                'password'              => 'new-password',
+                '_token' => 'test_csrf_token',
+                'current_password' => 'wrong-password',
+                'password' => 'new-password',
                 'password_confirmation' => 'new-password',
             ]);
 
@@ -65,4 +65,3 @@ class PasswordUpdateTest extends TestCase
             ->assertRedirect('/profile');
     }
 }
-
