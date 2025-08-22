@@ -190,4 +190,22 @@ class RecurringOperationController extends Controller
 
         return response()->json(['status' => 'ok']);
     }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: getNextOccurrences
+    // Dettagli: restituisce le prossime occorrenze per l'utente autenticato
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function getNextOccurrences(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $operations = RecurringOperation::where('user_id', $user->id)
+            ->whereNotNull('next_occurrence_date')
+            ->where('next_occurrence_date', '>=', now()->startOfDay())
+            ->orderBy('next_occurrence_date')
+            ->take(10)
+            ->get(['id', 'description', 'amount', 'type', 'next_occurrence_date']);
+
+        return response()->json($operations);
+    }
 }

@@ -32,9 +32,7 @@ class UserServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(module_path($this->name, 'Database/Migrations'));
 
-        // ✅ Carica anche le rotte API
-        $this->loadRoutesFrom(module_path($this->name, 'Routes/web.php'));
-        $this->loadRoutesFrom(module_path($this->name, 'Routes/api.php'));
+        // Le rotte sono gestite dal RouteServiceProvider del modulo.
 
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Modules\\User\\Database\\Factories\\'.class_basename($modelName).'Factory'

@@ -23,7 +23,7 @@ class VerifyNewEmail extends BaseVerifyEmail implements ShouldQueue
     protected function verificationUrl($notifiable)
     {
         return URL::temporarySignedRoute(
-            'verification.pending-email',
+            'api.verification.pending-email',
             Carbon::now()->addMinutes(config('auth.verification.expire', 60)),
             [
                 'id' => $notifiable->getKey(),

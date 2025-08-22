@@ -8,7 +8,6 @@ use Modules\AuditTrail\Http\Controllers\AuditTrailController;
 // ==========================
 Route::middleware(['auth:sanctum'])
     ->prefix('v1')
-    ->name('api.audittrail.')
     ->group(function () {
         Route::apiResource('audittrails', AuditTrailController::class)
             ->parameters(['audittrails' => 'audit_log'])
