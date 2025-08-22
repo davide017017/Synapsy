@@ -12,8 +12,8 @@ class RouteServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        $this->mapModuleApiRoutes();
-        $this->mapModuleWebRoutes();
+        // I moduli registrano le proprie rotte tramite i rispettivi RouteServiceProvider.
+        // Le chiamate globali sono state rimosse per evitare doppie registrazioni.
     }
 
     protected function mapModuleApiRoutes(): void

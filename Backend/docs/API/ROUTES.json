@@ -7,41 +7,56 @@
                 "module": "audittrails",
                 "method": "GET",
                 "uri": "api/v1/audittrails",
-                "name": "api.api.audittrail.audittrails.index",
+                "name": "api.audittrails.index",
                 "action": "Modules\\AuditTrail\\Http\\Controllers\\AuditTrailController@index",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "audittrails",
                 "method": "POST",
                 "uri": "api/v1/audittrails",
-                "name": "api.api.audittrail.audittrails.store",
+                "name": "api.audittrails.store",
                 "action": "Modules\\AuditTrail\\Http\\Controllers\\AuditTrailController@store",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "audittrails",
                 "method": "GET",
                 "uri": "api/v1/audittrails/{audit_log}",
-                "name": "api.api.audittrail.audittrails.show",
+                "name": "api.audittrails.show",
                 "action": "Modules\\AuditTrail\\Http\\Controllers\\AuditTrailController@show",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "audittrails",
                 "method": "PUT|PATCH",
                 "uri": "api/v1/audittrails/{audit_log}",
-                "name": "api.api.audittrail.audittrails.update",
+                "name": "api.audittrails.update",
                 "action": "Modules\\AuditTrail\\Http\\Controllers\\AuditTrailController@update",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "audittrails",
                 "method": "DELETE",
                 "uri": "api/v1/audittrails/{audit_log}",
-                "name": "api.api.audittrail.audittrails.destroy",
+                "name": "api.audittrails.destroy",
                 "action": "Modules\\AuditTrail\\Http\\Controllers\\AuditTrailController@destroy",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "avatars": [
@@ -51,7 +66,9 @@
                 "uri": "api/v1/avatars",
                 "name": "api.",
                 "action": "Closure",
-                "middleware": ["api"]
+                "middleware": [
+                    "api"
+                ]
             }
         ],
         "categories": [
@@ -59,41 +76,56 @@
                 "module": "categories",
                 "method": "GET",
                 "uri": "api/v1/categories",
-                "name": "api.",
+                "name": "api.categories.index",
                 "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@indexApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "categories",
                 "method": "POST",
                 "uri": "api/v1/categories",
-                "name": "api.",
+                "name": "api.categories.store",
                 "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@storeApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "categories",
                 "method": "GET",
                 "uri": "api/v1/categories/{category}",
-                "name": "api.",
+                "name": "api.categories.show",
                 "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@showApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "categories",
                 "method": "PUT",
                 "uri": "api/v1/categories/{category}",
-                "name": "api.",
+                "name": "api.categories.update",
                 "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@updateApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "categories",
                 "method": "DELETE",
                 "uri": "api/v1/categories/{category}",
-                "name": "api.",
+                "name": "api.categories.destroy",
                 "action": "Modules\\Categories\\Http\\Controllers\\CategoriesController@destroyApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "dashboard": [
@@ -103,7 +135,10 @@
                 "uri": "api/v1/dashboard",
                 "name": "api.dashboard.index",
                 "action": "Modules\\User\\Http\\Controllers\\DashboardController@index",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "entrate": [
@@ -111,57 +146,67 @@
                 "module": "entrate",
                 "method": "GET",
                 "uri": "api/v1/entrate",
-                "name": "api.",
+                "name": "api.entrate.index",
                 "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@indexApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "entrate",
                 "method": "POST",
                 "uri": "api/v1/entrate",
-                "name": "api.",
+                "name": "api.entrate.store",
                 "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@storeApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "entrate",
                 "method": "PATCH",
                 "uri": "api/v1/entrate/move-category",
-                "name": "api.",
+                "name": "api.entrate.move-category",
                 "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@moveCategory",
-                "middleware": ["api", "auth:sanctum"]
-            },
-            {
-                "module": "entrate",
-                "method": "GET",
-                "uri": "api/v1/entrate/next-occurrences",
-                "name": "api.",
-                "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@getNextOccurrences",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "entrate",
                 "method": "GET",
                 "uri": "api/v1/entrate/{entrata}",
-                "name": "api.",
+                "name": "api.entrate.show",
                 "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@showApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "entrate",
                 "method": "PUT",
                 "uri": "api/v1/entrate/{entrata}",
-                "name": "api.",
+                "name": "api.entrate.update",
                 "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@updateApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "entrate",
                 "method": "DELETE",
                 "uri": "api/v1/entrate/{entrata}",
-                "name": "api.",
+                "name": "api.entrate.destroy",
                 "action": "Modules\\Entrate\\Http\\Controllers\\EntrateController@destroyApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "financialoverview": [
@@ -169,9 +214,12 @@
                 "module": "financialoverview",
                 "method": "GET",
                 "uri": "api/v1/financialoverview",
-                "name": "api.api.financialoverview.index",
+                "name": "api.financialoverview.index",
                 "action": "Modules\\FinancialOverview\\Http\\Controllers\\FinancialOverviewController@indexApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "forgot-password": [
@@ -179,9 +227,12 @@
                 "module": "forgot-password",
                 "method": "POST",
                 "uri": "api/v1/forgot-password",
-                "name": "api.",
+                "name": "api.forgot-password",
                 "action": "Modules\\User\\Http\\Controllers\\ApiForgotPasswordController@sendResetLink",
-                "middleware": ["api", "throttle:5,1"]
+                "middleware": [
+                    "api",
+                    "throttle:5,1"
+                ]
             }
         ],
         "login": [
@@ -189,9 +240,12 @@
                 "module": "login",
                 "method": "POST",
                 "uri": "api/v1/login",
-                "name": "api.",
+                "name": "api.login",
                 "action": "Modules\\User\\Http\\Controllers\\ApiLoginController@login",
-                "middleware": ["api", "throttle:5,1"]
+                "middleware": [
+                    "api",
+                    "throttle:5,1"
+                ]
             }
         ],
         "logout": [
@@ -199,9 +253,12 @@
                 "module": "logout",
                 "method": "POST",
                 "uri": "api/v1/logout",
-                "name": "api.",
+                "name": "api.logout",
                 "action": "Modules\\User\\Http\\Controllers\\ApiLoginController@logout",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "me": [
@@ -211,7 +268,10 @@
                 "uri": "api/v1/me",
                 "name": "api.me.show",
                 "action": "Closure",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "profile": [
@@ -221,7 +281,11 @@
                 "uri": "api/v1/profile",
                 "name": "api.profile.update",
                 "action": "Modules\\User\\Http\\Controllers\\ProfileController@update",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             },
             {
                 "module": "profile",
@@ -229,7 +293,11 @@
                 "uri": "api/v1/profile",
                 "name": "api.profile.destroy",
                 "action": "Modules\\User\\Http\\Controllers\\ProfileController@destroy",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             },
             {
                 "module": "profile",
@@ -237,7 +305,10 @@
                 "uri": "api/v1/profile",
                 "name": "api.profile.show",
                 "action": "Modules\\User\\Http\\Controllers\\ProfileController@show",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "profile",
@@ -245,7 +316,11 @@
                 "uri": "api/v1/profile/pending-email",
                 "name": "api.profile.pending-email.cancel",
                 "action": "Modules\\User\\Http\\Controllers\\ProfileController@cancelPendingEmail",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             },
             {
                 "module": "profile",
@@ -253,7 +328,11 @@
                 "uri": "api/v1/profile/pending-email/resend",
                 "name": "api.profile.pending-email.resend",
                 "action": "Modules\\User\\Http\\Controllers\\ProfileController@resendPendingEmail",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             }
         ],
         "recurring-operations": [
@@ -263,7 +342,10 @@
                 "uri": "api/v1/recurring-operations",
                 "name": "api.recurring-operations.index",
                 "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@index",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "recurring-operations",
@@ -271,7 +353,10 @@
                 "uri": "api/v1/recurring-operations",
                 "name": "api.recurring-operations.store",
                 "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@store",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "recurring-operations",
@@ -279,7 +364,10 @@
                 "uri": "api/v1/recurring-operations/move-category",
                 "name": "api.recurring-operations.move-category",
                 "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@moveCategory",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "recurring-operations",
@@ -287,7 +375,10 @@
                 "uri": "api/v1/recurring-operations/next-occurrences",
                 "name": "api.recurring-operations.next-occurrences",
                 "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@getNextOccurrences",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "recurring-operations",
@@ -295,7 +386,10 @@
                 "uri": "api/v1/recurring-operations/{recurring_operation}",
                 "name": "api.recurring-operations.show",
                 "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@show",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "recurring-operations",
@@ -303,7 +397,10 @@
                 "uri": "api/v1/recurring-operations/{recurring_operation}",
                 "name": "api.recurring-operations.update",
                 "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@update",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "recurring-operations",
@@ -311,7 +408,10 @@
                 "uri": "api/v1/recurring-operations/{recurring_operation}",
                 "name": "api.recurring-operations.destroy",
                 "action": "Modules\\RecurringOperations\\Http\\Controllers\\RecurringOperationController@destroy",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "register": [
@@ -319,9 +419,12 @@
                 "module": "register",
                 "method": "POST",
                 "uri": "api/v1/register",
-                "name": "api.",
+                "name": "api.register",
                 "action": "Modules\\User\\Http\\Controllers\\ApiRegisterController@register",
-                "middleware": ["api", "throttle:5,1"]
+                "middleware": [
+                    "api",
+                    "throttle:5,1"
+                ]
             }
         ],
         "reset-password": [
@@ -329,9 +432,12 @@
                 "module": "reset-password",
                 "method": "POST",
                 "uri": "api/v1/reset-password",
-                "name": "api.",
+                "name": "api.reset-password",
                 "action": "Modules\\User\\Http\\Controllers\\ApiResetPasswordController@reset",
-                "middleware": ["api", "throttle:5,1"]
+                "middleware": [
+                    "api",
+                    "throttle:5,1"
+                ]
             }
         ],
         "spese": [
@@ -339,57 +445,67 @@
                 "module": "spese",
                 "method": "GET",
                 "uri": "api/v1/spese",
-                "name": "api.",
+                "name": "api.spese.index",
                 "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@indexApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "spese",
                 "method": "POST",
                 "uri": "api/v1/spese",
-                "name": "api.",
+                "name": "api.spese.store",
                 "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@storeApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "spese",
                 "method": "PATCH",
                 "uri": "api/v1/spese/move-category",
-                "name": "api.",
+                "name": "api.spese.move-category",
                 "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@moveCategory",
-                "middleware": ["api", "auth:sanctum"]
-            },
-            {
-                "module": "spese",
-                "method": "GET",
-                "uri": "api/v1/spese/next-occurrences",
-                "name": "api.",
-                "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@getNextOccurrences",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "spese",
                 "method": "GET",
                 "uri": "api/v1/spese/{spesa}",
-                "name": "api.",
+                "name": "api.spese.show",
                 "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@showApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "spese",
                 "method": "PUT",
                 "uri": "api/v1/spese/{spesa}",
-                "name": "api.",
+                "name": "api.spese.update",
                 "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@updateApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             },
             {
                 "module": "spese",
                 "method": "DELETE",
                 "uri": "api/v1/spese/{spesa}",
-                "name": "api.",
+                "name": "api.spese.destroy",
                 "action": "Modules\\Spese\\Http\\Controllers\\SpeseController@destroyApi",
-                "middleware": ["api", "auth:sanctum"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
             }
         ],
         "users": [
@@ -399,7 +515,11 @@
                 "uri": "api/v1/users",
                 "name": "api.users.index",
                 "action": "Modules\\User\\Http\\Controllers\\UserController@index",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             },
             {
                 "module": "users",
@@ -407,7 +527,11 @@
                 "uri": "api/v1/users",
                 "name": "api.users.store",
                 "action": "Modules\\User\\Http\\Controllers\\UserController@store",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             },
             {
                 "module": "users",
@@ -415,7 +539,11 @@
                 "uri": "api/v1/users/{user}",
                 "name": "api.users.show",
                 "action": "Modules\\User\\Http\\Controllers\\UserController@show",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             },
             {
                 "module": "users",
@@ -423,7 +551,11 @@
                 "uri": "api/v1/users/{user}",
                 "name": "api.users.update",
                 "action": "Modules\\User\\Http\\Controllers\\UserController@update",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             },
             {
                 "module": "users",
@@ -431,7 +563,11 @@
                 "uri": "api/v1/users/{user}",
                 "name": "api.users.destroy",
                 "action": "Modules\\User\\Http\\Controllers\\UserController@destroy",
-                "middleware": ["api", "auth:sanctum", "block-demo-user"]
+                "middleware": [
+                    "api",
+                    "auth:sanctum",
+                    "block-demo-user"
+                ]
             }
         ],
         "verify-email": [
@@ -439,9 +575,11 @@
                 "module": "verify-email",
                 "method": "GET",
                 "uri": "api/v1/verify-email/{id}/{hash}",
-                "name": "api.api.verification.verify",
+                "name": "api.verification.verify",
                 "action": "Modules\\User\\Http\\Controllers\\ApiVerifyEmailController",
-                "middleware": ["api"]
+                "middleware": [
+                    "api"
+                ]
             }
         ],
         "verify-new-email": [
@@ -451,7 +589,9 @@
                 "uri": "api/v1/verify-new-email/{id}/{hash}",
                 "name": "api.verification.pending-email",
                 "action": "Modules\\User\\Http\\Controllers\\VerifyPendingEmailController",
-                "middleware": ["api"]
+                "middleware": [
+                    "api"
+                ]
             }
         ]
     }

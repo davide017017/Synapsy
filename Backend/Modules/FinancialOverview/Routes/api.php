@@ -14,6 +14,6 @@ use Modules\FinancialOverview\Http\Controllers\FinancialOverviewController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     // Panoramica finanziaria (API JSON)
     Route::get('financialoverview', [FinancialOverviewController::class, 'indexApi'])
-        ->name('api.financialoverview.index');
+        ->name('financialoverview.index');
     // Puoi aggiungere qui altre rotte API (store, update, ecc) se servono
 });

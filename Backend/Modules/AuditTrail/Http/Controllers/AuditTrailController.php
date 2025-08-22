@@ -3,81 +3,101 @@
 namespace Modules\AuditTrail\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\AuditTrail\Models\AuditLog;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Controller: AuditTrailController
+// Dettagli: gestione CRUD dei log di audit via API JSON
+// ─────────────────────────────────────────────────────────────────────────────
 class AuditTrailController extends Controller
 {
-    // ===========================================
-    // Elenco log (dashboard/admin)
-    // ===========================================
-    public function index(Request $request)
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: index
+    // Dettagli: lista paginata (id, user_id, action, created_at)
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function index(Request $request): JsonResponse
     {
-        // Esempio: ordina per data, ricerca per utente/azione/oggetto (espandi come vuoi)
-        $query = AuditLog::query()
-            ->with('user')    // eager load user (se definito in model)
-            ->latest();
+        $logs = AuditLog::select('id', 'user_id', 'action', 'created_at')
+            ->latest()
+            ->paginate($request->query('per_page', 30));
 
-        // Filtro per utente
-        if ($request->filled('user_id')) {
-            $query->where('user_id', $request->user_id);
-        }
-        // Filtro per azione (created/updated/deleted)
-        if ($request->filled('action')) {
-            $query->where('action', $request->action);
-        }
-        // Filtro per modello
-        if ($request->filled('auditable_type')) {
-            $query->where('auditable_type', $request->auditable_type);
-        }
-
-        $logs = $query->paginate(30);
-
-        // Se vuoi una view Blade:
-        return view('audittrail::index', compact('logs'));
-        // Se vuoi API JSON, usa:
-        // return response()->json($logs);
+        return response()->json($logs);
     }
 
-    // ===========================================
-    // Dettaglio singolo log
-    // ===========================================
-    public function show($id)
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: show
+    // Dettagli: dettaglio singolo record
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function show(int $id): JsonResponse
     {
-        $log = AuditLog::with('user')->findOrFail($id);
+        $log = AuditLog::findOrFail($id);
 
-        return view('audittrail::show', compact('log'));
-        // return response()->json($log);
+        return response()->json($log);
     }
 
-    // CRUD NON USATI: per sicurezza li lascio vuoti/disabilitati
-
-    public function create()
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: store
+    // Dettagli: crea un nuovo log
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function store(Request $request): JsonResponse
     {
-        abort(404);
+        $validated = $request->validate([
+            'user_id' => 'nullable|integer|exists:users,id',
+            'action' => 'required|string',
+            'auditable_type' => 'required|string',
+            'auditable_id' => 'required|integer',
+            'meta' => 'array|nullable',
+        ]);
+
+        $log = AuditLog::create([
+            'user_id' => $validated['user_id'] ?? null,
+            'action' => $validated['action'],
+            'auditable_type' => $validated['auditable_type'],
+            'auditable_id' => $validated['auditable_id'],
+            'new_values' => $validated['meta'] ?? null,
+        ]);
+
+        return response()->json($log, 201);
     }
 
-    public function store(Request $request)
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: update
+    // Dettagli: aggiorna i campi ammessi
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function update(Request $request, int $id): JsonResponse
     {
-        abort(404);
+        $log = AuditLog::findOrFail($id);
+
+        $validated = $request->validate([
+            'user_id' => 'nullable|integer|exists:users,id',
+            'action' => 'sometimes|string',
+            'auditable_type' => 'sometimes|string',
+            'auditable_id' => 'sometimes|integer',
+            'meta' => 'array|nullable',
+        ]);
+
+        $log->update([
+            'user_id' => $validated['user_id'] ?? $log->user_id,
+            'action' => $validated['action'] ?? $log->action,
+            'auditable_type' => $validated['auditable_type'] ?? $log->auditable_type,
+            'auditable_id' => $validated['auditable_id'] ?? $log->auditable_id,
+            'new_values' => $validated['meta'] ?? $log->new_values,
+        ]);
+
+        return response()->json($log);
     }
 
-    public function edit($id)
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: destroy
+    // Dettagli: elimina un record
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function destroy(int $id): JsonResponse
     {
-        abort(404);
-    }
+        $log = AuditLog::findOrFail($id);
+        $log->delete();
 
-    public function update(Request $request, $id)
-    {
-        abort(404);
-    }
-
-    public function destroy($id)
-    {
-        abort(404);
+        return response()->json(null, 204);
     }
 }
-// Questo controller gestisce le richieste per visualizzare i log di audit.
-// - `index`: mostra l'elenco dei log con filtri opzionali (utente, azione, modello).
-// - `show`: mostra i dettagli di un singolo log.
-// - Le operazioni di creazione, aggiornamento ed eliminazione sono disabilitate per sicurezza.

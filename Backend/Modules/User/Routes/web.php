@@ -10,7 +10,7 @@ Route::middleware(['web'])->group(function () {
     require __DIR__.'/auth.php';
 
     // Dashboard (solo auth per ora)
-    Route::get('/dashboard', DashboardController::class)
+    Route::get('/dashboard', [DashboardController::class, 'index'])
         ->middleware('auth')
         ->name('dashboard');
 

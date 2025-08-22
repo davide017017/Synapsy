@@ -39,11 +39,20 @@ Route::prefix('v1')->group(function () {
     // =========================================================================
     // 🔐 Auth / Registrazione
     // =========================================================================
-    Route::post('login', [ApiLoginController::class, 'login'])->middleware('throttle:5,1');
-    Route::post('register', [ApiRegisterController::class, 'register'])->middleware('throttle:5,1');
-    Route::get('verify-email/{id}/{hash}', ApiVerifyEmailController::class)->name('api.verification.verify');
-    Route::post('forgot-password', [ApiForgotPasswordController::class, 'sendResetLink'])->middleware('throttle:5,1');
-    Route::post('reset-password', [ApiResetPasswordController::class, 'reset'])->middleware('throttle:5,1');
+    Route::post('login', [ApiLoginController::class, 'login'])
+        ->middleware('throttle:5,1')
+        ->name('login');
+    Route::post('register', [ApiRegisterController::class, 'register'])
+        ->middleware('throttle:5,1')
+        ->name('register');
+    Route::get('verify-email/{id}/{hash}', ApiVerifyEmailController::class)
+        ->name('verification.verify');
+    Route::post('forgot-password', [ApiForgotPasswordController::class, 'sendResetLink'])
+        ->middleware('throttle:5,1')
+        ->name('forgot-password');
+    Route::post('reset-password', [ApiResetPasswordController::class, 'reset'])
+        ->middleware('throttle:5,1')
+        ->name('reset-password');
     Route::get('verify-new-email/{id}/{hash}', VerifyPendingEmailController::class)
         ->name('verification.pending-email');
 
@@ -51,16 +60,25 @@ Route::prefix('v1')->group(function () {
     // 🔒 ROTTE PROTETTE
     // =========================================================================
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('logout', [ApiLoginController::class, 'logout']);
-        Route::get('me', fn (Request $r) => $r->user())->name('me.show');
+        Route::post('logout', [ApiLoginController::class, 'logout'])
+            ->name('logout');
+        Route::get('me', fn (Request $r) => $r->user())
+            ->name('me.show');
         Route::middleware('block-demo-user')->group(function () {
-            Route::apiResource('users', UserController::class)->names('users');
-            Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
-            Route::delete('profile/pending-email', [ProfileController::class, 'cancelPendingEmail'])->name('profile.pending-email.cancel');
-            Route::post('profile/pending-email/resend', [ProfileController::class, 'resendPendingEmail'])->name('profile.pending-email.resend');
-            Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+            Route::apiResource('users', UserController::class)
+                ->names('users');
+            Route::put('profile', [ProfileController::class, 'update'])
+                ->name('profile.update');
+            Route::delete('profile/pending-email', [ProfileController::class, 'cancelPendingEmail'])
+                ->name('profile.pending-email.cancel');
+            Route::post('profile/pending-email/resend', [ProfileController::class, 'resendPendingEmail'])
+                ->name('profile.pending-email.resend');
+            Route::delete('profile', [ProfileController::class, 'destroy'])
+                ->name('profile.destroy');
         });
-        Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
-        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('profile', [ProfileController::class, 'show'])
+            ->name('profile.show');
+        Route::get('dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard.index');
     });
 });

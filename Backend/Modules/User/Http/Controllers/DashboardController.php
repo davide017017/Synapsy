@@ -2,18 +2,55 @@
 
 namespace Modules\User\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Modules\Entrate\Models\Entrata;
+use Modules\Spese\Models\Spesa;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Controller: DashboardController
+// Dettagli: restituisce riepilogo del mese corrente in formato JSON
+// ─────────────────────────────────────────────────────────────────────────────
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request): View
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: index
+    // Dettagli: totali e conteggi delle operazioni del mese corrente
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function index(): JsonResponse
     {
-        $user = Auth::user();
+        $user = auth()->user();
+        $start = now()->startOfMonth()->toDateString();
+        $end = now()->toDateString();
 
-        return view('user::dashboard');
+        $entrateSum = Entrata::where('user_id', $user->id)
+            ->whereBetween('date', [$start, $end])
+            ->sum('amount');
+        $speseSum = Spesa::where('user_id', $user->id)
+            ->whereBetween('date', [$start, $end])
+            ->sum('amount');
 
+        $entrateCount = Entrata::where('user_id', $user->id)
+            ->whereBetween('date', [$start, $end])
+            ->count();
+        $speseCount = Spesa::where('user_id', $user->id)
+            ->whereBetween('date', [$start, $end])
+            ->count();
+
+        return response()->json([
+            'period' => [
+                'start' => $start,
+                'end' => $end,
+            ],
+            'totals' => [
+                'entrate_month' => $entrateSum,
+                'spese_month' => $speseSum,
+                'balance_month' => $entrateSum - $speseSum,
+            ],
+            'counts' => [
+                'entrate' => $entrateCount,
+                'spese' => $speseCount,
+            ],
+        ]);
     }
 }

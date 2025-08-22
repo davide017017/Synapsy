@@ -3,83 +3,95 @@
 namespace Modules\User\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Modules\User\Models\User;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Controller: UserController
+// Dettagli: CRUD utenti via API JSON
+// ─────────────────────────────────────────────────────────────────────────────
 class UserController extends Controller
 {
-    // ============================
-    // Index - Lista utenti
-    // ============================
-
-    /**
-     * Mostra la lista degli utenti.
-     */
-    public function index()
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: index
+    // Dettagli: lista utenti paginata
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function index(Request $request): JsonResponse
     {
-        return view('user::index');
+        $users = User::select('id', 'name', 'surname', 'email', 'is_admin')
+            ->paginate($request->query('per_page', 30));
+
+        return response()->json($users);
     }
 
-    // ============================
-    // Create - Nuovo utente
-    // ============================
-
-    /**
-     * Mostra il form per creare un nuovo utente.
-     */
-    public function create()
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: show
+    // Dettagli: dettaglio utente
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function show(int $id): JsonResponse
     {
-        return view('user::create');
+        $user = User::select('id', 'name', 'surname', 'email', 'is_admin')
+            ->findOrFail($id);
+
+        return response()->json($user);
     }
 
-    /**
-     * Salva un nuovo utente.
-     */
-    public function store(Request $request)
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: store
+    // Dettagli: crea un nuovo utente
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function store(Request $request): JsonResponse
     {
-        // Da implementare
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'surname' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'is_admin' => 'boolean',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        $user = User::create($validated);
+
+        return response()->json($user, 201);
     }
 
-    // ============================
-    // Show - Dettaglio utente
-    // ============================
-
-    /**
-     * Mostra i dettagli di un utente.
-     */
-    public function show($id)
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: update
+    // Dettagli: aggiorna un utente esistente
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function update(Request $request, int $id): JsonResponse
     {
-        return view('user::show');
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string',
+            'surname' => 'sometimes|string',
+            'email' => 'sometimes|email|unique:users,email,'.$user->id,
+            'password' => 'sometimes|string|min:8',
+            'is_admin' => 'sometimes|boolean',
+        ]);
+
+        if (isset($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return response()->json($user);
     }
 
-    // ============================
-    // Edit - Modifica utente
-    // ============================
-
-    /**
-     * Mostra il form per modificare un utente.
-     */
-    public function edit($id)
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Metodo: destroy
+    // Dettagli: elimina un utente
+    // ─────────────────────────────────────────────────────────────────────────────
+    public function destroy(int $id): JsonResponse
     {
-        return view('user::edit');
-    }
+        $user = User::findOrFail($id);
+        $user->delete();
 
-    /**
-     * Aggiorna un utente esistente.
-     */
-    public function update(Request $request, $id)
-    {
-        // Da implementare
-    }
-
-    // ============================
-    // Destroy - Elimina utente
-    // ============================
-
-    /**
-     * Elimina un utente.
-     */
-    public function destroy($id)
-    {
-        // Da implementare
+        return response()->json(null, 204);
     }
 }
