@@ -206,6 +206,19 @@
                 "middleware": ["api", "auth:sanctum"]
             }
         ],
+        "ml": [
+            {
+                "module": "ml",
+                "method": "POST",
+                "uri": "api/v1/ml/suggest-category",
+                "name": "api.ml.suggest-category",
+                "action": "Modules\\Categories\\Http\\Controllers\\CategorySuggestionApiController@predict",
+                "middleware": [
+                    "api",
+                    "auth:sanctum"
+                ]
+            }
+        ],
         "profile": [
             {
                 "module": "profile",
