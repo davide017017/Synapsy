@@ -86,6 +86,12 @@ php artisan routes:export-api-md   --path=docs/API/ROUTES.md   --prefix=/api/v1
 |---|---|---|---|
 | GET | `api/v1/me` | api.me.show | `Closure` |
 
+## 🧩 Modulo: `ml`
+---
+| Method | URI | Name | Action |
+|---|---|---|---|
+| POST | `api/v1/ml/suggest-category` | api.ml.suggest-category | `Modules\Categories\Http\Controllers\CategorySuggestionApiController@predict` |
+
 ## 🧩 Modulo: `profile`
 ---
 | Method | URI | Name | Action |

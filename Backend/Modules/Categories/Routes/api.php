@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Categories\Http\Controllers\CategoriesController;
+use Modules\Categories\Http\Controllers\CategorySuggestionApiController;
 
 Route::middleware(['auth:sanctum'])
     ->prefix('v1')
@@ -17,3 +18,8 @@ Route::middleware(['auth:sanctum'])
         Route::delete('categories/{category}', [CategoriesController::class, 'destroyApi'])
             ->name('categories.destroy');
     });
+
+Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+    Route::post('ml/suggest-category', [CategorySuggestionApiController::class, 'predict'])
+        ->name('api.ml.suggest-category');
+});
