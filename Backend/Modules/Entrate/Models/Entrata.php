@@ -1,12 +1,18 @@
 <?php
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Modello Entrata
+// Dettagli: rappresenta una singola entrata e include scope comuni
+// ─────────────────────────────────────────────────────────────────────────────
+
 namespace Modules\Entrate\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\User\Models\User;
 use Modules\Categories\Models\Category;
+use Modules\User\Models\User;
 
 /**
  * Modello per le entrate.
@@ -20,7 +26,6 @@ use Modules\Categories\Models\Category;
  * @property string|null $notes
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
  * @property-read User $user
  * @property-read Category|null $category
  *
@@ -61,7 +66,7 @@ class Entrata extends Model
     {
         return [
             'amount' => 'float',
-            'date'   => 'date',
+            'date' => 'date',
         ];
     }
 
@@ -77,6 +82,20 @@ class Entrata extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // ===================================================================
+    // Local Scopes
+    // ===================================================================
+
+    public function scopeOfUser(Builder $query, int $userId): Builder
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeBetweenDates(Builder $query, string $from, string $to): Builder
+    {
+        return $query->whereBetween('date', [$from, $to]);
     }
 
     // ============================
@@ -98,4 +117,3 @@ class Entrata extends Model
     //     return number_format($this->amount, 2) . ' €';
     // }
 }
-

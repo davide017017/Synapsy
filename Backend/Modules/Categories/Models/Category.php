@@ -1,9 +1,15 @@
 <?php
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Modello Category
+// Dettagli: categorie per transazioni, con scope di utilità
+// ─────────────────────────────────────────────────────────────────────────────
+
 namespace Modules\Categories\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Categories\Database\Factories\CategoryFactory;
 use Modules\User\Models\User;
@@ -17,7 +23,6 @@ use Modules\User\Models\User;
  * @property string $type
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- *
  * @property-read User $user
  *
  * @method static CategoryFactory factory($count = null, array $state = [])
@@ -51,8 +56,6 @@ class Category extends Model
 
     protected $casts = [
         'type' => 'string',
-        'color',
-        'icon',
     ];
 
     // ============================
@@ -62,6 +65,20 @@ class Category extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    // ===================================================================
+    // Local Scopes
+    // ===================================================================
+
+    public function scopeOfUser(Builder $query, int $userId): Builder
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeOfType(Builder $query, string $type): Builder
+    {
+        return $query->where('type', $type);
     }
 
     // ============================
@@ -87,4 +104,3 @@ class Category extends Model
         return CategoryFactory::new();
     }
 }
-

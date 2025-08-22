@@ -1,0 +1,55 @@
+erDiagram
+    users {
+        bigint id PK
+        string name
+        string email
+        boolean is_admin
+    }
+    categories {
+        bigint id PK
+        bigint user_id FK
+        string name
+        string type
+    }
+    entrate {
+        bigint id PK
+        bigint user_id FK
+        bigint category_id FK
+        decimal amount
+        date date
+    }
+    spese {
+        bigint id PK
+        bigint user_id FK
+        bigint category_id FK
+        decimal amount
+        date date
+    }
+    recurring_operations {
+        bigint id PK
+        bigint user_id FK
+        bigint category_id FK
+        string type
+        decimal amount
+        date next_occurrence_date
+    }
+    financial_snapshots {
+        bigint id PK
+        bigint user_id FK
+        string period_type
+        decimal balance
+    }
+    audit_logs {
+        bigint id PK
+        bigint user_id FK
+        string action
+    }
+    users ||--o{ categories : owns
+    users ||--o{ entrate : owns
+    users ||--o{ spese : owns
+    users ||--o{ recurring_operations : owns
+    users ||--o{ financial_snapshots : owns
+    users ||--o{ audit_logs : logs
+    categories ||--o{ entrate : categorizes
+    categories ||--o{ spese : categorizes
+    categories ||--o{ recurring_operations : categorizes

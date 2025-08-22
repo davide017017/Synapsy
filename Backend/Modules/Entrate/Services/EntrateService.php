@@ -1,12 +1,17 @@
 <?php
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Servizio Entrate
+// Dettagli: logica di business per la gestione delle entrate
+// ─────────────────────────────────────────────────────────────────────────────
+
 namespace Modules\Entrate\Services;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Entrate\Models\Entrata;
 use Modules\User\Models\User;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Servizio per la gestione delle Entrate utente.
@@ -19,14 +24,20 @@ class EntrateService
     // ─────────────────────────────────────────────────────────────────────────
     public function listForUserPaginated($user, array $filters, string $sort, int $page, int $perPage): LengthAwarePaginator
     {
-        $q = Entrata::query()->where('user_id', $user->id);
+        $q = Entrata::query()->with('category')->where('user_id', $user->id);
 
-        if (!empty($filters['start_date'])) $q->whereDate('date', '>=', $filters['start_date']);
-        if (!empty($filters['end_date']))   $q->whereDate('date', '<=', $filters['end_date']);
-        if (!empty($filters['category_id'])) $q->where('category_id', $filters['category_id']);
-        if (!empty($filters['description'])) {
+        if (! empty($filters['start_date'])) {
+            $q->whereDate('date', '>=', $filters['start_date']);
+        }
+        if (! empty($filters['end_date'])) {
+            $q->whereDate('date', '<=', $filters['end_date']);
+        }
+        if (! empty($filters['category_id'])) {
+            $q->where('category_id', $filters['category_id']);
+        }
+        if (! empty($filters['description'])) {
             $term = $filters['description'];
-            $q->where(fn(Builder $qq) => $qq
+            $q->where(fn (Builder $qq) => $qq
                 ->where('description', 'like', "%{$term}%")
                 ->orWhere('notes', 'like', "%{$term}%"));
         }
@@ -36,9 +47,13 @@ class EntrateService
         foreach ($parts as $s) {
             $dir = str_starts_with($s, '-') ? 'desc' : 'asc';
             $col = ltrim($s, '-');
-            if (in_array($col, $allowed, true)) $q->orderBy($col, $dir);
+            if (in_array($col, $allowed, true)) {
+                $q->orderBy($col, $dir);
+            }
         }
-        if (empty($parts)) $q->orderBy('date', 'desc');
+        if (empty($parts)) {
+            $q->orderBy('date', 'desc');
+        }
 
         return $q->paginate($perPage, ['*'], 'page', $page);
     }
@@ -54,19 +69,19 @@ class EntrateService
     {
         $query = $user->entrate()->with('category');
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $query->whereDate('date', '>=', $filters['start_date']);
         }
 
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $query->whereDate('date', '<=', $filters['end_date']);
         }
 
-        if (!empty($filters['description'])) {
-            $query->where('description', 'like', '%' . $filters['description'] . '%');
+        if (! empty($filters['description'])) {
+            $query->where('description', 'like', '%'.$filters['description'].'%');
         }
 
-        if (!empty($filters['category_id'])) {
+        if (! empty($filters['category_id'])) {
             $validCategory = $user->categories()
                 ->where('type', 'entrata')
                 ->find($filters['category_id']);
@@ -106,10 +121,10 @@ class EntrateService
     {
         return $user->entrate()->create([
             'description' => $data['description'],
-            'amount'      => $data['amount'],
-            'date'        => $data['date'],
+            'amount' => $data['amount'],
+            'date' => $data['date'],
             'category_id' => $data['category_id'] ?? null,
-            'notes'       => $data['notes'] ?? null,
+            'notes' => $data['notes'] ?? null,
         ]);
     }
 
@@ -128,10 +143,10 @@ class EntrateService
     {
         return $entrata->update([
             'description' => $data['description'],
-            'amount'      => $data['amount'],
-            'date'        => $data['date'],
+            'amount' => $data['amount'],
+            'date' => $data['date'],
             'category_id' => $data['category_id'] ?? null,
-            'notes'       => $data['notes'] ?? null,
+            'notes' => $data['notes'] ?? null,
         ]);
     }
 
