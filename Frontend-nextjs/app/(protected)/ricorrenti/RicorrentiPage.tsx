@@ -8,8 +8,8 @@
 import { useState } from "react";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
 import { Ricorrenza } from "@/types/models/ricorrenza";
-import CardTotaliAnnui from "./card/CardTotaliAnnui"; 
-import CardGraficoPagamenti from "./card/CardGraficoPagamenti";
+import CardTotaliAnnui from "./Card/CardTotaliAnnui";
+import CardGraficoPagamenti from "./Card/CardGraficoPagamenti";
 import ListaRicorrenzePerFrequenza from "./liste/ListaRicorrenzePerFrequenza";
 import ListaProssimiPagamenti from "./liste/ListaProssimiPagamenti";
 import AreaGraficiRicorrenze from "./grafici/AreaGraficiRicorrenze";
