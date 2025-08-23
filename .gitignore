@@ -89,3 +89,6 @@ TODO-Roadmap.md
 Script-Codex.md
 Git-Flow.md
 
+ml_category_suggester/ 
+ml_category_suggester/.venv/ 
+ml_category_suggester/__pycache__/
