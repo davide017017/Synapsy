@@ -1,10 +1,11 @@
 "use client";
 
-// ======================================================
-// ProfilePage.tsx — Avatar a sinistra, dati a destra
-// ======================================================
+// ╔════════════════════════════════════════════════════════════════════════════╗
+// ║ ProfilePage.tsx — Avatar a sinistra, dati a destra                        ║
+// ╚════════════════════════════════════════════════════════════════════════════╝
 
 import { useEffect, useState } from "react";
+import Image from "next/image"; // ← Next Image per evitare warning @next/next/no-img-element
 import { motion, AnimatePresence } from "framer-motion";
 import ProfileRow from "./components/ProfileRow";
 import ThemeSelectorRow from "./components/ThemeSelectorRow";
@@ -18,9 +19,9 @@ import LegalLinks from "@/app/components/legal/LegalLinks";
 import DeleteAccountSection from "./components/DeleteAccountSection";
 import getAvatarUrl from "@/utils/getAvatarUrl";
 
-// ======================================================
-// Componente principale
-// ======================================================
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Componente principale
+// ─────────────────────────────────────────────────────────────────────────────
 export default function ProfilePage() {
     const { user, update } = useUser();
     const { setTheme } = useThemeContext();
@@ -32,15 +33,23 @@ export default function ProfilePage() {
 
     const isDemo = user?.email === "demo@synapsy.app";
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Sync form con utente
+    // ─────────────────────────────────────────────────────────────────────────
     useEffect(() => {
         if (user) setForm(user);
     }, [user]);
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Handlers base (edit / change / save / cancel / avatar)
+    // ─────────────────────────────────────────────────────────────────────────
     const handleEdit = (field: keyof UserType) => {
         setBackup((b) => ({ ...b, [field]: form[field] }));
         setEditing({ ...editing, [field]: true });
     };
+
     const handleChange = (field: keyof UserType, value: string) => setForm({ ...form, [field]: value });
+
     const handleSave = async (field: keyof UserType) => {
         if (field === "theme") setTheme(form.theme, false);
         await update({ [field]: form[field] } as Partial<UserType>);
@@ -50,6 +59,7 @@ export default function ProfilePage() {
             return rest;
         });
     };
+
     const handleCancel = (field: keyof UserType) => {
         setForm((f) => ({ ...f, [field]: backup[field] as any }));
         setEditing({ ...editing, [field]: false });
@@ -58,6 +68,7 @@ export default function ProfilePage() {
             return rest;
         });
     };
+
     const handleAvatarChange = async (val: string) => {
         await update({ avatar: val });
         setShowPicker(false);
@@ -65,6 +76,9 @@ export default function ProfilePage() {
 
     const avatarUrl = getAvatarUrl(form.avatar);
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Render
+    // ─────────────────────────────────────────────────────────────────────────
     return (
         <div className="max-w-3xl mx-auto">
             {isDemo && (
@@ -72,18 +86,23 @@ export default function ProfilePage() {
                     Questo è un account demo. I dati non possono essere modificati.
                 </div>
             )}
+
             <PendingEmailNotice />
+
             {/* ───────────────────────────── */}
             {/*   DUE COLONNE SU MD+         */}
             {/* ───────────────────────────── */}
             <div className="flex flex-col md:flex-row md:items-start md:gap-8">
-                {/* -------- Colonna avatar -------- */}
+                {/* ── Colonna avatar ── */}
                 <div className="flex justify-center md:justify-start md:min-w-[160px] md:pt-4">
                     <motion.div whileHover={isDemo ? {} : { scale: 1.07 }} className="relative group">
-                        <img
+                        {/* Next/Image al posto di <img /> */}
+                        <Image
                             src={avatarUrl}
                             alt="Avatar"
-                            className="w-50 h-72 rounded-full object-cover border-2 shadow transition group-hover:ring-2"
+                            width={200} // ← dimensioni esplicite per Next Image
+                            height={288} //    (mantiene l’aspect simile al vecchio w-50 h-72)
+                            className="rounded-full object-cover border-2 shadow transition group-hover:ring-2"
                             style={{
                                 borderColor: "hsl(var(--c-primary, 205 66% 49%))",
                                 boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
@@ -91,7 +110,9 @@ export default function ProfilePage() {
                             }}
                             onClick={isDemo ? undefined : () => setShowPicker(true)}
                             title="Cambia avatar"
+                            priority
                         />
+
                         {/* Badge matita (edit) */}
                         {!isDemo && (
                             <button
@@ -112,7 +133,7 @@ export default function ProfilePage() {
                     </motion.div>
                 </div>
 
-                {/* -------- Colonna dati profilo -------- */}
+                {/* ── Colonna dati profilo ── */}
                 <div className="flex-1 flex flex-col gap-4">
                     {/* Intestazione */}
                     <div className="flex flex-col items-center md:items-start gap-1 mb-2 mt-4 md:mt-0">
@@ -141,6 +162,7 @@ export default function ProfilePage() {
                             onCancel={() => handleCancel("name")}
                             disabled={isDemo}
                         />
+
                         <ProfileRow
                             label="Cognome"
                             value={form.surname ?? ""}
@@ -151,6 +173,7 @@ export default function ProfilePage() {
                             onCancel={() => handleCancel("surname")}
                             disabled={isDemo}
                         />
+
                         <ProfileRow
                             label="Username"
                             value={form.username}
@@ -161,6 +184,7 @@ export default function ProfilePage() {
                             onCancel={() => handleCancel("username")}
                             disabled={isDemo}
                         />
+
                         <ProfileRow
                             label="Email"
                             value={form.email}
@@ -171,6 +195,7 @@ export default function ProfilePage() {
                             onCancel={() => handleCancel("email")}
                             disabled={isDemo || !!user?.pending_email}
                         />
+
                         <ThemeSelectorRow
                             value={form.theme}
                             editing={editing.theme}
@@ -186,8 +211,9 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
+
             {/* ───────────────────────────── */}
-            {/* Modale scelta avatar          */}
+            {/* Modale scelta avatar         */}
             {/* ───────────────────────────── */}
             <AnimatePresence>
                 {showPicker && !isDemo && (
@@ -198,6 +224,7 @@ export default function ProfilePage() {
                     />
                 )}
             </AnimatePresence>
+
             <DeleteAccountSection />
             <LegalLinks className="p-4 border-t border-white/10 text-center" />
         </div>

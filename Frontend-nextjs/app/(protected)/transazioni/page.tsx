@@ -3,7 +3,6 @@
 // ==============================================
 // Pagina principale lista transazioni — CRUD sync
 // ==============================================
-
 import { useEffect, useState, Suspense } from "react";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
 import { useCategories } from "@/context/contexts/CategoriesContext";
@@ -17,21 +16,25 @@ import { Transaction } from "@/types/models/transaction";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import { Loader2 } from "lucide-react";
 
-// ----------------------------------------------
-// Componente principale pagina transazioni
-// ----------------------------------------------
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Component
+// ─────────────────────────────────────────────────────────────────────────────
 export default function TransazioniPage() {
     const { transactions, loading, error, fetchAll, update, remove } = useTransactions();
     const { categories } = useCategories();
     const [selected, setSelected] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Carica lista al mount
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Carica lista (deps corrette → include fetchAll)
+    // ─────────────────────────────────────────────────────────────────────────
     useEffect(() => {
         fetchAll();
-    }, []);
+    }, [fetchAll]);
 
-    // Handler modifica transazione
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Handlers CRUD
+    // ─────────────────────────────────────────────────────────────────────────
     const handleEdit = async (tx: Transaction) => {
         setSelected(null);
         setIsLoading(true);
@@ -39,7 +42,6 @@ export default function TransazioniPage() {
         setIsLoading(false);
     };
 
-    // Handler elimina singola transazione
     const handleDelete = async (tx: Transaction) => {
         setSelected(null);
         setIsLoading(true);
@@ -47,7 +49,6 @@ export default function TransazioniPage() {
         setIsLoading(false);
     };
 
-    // Handler elimina selezione multipla
     const handleDeleteSelectedTransactions = async (ids: number[]) => {
         setIsLoading(true);
         for (const id of ids) await remove(id);
@@ -56,17 +57,14 @@ export default function TransazioniPage() {
 
     const selectedTx = transactions.find((tx) => tx.id === selected);
 
-    // ----------------------------------------------
-    // Render
-    // ----------------------------------------------
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Render
+    // ─────────────────────────────────────────────────────────────────────────
     return (
         <div className="space-y-5">
-            {/* ===================== Header compatto/minimal ===================== */}
-            {/* ----------- Blocco superiore con sfondo ----------- */}
+            {/* ===================== Header ===================== */}
             <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-6 shadow-md overflow-hidden animate-fade-in">
-                {/* -------- Icona sfumata di sfondo -------- */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    {/* Puoi cambiare l'icona se vuoi: es. CreditCard, Table, ecc */}
                     <svg
                         className="w-[180px] h-[180px] text-[hsl(var(--c-secondary))] opacity-5"
                         style={{ filter: "blur(2px)" }}
@@ -77,12 +75,9 @@ export default function TransazioniPage() {
                     </svg>
                 </div>
 
-                {/* -------- Titolo e descrizione -------- */}
                 <div className="relative z-10 text-center max-w-xl mx-auto space-y-2">
                     <h1 className="text-2xl md:text-3xl font-serif font-bold flex justify-center items-center gap-3 text-[hsl(var(--c-primary-dark))] drop-shadow-sm">
-                        {/* Sostituisci con una icona lucide-react a tema transazioni */}
                         <span className="inline-block w-7 h-7 text-[hsl(var(--c-primary))]">
-                            {/* Esempio: icona carta di credito */}
                             <svg
                                 viewBox="0 0 24 24"
                                 fill="none"
@@ -101,12 +96,10 @@ export default function TransazioniPage() {
                     </p>
                 </div>
 
-                {/* -------- Pulsante -------- */}
                 <div className="relative z-10 mt-4 flex justify-center">
                     <NewTransactionButton />
                 </div>
             </div>
-
             {/* ===================== /Header ===================== */}
 
             {/* ===================== Lista ====================== */}
@@ -143,7 +136,6 @@ export default function TransazioniPage() {
             {/* =============== /Modale Dettaglio ================= */}
 
             {/* ============== Spinner full screen ================ */}
-
             {isLoading && (
                 <LoadingOverlay
                     show={true}
@@ -158,4 +150,3 @@ export default function TransazioniPage() {
         </div>
     );
 }
-

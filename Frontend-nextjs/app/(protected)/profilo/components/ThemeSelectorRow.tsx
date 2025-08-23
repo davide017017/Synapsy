@@ -1,16 +1,31 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: ThemeSelectorRow
+// Dettagli: Selettore tema accessibile con pattern listbox (a11y fix)
+// ─────────────────────────────────────────────────────────────────────────────
+import { useState, useRef, useEffect, useId } from "react";
 import { useThemeContext } from "@/context/contexts/ThemeContext";
 import { themeMeta, availableThemes } from "@/lib/themeUtils";
 import { ThemeSelectorRowProps } from "@/types/profilo/row";
 
-export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCancel, disabled = false }: ThemeSelectorRowProps) {
+export default function ThemeSelectorRow({
+    value,
+    editing,
+    onEdit,
+    onSave,
+    onCancel,
+    disabled = false,
+}: ThemeSelectorRowProps) {
     const { theme } = useThemeContext();
     const [open, setOpen] = useState(false);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const listboxId = useId();
 
-    // Gestione chiusura con ESC e click fuori
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Chiusura con ESC / click esterno
+    // ─────────────────────────────────────────────────────────────────────────
     useEffect(() => {
         if (!open) return;
         const handleKey = (e: KeyboardEvent) => {
@@ -38,15 +53,18 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
         };
     }, [open, onCancel]);
 
-    // Cambia subito tema al click su opzione
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Selezione tema
+    // ─────────────────────────────────────────────────────────────────────────
     const handleSelect = (t: string) => {
-        // Delega al parent l'applicazione del tema
-        onSave(t);
+        onSave(t); // delega al parent
         setOpen(false);
         buttonRef.current?.focus();
     };
 
-    // UI: riga profilo (se non editing)
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: View compatta (non in editing)
+    // ─────────────────────────────────────────────────────────────────────────
     if (!editing) {
         return (
             <div className="flex items-center px-3 py-3 gap-4 group border-b border-primary/10">
@@ -71,7 +89,9 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
         );
     }
 
-    // UI: selettore a tendina, responsive e accessibile
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Selettore a tendina (editing) — pattern listbox
+    // ─────────────────────────────────────────────────────────────────────────
     return (
         <div ref={containerRef} className="flex items-center px-3 py-3 gap-4 border-b border-primary/10">
             <div className="w-28 font-medium text-sm text-muted-foreground">Tema</div>
@@ -83,31 +103,40 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
                     onClick={() => setOpen((v) => !v)}
                     aria-expanded={open}
                     aria-haspopup="listbox"
+                    aria-controls={open ? listboxId : undefined}
                 >
                     <span>{themeMeta[theme as keyof typeof themeMeta].label}</span>
-                    <svg width="18" height="18" className="ml-2 opacity-60" viewBox="0 0 20 20">
+                    <svg width="18" height="18" className="ml-2 opacity-60" viewBox="0 0 20 20" aria-hidden="true">
                         <path d="M5.8 8l4.2 4.2L14.2 8" stroke="currentColor" strokeWidth="2" fill="none" />
                     </svg>
                 </button>
+
                 {open && (
                     <ul
+                        id={listboxId}
                         className="absolute z-50 mt-2 w-full bg-bg-elevate border border-primary/20 rounded-xl shadow-lg animate-fade-in overflow-hidden"
                         role="listbox"
                     >
                         {availableThemes.map((t) => (
-                            <li key={t}>
+                            <li
+                                key={t}
+                                role="option"
+                                aria-selected={theme === t} // ✔ valido su role="option"
+                                tabIndex={-1}
+                                className="focus:outline-none"
+                            >
                                 <button
                                     type="button"
                                     className={`w-full flex items-center gap-2 text-left px-4 py-2 capitalize transition hover:bg-primary/10 ${
                                         theme === t ? "font-bold text-primary" : ""
                                     }`}
                                     onClick={() => handleSelect(t)}
-                                    aria-selected={theme === t}
                                 >
-                                    {/* --- Preview colore circolare --- */}
+                                    {/* ── Preview colore circolare ── */}
                                     <span
                                         className="inline-block w-4 h-4 rounded-full border border-primary/30"
                                         style={{ background: themeMeta[t].color }}
+                                        aria-hidden="true"
                                     />
                                     {themeMeta[t].label}
                                 </button>
@@ -116,6 +145,7 @@ export default function ThemeSelectorRow({ value, editing, onEdit, onSave, onCan
                     </ul>
                 )}
             </div>
+
             <div>
                 <button
                     className="ml-2 px-2 py-1 rounded-xl font-semibold shadow text-xs transition bg-primary text-bg"

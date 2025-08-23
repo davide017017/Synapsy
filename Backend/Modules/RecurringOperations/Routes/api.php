@@ -4,13 +4,14 @@ use Illuminate\Support\Facades\Route;
 use Modules\RecurringOperations\Http\Controllers\RecurringOperationController as C;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sezione: API Recurring Operations
-// Dettagli: statiche PRIMA delle parametrizzate + vincoli numerici
+// Sezione: API v1 - Recurring Operations
+// Dettagli: il RouteServiceProvider del modulo aggiunge già '/api' e 'api.'
+//           Qui aggiungiamo SOLO '/v1/recurring-operations' e 'recurring-operations.'
 // ─────────────────────────────────────────────────────────────────────────────
 
-Route::middleware(['api', 'auth:sanctum'])
-    ->prefix('api/v1/recurring-operations')
-    ->name('api.recurring-operations.')
+Route::middleware(['auth:sanctum'])
+    ->prefix('v1/recurring-operations')
+    ->name('recurring-operations.')
     ->group(function () {
 
         // ============================
@@ -20,7 +21,7 @@ Route::middleware(['api', 'auth:sanctum'])
         Route::post('/', [C::class, 'store'])->name('store');
 
         // ============================
-        // ROTTE STATICHE (devono stare prima!)
+        // ROTTE STATICHE (prima delle parametrizzate)
         // ============================
         Route::patch('/move-category', [C::class, 'moveCategory'])->name('move-category');
         Route::get('/next-occurrences', [C::class, 'getNextOccurrences'])->name('next-occurrences');

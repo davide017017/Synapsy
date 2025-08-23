@@ -4,7 +4,7 @@
 // Pagina riepilogo calendario — CRUD sincrono
 // ================================================
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTransactions } from "@/context/contexts/TransactionsContext";
 import CalendarGrid from "./components/CalendarGrid";
 import CalendarGridSkeleton from "./components/skeleton/CalendarGridSkeleton";
@@ -22,9 +22,20 @@ export default function PanoramicaPage() {
         setSelectedTx(tx);
     };
 
+    // Removed local fetchAll to avoid redeclaration error.
+    // If you need a custom fetch function, rename it to something else, e.g., fetchAllCustom.
+    // const fetchAllCustom = useCallback(
+    //     async () => {
+    //         // ... logica fetch
+    //     },
+    //     [
+    //         /* deps reali: token, filtri, ecc. */
+    //     ]
+    // );
+
     useEffect(() => {
         fetchAll();
-    }, []);
+    }, [fetchAll]); // ← OK
 
     return (
         <div className="space-y-6">
@@ -88,4 +99,3 @@ export default function PanoramicaPage() {
         </div>
     );
 }
-

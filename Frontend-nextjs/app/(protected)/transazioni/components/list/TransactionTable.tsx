@@ -1,10 +1,12 @@
 // ========================================
 // TransactionTable.tsx
 // ========================================
-
 "use client";
 
-import React, { useMemo } from "react";
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Import
+// ─────────────────────────────────────────────────────────────────────────────
+import React, { useMemo, useCallback } from "react";
 import { useReactTable, getCoreRowModel, flexRender, ColumnResizeMode, Row } from "@tanstack/react-table";
 import { addMonthGroup } from "./table/utils";
 import { getColumnsWithSelection } from "./table/columns";
@@ -14,13 +16,9 @@ import MonthDividerRow from "./table/MonthDividerRow";
 import YearDividerRow from "./table/YearDividerRow";
 import { useSelection } from "@/context/contexts/SelectionContext";
 
-// =============================
-// Props
-// =============================
-
-// =============================
-// TransactionTable principale
-// =============================
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Component
+// ─────────────────────────────────────────────────────────────────────────────
 export default function TransactionTable({
     data,
     onRowClick,
@@ -29,27 +27,44 @@ export default function TransactionTable({
     selectedIds: propSelectedIds,
     setSelectedIds: propSetSelectedIds,
 }: TransactionTableProps) {
-    // Context selection come fallback
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Selection context (fallback)
+    // ─────────────────────────────────────────────────────────────────────────
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
 
-    // Priority alle prop
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Priorità alle props
+    // ─────────────────────────────────────────────────────────────────────────
     const actualIsSelectionMode = propIsSelectionMode ?? isSelectionMode;
     const actualSelectedIds = propSelectedIds ?? selectedIds;
     const actualSetSelectedIds = propSetSelectedIds ?? setSelectedIds;
 
-    // ------ Toggle selezione singola ------
-    const handleCheckToggle = (id: number) => {
-        actualSetSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
-    };
-
-    // ------ Toggle selezione tutti ------
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Dati + ID memo
+    // ─────────────────────────────────────────────────────────────────────────
     const dataWithGroups = useMemo(() => addMonthGroup(data), [data]);
     const allIds = useMemo(() => dataWithGroups.map((tx) => tx.id), [dataWithGroups]);
-    const handleCheckAllToggle = (checked: boolean) => {
-        actualSetSelectedIds((ids) => (checked ? allIds : ids.filter((id) => !allIds.includes(id))));
-    };
 
-    // ------ Colonne ------
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Handler stabili (useCallback)
+    // ─────────────────────────────────────────────────────────────────────────
+    const handleCheckToggle = useCallback(
+        (id: number) => {
+            actualSetSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
+        },
+        [actualSetSelectedIds]
+    );
+
+    const handleCheckAllToggle = useCallback(
+        (checked: boolean) => {
+            actualSetSelectedIds((ids) => (checked ? allIds : ids.filter((id) => !allIds.includes(id))));
+        },
+        [actualSetSelectedIds, allIds]
+    );
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Colonne
+    // ─────────────────────────────────────────────────────────────────────────
     const columns = useMemo(
         () =>
             getColumnsWithSelection(
@@ -59,10 +74,12 @@ export default function TransactionTable({
                 handleCheckAllToggle,
                 allIds
             ),
-        [actualIsSelectionMode, actualSelectedIds, allIds]
+        [actualIsSelectionMode, actualSelectedIds, allIds, handleCheckToggle, handleCheckAllToggle]
     );
 
-    // ------ Setup TanStack Table ------
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Setup TanStack Table
+    // ─────────────────────────────────────────────────────────────────────────
     const table = useReactTable({
         data: dataWithGroups,
         columns,
@@ -71,7 +88,9 @@ export default function TransactionTable({
         debugTable: false,
     });
 
-    // ------ Raggruppa righe per "YYYY-MM" ------
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Raggruppo righe per YYYY-MM + totali per anno
+    // ─────────────────────────────────────────────────────────────────────────
     const groupedRows: Record<string, Row<TransactionWithGroup>[]> = {};
     for (const row of table.getRowModel().rows) {
         const key = row.original.monthGroup;
@@ -79,7 +98,6 @@ export default function TransactionTable({
         groupedRows[key].push(row);
     }
 
-    // ------ Totali per anno ------
     const yearTotals: Record<string, { entrate: number; spese: number }> = {};
     Object.entries(groupedRows).forEach(([monthKey, rows]) => {
         const [year] = monthKey.split("-");
@@ -90,9 +108,9 @@ export default function TransactionTable({
         });
     });
 
-    // =========================
-    // Render tabella
-    // =========================
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Render tabella
+    // ─────────────────────────────────────────────────────────────────────────
     return (
         <div className="table-container overflow-x-auto bg-[hsl(var(--c-table-bg))] rounded-2xl border border-[hsl(var(--c-table-divider))] shadow">
             <table className="table-base min-w-full">
@@ -118,6 +136,7 @@ export default function TransactionTable({
                         </tr>
                     ))}
                 </thead>
+
                 {/* Corpo */}
                 <tbody className="text-[hsl(var(--c-table-text))]">
                     {/* Blocchi raggruppati per mese/anno */}
@@ -212,4 +231,3 @@ export default function TransactionTable({
         </div>
     );
 }
-

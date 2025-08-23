@@ -1,93 +1,137 @@
-#!/usr/bin/env python3
-"""
-Flask microservice providing smart category suggestions via TFLite model
-or heuristic fallback.
-"""
+# ─────────────────────────────────────────────────────────────────────────────
+# Microservizio: Category Suggester (Flask)
+# Endpoints:
+#   GET  /health                 -> {status:"ok", tflite:<bool>}
+#   POST /predict-category       -> {category:string|null, confidence:number}
+# Note:
+#   - Preferisce tflite_runtime / tensorflow.lite se disponibili + modello .tflite
+#   - Fallback euristico in ITALIANO quando il modello non è disponibile
+#   - Porta: 7001 – Host: 0.0.0.0
+# ─────────────────────────────────────────────────────────────────────────────
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Sezione: Import
-# Dettagli: librerie standard e ML
-# ─────────────────────────────────────────────────────────────────────────────
 from __future__ import annotations
-
+from flask import Flask, request, jsonify
 import os
-from typing import Optional
+import logging
 
-import numpy as np
-from flask import Flask, jsonify, request
+# ─────────────────────────────────────────────────────────────────────────────
+# Sezione: Import opzionali (numpy e TFLite)
+# ─────────────────────────────────────────────────────────────────────────────
+try:
+    import numpy as np  # opzionale; richiesto solo per inference TFLite/TF
+except Exception:  # numpy non installato → ok, useremo le euristiche
+    np = None  # type: ignore
 
-try:  # Prefer tflite-runtime when available
-    import tflite_runtime.interpreter as tflite  # type: ignore
-except Exception:  # pragma: no cover - Fallback to TensorFlow
+Interpreter = None  # type: ignore
+try:
+    # Preferisci tflite_runtime, se presente
+    from tflite_runtime.interpreter import Interpreter as _TflInterpreter  # type: ignore
+    Interpreter = _TflInterpreter
+except Exception:
     try:
-        import tensorflow.lite as tflite  # type: ignore
+        # In alternativa, tensorflow.lite
+        from tensorflow.lite import Interpreter as _TfInterpreter  # type: ignore
+        Interpreter = _TfInterpreter
     except Exception:
-        tflite = None  # type: ignore
+        Interpreter = None  # nessun runtime TFLite disponibile
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Sezione: Caricamento modello
-# Dettagli: prova a caricare il modello TFLite se presente
-# ─────────────────────────────────────────────────────────────────────────────
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models', 'category_classifier.tflite')
-INTERPRETER: Optional["tflite.Interpreter"] = None
-
-if tflite and os.path.exists(MODEL_PATH):
-    try:
-        INTERPRETER = tflite.Interpreter(model_path=MODEL_PATH)
-        INTERPRETER.allocate_tensors()
-    except Exception:
-        INTERPRETER = None
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Sezione: App Flask
-# Dettagli: definizione degli endpoint
+# Sezione: Config & Logger
 # ─────────────────────────────────────────────────────────────────────────────
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("category_suggester")
 
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "category_classifier.tflite")
+TFLITE_AVAILABLE = Interpreter is not None and os.path.exists(MODEL_PATH) and np is not None
 
-# -----------------------------------------------------------------------------
-# Endpoint: /health
-# Dettagli: verifica stato servizio e disponibilità modello
-# -----------------------------------------------------------------------------
-@app.get('/health')
-def health() -> tuple[dict, int]:
-    return {"status": "ok", "tflite": INTERPRETER is not None}, 200
+tflite_interpreter = None
+if TFLITE_AVAILABLE:
+    try:
+        tflite_interpreter = Interpreter(model_path=MODEL_PATH)  # type: ignore[call-arg]
+        tflite_interpreter.allocate_tensors()
+        logger.info("TFLite model loaded.")
+    except Exception as e:
+        logger.warning(f"Impossibile inizializzare TFLite: {e}")
+        tflite_interpreter = None
 
+MODEL_READY = tflite_interpreter is not None
 
-# -----------------------------------------------------------------------------
-# Funzione: heuristic_predict
-# Dettagli: semplice fallback basato su keyword in lingua italiana/inglese
-# -----------------------------------------------------------------------------
-def heuristic_predict(description: str) -> tuple[Optional[str], float]:
-    description = description.lower()
-    if "pizza" in description or "pasta" in description:
+# ─────────────────────────────────────────────────────────────────────────────
+# Sezione: Euristiche ITA
+#  - “pizza”, “pasta”                 → "cibo" (0.9)
+#  - “tax”, “invoice”, “tassa”, “fattura” → "finanza" (0.8)
+#  - “rent”, “affitto”                → "casa" (0.7)
+#  - altrimenti                       → None (0.0)
+# ─────────────────────────────────────────────────────────────────────────────
+def heuristic_category_it(text: str) -> tuple[str | None, float]:
+    t = (text or "").strip().lower()
+
+    cibo_kw = {"pizza", "pasta"}
+    finanza_kw = {"tax", "invoice", "tassa", "fattura"}
+    casa_kw = {"rent", "affitto"}
+
+    # match semplice su substring/word
+    def contains_any(keywords: set[str]) -> bool:
+        return any(k in t for k in keywords)
+
+    if contains_any(cibo_kw):
         return "cibo", 0.9
-    if any(word in description for word in ["tax", "invoice", "tassa", "fattura"]):
+    if contains_any(finanza_kw):
         return "finanza", 0.8
-    if "rent" in description or "affitto" in description:
+    if contains_any(casa_kw):
         return "casa", 0.7
     return None, 0.0
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Sezione: Inference con TFLite (facoltativa)
+# Nota: Senza specifica del modello/tokenizer, manteniamo l’euristica anche se
+#       il modello è caricato. Qui trovi uno scheletro per integrare la tua
+#       pipeline quando avrai un vero .tflite e pre-processing definito.
+# ─────────────────────────────────────────────────────────────────────────────
+def predict_with_tflite(description: str) -> tuple[str | None, float]:
+    # Esempio di scheletro; ritorna euristica per ora.
+    # Quando avrai I/O del modello:
+    #  - usa np per creare l’input (np.array([...], dtype=np.*))
+    #  - setta gli input tensor con interpreter.set_tensor(...)
+    #  - invoca interpreter.invoke()
+    #  - leggi output con interpreter.get_tensor(...)
+    return heuristic_category_it(description)
 
-# -----------------------------------------------------------------------------
+# ─────────────────────────────────────────────────────────────────────────────
+# Endpoint: /health
+# ─────────────────────────────────────────────────────────────────────────────
+@app.get("/health")
+def health():
+    return jsonify({"status": "ok", "tflite": bool(MODEL_READY)}), 200
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Endpoint: /predict-category
-# Dettagli: restituisce categoria suggerita
-# -----------------------------------------------------------------------------
-@app.post('/predict-category')
-def predict_category() -> tuple[dict, int]:
+# Body: { "description": string }
+# ─────────────────────────────────────────────────────────────────────────────
+@app.post("/predict-category")
+def predict_category():
     payload = request.get_json(silent=True) or {}
-    description = str(payload.get('description', '')).strip()
+    description = payload.get("description")
 
-    if not description:
-        return {"category": None, "confidence": 0.0}, 200
+    if not isinstance(description, str) or not description.strip():
+        return jsonify({"error": "Campo 'description' mancante o non valido."}), 400
 
-    category, confidence = heuristic_predict(description)
-    return {"category": category, "confidence": confidence}, 200
+    try:
+        if MODEL_READY:
+            category, conf = predict_with_tflite(description)
+        else:
+            category, conf = heuristic_category_it(description)
 
+        return jsonify({"category": category, "confidence": float(conf)}), 200
+    except Exception as e:
+        logger.exception(f"Errore in predict_category: {e}")
+        # fallback finale safe
+        return jsonify({"category": None, "confidence": 0.0}), 200
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Sezione: Main
-# Dettagli: avvia il server Flask
+# Main
 # ─────────────────────────────────────────────────────────────────────────────
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7001)
+if __name__ == "__main__":
+    # Host 0.0.0.0, Port 7001 (prod = debug False)
+    app.run(host="0.0.0.0", port=7001, debug=False)

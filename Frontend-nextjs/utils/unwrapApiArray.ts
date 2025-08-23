@@ -1,22 +1,29 @@
 // ==============================
 // utils/unwrapApiArray.ts
-// Scompatta array provenienti dal backend Laravel/API
-// Supporta: [true, "msg", dati] oppure array diretto
+// Scompatta array da varie forme di risposta Laravel/API
+// Supporta: {data:{items:[]}}, {items:[]}, {data:[]}, [true,"msg",[]], [].
 // ==============================
 
 /**
- * Ritorna sempre un array "pulito" anche da risposte Laravel tipo [true, "msg", array]
- * @param input Dato grezzo dalla fetch API
- * @returns Array di oggetti, o array vuoto se non valido
+ * Ritorna sempre un array "pulito" a prescindere dal wrapper.
  */
 export function unwrapApiArray<T = any>(input: any): T[] {
-    // Se arriva la forma [true, "msg", array], restituisce il terzo elemento (array vero)
-    if (Array.isArray(input) && Array.isArray(input[2])) return input[2];
-    // Se è già un array puro (già normalizzato)
-    return Array.isArray(input) ? input : [];
-}
+    // ── Caso classico: { data: { items: [...] } }
+    if (Array.isArray(input?.data?.items)) return input.data.items as T[];
 
+    // ── Varianti frequenti
+    if (Array.isArray(input?.items)) return input.items as T[];
+    if (Array.isArray(input?.data)) return input.data as T[];
+
+    // ── Tua forma legacy: [true, "msg", array]
+    if (Array.isArray(input) && Array.isArray(input[2])) return input[2] as T[];
+
+    // ── Array già "piatto"
+    if (Array.isArray(input)) return input as T[];
+
+    // ── Fallback: vuoto
+    return [];
+}
 // ==============================
 // END utils/unwrapApiArray.ts
 // ==============================
-

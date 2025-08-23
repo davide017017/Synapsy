@@ -1,16 +1,18 @@
 // ╔══════════════════════════════════════════════════════╗
 // ║   TransactionListFilter.tsx — Filtro tabella        ║
 // ╚══════════════════════════════════════════════════════╝
-
 "use client";
 
-import React, { useEffect } from "react";
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Import
+// ─────────────────────────────────────────────────────────────────────────────
+import React, { useEffect, useMemo } from "react";
 import { RotateCcw, Search, Funnel, Tag } from "lucide-react";
-import type { TransactionListFilterProps, Filter, TxCategory } from "@/types/transazioni/list";
+import type { TransactionListFilterProps, TxCategory } from "@/types/transazioni/list";
 
-// =========================
-// TransactionListFilter
-// =========================
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Component
+// ─────────────────────────────────────────────────────────────────────────────
 export default function TransactionListFilter({
     filter,
     setFilter,
@@ -19,25 +21,32 @@ export default function TransactionListFilter({
     iconType,
     iconCategory,
 }: TransactionListFilterProps) {
-    // Categorie filtrate per tipo
-    const filteredCategories =
-        filter.type === "tutti" ? categories : categories.filter((cat) => cat.type === filter.type);
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Derivazioni memoizzate (performance)
+    // ─────────────────────────────────────────────────────────────────────────
+    const filteredCategories = useMemo(() => {
+        return filter.type === "tutti" ? categories : categories.filter((cat) => cat.type === filter.type);
+    }, [categories, filter.type]);
 
-    // Ordina e deduplica
-    const uniqueCategories = Array.from(
-        filteredCategories.reduce((acc, cat) => acc.set(cat.id, cat), new Map<number, TxCategory>()).values()
-    ).sort((a, b) => a.name.localeCompare(b.name));
+    const uniqueCategories = useMemo(() => {
+        const map = filteredCategories.reduce<Map<number, TxCategory>>((acc, cat) => acc.set(cat.id, cat), new Map());
+        return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+    }, [filteredCategories]);
 
-    // Reset categoria se cambia tipo
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Reset categoria se non valida al cambio tipo
+    // Dettagli: setFilter richiede un Filter (no updater function)
+    // ─────────────────────────────────────────────────────────────────────────
     useEffect(() => {
-        if (filter.category !== "tutte" && !filteredCategories.some((cat) => String(cat.id) === filter.category)) {
-            setFilter({ ...filter, category: "tutte" });
+        const categoryStillValid = uniqueCategories.some((cat) => String(cat.id) === filter.category);
+        if (filter.category !== "tutte" && !categoryStillValid) {
+            setFilter({ ...filter, category: "tutte" }); // ← oggetto diretto
         }
-    }, [filter.type, filter.category, filteredCategories, setFilter]);
+    }, [filter, uniqueCategories, setFilter]);
 
-    // =========================
-    // Render ordinato e compatto
-    // =========================
+    // ─────────────────────────────────────────────────────────────────────────
+    // Sezione: Render ordinato e compatto
+    // ─────────────────────────────────────────────────────────────────────────
     return (
         <div className="bg-bg-alt dark:bg-bg-soft rounded-2xl shadow p-4 sticky top-4 flex flex-col gap-2 border border-primary/20 border-bg-elevate min-w-0">
             {/* ===== Intestazione ===== */}
@@ -99,4 +108,6 @@ export default function TransactionListFilter({
         </div>
     );
 }
-
+// ============================
+// END TransactionListFilter
+// ============================

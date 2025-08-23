@@ -1,38 +1,56 @@
 // ============================
 // utils/normalizeRicorrenza.ts
-// Converte qualsiasi risposta "ricorrenza" dal backend
-// nello shape Ricorrenza usato nel frontend
+// Converte risposta backend → shape Ricorrenza per la UI
 // ============================
 
 import { Ricorrenza } from "@/types/models/ricorrenza";
 
-// -----------------------------------
-// Funzione: Normalizza Ricorrenza
-// -----------------------------------
+// ─────────────────────────────────────────────────────────────
+// Sezione: util numeri / flag
+// ─────────────────────────────────────────────────────────────
+const toNum = (v: unknown) => {
+    if (typeof v === "number") return v;
+    if (typeof v === "string") {
+        const n = Number(v.replace(",", "."));
+        return Number.isFinite(n) ? n : 0;
+    }
+    return 0;
+};
 
-/**
- * Trasforma un oggetto generico del backend in Ricorrenza
- * @param r Oggetto grezzo dal backend (può avere chiavi diverse)
- * @returns Ricorrenza standardizzata per il frontend
- */
+const to01 = (v: unknown) => {
+    if (typeof v === "boolean") return v ? 1 : 0;
+    if (typeof v === "number") return v ? 1 : 0;
+    if (typeof v === "string") return ["1", "true", "TRUE", "True", "yes", "on"].includes(v) ? 1 : 0;
+    return 0;
+};
+
+// ─────────────────────────────────────────────────────────────
+// Sezione: normalizzazione principale
+// ─────────────────────────────────────────────────────────────
 export function normalizeRicorrenza(r: any): Ricorrenza {
     return {
-        id: r.id,
+        id: Number(r.id),
+
+        // ── campi usati dalla tua UI (ITA)
         nome: r.nome || r.description || "",
-        importo: typeof r.importo !== "undefined" ? Number(r.importo) : Number(r.amount) || 0,
-        frequenza: r.frequenza || r.frequency || "non specificata",
-        prossima: r.prossima || r.next_occurrence_date || r.start_date || "",
-        category_id: r.category_id,
-        categoria: r.categoria || (r.category?.name ?? ""), // fallback: usa il nome categoria se presente
-        category_color: r.category_color || r.category?.color || "", // ← sempre valorizzato
+        importo: typeof r.importo !== "undefined" ? toNum(r.importo) : toNum(r.amount),
+        frequenza: r.frequenza || r.frequency || "monthly",
+        prossima: r.next_occurrence_date ?? r.prossima ?? r.start_date ?? null,
+
+        category_id: Number(r.category_id ?? 0),
+        categoria: r.categoria || (r.category?.name ?? ""),
+        category_color: r.category_color || r.category?.color || "",
+
         notes: r.note ?? r.notes ?? "",
-        type: r.type || (r.category?.type ?? "spesa"),
-        is_active: typeof r.is_active !== "undefined" ? r.is_active : true, // fallback true
-        interval: typeof r.interval !== "undefined" ? Number(r.interval) : 1, // fallback 1
-    };
+        type: r.type === "entrata" ? "entrata" : r.category?.type ?? "spesa",
+
+        // ⚠️ il tuo tipo Richiede number → 0/1
+        is_active: typeof r.is_active !== "undefined" ? to01(r.is_active) : 1,
+
+        interval: typeof r.interval !== "undefined" ? Number(r.interval) : 1,
+    } as Ricorrenza;
 }
 
 // ============================
 // END utils/normalizeRicorrenza.ts
 // ============================
-

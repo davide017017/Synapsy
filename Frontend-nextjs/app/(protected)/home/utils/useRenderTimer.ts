@@ -1,20 +1,39 @@
 // utils/useRenderTimer.ts
-import { useRef, useEffect } from "react";
+// ─────────────────────────────────────────────────────────────────────────────
+// Sezione: Hook - Render Timer
+// Dettagli: misura il tempo tra render e commit; supporta 'every-render' | 'mount'
+// ─────────────────────────────────────────────────────────────────────────────
+import { useEffect, useRef } from "react";
 
-/**
- * Hook che logga il tempo di render del componente
- * @param name Nome del componente da mostrare nel log
- */
-export function useRenderTimer(name: string) {
-    const start = useRef(performance.now());
+type Options = {
+    thresholdMs?: number; // soglia log (default 5ms)
+    mode?: "every-render" | "mount"; // default: every-render
+};
+
+export function useRenderTimer(name: string, options?: Options) {
+    const { thresholdMs = 5, mode = "every-render" } = options ?? {};
+
+    // ── refs stabili (no deps in useEffect)
+    const startRef = useRef(0);
+    const nameRef = useRef(name);
+    const thresholdRef = useRef(thresholdMs);
+    const didLogRef = useRef(false); // per loggare una sola volta in modalità 'mount'
+
+    // ── snapshot ad ogni render
+    startRef.current = performance.now();
+    nameRef.current = name;
+    thresholdRef.current = thresholdMs;
+
+    // ── effetto dopo il commit (nessuna deps → ogni render)
     useEffect(() => {
-        const end = performance.now();
-        // Mostra solo se il render dura più di 5ms (personalizza come vuoi)
-        const duration = end - start.current;
-        if (duration > 5) {
-            // Log visibile, puoi colorare per differenziare
-            console.log(`%c[RenderTimer] ${name}: ${duration.toFixed(2)}ms`, "color:orange;");
-        }
-    }, []);
-}
+        // gate per 'mount': logga solo alla prima esecuzione
+        if (mode === "mount" && didLogRef.current) return;
 
+        const duration = performance.now() - startRef.current;
+        if (duration >= thresholdRef.current) {
+            console.log(`%c[RenderTimer] ${nameRef.current}: ${duration.toFixed(2)}ms`, "color:orange;");
+        }
+
+        if (mode === "mount") didLogRef.current = true;
+    }); // ← nessuna dependency array: niente warning e funziona per entrambi i mode
+}

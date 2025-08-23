@@ -40,7 +40,7 @@ export default function DeleteAccountSection() {
     if (isDemo) {
         return (
             <p className="text-center text-sm text-muted-foreground mt-6 mb-6">
-                L'utente demo non può eliminare il profilo.
+                {"L'utente demo non può eliminare il profilo."}
             </p>
         );
     }

@@ -1,4 +1,9 @@
+# ─────────────────────────────────────────────────────────────
+# requirements.txt — Windows-light (solo Flask)
+# ─────────────────────────────────────────────────────────────
 Flask>=2.2
-numpy>=1.23
+
+# Opzionali, solo su non-Windows:
 tflite-runtime; sys_platform != "win32"
-tensorflow; sys_platform == "win32"
+tensorflow==2.20.0; sys_platform != "win32"
+# ─────────────────────────────────────────────────────────────
