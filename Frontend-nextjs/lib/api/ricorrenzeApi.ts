@@ -3,11 +3,7 @@
 // ╚═══════════════════════════════════════════════════════════╝
 
 import { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
-
-// ==============================
-// URL BASE (usa variabile ENV)
-// ==============================
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { url } from "@/lib/api/endpoints";
 
 // ==============================
 // Funzione di mapping frequenza IT → EN per backend
@@ -37,7 +33,7 @@ function frequencyToBackend(freq: string): string {
 // Fetch: Lista ricorrenze
 // ==============================
 export async function fetchRicorrenze(token: string): Promise<Ricorrenza[]> {
-    const res = await fetch(`${API_URL}/v1/recurring-operations`, {
+    const res = await fetch(url("recurring"), {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -73,7 +69,7 @@ export async function createRicorrenza(token: string, data: RicorrenzaBase): Pro
         type: data.type, // opzionale, se richiesto
     };
 
-    const res = await fetch(`${API_URL}/v1/recurring-operations`, {
+    const res = await fetch(url("recurring"), {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -108,7 +104,7 @@ export async function updateRicorrenza(token: string, id: number, data: Ricorren
         type: data.type,
     };
 
-    const res = await fetch(`${API_URL}/v1/recurring-operations/${id}`, {
+    const res = await fetch(url("recurring", id), {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -125,7 +121,7 @@ export async function updateRicorrenza(token: string, id: number, data: Ricorren
 // Delete: Elimina ricorrenza
 // ==============================
 export async function deleteRicorrenza(token: string, ricorrenza: Ricorrenza): Promise<void> {
-    const res = await fetch(`${API_URL}/v1/recurring-operations/${ricorrenza.id}`, {
+    const res = await fetch(url("recurring", ricorrenza.id), {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`,

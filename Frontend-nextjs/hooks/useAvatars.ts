@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { url } from "@/lib/api/endpoints";
 
 export type AvatarOption = {
     id: number;
@@ -13,14 +14,7 @@ export function useAvatars() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        if (!apiUrl) {
-            console.error("NEXT_PUBLIC_API_URL non definita");
-            setLoading(false);
-            return;
-        }
-
-        fetch(`${apiUrl}/v1/avatars`)
+        fetch(url("avatars"))
             .then((res) => {
                 if (!res.ok) throw new Error(`Errore HTTP: ${res.status}`);
                 return res.json();

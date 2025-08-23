@@ -4,13 +4,13 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { Category, CategoryBase } from "@/types/models/category";
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { url } from "@/lib/api/endpoints";
 
 // ==============================
 // Fetch: Lista categorie
 // ==============================
 export async function getAllCategories(token: string): Promise<Category[]> {
-    const res = await fetch(`${API_URL}/v1/categories`, {
+    const res = await fetch(url("categories"), {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -26,7 +26,7 @@ export async function getAllCategories(token: string): Promise<Category[]> {
 // Create: Nuova categoria
 // ==============================
 export async function createCategory(token: string, payload: CategoryBase): Promise<Category> {
-    const res = await fetch(`${API_URL}/v1/categories`, {
+    const res = await fetch(url("categories"), {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -42,7 +42,7 @@ export async function createCategory(token: string, payload: CategoryBase): Prom
 // Update: Modifica categoria
 // ==============================
 export async function updateCategory(token: string, id: number, data: CategoryBase): Promise<Category> {
-    const res = await fetch(`${API_URL}/v1/categories/${id}`, {
+    const res = await fetch(url("categories", id), {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export async function updateCategory(token: string, id: number, data: CategoryBa
 // Delete: Elimina categoria
 // ==============================
 export async function deleteCategory(token: string, categoryId: number): Promise<boolean> {
-    const res = await fetch(`${API_URL}/v1/categories/${categoryId}`, {
+    const res = await fetch(url("categories", categoryId), {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -72,7 +72,7 @@ export async function deleteCategory(token: string, categoryId: number): Promise
 // Move: Sposta tutte le ENTRATE a un'altra categoria
 // ==============================
 export async function moveEntrateToCategory(token: string, oldCategoryId: number, newCategoryId: number) {
-    const res = await fetch(`${API_URL}/v1/entrate/move-category`, {
+    const res = await fetch(`${url("entrate")}/move-category`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ oldCategoryId, newCategoryId }),
@@ -85,7 +85,7 @@ export async function moveEntrateToCategory(token: string, oldCategoryId: number
 // Move: Sposta tutte le SPESE a un'altra categoria
 // ==============================
 export async function moveSpeseToCategory(token: string, oldCategoryId: number, newCategoryId: number) {
-    const res = await fetch(`${API_URL}/v1/spese/move-category`, {
+    const res = await fetch(`${url("spese")}/move-category`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ oldCategoryId, newCategoryId }),
@@ -98,7 +98,7 @@ export async function moveSpeseToCategory(token: string, oldCategoryId: number, 
 // Move: Sposta tutte le RICORRENZE a un'altra categoria
 // ==============================
 export async function moveRecurringToCategory(token: string, oldCategoryId: number, newCategoryId: number) {
-    const res = await fetch(`${API_URL}/v1/recurring-operations/move-category`, {
+    const res = await fetch(`${url("recurring")}/move-category`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ oldCategoryId, newCategoryId }),

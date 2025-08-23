@@ -2,6 +2,8 @@
 // Sezione: ML suggest API client (via backend Laravel protetto Sanctum)
 // Dettagli: POST /api/v1/ml/suggest-category → { category, confidence }
 // ─────────────────────────────────────────────────────────────────────────────
+import { url } from "@/lib/api/endpoints";
+
 export type MlSuggestion = { category: string | null; confidence: number };
 
 export async function suggestCategory(description: string, token: string): Promise<MlSuggestion> {
@@ -10,13 +12,9 @@ export async function suggestCategory(description: string, token: string): Promi
     return { category: null, confidence: 0 };
   }
 
-  // ── endpoint base
-  const base = process.env.NEXT_PUBLIC_API_BASE;
-  if (!base) return { category: null, confidence: 0 };
-
   // ── fetch con fallback silenzioso
   try {
-    const res = await fetch(`${base}/api/v1/ml/suggest-category`, {
+    const res = await fetch(url("mlSuggestCategory"), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

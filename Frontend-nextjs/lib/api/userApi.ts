@@ -3,14 +3,13 @@
 // ╚═════════════════════════════════════════════════════════╝
 
 import type { UserType } from "@/types/models/user";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { url } from "@/lib/api/endpoints";
 
 // ==============================
 // GET profilo corrente
 // ==============================
 export async function fetchUserProfile(token: string): Promise<UserType> {
-    const res = await fetch(`${API_URL}/v1/profile`, {
+    const res = await fetch(url("profile"), {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -29,7 +28,7 @@ export async function updateUserProfile(
     token: string,
     payload: Partial<UserType>
 ): Promise<UserType> {
-    const res = await fetch(`${API_URL}/v1/profile`, {
+    const res = await fetch(url("profile"), {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -47,7 +46,7 @@ export async function updateUserProfile(
 // DELETE pending email
 // ==============================
 export async function cancelPendingEmail(token: string): Promise<UserType> {
-    const res = await fetch(`${API_URL}/v1/profile/pending-email`, {
+    const res = await fetch(`${url("profile")}/pending-email`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -64,7 +63,7 @@ export async function cancelPendingEmail(token: string): Promise<UserType> {
 // RESEND pending email link
 // ==============================
 export async function resendPendingEmail(token: string): Promise<void> {
-    const res = await fetch(`${API_URL}/v1/profile/pending-email/resend`, {
+    const res = await fetch(`${url("profile")}/pending-email/resend`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -80,7 +79,7 @@ export async function resendPendingEmail(token: string): Promise<void> {
 // DELETE profilo (soft delete)
 // ==============================
 export async function deleteUserProfile(token: string, password: string): Promise<void> {
-    const res = await fetch(`${API_URL}/v1/profile`, {
+    const res = await fetch(url("profile"), {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
