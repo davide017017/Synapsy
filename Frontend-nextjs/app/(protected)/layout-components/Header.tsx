@@ -10,7 +10,7 @@ import BetaBadge from "@/app/components/BetaBadge";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { useUser } from "@/context/contexts/UserContext";
+import { useUser } from "@/context/UserContext";
 import getAvatarUrl from "@/utils/getAvatarUrl";
 
 // ==================================================

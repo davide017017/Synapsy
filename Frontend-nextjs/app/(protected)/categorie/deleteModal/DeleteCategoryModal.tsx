@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Category, DeleteCategoryModalProps } from "@/types";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useCategories } from "@/context/CategoriesContext";
 
 // ============================
 // Tipi props

@@ -4,8 +4,8 @@
 // Pagina principale lista transazioni — CRUD sync
 // ==============================================
 import { useEffect, useState, Suspense } from "react";
-import { useTransactions } from "@/context/contexts/TransactionsContext";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useTransactions } from "@/context/TransactionsContext";
+import { useCategories } from "@/context/CategoriesContext";
 import SelectionToolbar from "./components/SelectionToolbar";
 import dynamic from "next/dynamic";
 import TransactionsListSkeleton from "./skeleton/TransactionsListSkeleton";

@@ -4,7 +4,7 @@
 import { FiTag } from "react-icons/fi";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useCategories } from "@/context/CategoriesContext";
 import { useRenderTimer } from "../utils/useRenderTimer";
 import { getIconComponent } from "@/utils/categoryOptions";
 import { Category } from "@/types/models/category";

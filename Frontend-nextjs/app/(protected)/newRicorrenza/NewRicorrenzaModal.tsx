@@ -8,7 +8,7 @@ import { useState, useMemo } from "react";
 import Dialog from "@/app/components/ui/Dialog";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import NewRicorrenzaForm from "./NewRicorrenzaForm";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useCategories } from "@/context/CategoriesContext";
 import { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
 import type { NewRicorrenzaModalProps } from "@/types";
 

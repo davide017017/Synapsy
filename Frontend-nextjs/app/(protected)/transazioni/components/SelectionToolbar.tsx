@@ -6,7 +6,7 @@
 "use client";
 import { useState } from "react";
 import type { SelectionToolbarProps } from "@/types/transazioni/list";
-import { useSelection } from "@/context/contexts/SelectionContext";
+import { useSelection } from "@/context/SelectionContext";
 import { MousePointerSquareDashed, XCircle, Trash2, AlertTriangle } from "lucide-react";
 
 export default function SelectionToolbar({ onDeleteSelected }: SelectionToolbarProps) {

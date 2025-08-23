@@ -8,7 +8,7 @@ import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { ListaProssimiPagamentiProps, SectionOccorrenzeProps } from "@/types/ricorrenti/liste";
 import { normalizzaFrequenza, freqToIt, freqToDays } from "../utils/ricorrenza-utils";
 import { Pencil, Trash2 } from "lucide-react";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useCategories } from "@/context/CategoriesContext";
 
 // ============================
 // Props tipizzate

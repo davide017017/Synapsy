@@ -5,7 +5,7 @@
 // ================================================
 
 import { useCallback, useEffect, useState } from "react";
-import { useTransactions } from "@/context/contexts/TransactionsContext";
+import { useTransactions } from "@/context/TransactionsContext";
 import CalendarGrid from "./components/CalendarGrid";
 import CalendarGridSkeleton from "./components/skeleton/CalendarGridSkeleton";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";

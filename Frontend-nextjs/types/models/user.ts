@@ -1,4 +1,4 @@
-import type { Theme } from "@/context/contexts/ThemeContext";
+import type { Theme } from "@/context/ThemeContext";
 
 export type UserType = {
     name: string;

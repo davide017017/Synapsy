@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Repeat } from "lucide-react";
 import DashboardCard from "./DashboardCard";
-import { useRicorrenze } from "@/context/contexts/RicorrenzeContext";
+import { useRicorrenze } from "@/context/RicorrenzeContext";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
 import { formatDataIt, isThisWeek, isThisMonth, isThisYear } from "@/utils/date";

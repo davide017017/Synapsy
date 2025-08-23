@@ -6,7 +6,7 @@
 // =========================================
 
 import { PlusCircle } from "lucide-react";
-import { useRicorrenze } from "@/context/contexts/RicorrenzeContext";
+import { useRicorrenze } from "@/context/RicorrenzeContext";
 import type { NewRicorrenzaButtonProps } from "@/types";
 
 export default function NewRicorrenzaButton({ label = "Nuova Ricorrenza", onSuccess }: NewRicorrenzaButtonProps) {

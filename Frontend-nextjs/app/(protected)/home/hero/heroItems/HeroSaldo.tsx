@@ -3,7 +3,7 @@
 // ======================================================================
 // HeroSaldo — riepilogo saldi (mese, anno, settimana, totale)
 // ======================================================================
-import { useTransactions } from "@/context/contexts/TransactionsContext";
+import { useTransactions } from "@/context/TransactionsContext";
 
 // ----------------------------------------------------------------------
 // Helpers locali: formattazione valuta e colore saldo

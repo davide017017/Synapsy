@@ -14,7 +14,7 @@ import type { TransactionTableProps, TransactionWithGroup } from "@/types/transa
 import TableRow from "./table/TableRow";
 import MonthDividerRow from "./table/MonthDividerRow";
 import YearDividerRow from "./table/YearDividerRow";
-import { useSelection } from "@/context/contexts/SelectionContext";
+import { useSelection } from "@/context/SelectionContext";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sezione: Component

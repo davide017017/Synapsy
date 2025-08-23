@@ -20,8 +20,8 @@ import {
     Moon,
     ListOrdered,
 } from "lucide-react";
-import { useSidebar } from "@/context/contexts/SidebarContext";
-import { useThemeContext } from "@/context/contexts/ThemeContext";
+import { useSidebar } from "@/context/SidebarContext";
+import { useThemeContext } from "@/context/ThemeContext";
 import { useState } from "react";
 import BetaBadge from "@/app/components/BetaBadge";
 import LegalLinks from "@/app/components/legal/LegalLinks";

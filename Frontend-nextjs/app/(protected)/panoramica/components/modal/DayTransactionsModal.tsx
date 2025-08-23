@@ -3,7 +3,7 @@
 import Dialog from "@/app/components/ui/Dialog";
 import { Pencil, Trash2, ArrowUpCircle, ArrowDownCircle, Calendar, Calculator } from "lucide-react";
 import { Transaction } from "@/types/models/transaction";
-import { useTransactions } from "@/context/contexts/TransactionsContext";
+import { useTransactions } from "@/context/TransactionsContext";
 import { CATEGORY_ICONS_MAP } from "@/utils/categoryOptions";
 import { toDateInputValue } from "@/utils/date";
 import { FiTag } from "react-icons/fi";

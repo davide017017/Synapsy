@@ -5,7 +5,7 @@
 import { Row, flexRender } from "@tanstack/react-table";
 import type { TransactionWithGroup, TableRowProps } from "@/types/transazioni/list";
 import clsx from "clsx";
-import { useSelection } from "../../../../../../context/contexts/SelectionContext";
+import { useSelection } from "@/context/SelectionContext";
 
 export default function TableRow({ row, onClick, className }: TableRowProps) {
     const { isSelectionMode, selectedIds } = useSelection();

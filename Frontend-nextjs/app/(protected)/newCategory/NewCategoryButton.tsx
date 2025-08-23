@@ -6,7 +6,7 @@
 // =========================================
 
 import { PlusCircle } from "lucide-react";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useCategories } from "@/context/CategoriesContext";
 import type { NewCategoryButtonProps } from "@/types";
 
 export default function NewCategoryButton({
