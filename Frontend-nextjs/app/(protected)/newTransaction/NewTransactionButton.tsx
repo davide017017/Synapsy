@@ -5,7 +5,7 @@
  * ╚═════════════════════════════════════════════════════════╝ */
 
 import { PlusCircle } from "lucide-react";
-import { useTransactions } from "@/context/contexts/TransactionsContext";
+import { useTransactions } from "@/context/TransactionsContext";
 import type { NewTransactionButtonProps } from "@/types";
 
 // ============================

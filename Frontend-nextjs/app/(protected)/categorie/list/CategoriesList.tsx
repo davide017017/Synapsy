@@ -4,7 +4,7 @@
 // CategoriesList.tsx — Visualizza categorie divise per tipo
 // ===========================================================
 
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useCategories } from "@/context/CategoriesContext";
 import { useState } from "react";
 import DeleteCategoryModal from "../deleteModal/DeleteCategoryModal";
 import { Category } from "@/types";

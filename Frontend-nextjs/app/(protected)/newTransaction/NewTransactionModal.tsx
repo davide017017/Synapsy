@@ -8,8 +8,8 @@ import { useState, useMemo } from "react";
 import Dialog from "@/app/components/ui/Dialog";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import NewTransactionForm from "./NewTransactionForm";
-import { useTransactions } from "@/context/contexts/TransactionsContext";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useTransactions } from "@/context/TransactionsContext";
+import { useCategories } from "@/context/CategoriesContext";
 
 // ============================
 // Componente principale

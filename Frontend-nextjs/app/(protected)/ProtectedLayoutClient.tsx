@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Sidebar from "./layout-components/Sidebar";
 import Header from "./layout-components/Header";
-import { useSidebar } from "@/context/contexts/SidebarContext";
+import { useSidebar } from "@/context/SidebarContext";
 
 // ==============================
 // LAYOUT PROTETTO CON SIDEBAR E HEADER

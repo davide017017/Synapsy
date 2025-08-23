@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@/context/contexts/UserContext";
+import { useUser } from "@/context/UserContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import ConfirmDialog from "@/app/components/ui/ConfirmDialog";

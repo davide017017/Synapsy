@@ -6,7 +6,7 @@
 // =======================================================
 
 import { useState } from "react";
-import { useRicorrenze } from "@/context/contexts/RicorrenzeContext";
+import { useRicorrenze } from "@/context/RicorrenzeContext";
 import { Ricorrenza } from "@/types/models/ricorrenza";
 import CardTotaliAnnui from "./card/CardTotaliAnnui"; 
 import CardGraficoPagamenti from "./card/CardGraficoPagamenti";

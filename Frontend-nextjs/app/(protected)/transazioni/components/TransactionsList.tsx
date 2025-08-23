@@ -6,8 +6,8 @@
 import { useState, useMemo, useEffect } from "react";
 import TransactionListFilter from "./list/TransactionListFilter";
 import TransactionTable from "./list/TransactionTable";
-import { useSelection } from "@/context/contexts/SelectionContext";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useSelection } from "@/context/SelectionContext";
+import { useCategories } from "@/context/CategoriesContext";
 import { Funnel, Search, Tag, RefreshCw } from "lucide-react"; // icone esempio
 import type { TransactionsListProps } from "@/types/transazioni/list";
 

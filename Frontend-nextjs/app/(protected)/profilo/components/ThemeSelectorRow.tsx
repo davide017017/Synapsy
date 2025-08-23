@@ -5,7 +5,7 @@
 // Dettagli: Selettore tema accessibile con pattern listbox (a11y fix)
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useRef, useEffect, useId } from "react";
-import { useThemeContext } from "@/context/contexts/ThemeContext";
+import { useThemeContext } from "@/context/ThemeContext";
 import { themeMeta, availableThemes } from "@/lib/themeUtils";
 import { ThemeSelectorRowProps } from "@/types/profilo/row";
 

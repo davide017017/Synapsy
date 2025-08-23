@@ -1,5 +1,9 @@
 /* app/(protected)/layout.tsx */
 import ProtectedLayoutClient from "./ProtectedLayoutClient";
+import { SidebarProvider } from "@/context/SidebarContext";
+import { CategoriesProvider } from "@/context/CategoriesContext";
+import { TransactionsProvider } from "@/context/TransactionsContext";
+import { RicorrenzeProvider } from "@/context/RicorrenzeContext";
 
 /* metadata solo per la zona autenticata  */
 export const metadata = {
@@ -8,6 +12,16 @@ export const metadata = {
 };
 
 export default function ProtectedServerLayout({ children }: { children: React.ReactNode }) {
-    return <ProtectedLayoutClient>{children}</ProtectedLayoutClient>;
+    return (
+        <SidebarProvider>
+            <CategoriesProvider>
+                <TransactionsProvider>
+                    <RicorrenzeProvider>
+                        <ProtectedLayoutClient>{children}</ProtectedLayoutClient>
+                    </RicorrenzeProvider>
+                </TransactionsProvider>
+            </CategoriesProvider>
+        </SidebarProvider>
+    );
 }
 

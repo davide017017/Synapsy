@@ -1,7 +1,9 @@
 /* app/layout.tsx */
 import "@/styles/globals.css";
-import GlobalContextProvider from "@/context/GlobalContextProvider";
 import { Toaster } from "sonner";
+import { SessionProvider } from "next-auth/react";
+import { UserProvider } from "@/context/UserContext";
+import { ThemeContextProvider } from "@/context/ThemeContext";
 
 export const metadata = {
     title: "Synapsy",
@@ -38,8 +40,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         },
                     }}
                 />
-                {/* Context globali (auth, sidebar ecc) */}
-                <GlobalContextProvider>{children}</GlobalContextProvider>
+                {/* Context globali minimi */}
+                <SessionProvider>
+                    <UserProvider>
+                        <ThemeContextProvider>{children}</ThemeContextProvider>
+                    </UserProvider>
+                </SessionProvider>
             </body>
         </html>
     );

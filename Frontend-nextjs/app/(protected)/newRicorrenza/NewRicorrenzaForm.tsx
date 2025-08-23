@@ -7,7 +7,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { RicorrenzaBase } from "@/types/models/ricorrenza";
 import type { NewRicorrenzaFormProps } from "@/types";
-import { useCategories } from "@/context/contexts/CategoriesContext";
+import { useCategories } from "@/context/CategoriesContext";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import { Button } from "@/app/components/ui/Button";
