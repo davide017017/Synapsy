@@ -32,9 +32,11 @@ class CategorySuggestionEndpointTest extends TestCase
 
         $this->postJson('/api/v1/ml/suggest-category', $payload)
             ->assertStatus(200)
-            ->assertJsonStructure([
-                'description',
-                'suggestion' => ['category', 'confidence'],
-            ]);
+            ->assertJson([
+                'category' => 'cibo',
+                'confidence' => 0.9,
+            ])
+            ->assertJsonMissingPath('description')
+            ->assertJsonStructure(['category', 'confidence']);
     }
 }

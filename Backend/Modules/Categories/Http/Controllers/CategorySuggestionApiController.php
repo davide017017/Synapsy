@@ -27,9 +27,8 @@ class CategorySuggestionApiController extends Controller
 
         $suggestion = $this->client->suggest($data['description']);
 
-        return response()->json([
-            'description' => $data['description'],
-            'suggestion' => $suggestion,
-        ]);
+        // Return the suggestion payload directly so the endpoint responds with
+        // { category: ..., confidence: ... }
+        return response()->json($suggestion);
     }
 }

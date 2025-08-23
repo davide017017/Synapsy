@@ -26,11 +26,11 @@ export async function suggestCategory(description: string, token: string): Promi
       body: JSON.stringify({ description }),
     });
     if (!res.ok) return { category: null, confidence: 0 };
-    const data = await res.json() as MlSuggestion;
+    const data = await res.json() as { category?: unknown; confidence?: unknown };
     // ── normalizza struttura minima
     return {
-      category: typeof data?.category === 'string' ? data.category : null,
-      confidence: typeof data?.confidence === 'number' ? data.confidence : 0,
+      category: typeof data.category === 'string' ? data.category : null,
+      confidence: typeof data.confidence === 'number' ? data.confidence : 0,
     };
   } catch {
     return { category: null, confidence: 0 };
