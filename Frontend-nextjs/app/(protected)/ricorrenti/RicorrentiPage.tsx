@@ -8,8 +8,8 @@
 import { useState } from "react";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
 import { Ricorrenza } from "@/types/models/ricorrenza";
-import CardTotaliAnnui from "./Card/CardTotaliAnnui";
-import CardGraficoPagamenti from "./Card/CardGraficoPagamenti";
+import CardTotaliAnnui from "./card/CardTotaliAnnui";
+import CardGraficoPagamenti from "./card/CardGraficoPagamenti";
 import ListaRicorrenzePerFrequenza from "./liste/ListaRicorrenzePerFrequenza";
 import ListaProssimiPagamenti from "./liste/ListaProssimiPagamenti";
 import AreaGraficiRicorrenze from "./grafici/AreaGraficiRicorrenze";
@@ -95,4 +95,3 @@ export default function RicorrentiPage() {
 // =======================================================
 // END RicorrentiPage.tsx
 // =======================================================
-
