@@ -17,11 +17,11 @@ const toNum = (v: unknown) => {
     return 0;
 };
 
-const to01 = (v: unknown) => {
-    if (typeof v === "boolean") return v ? 1 : 0;
-    if (typeof v === "number") return v ? 1 : 0;
-    if (typeof v === "string") return ["1", "true", "TRUE", "True", "yes", "on"].includes(v) ? 1 : 0;
-    return 0;
+const toBool = (v: unknown): boolean => {
+    if (typeof v === "boolean") return v;
+    if (typeof v === "number") return v !== 0;
+    if (typeof v === "string") return ["1", "true", "TRUE", "True", "yes", "on"].includes(v);
+    return false;
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -44,8 +44,7 @@ export function normalizeRicorrenza(r: any): Ricorrenza {
         notes: r.note ?? r.notes ?? "",
         type: r.type === "entrata" ? "entrata" : r.category?.type ?? "spesa",
 
-        // ⚠️ il tuo tipo Richiede number → 0/1
-        is_active: typeof r.is_active !== "undefined" ? to01(r.is_active) : 1,
+        is_active: typeof r.is_active !== "undefined" ? toBool(r.is_active) : true,
 
         interval: typeof r.interval !== "undefined" ? Number(r.interval) : 1,
     } as Ricorrenza;

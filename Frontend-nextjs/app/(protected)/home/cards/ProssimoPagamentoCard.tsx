@@ -25,7 +25,7 @@ export default function ProssimoPagamentoCard() {
     // Filtro: solo attive e con prossima >= oggi
     const oggi = new Date();
     const future = ricorrenze
-        .filter((r) => !!r.is_active && new Date(r.prossima) >= oggi)
+        .filter((r) => r.is_active && new Date(r.prossima) >= oggi)
         .sort((a, b) => new Date(a.prossima).getTime() - new Date(b.prossima).getTime());
 
     const prossimo = future[0];

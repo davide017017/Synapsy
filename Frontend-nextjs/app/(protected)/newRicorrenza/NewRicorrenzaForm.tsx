@@ -8,6 +8,7 @@ import { useState, useMemo, useEffect } from "react";
 import { RicorrenzaBase } from "@/types/models/ricorrenza";
 import type { NewRicorrenzaFormProps } from "@/types";
 import { useCategories } from "@/context/CategoriesContext";
+import type { Category } from "@/types/models/category";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import { Button } from "@/app/components/ui/Button";
@@ -38,7 +39,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onC
         category_id: initialValues?.category_id || 0,
         notes: initialValues?.notes || "",
         type: initialValues?.type || "entrata",
-        is_active: initialValues?.is_active ?? 1,
+        is_active: initialValues?.is_active ?? true,
         interval: initialValues?.interval || 1,
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -52,7 +53,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onC
                 ...initialValues,
                 prossima: toDateInputValue(initialValues.prossima),
                 importo: initialValues.importo ?? 0,
-                is_active: initialValues.is_active ?? 1,
+                is_active: initialValues.is_active ?? true,
                 interval: initialValues.interval ?? 1,
             }));
         }
@@ -65,7 +66,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onC
 
     // ==================== CATEGORY FILTER ====================
     const filteredCategories = useMemo(
-        () => categories.filter((cat) => cat.type === formData.type),
+        () => categories.filter((cat: Category) => cat.type === formData.type),
         [categories, formData.type]
     );
 
@@ -134,7 +135,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onC
                     <option value={0} disabled>
                         {loadingCategories ? "Caricamento..." : "Seleziona categoria"}
                     </option>
-                    {filteredCategories.map((cat) => (
+                    {filteredCategories.map((cat: Category) => (
                         <option key={cat.id} value={cat.id}>
                             {cat.name}
                         </option>
