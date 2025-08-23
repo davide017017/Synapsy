@@ -13,7 +13,7 @@ export default function RicorrentiCard() {
     useRenderTimer("RicorrentiCard");
     const { ricorrenze, loading } = useRicorrenze();
 
-    const attive = useMemo(() => ricorrenze.filter((r) => !!r.is_active), [ricorrenze]);
+    const attive = useMemo(() => ricorrenze.filter((r) => r.is_active), [ricorrenze]);
 
     // Calcolo statistiche
     const totali = useMemo(() => {

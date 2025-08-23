@@ -63,7 +63,7 @@ export async function createRicorrenza(token: string, data: RicorrenzaBase): Pro
         frequency: frequencyToBackend(data.frequenza), // IT → EN
         interval: data.interval || 1, // default 1
         start_date: data.prossima, // "prossima" → "start_date"
-        is_active: data.is_active ?? 1, // default 1
+        is_active: data.is_active ?? true, // default true
         category_id: data.category_id,
         notes: data.notes ?? "",
         type: data.type, // opzionale, se richiesto
@@ -98,7 +98,7 @@ export async function updateRicorrenza(token: string, id: number, data: Ricorren
         frequency: frequencyToBackend(data.frequenza),
         interval: data.interval || 1,
         start_date: data.prossima,
-        is_active: Number(data.is_active ?? 1),
+        is_active: data.is_active ?? true,
         category_id: data.category_id,
         notes: data.notes ?? "",
         type: data.type,

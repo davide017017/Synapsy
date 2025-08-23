@@ -17,7 +17,7 @@ export type Ricorrenza = {
 
     notes: string;
     type: "entrata" | "spesa";
-    is_active: number; // <--- puoi aggiungerlo se il backend lo restituisce (opzionale)
+    is_active: boolean; // stato della regola (true=attiva)
     interval: number; // <--- idem, opzionale
 };
 
@@ -32,7 +32,7 @@ export type RicorrenzaBase = {
     category_id: number; // Categoria collegata
     notes: string; // Note opzionali
     type: "entrata" | "spesa"; // Tipo
-    is_active: number; // 1=attiva, 0=disattivata (obbligatorio)
+    is_active: boolean; // true=attiva, false=disattivata (obbligatorio)
     interval: number; // Quanti intervalli tra una ricorrenza e l'altra (es: 1=ogni mese)
 };
 
