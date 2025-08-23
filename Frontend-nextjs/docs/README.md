@@ -36,6 +36,9 @@ npm run dev
 ```
 L'app è disponibile su [http://localhost:3000](http://localhost:3000)
 
+## ⚙️ Feature flags
+- `NEXT_PUBLIC_FEATURE_ML_SUGGEST`: abilita il suggerimento automatico della categoria tramite modello ML.
+
 ---
 
 ## 📚 Documentazione

@@ -30,7 +30,7 @@ function findCategoryId(hint: string | null, categories: { id:number; name:strin
 }
 
 export default function CategorySuggestionChip({ description, threshold = 0.6 }: Props) {
-  const featureOn = process.env.NEXT_PUBLIC_FEATURE_SUGGEST_CATEGORY === 'true';
+  const featureOn = process.env.NEXT_PUBLIC_FEATURE_ML_SUGGEST === 'true';
   const { token } = useAuth();
   const { categories } = useCategories();
   const { setValue } = useFormContext();
