@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { url } from "@/lib/api/endpoints";
 
 export interface ResetPayload {
   email: string;
@@ -8,8 +8,7 @@ export interface ResetPayload {
 }
 
 export async function handleResetPassword(payload: ResetPayload): Promise<{success:boolean; message:string}> {
-  if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL not defined');
-  const res = await fetch(`${API_URL}/v1/reset-password`, {
+  const res = await fetch(url("resetPassword"), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(payload),

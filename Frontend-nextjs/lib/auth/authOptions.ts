@@ -1,10 +1,6 @@
 import Credentials from "next-auth/providers/credentials";
 import { type NextAuthOptions } from "next-auth";
-
-if (!process.env.NEXT_PUBLIC_API_URL) {
-  throw new Error("NEXT_PUBLIC_API_URL non definita");
-}
-const API = process.env.NEXT_PUBLIC_API_URL;
+import { url } from "@/lib/api/endpoints";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,7 +11,7 @@ export const authOptions: NextAuthOptions = {
         password: { type: "password" },
       },
       async authorize(credentials) {
-        const res = await fetch(`${API}/v1/login`, {
+        const res = await fetch(url("login"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(credentials),
@@ -37,7 +33,7 @@ export const authOptions: NextAuthOptions = {
       credentials: { token: { type: "text" } },
       async authorize(credentials) {
         if (!credentials?.token) return null;
-        const res = await fetch(`${API}/v1/me`, {
+        const res = await fetch(url("me"), {
           headers: { Authorization: `Bearer ${credentials.token}` },
         });
         if (!res.ok) return null;

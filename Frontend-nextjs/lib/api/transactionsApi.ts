@@ -3,7 +3,7 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { Transaction } from "@/types/models/transaction";
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { url } from "@/lib/api/endpoints";
 
 // ======================================================
 // Fetch: Lista transazioni (overview completa)
@@ -12,7 +12,7 @@ export async function fetchTransactions(token: string): Promise<Transaction[]> {
     // --------------------------------------------------
     // Richiede le transazioni dalla più recente alla più vecchia
     // --------------------------------------------------
-    const res = await fetch(`${API_URL}/v1/financialoverview?sort_by=date&sort_direction=desc`, {
+    const res = await fetch(`${url("financialOverview")}?sort_by=date&sort_direction=desc`, {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -37,8 +37,7 @@ export async function createTransaction(
     transaction: Omit<Transaction, "id">,
     type: "entrata" | "spesa"
 ): Promise<Transaction> {
-    const endpoint = type === "entrata" ? "/v1/entrate" : "/v1/spese";
-    const url = `${API_URL}${endpoint}`;
+    const endpoint = type === "entrata" ? url("entrate") : url("spese");
     // Costruisci payload pulito
     const payload = {
         description: transaction.description,
@@ -49,7 +48,7 @@ export async function createTransaction(
         notes: (transaction as any).notes,
     };
 
-    const res = await fetch(url, {
+    const res = await fetch(endpoint, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -77,13 +76,13 @@ export async function updateTransaction(token: string, transaction: Transaction)
     const type = transaction.category?.type || transaction.type;
     if (!type) throw new Error("Tipo transazione non riconosciuto");
 
-    const endpoint = type === "entrata" ? `/v1/entrate/${transaction.id}` : `/v1/spese/${transaction.id}`;
+    const endpoint = type === "entrata" ? url("entrate", transaction.id) : url("spese", transaction.id);
 
     // Pulisci il payload (togli category per evitare errori lato backend)
     const payload = { ...transaction, category_id: transaction.category?.id };
     delete (payload as any).category;
 
-    const res = await fetch(`${API_URL}${endpoint}`, {
+    const res = await fetch(endpoint, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -105,9 +104,9 @@ export async function deleteTransaction(token: string, transaction: Transaction)
     const type = transaction.category?.type || transaction.type;
     if (!type) throw new Error("Tipo transazione non riconosciuto");
 
-    const endpoint = type === "entrata" ? `/v1/entrate/${transaction.id}` : `/v1/spese/${transaction.id}`;
+    const endpoint = type === "entrata" ? url("entrate", transaction.id) : url("spese", transaction.id);
 
-    const res = await fetch(`${API_URL}${endpoint}`, {
+    const res = await fetch(endpoint, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -138,10 +137,11 @@ export async function softMoveTransaction(
 ) {
     // 1. Elimina la vecchia
     const typeOld = original.category?.type || original.type;
-    const deleteEndpoint = typeOld === "entrata" ? `/v1/entrate/${original.id}` : `/v1/spese/${original.id}`;
+    const deleteEndpoint =
+        typeOld === "entrata" ? url("entrate", original.id) : url("spese", original.id);
 
     // Elimina la transazione originale
-    const resDelete = await fetch(`${API_URL}${deleteEndpoint}`, {
+    const resDelete = await fetch(deleteEndpoint, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`,
@@ -155,7 +155,7 @@ export async function softMoveTransaction(
     }
 
     // 2. Crea la nuova col nuovo tipo
-    const createEndpoint = newType === "entrata" ? "/v1/entrate" : "/v1/spese";
+    const createEndpoint = newType === "entrata" ? url("entrate") : url("spese");
     const payload = {
         description: formData.description,
         amount: formData.amount,
@@ -165,7 +165,7 @@ export async function softMoveTransaction(
         notes: formData.notes,
     };
 
-    const resCreate = await fetch(`${API_URL}${createEndpoint}`, {
+    const resCreate = await fetch(createEndpoint, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
