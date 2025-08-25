@@ -5,6 +5,7 @@ namespace Modules\FinancialOverview\Services;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Modules\FinancialOverview\Models\FinancialSnapshot;
 use Modules\User\Models\User;
 
@@ -105,49 +106,61 @@ class FinancialOverviewService
      */
     public function getOverviewData(User $user, array $filters, string $sortBy = 'date', string $sortDirection = 'desc'): array
     {
-        $entrateQuery = $user->entrate()->with('category');
-        $speseQuery = $user->spese()->with('category');
+        $cacheKey = $this->makeCacheKey($user->id, $filters, $sortBy, $sortDirection);
 
-        if (! empty($filters['start_date'])) {
-            $entrateQuery->whereDate('date', '>=', $filters['start_date']);
-            $speseQuery->whereDate('date', '>=', $filters['start_date']);
-        }
+        return Cache::tags(['financial_overview', 'user:' . $user->id])
+            ->remember($cacheKey, now()->addMinutes(10), function () use ($user, $filters, $sortBy, $sortDirection) {
+                $entrateQuery = $user->entrate()->with('category');
+                $speseQuery = $user->spese()->with('category');
 
-        if (! empty($filters['end_date'])) {
-            $entrateQuery->whereDate('date', '<=', $filters['end_date']);
-            $speseQuery->whereDate('date', '<=', $filters['end_date']);
-        }
+                if (! empty($filters['start_date'])) {
+                    $entrateQuery->whereDate('date', '>=', $filters['start_date']);
+                    $speseQuery->whereDate('date', '>=', $filters['start_date']);
+                }
 
-        // --------------------------------------------------
-        // Recupera entrate e spese ordinate dalla più recente
-        // --------------------------------------------------
-        $entrate = $entrateQuery->orderByDesc('date')->get();
-        $spese = $speseQuery->orderByDesc('date')->get();
+                if (! empty($filters['end_date'])) {
+                    $entrateQuery->whereDate('date', '<=', $filters['end_date']);
+                    $speseQuery->whereDate('date', '<=', $filters['end_date']);
+                }
 
-        // --------------------------------------------------
-        // Unisce e ordina i risultati (fallback su created_at)
-        // --------------------------------------------------
-        $financialEntries = $entrate
-            ->concat($spese)
-            ->sortBy(
-                function ($item) use ($sortBy) {
-                    return match ($sortBy) {
-                        'type' => class_basename($item),
-                        'category' => $item->category?->name ?? '',
-                        default => $item->{$sortBy} ?? $item->created_at,
-                    };
-                },
-                SORT_REGULAR,
-                $sortDirection === 'desc'
-            )
-            ->values(); // Reindicizza per preservare l'ordine JSON
+                // --------------------------------------------------
+                // Recupera entrate e spese ordinate dalla più recente
+                // --------------------------------------------------
+                $entrate = $entrateQuery->orderByDesc('date')->get();
+                $spese = $speseQuery->orderByDesc('date')->get();
 
-        return [
-            'financialEntries' => $financialEntries,
-            'totalEntrate' => $entrate->sum('amount'),
-            'totalSpese' => $spese->sum('amount'),
-            'balance' => $entrate->sum('amount') - $spese->sum('amount'),
-        ];
+                // --------------------------------------------------
+                // Unisce e ordina i risultati (fallback su created_at)
+                // --------------------------------------------------
+                $financialEntries = $entrate
+                    ->concat($spese)
+                    ->sortBy(
+                        function ($item) use ($sortBy) {
+                            return match ($sortBy) {
+                                'type' => class_basename($item),
+                                'category' => $item->category?->name ?? '',
+                                default => $item->{$sortBy} ?? $item->created_at,
+                            };
+                        },
+                        SORT_REGULAR,
+                        $sortDirection === 'desc'
+                    )
+                    ->values(); // Reindicizza per preservare l'ordine JSON
+
+                return [
+                    'financialEntries' => $financialEntries,
+                    'totalEntrate' => $entrate->sum('amount'),
+                    'totalSpese' => $spese->sum('amount'),
+                    'balance' => $entrate->sum('amount') - $spese->sum('amount'),
+                ];
+            });
+    }
+
+    protected function makeCacheKey(int $userId, array $filters, string $sortBy, string $sortDirection): string
+    {
+        $filtersKey = md5(json_encode($filters));
+
+        return "financial_overview:{$userId}:{$filtersKey}:{$sortBy}:{$sortDirection}";
     }
 
     // ============================

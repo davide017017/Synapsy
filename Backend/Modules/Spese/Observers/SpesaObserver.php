@@ -2,6 +2,7 @@
 
 namespace Modules\Spese\Observers;
 
+use Illuminate\Support\Facades\Cache;
 use Modules\AuditTrail\Services\AuditTrailService;
 use Modules\Spese\Models\Spesa;
 
@@ -21,6 +22,8 @@ class SpesaObserver
             null,
             $spesa->toArray()
         );
+
+        $this->clearCache($spesa->user_id);
     }
 
     /**
@@ -34,6 +37,8 @@ class SpesaObserver
             $spesa->getOriginal(),   // Stato precedente
             $spesa->toArray()        // Stato attuale
         );
+
+        $this->clearCache($spesa->user_id);
     }
 
     /**
@@ -47,6 +52,8 @@ class SpesaObserver
             $spesa->getOriginal(),
             null
         );
+
+        $this->clearCache($spesa->user_id);
     }
 
     /**
@@ -60,6 +67,8 @@ class SpesaObserver
             $spesa->getOriginal(),
             $spesa->toArray()
         );
+
+        $this->clearCache($spesa->user_id);
     }
 
     /**
@@ -73,6 +82,13 @@ class SpesaObserver
             $spesa->getOriginal(),
             null
         );
+
+        $this->clearCache($spesa->user_id);
+    }
+
+    protected function clearCache(int $userId): void
+    {
+        Cache::tags(['financial_overview', 'user:' . $userId])->flush();
     }
 }
 

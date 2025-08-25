@@ -2,6 +2,7 @@
 
 namespace Modules\Entrate\Observers;
 
+use Illuminate\Support\Facades\Cache;
 use Modules\AuditTrail\Services\AuditTrailService;
 use Modules\Entrate\Models\Entrata;
 
@@ -21,6 +22,8 @@ class EntrataObserver
             null,
             $entrata->toArray()
         );
+
+        $this->clearCache($entrata->user_id);
     }
 
     /**
@@ -34,6 +37,8 @@ class EntrataObserver
             $entrata->getOriginal(),   // Stato precedente
             $entrata->toArray()        // Stato attuale
         );
+
+        $this->clearCache($entrata->user_id);
     }
 
     /**
@@ -47,6 +52,8 @@ class EntrataObserver
             $entrata->getOriginal(),
             null
         );
+
+        $this->clearCache($entrata->user_id);
     }
 
     /**
@@ -60,6 +67,8 @@ class EntrataObserver
             $entrata->getOriginal(),
             $entrata->toArray()
         );
+
+        $this->clearCache($entrata->user_id);
     }
 
     /**
@@ -73,6 +82,13 @@ class EntrataObserver
             $entrata->getOriginal(),
             null
         );
+
+        $this->clearCache($entrata->user_id);
+    }
+
+    protected function clearCache(int $userId): void
+    {
+        Cache::tags(['financial_overview', 'user:' . $userId])->flush();
     }
 }
 
