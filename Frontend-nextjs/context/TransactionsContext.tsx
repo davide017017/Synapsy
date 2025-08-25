@@ -4,7 +4,7 @@
 // ║ TransactionsContext — CRUD + Undo/Redo Sonner   ║
 // ╚══════════════════════════════════════════════════╝
 
-import { createContext, useContext, useState, useEffect, useMemo } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Transaction, TransactionBase } from "@/types";
 import {
     fetchTransactions,
@@ -74,7 +74,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         if (token) {
             fetchAll();
         }
-    }, [token]);
+    }, [token, fetchAll]); // Fix: include fetchAll to satisfy deps
 
     // ==================================================
     // Saldi mese/anno/settimana/totale
@@ -125,8 +125,11 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // ==================================================
     // Fetch ALL
     // ==================================================
-    const fetchAll = async () => {
-        if (!token) return;
+    // Fix: memoize fetch to prevent re-render loop
+    const inFlightRef = useRef(false);
+    const fetchAll = useCallback(async () => {
+        if (!token || inFlightRef.current) return;
+        inFlightRef.current = true;
         setLoading(true);
         setError(null);
         try {
@@ -137,8 +140,9 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             toast.error(e.message || "Errore caricamento transazioni");
         } finally {
             setLoading(false);
+            inFlightRef.current = false;
         }
-    };
+    }, [token]);
 
     // ==================================================
     // CREATE

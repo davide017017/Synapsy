@@ -4,7 +4,7 @@
 // ║ RicorrenzeContext — CRUD + Undo Delete (Sonner)          ║
 // ╚════════════════════════════════════════════════════════════╝
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
 import { fetchRicorrenze, createRicorrenza, updateRicorrenza, deleteRicorrenza } from "@/lib/api/ricorrenzeApi";
 import { unwrapApiArray } from "@/utils/unwrapApiArray";
@@ -58,11 +58,14 @@ export function RicorrenzeProvider({ children }: { children: React.ReactNode }) 
     // =======================================================
     // Fetch ricorrenze
     // =======================================================
-    const loadRicorrenze = async () => {
-        if (!token) {
-            setRicorrenze([]);
+    // Fix: memoize load to prevent repeated requests
+    const inFlightRef = useRef(false);
+    const loadRicorrenze = useCallback(async () => {
+        if (!token || inFlightRef.current) {
+            if (!token) setRicorrenze([]);
             return;
         }
+        inFlightRef.current = true;
         setLoading(true);
         setError(null);
         try {
@@ -73,12 +76,13 @@ export function RicorrenzeProvider({ children }: { children: React.ReactNode }) 
             toast.error("Errore caricamento ricorrenze");
         } finally {
             setLoading(false);
+            inFlightRef.current = false;
         }
-    };
+    }, [token]);
 
     useEffect(() => {
         if (token) loadRicorrenze();
-    }, [token]);
+    }, [token, loadRicorrenze]); // Fix: include loadRicorrenze
 
     // =======================================================
     // CREATE

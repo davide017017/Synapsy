@@ -28,6 +28,7 @@ export default function TransazioniPage() {
     // ─────────────────────────────────────────────────────────────────────────
     // Sezione: Carica lista (deps corrette → include fetchAll)
     // ─────────────────────────────────────────────────────────────────────────
+    // Fix: stop polling loop — fetchAll is memoized in context
     useEffect(() => {
         fetchAll();
     }, [fetchAll]);

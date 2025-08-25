@@ -33,9 +33,10 @@ export default function PanoramicaPage() {
     //     ]
     // );
 
+    // Fix: stop polling loop — fetchAll is memoized in context
     useEffect(() => {
         fetchAll();
-    }, [fetchAll]); // ← OK
+    }, [fetchAll]);
 
     return (
         <div className="space-y-6">
