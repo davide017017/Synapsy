@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-    await page.route("**/api/auth/session", (route) =>
+test.beforeEach(async ({ page }: { page: any }) => {
+    await page.route("**/api/auth/session", (route: any) =>
         route.fulfill({
             status: 200,
             contentType: "application/json",
@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
             }),
         }),
     );
-    await page.route("**/api/v1/profile", (route) =>
+    await page.route("**/api/v1/profile", (route: any) =>
         route.fulfill({
             status: 200,
             contentType: "application/json",
@@ -27,12 +27,12 @@ test.beforeEach(async ({ page }) => {
             }),
         }),
     );
-    await page.route("**/api/v1/**", (route) =>
+    await page.route("**/api/v1/**", (route: any) =>
         route.fulfill({ status: 200, contentType: "application/json", body: "[]" }),
     );
 });
 
-test("navigazione sidebar", async ({ page }) => {
+test("navigazione sidebar", async ({ page }: { page: any }) => {
     await page.goto("/");
     await page.click("text=Panoramica");
     await expect(page.getByRole("heading", { name: /Riepilogo con Calendario/i })).toBeVisible();
@@ -42,7 +42,7 @@ test("navigazione sidebar", async ({ page }) => {
     await expect(page.getByRole("heading", { name: /Profilo/i })).toBeVisible();
 });
 
-test("avatar header link", async ({ page }) => {
+test("avatar header link", async ({ page }: { page: any }) => {
     await page.goto("/");
     await page.getByTitle("Vai al profilo").click();
     await expect(page.getByRole("heading", { name: /Profilo/i })).toBeVisible();
