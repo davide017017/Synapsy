@@ -66,9 +66,8 @@ export function RicorrenzeProvider({ children }: { children: React.ReactNode }) 
         setLoading(true);
         setError(null);
         try {
-            const raw = await fetchRicorrenze(token);
-            const arr = unwrapApiArray(raw);
-            setRicorrenze(arr.map(normalizeRicorrenza));
+            const items = await fetchRicorrenze(token);
+            setRicorrenze(items.map(normalizeRicorrenza));
         } catch (e: any) {
             setError("Errore caricamento ricorrenze");
             toast.error("Errore caricamento ricorrenze");
@@ -227,4 +226,3 @@ export function useRicorrenze() {
     return context;
 }
 // ===========================================================
-

@@ -40,16 +40,20 @@ export async function fetchRicorrenze(token: string): Promise<Ricorrenza[]> {
             Accept: "application/json",
         },
     });
-    if (!res.ok) throw new Error("Errore fetch ricorrenze");
 
-    // Accetta array o oggetto indicizzato (come Laravel a volte restituisce)
-    const raw = await res.text();
-    try {
-        const data = JSON.parse(raw);
-        return Array.isArray(data) ? data : Object.values(data);
-    } catch {
-        throw new Error("Risposta non valida dal server");
+    const json = await res.json().catch(() => null);
+    if (!res.ok) {
+        throw new Error(json?.message || "Errore fetch ricorrenze");
     }
+
+    // Sblocca TUTTE le forme comuni:
+    if (Array.isArray(json)) return json as Ricorrenza[];
+    if (Array.isArray(json?.data?.items)) return json.data.items as Ricorrenza[];
+    if (Array.isArray(json?.items)) return json.items as Ricorrenza[];
+    if (Array.isArray(json?.data)) return json.data as Ricorrenza[];
+
+    // fallback sicuro
+    return [];
 }
 
 // ==============================
@@ -132,4 +136,3 @@ export async function deleteRicorrenza(token: string, ricorrenza: Ricorrenza): P
 }
 
 // ═══════════════════════════════════════════════════════════
-
