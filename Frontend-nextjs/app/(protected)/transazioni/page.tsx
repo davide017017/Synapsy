@@ -3,7 +3,8 @@
 // ==============================================
 // Pagina principale lista transazioni — CRUD sync
 // ==============================================
-import { useEffect, useState, Suspense } from "react";
+
+import { useState, Suspense } from "react";
 import { useTransactions } from "@/context/TransactionsContext";
 import { useCategories } from "@/context/CategoriesContext";
 import SelectionToolbar from "./components/SelectionToolbar";
@@ -16,26 +17,12 @@ import { Transaction } from "@/types/models/transaction";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import { Loader2 } from "lucide-react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Sezione: Component
-// ─────────────────────────────────────────────────────────────────────────────
 export default function TransazioniPage() {
-    const { transactions, loading, error, fetchAll, update, remove } = useTransactions();
+    const { transactions, loading, error, update, remove } = useTransactions();
     const { categories } = useCategories();
     const [selected, setSelected] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Sezione: Carica lista (deps corrette → include fetchAll)
-    // ─────────────────────────────────────────────────────────────────────────
-    // Fix: stop polling loop — fetchAll is memoized in context
-    useEffect(() => {
-        fetchAll();
-    }, [fetchAll]);
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // Sezione: Handlers CRUD
-    // ─────────────────────────────────────────────────────────────────────────
     const handleEdit = async (tx: Transaction) => {
         setSelected(null);
         setIsLoading(true);
@@ -58,9 +45,6 @@ export default function TransazioniPage() {
 
     const selectedTx = transactions.find((tx) => tx.id === selected);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Sezione: Render
-    // ─────────────────────────────────────────────────────────────────────────
     return (
         <div className="space-y-5">
             {/* ===================== Header ===================== */}
@@ -139,7 +123,7 @@ export default function TransazioniPage() {
             {/* ============== Spinner full screen ================ */}
             {isLoading && (
                 <LoadingOverlay
-                    show={true}
+                    show
                     fixed
                     rounded={false}
                     message="Sto aggiornando!"

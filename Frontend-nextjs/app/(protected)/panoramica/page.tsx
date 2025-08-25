@@ -4,7 +4,7 @@
 // Pagina riepilogo calendario — CRUD sincrono
 // ================================================
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTransactions } from "@/context/TransactionsContext";
 import CalendarGrid from "./components/CalendarGrid";
 import CalendarGridSkeleton from "./components/skeleton/CalendarGridSkeleton";
@@ -13,7 +13,7 @@ import DayTransactionsModal from "./components/modal/DayTransactionsModal";
 import { Transaction } from "@/types";
 
 export default function PanoramicaPage() {
-    const { transactions, loading, fetchAll } = useTransactions();
+    const { transactions, loading } = useTransactions();
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedTx, setSelectedTx] = useState<Transaction[]>([]);
 
@@ -22,28 +22,11 @@ export default function PanoramicaPage() {
         setSelectedTx(tx);
     };
 
-    // Removed local fetchAll to avoid redeclaration error.
-    // If you need a custom fetch function, rename it to something else, e.g., fetchAllCustom.
-    // const fetchAllCustom = useCallback(
-    //     async () => {
-    //         // ... logica fetch
-    //     },
-    //     [
-    //         /* deps reali: token, filtri, ecc. */
-    //     ]
-    // );
-
-    // Fix: stop polling loop — fetchAll is memoized in context
-    useEffect(() => {
-        fetchAll();
-    }, [fetchAll]);
-
     return (
         <div className="space-y-6">
             <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-6 shadow-md overflow-hidden animate-fade-in">
                 {/* -------- Icona sfumata di sfondo -------- */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    {/* Sostituisci con icona Lucide se vuoi */}
                     <svg
                         className="w-[180px] h-[180px] text-[hsl(var(--c-secondary))] opacity-5"
                         style={{ filter: "blur(2px)" }}
@@ -57,7 +40,6 @@ export default function PanoramicaPage() {
                 {/* -------- Titolo e descrizione -------- */}
                 <div className="relative z-10 text-center max-w-xl mx-auto space-y-2">
                     <h1 className="text-2xl md:text-3xl font-serif font-bold flex justify-center items-center gap-3 text-[hsl(var(--c-primary-dark))] drop-shadow-sm">
-                        {/* Sostituisci con icona a tema calendario */}
                         <span className="inline-block w-7 h-7 text-[hsl(var(--c-primary))]">
                             <svg
                                 viewBox="0 0 24 24"
@@ -66,7 +48,6 @@ export default function PanoramicaPage() {
                                 stroke="currentColor"
                                 strokeWidth={1.8}
                             >
-                                {/* Icona calendario */}
                                 <rect x="3" y="4" width="18" height="16" rx="3" stroke="currentColor" strokeWidth="2" />
                                 <path d="M3 10h18" stroke="currentColor" strokeWidth="2" />
                                 <path d="M8 2v4" stroke="currentColor" strokeWidth="2" />
@@ -91,6 +72,7 @@ export default function PanoramicaPage() {
             ) : (
                 <CalendarGrid transactions={transactions} onDayClick={handleDayClick} />
             )}
+
             <DayTransactionsModal
                 open={selectedDate !== null}
                 onClose={() => setSelectedDate(null)}

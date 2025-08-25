@@ -1,25 +1,26 @@
 // ╔══════════════════════════════════════════════════════╗
 // ║           API: CRUD Transazioni (Entrate/Spese)     ║
-// ╚══════════════════════════════════════════════════════╝
+/* ╚══════════════════════════════════════════════════════╝ */
 
-import { Transaction } from "@/types/models/transaction";
+import type { Transaction } from "@/types/models/transaction";
 import { url } from "@/lib/api/endpoints";
 
-// ======================================================
-// Fetch: Lista transazioni (overview completa)
-// ======================================================
-export async function fetchTransactions(token: string): Promise<Transaction[]> {
-    // --------------------------------------------------
-    // Richiede le transazioni dalla più recente alla più vecchia
-    // --------------------------------------------------
+/* ======================================================
+ * Fetch: Lista transazioni (overview completa)
+ * - supporta AbortController via parametro opzionale `signal`
+ * ====================================================== */
+export async function fetchTransactions(token: string, signal?: AbortSignal): Promise<Transaction[]> {
     const res = await fetch(`${url("financialOverview")}?sort_by=date&sort_direction=desc`, {
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
         },
+        signal,
     });
+
     if (!res.ok) throw new Error("Errore nel caricamento transazioni");
+
     const raw = await res.text();
     try {
         const data = JSON.parse(raw);
@@ -29,21 +30,22 @@ export async function fetchTransactions(token: string): Promise<Transaction[]> {
     }
 }
 
-// ======================================================
-// Create: Nuova transazione (entrata/spesa)
-// ======================================================
+/* ======================================================
+ * Create: Nuova transazione (entrata/spesa)
+ * ====================================================== */
 export async function createTransaction(
     token: string,
     transaction: Omit<Transaction, "id">,
     type: "entrata" | "spesa"
 ): Promise<Transaction> {
     const endpoint = type === "entrata" ? url("entrate") : url("spese");
-    // Costruisci payload pulito
+
+    // Payload pulito
     const payload = {
         description: transaction.description,
         amount: transaction.amount,
         date: transaction.date,
-        type: transaction.type,
+        type: transaction.type, // facoltativo lato backend; mantenuto per compatibilità
         category_id: (transaction as any).category_id,
         notes: (transaction as any).notes,
     };
@@ -59,7 +61,6 @@ export async function createTransaction(
     });
 
     if (!res.ok) {
-        // Mostra errore in console con dettagli del payload
         const errJson = await res.json().catch(() => ({}));
         console.error("💥 Errore creazione transazione:", errJson);
         throw new Error(res.status === 422 ? "Validazione fallita" : "Errore creazione transazione");
@@ -68,9 +69,9 @@ export async function createTransaction(
     return res.json();
 }
 
-// ======================================================
-// Update: Modifica transazione (entrata/spesa)
-// ======================================================
+/* ======================================================
+ * Update: Modifica transazione (entrata/spesa)
+ * ====================================================== */
 export async function updateTransaction(token: string, transaction: Transaction): Promise<Transaction> {
     // Usa il tipo dalla categoria oppure dalla proprietà type
     const type = transaction.category?.type || transaction.type;
@@ -78,9 +79,13 @@ export async function updateTransaction(token: string, transaction: Transaction)
 
     const endpoint = type === "entrata" ? url("entrate", transaction.id) : url("spese", transaction.id);
 
-    // Pulisci il payload (togli category per evitare errori lato backend)
-    const payload = { ...transaction, category_id: transaction.category?.id };
-    delete (payload as any).category;
+    // Pulisci il payload: niente oggetti annidati
+    const { id: _omitId, category: _omitCategory, ...rest } = transaction as unknown as Record<string, any>;
+
+    const payload = {
+        ...rest,
+        category_id: transaction.category?.id ?? (transaction as any).category_id,
+    };
 
     const res = await fetch(endpoint, {
         method: "PUT",
@@ -93,14 +98,13 @@ export async function updateTransaction(token: string, transaction: Transaction)
     });
 
     if (!res.ok) throw new Error("Errore modifica transazione");
-    return await res.json();
+    return res.json();
 }
 
-// ======================================================
-// Delete: Elimina transazione (entrata/spesa)
-// ======================================================
+/* ======================================================
+ * Delete: Elimina transazione (entrata/spesa)
+ * ====================================================== */
 export async function deleteTransaction(token: string, transaction: Transaction): Promise<boolean> {
-    // Usa il tipo dalla categoria oppure dalla proprietà type
     const type = transaction.category?.type || transaction.type;
     if (!type) throw new Error("Tipo transazione non riconosciuto");
 
@@ -118,29 +122,23 @@ export async function deleteTransaction(token: string, transaction: Transaction)
     return true;
 }
 
-// ════════════════════════════════════════════════════════
-// ==============================================
-// Soft move: cambia tipo di transazione (da entrata a spesa o viceversa)
-// ==============================================
-
-/**
- * Sposta una transazione da un tipo all'altro in modo "soft":
- * - Crea una nuova transazione nel nuovo tipo
- * - Cancella l'originale
- * - Ritorna la nuova transazione
- */
+/* ======================================================
+ * Soft move: cambia tipo di transazione (da entrata a spesa o viceversa)
+ * - Crea una nuova transazione nel nuovo tipo, poi cancella l’originale
+ *   (NB: se preferisci sicurezza > consistenza temporanea, inverti l’ordine)
+ * ====================================================== */
 export async function softMoveTransaction(
     token: string,
     original: Transaction,
     formData: Transaction,
     newType: "entrata" | "spesa"
-) {
-    // 1. Elimina la vecchia
+): Promise<Transaction> {
+    // 1) Elimina la vecchia
     const typeOld = original.category?.type || original.type;
-    const deleteEndpoint =
-        typeOld === "entrata" ? url("entrate", original.id) : url("spese", original.id);
+    if (!typeOld) throw new Error("Tipo transazione originale non riconosciuto");
 
-    // Elimina la transazione originale
+    const deleteEndpoint = typeOld === "entrata" ? url("entrate", original.id) : url("spese", original.id);
+
     const resDelete = await fetch(deleteEndpoint, {
         method: "DELETE",
         headers: {
@@ -148,21 +146,23 @@ export async function softMoveTransaction(
             Accept: "application/json",
         },
     });
+
     if (!resDelete.ok) {
         const err = await resDelete.json().catch(() => ({}));
         console.error("💥 Errore softMove DELETE:", err);
         throw new Error("Errore eliminazione vecchia transazione");
     }
 
-    // 2. Crea la nuova col nuovo tipo
+    // 2) Crea la nuova col nuovo tipo
     const createEndpoint = newType === "entrata" ? url("entrate") : url("spese");
+
     const payload = {
         description: formData.description,
         amount: formData.amount,
         date: formData.date,
         type: newType,
-        category_id: formData.category_id,
-        notes: formData.notes,
+        category_id: (formData as any).category_id,
+        notes: (formData as any).notes,
     };
 
     const resCreate = await fetch(createEndpoint, {
@@ -183,5 +183,3 @@ export async function softMoveTransaction(
 
     return resCreate.json();
 }
-// ════════════════════════════════════════════════════════
-

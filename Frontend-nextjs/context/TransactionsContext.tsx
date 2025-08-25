@@ -69,30 +69,44 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     const token = session?.accessToken as string | undefined;
 
     // ==================================================
-    // FETCH ALL (memoized + in-flight guard)  ← DEFINITO PRIMA DELL'useEffect
+    // FETCH ALL (memoized + in-flight guard + abort)
     // ==================================================
     const inFlightRef = useRef(false);
+    const abortRef = useRef<AbortController | null>(null);
+
     const fetchAll = useCallback(async () => {
         if (!token || inFlightRef.current) return;
+        // cancella eventuale richiesta precedente
+        abortRef.current?.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+
         inFlightRef.current = true;
         setLoading(true);
         setError(null);
+
         try {
-            const data = await fetchTransactions(token);
+            const data = await fetchTransactions(token, controller.signal);
             setTransactions(data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
         } catch (e: any) {
-            const msg = e?.message || "Errore caricamento transazioni";
-            setError(msg);
-            toast.error(msg);
+            // non mostrare errore per abort intenzionale
+            if (e?.name !== "AbortError") {
+                const msg = e?.message || "Errore caricamento transazioni";
+                setError(msg);
+                toast.error(msg);
+            }
         } finally {
             setLoading(false);
             inFlightRef.current = false;
         }
     }, [token]);
 
-    // ==================================================
-    // Carica alla (ri)autenticazione
-    // ==================================================
+    // cleanup on unmount
+    useEffect(() => {
+        return () => abortRef.current?.abort();
+    }, []);
+
+    // carica alla (ri)autenticazione
     useEffect(() => {
         if (token) fetchAll();
     }, [token, fetchAll]);
@@ -285,7 +299,6 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             }}
         >
             {children}
-            {/* Mantengo la tua integrazione della modale così com'è */}
             <NewTransactionModal defaultDate={defaultDate ?? undefined} defaultType={defaultType ?? undefined} />
         </TransactionsContext.Provider>
     );
@@ -299,4 +312,3 @@ export function useTransactions() {
     if (!context) throw new Error("useTransactions deve essere usato dentro <TransactionsProvider>");
     return context;
 }
-// ==================================================

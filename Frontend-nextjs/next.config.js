@@ -4,22 +4,31 @@
 // Configurazione Next.js
 // =========================
 const nextConfig = {
-    reactStrictMode: true, // Strict mode React (consigliato)
-    swcMinify: true, // Build più veloce
+    reactStrictMode: true,
+    swcMinify: true,
 
     experimental: {
-        scrollRestoration: true, // Ripristino scroll tra le pagine (UX migliore)
-        // Aggiungi altri flag sperimentali se servono
+        scrollRestoration: true,
     },
 
-    productionBrowserSourceMaps: false, // No sourcemap in produzione (sicurezza)
+    productionBrowserSourceMaps: false,
 
     typescript: {
-        ignoreBuildErrors: false, // Blocca build se errori TS
+        ignoreBuildErrors: false,
     },
 
     images: {
-        unoptimized: true, // ✅ Disabilita ottimizzazione immagini Next.js
+        // Lasciato intenzionalmente: ambiente locale / asset statici
+        unoptimized: true,
+    },
+
+    // Silenzia i warning "Managed item ... isn't a directory" in dev
+    webpack: (config, { dev }) => {
+        if (dev) {
+            config.snapshot = config.snapshot || {};
+            config.snapshot.managedPaths = [];
+        }
+        return config;
     },
 };
 
