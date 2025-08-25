@@ -61,7 +61,7 @@ export default function TransazioniCard() {
 
     if (error)
         return (
-            <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni" value="-" href="/panoramica">
+            <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni" value="-" href="/transazioni">
                 {error}
             </DashboardCard>
         );
@@ -70,7 +70,7 @@ export default function TransazioniCard() {
     // Render principale
     // ======================================================================
     return (
-        <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni" value={totali.totale} href="/panoramica">
+        <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni" value={totali.totale} href="/transazioni">
             <span>
                 <b>Questa settimana:</b> {totali.settimana}
             </span>

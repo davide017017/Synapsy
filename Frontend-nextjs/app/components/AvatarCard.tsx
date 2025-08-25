@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import clsx from "clsx";
-import getAvatarUrl from "@/utils/getAvatarUrl";
+import getAvatarUrl from "@/utils/avatar";
 
 export type AvatarCardProps = {
     src: string;
@@ -12,7 +12,7 @@ export type AvatarCardProps = {
 };
 
 export default function AvatarCard({ src, label, selected, onClick }: AvatarCardProps) {
-    const url = getAvatarUrl(src);
+    const url = getAvatarUrl({ avatarUrl: src });
 
     return (
         <div className="flex flex-col items-center gap-2">

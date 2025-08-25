@@ -17,7 +17,7 @@ import PendingEmailNotice from "@/app/components/PendingEmailNotice";
 import { UserRound } from "lucide-react";
 import LegalLinks from "@/app/components/legal/LegalLinks";
 import DeleteAccountSection from "./components/DeleteAccountSection";
-import getAvatarUrl from "@/utils/getAvatarUrl";
+import getAvatarUrl from "@/utils/avatar";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sezione: Componente principale
@@ -74,7 +74,7 @@ export default function ProfilePage() {
         setShowPicker(false);
     };
 
-    const avatarUrl = getAvatarUrl(form.avatar);
+    const avatarUrl = getAvatarUrl(form);
 
     // ─────────────────────────────────────────────────────────────────────────
     // Sezione: Render
