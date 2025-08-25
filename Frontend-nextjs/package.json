@@ -10,8 +10,8 @@
         "test": "echo \"No unit tests yet\" && exit 0",
         "check:routes": "tsx scripts/check-routes.ts",
         "e2e": "playwright test",
-        "e2e:ui": "playwright test --ui"
-
+        "e2e:ui": "playwright test --ui",
+        "benchmark": "tsx tests/calendarGrid.benchmark.ts"
     },
     "dependencies": {
         "@headlessui/react": "^2.2.4",

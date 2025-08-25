@@ -1,12 +1,12 @@
 "use client";
 
 // ╔═══════════════════════════════════════════════════════════════╗
-// ║ CalendarGrid.tsx — Calendario avanzato stile Google Calendar ║
+/* ║ CalendarGrid.tsx — Calendario avanzato stile Google Calendar ║ */
 // ╚═══════════════════════════════════════════════════════════════╝
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
-import { Transaction } from "@/types/models/transaction";
+import type { Transaction } from "@/types/models/transaction";
 import type { CalendarGridProps } from "@/types";
 import DayCell from "./calendar/DayCell";
 import { useMediaQuery } from "usehooks-ts";
@@ -14,6 +14,21 @@ import { getCalendarGrid } from "./calendar/utils/calendarUtils";
 import { motion, AnimatePresence } from "framer-motion";
 import WeekRow from "./calendar/WeekRow";
 import YearDropdown from "./calendar/YearDropdown";
+
+// ============================
+// Helpers date (LOCAL DAY KEY)
+// ============================
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const localDateKey = (d: Date) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const anyToLocalKey = (val: Date | string) => {
+    if (typeof val === "string") {
+        // Se arriva "YYYY-MM-DD" dal backend, è già un giorno (no time/UTC): usalo così com'è
+        if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+        // Altrimenti parsa e portalo a chiave locale
+        return localDateKey(new Date(val));
+    }
+    return localDateKey(val);
+};
 
 // ============================
 // Costanti
@@ -32,26 +47,22 @@ const monthNames = [
     "Novembre",
     "Dicembre",
 ];
-const daysOfWeek = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
-const currentYear = new Date().getFullYear();
-const currentMonth = new Date().getMonth();
-const yearOptions = Array.from({ length: 15 }, (_, i) => currentYear - 7 + i);
 
-// ============================
-// Props
-// ============================
+// Abbreviazioni univoche per evitare key duplicate
+const weekDayShort = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 
-// ============================
-// CalendarGrid principale
-// ============================
 export default function CalendarGrid({ transactions, onDayClick }: CalendarGridProps) {
-    // Stato visualizzazione mese/anno
     const isLg = useMediaQuery("(min-width: 1024px)");
-    const [viewYear, setViewYear] = useState(currentYear);
+
+    // Stato mese/anno in vista
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
     const [viewMonth, setViewMonth] = useState(currentMonth);
+    const [viewYear, setViewYear] = useState(currentYear);
     const [direction, setDirection] = useState<1 | -1>(1);
 
-    // --- Cambia mese con animazione ---
+    // Navigazione mesi
     const prevMonth = () => {
         setDirection(-1);
         if (viewMonth === 0) {
@@ -70,8 +81,6 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
             setViewMonth((m) => m + 1);
         }
     };
-
-    // --- Torna al mese corrente ---
     const goToToday = () => {
         setViewYear(currentYear);
         setViewMonth(currentMonth);
@@ -79,23 +88,27 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
     };
     const isCurrentMonth = viewYear === currentYear && viewMonth === currentMonth;
 
-    // --- Genera celle e settimane ---
+    // Celle e settimane da renderizzare
     const { cells, weeks } = getCalendarGrid(viewYear, viewMonth, { withWeekNumbers: true });
 
-    // ==========================
-    // Calcolo massimo importo su TUTTA la griglia visibile
-    // (inclusi giorni di mese precedente/successivo mostrati nella griglia)
-    // ==========================
-    const allDates = cells.map((c) => c.date);
-    const minDate = new Date(Math.min(...allDates.map((d) => d.getTime())));
-    const maxDate = new Date(Math.max(...allDates.map((d) => d.getTime())));
+    // ======================================================
+    // PRECOMPUTE: mappa data -> transazioni (usa giorno LOCALE)
+    // ======================================================
+    const txByDate = useMemo(() => {
+        const map = new Map<string, Transaction[]>();
+        for (const tx of transactions) {
+            const k = anyToLocalKey(tx.date as any);
+            const arr = map.get(k);
+            if (arr) arr.push(tx);
+            else map.set(k, [tx]);
+        }
+        return map;
+    }, [transactions]);
 
-    // Prendi tutte le transazioni tra minDate e maxDate (inclusi giorni "fuori mese")
-    const visibleGridTx = transactions.filter((tx) => {
-        const txDate = typeof tx.date === "string" ? new Date(tx.date) : tx.date;
-        return txDate >= minDate && txDate <= maxDate;
-    });
+    const getTxForDate = (d: Date) => txByDate.get(localDateKey(d)) ?? [];
 
+    // Max importo dell’intera griglia visibile (serve per normalizzare barre/progress)
+    const visibleGridTx = useMemo(() => cells.flatMap((c) => getTxForDate(c.date)), [cells, txByDate]);
     const maxEntrata = Math.max(
         0,
         ...visibleGridTx.filter((t) => t.category?.type === "entrata").map((t) => +t.amount)
@@ -103,64 +116,63 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
     const maxSpesa = Math.max(0, ...visibleGridTx.filter((t) => t.category?.type === "spesa").map((t) => +t.amount));
     const maxImportoGriglia = Math.max(maxEntrata, maxSpesa, 1);
 
-    // ==========================
-    // Varianti animazione mese
-    // ==========================
+    // Animazioni
     const variants = {
-        enter: (dir: 1 | -1) => ({
-            x: dir * 50,
-            opacity: 0,
-            position: "absolute" as const,
-        }),
+        enter: (dir: 1 | -1) => ({ x: dir * 50, opacity: 0, position: "absolute" as const }),
         center: { x: 0, opacity: 1, position: "relative" as const },
-        exit: (dir: 1 | -1) => ({
-            x: -dir * 50,
-            opacity: 0,
-            position: "absolute" as const,
-        }),
+        exit: (dir: 1 | -1) => ({ x: -dir * 50, opacity: 0, position: "absolute" as const }),
     };
 
-    // ==========================
-    // Render UI
-    // ==========================
     return (
-        <div>
+        <div className="space-y-4">
             {/* Header calendario */}
-            <div className="flex items-center justify-center gap-2 mb-4">
-                <button type="button" onClick={prevMonth} aria-label="Mese precedente">
-                    <ChevronLeft size={22} />
-                </button>
-                <span className="text-xl font-bold select-none px-2 text-primary">{monthNames[viewMonth]}</span>
-                <YearDropdown value={viewYear} options={yearOptions} onChange={setViewYear} />
-                <button type="button" onClick={nextMonth} aria-label="Mese successivo">
-                    <ChevronRight size={22} />
-                </button>
-                <button
-                    type="button"
-                    onClick={goToToday}
-                    disabled={isCurrentMonth}
-                    className={`
-                        ml-4 px-3 py-1.5 rounded-full flex items-center gap-2 font-bold text-sm
-                        border-2 border-primary transition
-                        ${
-                            isCurrentMonth
-                                ? "opacity-60 bg-primary/10 text-primary"
-                                : "bg-gradient-to-r from-primary/40 to-primary/20 text-primary hover:from-primary/70 hover:to-primary/40 hover:scale-105 active:scale-95"
-                        }
-                    `}
-                >
-                    <Calendar size={16} /> Oggi
-                </button>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 opacity-70" />
+                    <h2 className="text-lg font-semibold">
+                        {monthNames[viewMonth]} {viewYear}
+                    </h2>
+                </div>
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={prevMonth}
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-1 hover:bg-white/5"
+                        aria-label="Mese precedente"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={goToToday}
+                        disabled={isCurrentMonth}
+                        className="inline-flex items-center justify-center rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+                    >
+                        Oggi
+                    </button>
+                    <button
+                        type="button"
+                        onClick={nextMonth}
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-1 hover:bg-white/5"
+                        aria-label="Mese successivo"
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </button>
+
+                    <YearDropdown
+                        value={viewYear}
+                        options={[viewYear - 1, viewYear, viewYear + 1, viewYear + 2]}
+                        onChange={(y) => setViewYear(y)}
+                    />
+                </div>
             </div>
 
-            {/* Intestazione giorni settimana (desktop) */}
+            {/* Header giorni (desktop) */}
             {isLg && (
-                <div className="grid grid-cols-[auto_repeat(7,_1fr)] mb-2">
-                    <div className="flex items-center justify-center text-xs font-bold text-primary select-none px-1.5 py-1">
-                        Week
-                    </div>
-                    {daysOfWeek.map((d) => (
-                        <div key={d} className="text-xs font-semibold text-center text-gray-400 select-none">
+                <div className="grid grid-cols-[auto_repeat(7,_1fr)] gap-2">
+                    <div /> {/* placeholder per la colonna numeri settimana */}
+                    {weekDayShort.map((d, i) => (
+                        <div key={`${i}-${d}`} className="text-xs font-semibold text-center text-gray-400 select-none">
                             {d}
                         </div>
                     ))}
@@ -184,14 +196,8 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
                     >
                         {isLg
                             ? weeks!.map((week) => {
-                                  // Desktop: tutte le tx della settimana
-                                  const weekStart = week.days[0].date;
-                                  const weekEnd = week.days[6].date;
-                                  const weekTx = transactions.filter((tx) => {
-                                      const txDate = typeof tx.date === "string" ? new Date(tx.date) : tx.date;
-                                      return txDate >= weekStart && txDate <= weekEnd;
-                                  });
-
+                                  // Desktop: transazioni della settimana dalla mappa locale
+                                  const weekTx = week.days.flatMap((d) => getTxForDate(d.date));
                                   return (
                                       <WeekRow
                                           key={week.weekNumber}
@@ -203,18 +209,11 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
                                   );
                               })
                             : cells.map((cell) => {
-                                  // Mobile: tutte le tx del giorno
-                                  const dayTx = transactions.filter((tx) => {
-                                      const txDate = typeof tx.date === "string" ? new Date(tx.date) : tx.date;
-                                      return (
-                                          txDate.getDate() === cell.date.getDate() &&
-                                          txDate.getMonth() === cell.date.getMonth() &&
-                                          txDate.getFullYear() === cell.date.getFullYear()
-                                      );
-                                  });
+                                  // Mobile: transazioni del singolo giorno (chiave locale)
+                                  const dayTx = getTxForDate(cell.date);
                                   return (
                                       <DayCell
-                                          key={cell.date.toISOString()}
+                                          key={`day-${localDateKey(cell.date)}`}
                                           day={cell.day}
                                           date={cell.date}
                                           monthDelta={cell.monthDelta}
@@ -231,4 +230,3 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
         </div>
     );
 }
-
