@@ -4,7 +4,14 @@
 
 import type { YearDividerRowProps } from "@/types/transazioni/list";
 
-export default function YearDividerRow({ year, colSpan, entrate = 0, spese = 0, saldo = 0, className }: YearDividerRowProps) {
+export default function YearDividerRow({
+    year,
+    colSpan,
+    entrate = 0,
+    spese = 0,
+    saldo = 0,
+    className,
+}: YearDividerRowProps) {
     return (
         <tr className={className}>
             <td
@@ -52,4 +59,3 @@ export default function YearDividerRow({ year, colSpan, entrate = 0, spese = 0, 
         </tr>
     );
 }
-
