@@ -89,7 +89,9 @@ export function getColumnsWithSelection(
             },
         },
 
-        // Importo
+        // ───────────────────────────────────────────────────────────
+        // Importo (safe): coercizione a numero + formattazione IT
+        // ───────────────────────────────────────────────────────────
         {
             accessorKey: "amount",
             header: "Importo",
@@ -97,8 +99,22 @@ export function getColumnsWithSelection(
             minSize: 60,
             maxSize: 80,
             cell: ({ getValue, row }) => {
-                const value = getValue() as number;
-                const type = row.original?.category?.type;
+                // ── 1) Coercizione a numero sicura
+                const raw = getValue() as unknown;
+                const num = typeof raw === "number" ? raw : Number(raw);
+                const safe = Number.isFinite(num) ? num : 0;
+
+                // ── 2) Segno da tipo categoria
+                const type = row.original?.category?.type; // 'entrata' | 'spesa'
+                const sign = type === "entrata" ? "+" : "-";
+
+                // ── 3) Formattazione italiana con 2 decimali (valore assoluto)
+                const formatted = new Intl.NumberFormat("it-IT", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                }).format(Math.abs(safe));
+
+                // ── 4) Rendering con classi colore in base al tipo
                 return (
                     <span
                         className={clsx(
@@ -108,8 +124,8 @@ export function getColumnsWithSelection(
                                 : "text-[hsl(var(--c-table-danger-2))]"
                         )}
                     >
-                        {type === "entrata" ? "+" : "-"}
-                        {value?.toFixed(2)} €
+                        {sign}
+                        {formatted} €
                     </span>
                 );
             },
@@ -172,4 +188,3 @@ export function getColumnsWithSelection(
 // Esporta colonne base (senza selezione multipla)
 // ============================
 export const baseColumns: ColumnDef<TransactionWithGroup, any>[] = getColumnsWithSelection(false, [], () => {});
-
