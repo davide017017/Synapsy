@@ -7,10 +7,11 @@
         "start": "next start",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "lint": "next lint",
-        "test": "jest",
-        "test:watch": "jest --watch",
+        "test": "echo \"No unit tests yet\" && exit 0",
         "check:routes": "tsx scripts/check-routes.ts",
-        "test:e2e": "playwright test"
+        "e2e": "playwright test",
+        "e2e:ui": "playwright test --ui"
+
     },
     "dependencies": {
         "@headlessui/react": "^2.2.4",
