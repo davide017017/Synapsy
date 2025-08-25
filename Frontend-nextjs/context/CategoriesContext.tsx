@@ -4,7 +4,7 @@
  * ║    CategoriesContext — Categorie: CRUD + Modale + Undo     ║
  * ╚═════════════════════════════════════════════════════════════╝ */
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import { Category, CategoryBase } from "@/types";
 import {
     getAllCategories,
@@ -66,8 +66,11 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
     // =======================================================
     // Fetch categorie da API
     // =======================================================
-    const loadCategories = async () => {
-        if (!token) return;
+    // Fix: memoize load to avoid repeated fetch
+    const inFlightRef = useRef(false);
+    const loadCategories = useCallback(async () => {
+        if (!token || inFlightRef.current) return;
+        inFlightRef.current = true;
         setLoading(true);
         setError(null);
         try {
@@ -78,12 +81,13 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
             toast.error(e.message || "Errore caricamento categorie");
         } finally {
             setLoading(false);
+            inFlightRef.current = false;
         }
-    };
+    }, [token]);
 
     useEffect(() => {
         if (token) loadCategories();
-    }, [token]);
+    }, [token, loadCategories]); // Fix: include loadCategories
 
     // =======================================================
     // CRUD: Create

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import type { UserType } from "@/types/models/user";
 import {
     fetchUserProfile,
@@ -37,8 +37,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const { data: session } = useSession();
     const token = session?.accessToken as string;
 
-    const loadUser = async () => {
-        if (!token) return;
+    // Fix: memoize load to avoid repeated profile fetch
+    const inFlightRef = useRef(false);
+    const loadUser = useCallback(async () => {
+        if (!token || inFlightRef.current) return;
+        inFlightRef.current = true;
         setLoading(true);
         setError(null);
         try {
@@ -49,12 +52,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             toast.error(e.message || "Errore caricamento profilo");
         } finally {
             setLoading(false);
+            inFlightRef.current = false;
         }
-    };
+    }, [token]);
 
     useEffect(() => {
         if (token) loadUser();
-    }, [token]);
+    }, [token, loadUser]); // Fix: include loadUser
 
     const update = async (data: Partial<UserType>) => {
         if (!token) return;
