@@ -50,31 +50,52 @@ const TransactionsContext = createContext<TransactionsContextType | undefined>(u
 // Provider principale
 // ==================================================
 export function TransactionsProvider({ children }: { children: React.ReactNode }) {
+    // ---- State base ----
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Modale
+    // ---- Modale ----
     const [isOpen, setIsOpen] = useState(false);
     const [transactionToEdit, setTransactionToEdit] = useState<Transaction | null>(null);
     const [defaultDate, setDefaultDate] = useState<string | null>(null);
     const [defaultType, setDefaultType] = useState<"entrata" | "spesa" | null>(null);
 
-    // Per undo temporaneo
+    // ---- Undo temp ----
     const [lastDeleted, setLastDeleted] = useState<Transaction | null>(null);
 
-    // Auth
+    // ---- Auth ----
     const { data: session } = useSession();
-    const token = session?.accessToken;
+    const token = session?.accessToken as string | undefined;
 
     // ==================================================
-    // Carica tutte le transazioni all'avvio/autenticazione
+    // FETCH ALL (memoized + in-flight guard)  ← DEFINITO PRIMA DELL'useEffect
+    // ==================================================
+    const inFlightRef = useRef(false);
+    const fetchAll = useCallback(async () => {
+        if (!token || inFlightRef.current) return;
+        inFlightRef.current = true;
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await fetchTransactions(token);
+            setTransactions(data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        } catch (e: any) {
+            const msg = e?.message || "Errore caricamento transazioni";
+            setError(msg);
+            toast.error(msg);
+        } finally {
+            setLoading(false);
+            inFlightRef.current = false;
+        }
+    }, [token]);
+
+    // ==================================================
+    // Carica alla (ri)autenticazione
     // ==================================================
     useEffect(() => {
-        if (token) {
-            fetchAll();
-        }
-    }, [token, fetchAll]); // Fix: include fetchAll to satisfy deps
+        if (token) fetchAll();
+    }, [token, fetchAll]);
 
     // ==================================================
     // Saldi mese/anno/settimana/totale
@@ -96,15 +117,12 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             .reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
     }, [transactions]);
 
-    // Settimana corrente (da lunedì a domenica)
     const weekBalance = useMemo(() => {
         const now = new Date();
-        // Calcola il lunedì della settimana corrente
         const firstDayOfWeek = new Date(now);
         const day = now.getDay() || 7; // Domenica=7
         firstDayOfWeek.setDate(now.getDate() - day + 1);
         firstDayOfWeek.setHours(0, 0, 0, 0);
-        // Calcola la domenica della settimana corrente
         const lastDayOfWeek = new Date(firstDayOfWeek);
         lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
         lastDayOfWeek.setHours(23, 59, 59, 999);
@@ -117,32 +135,10 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             .reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
     }, [transactions]);
 
-    // Saldo totale (tutte le transazioni)
-    const totalBalance = useMemo(() => {
-        return transactions.reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0);
-    }, [transactions]);
-
-    // ==================================================
-    // Fetch ALL
-    // ==================================================
-    // Fix: memoize fetch to prevent re-render loop
-    const inFlightRef = useRef(false);
-    const fetchAll = useCallback(async () => {
-        if (!token || inFlightRef.current) return;
-        inFlightRef.current = true;
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await fetchTransactions(token);
-            setTransactions(data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-        } catch (e: any) {
-            setError(e.message || "Errore caricamento transazioni");
-            toast.error(e.message || "Errore caricamento transazioni");
-        } finally {
-            setLoading(false);
-            inFlightRef.current = false;
-        }
-    }, [token]);
+    const totalBalance = useMemo(
+        () => transactions.reduce((sum, t) => sum + (t.type === "entrata" ? t.amount : -t.amount), 0),
+        [transactions]
+    );
 
     // ==================================================
     // CREATE
@@ -190,20 +186,16 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             const tx = transactions.find((t) => t.id === id);
             if (!tx) return;
 
-            // 1. Cancella
             await deleteTransaction(token, tx);
-            setLastDeleted(tx); // Salva per eventuale undo
+            setLastDeleted(tx);
             await fetchAll();
 
-            // 2. Toast con undo
             toast.success("Transazione eliminata!", {
                 description: (
                     <div>
                         <span className="font-semibold">{tx.description}</span> rimossa.
                         <br />
-                        <span className="text-sm text-zinc-500">
-                            Puoi annullare questa operazione con il bottone ...
-                        </span>
+                        <span className="text-sm text-zinc-500">Puoi annullare questa operazione con il bottone …</span>
                     </div>
                 ),
                 action: {
@@ -212,12 +204,11 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                         if (!token || !tx) return;
                         setLoading(true);
                         try {
-                            // Rimuovi l'id dal payload per ricreare la transazione
                             const { id, ...txBase } = tx;
                             await createTransaction(token, txBase, tx.type);
                             await fetchAll();
                             toast.success("Eliminazione annullata!");
-                        } catch (e: any) {
+                        } catch {
                             toast.error("Errore durante l'annullamento.");
                         } finally {
                             setLoading(false);
@@ -259,6 +250,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         setDefaultType(type ?? null);
         setIsOpen(true);
     };
+
     const closeModal = () => {
         setTransactionToEdit(null);
         setDefaultDate(null);
@@ -293,6 +285,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             }}
         >
             {children}
+            {/* Mantengo la tua integrazione della modale così com'è */}
             <NewTransactionModal defaultDate={defaultDate ?? undefined} defaultType={defaultType ?? undefined} />
         </TransactionsContext.Provider>
     );
