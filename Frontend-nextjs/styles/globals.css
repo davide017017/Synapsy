@@ -8,8 +8,8 @@ TailwindCSS base, components, utilities
 /* ===================================================
 Import custom styles (tabelle, temi, ecc.)
    =================================================== */
-@import "./table.css";
-@import "./themes.css";
+/* @import "./table.css";
+@import "./themes.css"; */
 
 /* ===================================================
 Stili base (body, html, transizioni globali)
@@ -35,4 +35,3 @@ Stili base (body, html, transizioni globali)
 /* ===================================================
 Fine personalizzazioni globali
 =================================================== */
-

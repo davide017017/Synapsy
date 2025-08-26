@@ -1,52 +1,52 @@
+// HeroSuggerimento.tsx
+// ======================================================================
+// Componente che mostra un suggerimento casuale da heroSuggestions
+// con possibilità di passare al successivo
+// ======================================================================
+
 "use client";
 
 import { useState } from "react";
 import { heroSuggestions } from "./heroSuggestions";
 
 // ======================================================================
-// HeroSuggerimento — suggerimenti, motivazioni e consigli d’uso
+// Componente principale
 // ======================================================================
 export default function HeroSuggerimento() {
-    const suggestions = heroSuggestions;
+    // Stato indice suggerimento casuale iniziale
+    const [index, setIndex] = useState(() => Math.floor(Math.random() * heroSuggestions.length));
 
-    // ── Indice del suggerimento corrente ──
-    const [index, setIndex] = useState(() => Math.floor(Math.random() * suggestions.length));
-
-    // ── Funzione per cambiare suggerimento (senza ripetere subito lo stesso) ──
-    const getNewIndex = () => {
-        let newIndex = Math.floor(Math.random() * suggestions.length);
-        while (suggestions.length > 1 && newIndex === index) {
-            newIndex = Math.floor(Math.random() * suggestions.length);
+    // Funzione per passare a un nuovo suggerimento
+    const next = () => {
+        let n = Math.floor(Math.random() * heroSuggestions.length);
+        if (heroSuggestions.length > 1 && n === index) {
+            n = (n + 1) % heroSuggestions.length;
         }
-        return newIndex;
-    };
-
-    // ── Handler bottone ──
-    const handleNext = () => {
-        setIndex(getNewIndex());
+        setIndex(n);
     };
 
     return (
-        <div className="px-4 text-center">
-            {/* Titolo */}
-            <h2 className="text-lg font-bold mb-2">Suggerimento 🌱</h2>
+        <div className="flex flex-col h-full justify-center">
+            <div className="px-4 text-center">
+                <h2 className="text-lg font-bold mb-2">Suggerimento 🌱</h2>
 
-            {/* Suggerimento principale */}
-            <p className="text-base min-h-[40px]">{suggestions[index]}</p>
+                {/* Suggerimento attuale */}
+                <p className="text-base min-h-[40px]">{heroSuggestions[index]}</p>
 
-            {/* Bottone nuovo suggerimento */}
-            <button
-                className="mt-3 px-4 py-1 rounded-xl bg-emerald-400 text-white font-semibold shadow transition hover:bg-emerald-500 active:scale-95"
-                onClick={handleNext}
-                title="Mostra un nuovo suggerimento"
-            >
-                Nuovo suggerimento
-            </button>
+                {/* Bottone cambio suggerimento */}
+                <button
+                    onClick={next}
+                    className="
+                        mt-3 px-4 py-1 rounded-xl
+                        bg-emerald-400 text-white font-semibold shadow
+                        transition hover:bg-emerald-500 active:scale-95
+                    "
+                >
+                    Nuovo suggerimento
+                </button>
 
-            {/* Nota */}
-            <p className="text-sm text-gray-500 mt-2">
-                (Presto arriveranno suggerimenti ancora più personalizzati!)
-            </p>
+                <p className="text-sm text-gray-500 mt-2">(Presto suggerimenti personalizzati!)</p>
+            </div>
         </div>
     );
 }

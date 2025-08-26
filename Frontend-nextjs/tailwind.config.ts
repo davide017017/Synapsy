@@ -1,22 +1,34 @@
 /** @type {import('tailwindcss').Config} */
 import type { Config } from "tailwindcss";
+import forms from "@tailwindcss/forms";
 
-// Helper per variabili HSL con opacità dinamica (Tailwind 3.1+)
+// =========================
+// Helper colori HSL
+// =========================
 const c = (name: string) => `hsl(var(--${name}) / <alpha-value>)`;
 
+// =========================
+// Configurazione Tailwind
+// =========================
 const config: Config = {
+    // ──────────────────────
+    // Limita i percorsi (scan più rapido)
+    // ──────────────────────
     content: [
-        "./app/**/*.{js,ts,jsx,tsx}",
-        "./components/**/*.{js,ts,jsx,tsx}",
-        "./pages/**/*.{js,ts,jsx,tsx}",
-        "./styles/**/*.css",
+        "./app/**/*.{ts,tsx}",
+        "./components/**/*.{ts,tsx}",
+        "./pages/**/*.{ts,tsx}",
+        "./context/**/*.{ts,tsx}",
+        "./hooks/**/*.{ts,tsx}",
+        // Se hai un solo entry CSS tailwind, tienilo. Altrimenti rimuovi:
+        "./styles/tailwind.css",
     ],
     darkMode: "class",
 
     theme: {
         extend: {
             colors: {
-                /* neutrali */
+                // ── neutrali
                 bg: c("c-bg"),
                 "bg-alt": c("c-bg-alt"),
                 "bg-soft": c("c-bg-soft"),
@@ -28,12 +40,12 @@ const config: Config = {
                 "text-tertiary": c("c-text-tertiary"),
                 "text-invert": c("c-text-invert"),
 
-                /* palette primaria */
+                // ── primaria
                 primary: c("c-primary"),
                 "primary-light": c("c-primary-light"),
                 "primary-dark": c("c-primary-dark"),
 
-                /* semantic */
+                // ── semantic
                 success: c("c-success"),
                 "success-dark": c("c-success-dark"),
                 danger: c("c-danger"),
@@ -41,7 +53,7 @@ const config: Config = {
                 warning: c("c-warning"),
                 "warning-dark": c("c-warning-dark"),
 
-                /* tabella - palette dedicata */
+                // ── tabella
                 "table-bg": c("c-table-bg"),
                 "table-bg-alt": c("c-table-bg-alt"),
                 "table-header-bg": c("c-table-header-bg"),
@@ -57,7 +69,7 @@ const config: Config = {
                 "table-success": c("c-table-success"),
                 "table-success-2": c("c-table-success-2"),
 
-                /* Modal/Overlay */
+                // ── Modal/Overlay
                 "modal-bg": c("modal-bg"),
                 "modal-border": c("modal-border"),
                 "modal-text": c("modal-text"),
@@ -84,12 +96,14 @@ const config: Config = {
             backgroundImage: {
                 "gradient-radial": "radial-gradient(circle at center, var(--tw-gradient-stops))",
                 "gradient-conic": "conic-gradient(from 180deg at center, var(--tw-gradient-stops))",
-                // il linear-to è già builtin: bg-gradient-to-br, -to-tr, ecc.
             },
         },
     },
-    plugins: [require("@tailwindcss/forms")],
+
+    // ──────────────────────
+    // Plugin (ESM import, no require)
+    // ──────────────────────
+    plugins: [forms],
 };
 
 export default config;
-

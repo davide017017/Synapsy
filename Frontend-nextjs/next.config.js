@@ -4,27 +4,41 @@
 // Configurazione Next.js
 // =========================
 const nextConfig = {
+    // ──────────────────────
+    // Core
+    // ──────────────────────
     reactStrictMode: true,
-    swcMinify: true,
+    poweredByHeader: false,
 
+    // ──────────────────────
+    // Sperimentali utili
+    // ──────────────────────
     experimental: {
         scrollRestoration: true,
+        optimizePackageImports: ["lucide-react"],
     },
 
+    // ──────────────────────
+    // Qualità di vita
+    // ──────────────────────
     productionBrowserSourceMaps: false,
+    typescript: { ignoreBuildErrors: false },
+    images: { unoptimized: true },
 
-    typescript: {
-        ignoreBuildErrors: false,
-    },
+    // ──────────────────────
+    // Router micro‑ottimizzazioni
+    // ──────────────────────
+    skipTrailingSlashRedirect: true,
+    skipMiddlewareUrlNormalize: true,
 
-    images: {
-        // Lasciato intenzionalmente: ambiente locale / asset statici
-        unoptimized: true,
-    },
-
-    // Silenzia i warning "Managed item ... isn't a directory" in dev
+    // ──────────────────────
+    // Webpack (dev) — Windows friendly
+    // ──────────────────────
     webpack: (config, { dev }) => {
         if (dev) {
+            config.cache = { type: "memory", maxGenerations: 1 };
+            config.resolve = config.resolve || {};
+            config.resolve.symlinks = false;
             config.snapshot = config.snapshot || {};
             config.snapshot.managedPaths = [];
         }
@@ -32,7 +46,4 @@ const nextConfig = {
     },
 };
 
-// =========================
-// Esporta la configurazione
-// =========================
 module.exports = nextConfig;
