@@ -1,19 +1,29 @@
-import { CalendarCheck } from "lucide-react";
-// ============================
-// ProssimoPagamentoCard.tsx
-// Card prossimo pagamento ricorrente, cliccabile
-// ============================
+// app/(protected)/home/cards/ProssimoPagamentoCard.tsx
+// ======================================================================
+// Card: prossimo pagamento ricorrente. Legge da RicorrenzeContext.
+// ======================================================================
 
+"use client";
+
+import { CalendarCheck, ArrowRight } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
-import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer"; // Debug per vedere quanto tempo ci mette a rtenderizzare
+import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
+import { formatDataIt } from "@/utils/date";
 
+// ── Helper: € formattato ────────────────────────────
+const eur = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
+
+// ===============================
+// Componente principale
+// ===============================
 export default function ProssimoPagamentoCard() {
-    useRenderTimer("TransazioniCard"); // Debug per vedere quanto tempo ci mette a rtenderizzare
+    useRenderTimer("ProssimoPagamentoCard");
     const { ricorrenze, loading } = useRicorrenze();
 
-    if (loading)
+    // ── Loading ────────────────────────────────────────
+    if (loading) {
         return (
             <LoadingSpinnerCard
                 icon={<CalendarCheck size={20} />}
@@ -21,8 +31,9 @@ export default function ProssimoPagamentoCard() {
                 message="Caricamento prossimo pagamento..."
             />
         );
+    }
 
-    // Filtro: solo attive e con prossima >= oggi
+    // ── Filtro: attive con prossima >= oggi ────────────
     const oggi = new Date();
     const future = ricorrenze
         .filter((r) => r.is_active && new Date(r.prossima) >= oggi)
@@ -30,33 +41,61 @@ export default function ProssimoPagamentoCard() {
 
     const prossimo = future[0];
 
+    // ── Empty state ─────────────────────────────────────
     if (!prossimo) {
         return (
-            <DashboardCard icon={<CalendarCheck size={20} />} title="Prossimo pagamento" value="—" href="/ricorrenti">
-                <span className="text-xs text-gray-400">Nessuna ricorrenza imminente</span>
+            <DashboardCard
+                icon={<CalendarCheck size={20} />}
+                title="Prossimo pagamento"
+                value="—"
+                href="/ricorrenti"
+                footer={
+                    <span className="group inline-flex items-center gap-1 text-primary font-medium">
+                        Nessuna ricorrenza imminente • crea o modifica
+                        <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                }
+            >
+                <span className="text-xs text-gray-400">Aggiungi una ricorrenza per vederla qui</span>
             </DashboardCard>
         );
     }
 
-    // Formatto la data
-    const data = new Date(prossimo.prossima).toLocaleDateString("it-IT");
-    const importo = Math.abs(prossimo.importo).toFixed(2);
-    const nome = prossimo.nome || "—";
-
-    // Stile colore importo e simbolo
+    // ── Dati formattati ─────────────────────────────────
+    const data = formatDataIt(prossimo.prossima);
     const isSpesa = prossimo.type === "spesa";
+    const importoAbs = Math.abs(Number(prossimo.importo) || 0);
+    const importoTxt = eur.format(importoAbs);
     const importoClass = isSpesa ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400";
     const simbolo = isSpesa ? "−" : "+";
+    const nome = prossimo.nome || "—";
 
+    // ── Render ─────────────────────────────────────────
     return (
-        <DashboardCard icon={<CalendarCheck size={20} />} title="Prossimo pagamento" value={data} href="/ricorrenti">
+        <DashboardCard
+            icon={<CalendarCheck size={20} />}
+            title="Prossimo pagamento"
+            value={data}
+            href="/ricorrenti"
+            footer={
+                <span className="group inline-flex items-center gap-1 text-primary font-medium">
+                    Dettagli e gestione
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
+            }
+        >
             <b>{nome}</b>
             <br />
             Importo:{" "}
             <span className={`font-semibold ${importoClass}`}>
-                {simbolo} € {importo}
+                {simbolo} {importoTxt}
             </span>
         </DashboardCard>
     );
 }
 
+// ----------------------------------------------------------------------
+// Descrizione file:
+// Card che mostra il prossimo pagamento ricorrente (se presente).
+// Footer con CTA descrittiva; formattazione € e data coerenti.
+// ----------------------------------------------------------------------

@@ -21,7 +21,6 @@ export function ThemeContextProvider({ children }: { children: React.ReactNode }
         const stored = localStorage.getItem("theme") as Theme | null;
         const initial = user?.theme as Theme | undefined;
         setThemeState(initial || stored || "dark");
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user?.theme]); // si aggiorna se cambia il profilo
 
     // Applica classe e data-theme su <html>
@@ -50,4 +49,3 @@ export function useThemeContext() {
     if (!ctx) throw new Error("useThemeContext deve essere usato dentro ThemeContextProvider");
     return ctx;
 }
-

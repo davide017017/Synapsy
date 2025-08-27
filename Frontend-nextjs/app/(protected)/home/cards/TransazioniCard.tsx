@@ -1,54 +1,32 @@
-import { useEffect, useState, useMemo } from "react";
-// ============================
-// TransazioniCard.tsx
-// Card riepilogo transazioni, cliccabile per dettaglio
-// ============================
-import { BarChart2 } from "lucide-react";
+// app/(protected)/home/cards/TransazioniCard.tsx
+// --------------------------------------------------
+// CTA in footer senza <Link> (card già cliccabile)
+// --------------------------------------------------
+
+"use client";
+
+import { useMemo } from "react";
+import { BarChart2, ArrowRight } from "lucide-react";
 import DashboardCard from "./DashboardCard";
-import { fetchTransactions } from "@/lib/api/transactionsApi";
-import { Transaction } from "@/types/models/transaction";
-import { useSession } from "next-auth/react";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
-import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer"; // Debug per vedere quanto tempo ci mette a renderizzare
-import { formatDataIt, isThisWeek, isThisMonth, isThisYear } from "@/utils/date";
+import { useTransactions } from "@/context/TransactionsContext";
+import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
+import { isThisWeek, isThisMonth, isThisYear } from "@/utils/date";
 
-// ======================================================================
-// Componente principale
-// ======================================================================
 export default function TransazioniCard() {
-    useRenderTimer("TransazioniCard"); // Debug per vedere quanto tempo ci mette a renderizzare
-    const { data: session } = useSession();
-    const token = session?.accessToken;
+    useRenderTimer("TransazioniCard");
+    const { transactions, loading, error } = useTransactions();
 
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!token) return;
-        setLoading(true);
-        fetchTransactions(token)
-            .then(setTransactions)
-            .catch((e) => setError(e.message))
-            .finally(() => setLoading(false));
-    }, [token]);
-
-    // ======================================================================
-    // Calcolo totali e prima transazione
-    // ======================================================================
-    const totali = useMemo(() => {
+    const { totale, settimana, mese, anno, prima } = useMemo(() => {
         const totale = transactions.length;
         const settimana = transactions.filter((t) => isThisWeek(t.date)).length;
         const mese = transactions.filter((t) => isThisMonth(t.date)).length;
         const anno = transactions.filter((t) => isThisYear(t.date)).length;
-        // Prima transazione per data crescente
         const prima = transactions.length
             ? [...transactions].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
             : null;
         return { totale, settimana, mese, anno, prima };
     }, [transactions]);
-
-    if (!token) return null;
 
     if (loading)
         return (
@@ -58,42 +36,48 @@ export default function TransazioniCard() {
                 message="Caricamento transazioni..."
             />
         );
-
     if (error)
         return (
-            <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni" value="-" href="/transazioni">
-                {error}
+            <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni">
+                <p className="text-red-500 text-sm">{error}</p>
             </DashboardCard>
         );
 
-    // ======================================================================
-    // Render principale
-    // ======================================================================
     return (
-        <DashboardCard icon={<BarChart2 size={20} />} title="Transazioni" value={totali.totale} href="/transazioni">
-            <span>
-                <b>Questa settimana:</b> {totali.settimana}
-            </span>
-            <br />
-            <span>
-                <b>Questo mese:</b> {totali.mese}
-            </span>
-            <br />
-            <span>
-                <b>Quest’anno:</b> {totali.anno}
-            </span>
-            {/* ======================= */}
-            {/* Linea divisoria elegante */}
-            {/* ======================= */}
-            <hr className="my-2 border-t border-dashed border-zinc-400 dark:border-zinc-600" />
-
-            {totali.prima && (
-                <span>
-                    <b>Prima transazione:</b> {formatDataIt(totali.prima.date)}
-                    {/* Se vuoi mostrare anche la descrizione: */}
-                    {/*  — {totali.prima.description} */}
+        <DashboardCard
+            icon={<BarChart2 size={20} />}
+            title="Transazioni"
+            href="/transazioni"
+            footer={
+                <span className="group inline-flex items-center gap-1 text-primary font-medium">
+                    {totale} movimenti • clicca per aprire
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
-            )}
+            }
+        >
+            <ul className="space-y-1 text-sm">
+                <li>
+                    Totali: <b>{totale}</b>
+                </li>
+                <li>
+                    Questa settimana: <b>{settimana}</b>
+                </li>
+                <li>
+                    Questo mese: <b>{mese}</b>
+                </li>
+                <li>
+                    Quest&rsquo;anno: <b>{anno}</b>
+                </li>
+
+                <hr className="my-2 border-t border-dashed border-zinc-400 dark:border-zinc-600" />
+                {prima && <li className="text-xs text-zinc-500">Prima transazione: {prima.date}</li>}
+            </ul>
         </DashboardCard>
     );
 }
+
+// --------------------------------------------------
+// Descrizione file:
+// Footer con CTA descrittiva (no <Link>) per evitare anchor annidati
+// visto che l’intera card è già cliccabile via href.
+// --------------------------------------------------

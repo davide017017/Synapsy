@@ -1,23 +1,33 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
-import type { UserType } from "@/types/models/user";
-import {
-    fetchUserProfile,
-    updateUserProfile,
-    cancelPendingEmail,
-    resendPendingEmail,
-} from "@/lib/api/userApi";
+/* ╔══════════════════════════════════════════════════════╗
+ * ║ UserContext — Profilo utente + azioni email          ║
+ * ║ Cache a livello di modulo + coalescing delle fetch   ║
+ * ╚══════════════════════════════════════════════════════╝ */
+
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-// ========================================================
-// Tipo del context
-// ========================================================
+import type { UserType } from "@/types/models/user";
+import { fetchUserProfile, updateUserProfile, cancelPendingEmail, resendPendingEmail } from "@/lib/api/userApi";
+
+/* ────────────────────────────────────────────────────────────────
+ * Cache & promise a livello di modulo per il profilo
+ * ──────────────────────────────────────────────────────────────── */
+let userCache: UserType | null = null;
+let userPromise: Promise<UserType> | null = null;
+let userToken: string | undefined;
+
+/* ===============================================================
+ * Tipi del context
+ * =============================================================== */
 export type UserContextType = {
     user: UserType | null;
     loading: boolean;
     error: string | null;
+
     refresh: () => void;
     update: (data: Partial<UserType>) => Promise<void>;
     cancelPending: () => Promise<void>;
@@ -26,40 +36,83 @@ export type UserContextType = {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// ========================================================
-// Provider principale
-// ========================================================
-export function UserProvider({ children }: { children: React.ReactNode }) {
+/* ===============================================================
+ * Provider
+ * =============================================================== */
+export function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserType | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const { data: session } = useSession();
-    const token = session?.accessToken as string;
+    const token = session?.accessToken as string | undefined;
 
-    // Fix: memoize load to avoid repeated profile fetch
-    const inFlightRef = useRef(false);
-    const loadUser = useCallback(async () => {
-        if (!token || inFlightRef.current) return;
-        inFlightRef.current = true;
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await fetchUserProfile(token);
-            setUser(data);
-        } catch (e: any) {
-            setError(e.message || "Errore caricamento profilo");
-            toast.error(e.message || "Errore caricamento profilo");
-        } finally {
-            setLoading(false);
-            inFlightRef.current = false;
-        }
-    }, [token]);
+    /* =============================================================
+     * Fetch profilo (cache + coalescing)
+     * ============================================================= */
+    const loadUser = useCallback(
+        async (force = false) => {
+            if (!token) {
+                setUser(null);
+                userCache = null;
+                userPromise = null;
+                userToken = undefined;
+                setLoading(false);
+                return;
+            }
 
+            // Cambio utente → invalida cache
+            if (userToken !== token) {
+                userCache = null;
+                userPromise = null;
+                userToken = token;
+            }
+
+            // Usa cache se presente e non forzato
+            if (!force && userCache) {
+                setUser(userCache);
+                setLoading(false);
+                return;
+            }
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                const promise = userPromise ?? fetchUserProfile(token);
+                userPromise = promise;
+
+                const data = await promise;
+                userCache = data;
+                setUser(data);
+            } catch (e: any) {
+                const msg = e?.message ?? "Errore caricamento profilo";
+                setError(msg);
+                toast.error(msg);
+            } finally {
+                setLoading(false);
+                userPromise = null;
+            }
+        },
+        [token]
+    );
+
+    // Bootstrap iniziale (o quando cambia token)
     useEffect(() => {
         if (token) loadUser();
-    }, [token, loadUser]); // Fix: include loadUser
+    }, [token, loadUser]);
 
+    // Invalida cache e forza il refetch (ritorno `void` per rispettare la firma)
+    const refresh = useCallback(() => {
+        userCache = null;
+        userPromise = null;
+        void loadUser(true);
+    }, [loadUser]);
+
+    /* =============================================================
+     * Mutazioni profilo
+     *  - Aggiorniamo sia lo stato locale che la cache di modulo
+     * ============================================================= */
     const update = async (data: Partial<UserType>) => {
         if (!token) return;
         setLoading(true);
@@ -67,10 +120,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         try {
             const updated = await updateUserProfile(token, data);
             setUser(updated);
+            userCache = updated;
             toast.success("Profilo aggiornato!");
         } catch (e: any) {
-            setError(e.message || "Errore aggiornamento profilo");
-            toast.error(e.message || "Errore aggiornamento profilo");
+            const msg = e?.message ?? "Errore aggiornamento profilo";
+            setError(msg);
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
@@ -83,10 +138,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         try {
             const updated = await cancelPendingEmail(token);
             setUser(updated);
+            userCache = updated;
             toast.success("Richiesta annullata!");
         } catch (e: any) {
-            setError(e.message || "Errore annullamento richiesta");
-            toast.error(e.message || "Errore annullamento richiesta");
+            const msg = e?.message ?? "Errore annullamento richiesta";
+            setError(msg);
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
@@ -100,8 +157,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             await resendPendingEmail(token);
             toast.success("Email di conferma inviata!");
         } catch (e: any) {
-            setError(e.message || "Errore invio email");
-            toast.error(e.message || "Errore invio email");
+            const msg = e?.message ?? "Errore invio email";
+            setError(msg);
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
@@ -113,7 +171,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                 user,
                 loading,
                 error,
-                refresh: loadUser,
+                refresh,
                 update,
                 cancelPending,
                 resendPending,
@@ -124,9 +182,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+/* ===============================================================
+ * Hook custom
+ * =============================================================== */
 export function useUser() {
     const ctx = useContext(UserContext);
     if (!ctx) throw new Error("useUser deve essere usato dentro <UserProvider>");
     return ctx;
 }
-

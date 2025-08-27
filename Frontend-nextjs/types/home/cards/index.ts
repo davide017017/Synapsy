@@ -6,6 +6,7 @@ export type DashboardCardProps = {
     value?: ReactNode;
     children?: ReactNode;
     href?: string;
+    footer?: ReactNode;
 };
 
 export type LoadingSpinnerCardProps = {
@@ -13,4 +14,3 @@ export type LoadingSpinnerCardProps = {
     title: string;
     message?: string;
 };
-

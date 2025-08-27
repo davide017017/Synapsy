@@ -4,7 +4,7 @@
  * ║ CalendarGrid.tsx — Calendario avanzato stile Google Calendar  ║
  * ╚═══════════════════════════════════════════════════════════════╝ */
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import type { Transaction } from "@/types/models/transaction";
 import type { CalendarGridProps } from "@/types";
@@ -114,12 +114,12 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
         return map;
     }, [transactions]);
 
-    const getTxForDate = (d: Date) => txByDate.get(localDateKey(d)) ?? [];
+    const getTxForDate = useCallback((d: Date) => txByDate.get(localDateKey(d)) ?? [], [txByDate]);
 
     // ──────────────────────────────────────────────────────────────
     // Max importo per normalizzare barre/progress
     // ──────────────────────────────────────────────────────────────
-    const visibleGridTx = useMemo(() => cells.flatMap((c) => getTxForDate(c.date)), [cells, txByDate]);
+    const visibleGridTx = useMemo(() => cells.flatMap((c) => getTxForDate(c.date)), [cells, getTxForDate]);
     const maxEntrata = Math.max(
         0,
         ...visibleGridTx.filter((t) => t.category?.type === "entrata").map((t) => +t.amount)
@@ -206,7 +206,6 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
                 {showSkeleton ? (
                     <div className="h-[370px] animate-pulse rounded-lg bg-white/5" />
                 ) : (
-                    // ⚠️ niente `mode="wait"` e la key NON include `isLg`
                     <AnimatePresence custom={direction} initial={false}>
                         <motion.div
                             key={`${viewYear}-${viewMonth}`}
