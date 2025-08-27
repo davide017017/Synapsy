@@ -6,6 +6,12 @@
         "server": "php artisan serve --host=0.0.0.0 --port=8484",
         "queue": "php artisan queue:work",
         "dev-full": "concurrently -n vite,server,queue -c green,magenta,yellow \"npm run dev\" \"npm run server\" \"npm run queue\"",
+        "server:xdebug-off": "set XDEBUG_MODE=off&& set XDEBUG_START_WITH_REQUEST=no&& set XDEBUG_CONFIG=&& php -d xdebug.mode=off -d xdebug.start_with_request=0 -d xdebug.discover_client_host=0 -d xdebug.log_level=0 artisan serve --host=0.0.0.0 --port=8484",
+        "queue:xdebug-off": "set XDEBUG_MODE=off&& set XDEBUG_START_WITH_REQUEST=no&& set XDEBUG_CONFIG=&& php -d xdebug.mode=off -d xdebug.start_with_request=0 -d xdebug.discover_client_host=0 -d xdebug.log_level=0 artisan queue:work",
+        "dev-full:xdebug-off": "concurrently -n vite,server,queue -c green,magenta,yellow \"npm run dev\" \"npm run server:xdebug-off\" \"npm run queue:xdebug-off\"",
+        "server:xdebug-on": "set XDEBUG_MODE=debug,develop&& set XDEBUG_START_WITH_REQUEST=yes&& php -d xdebug.mode=debug,develop -d xdebug.start_with_request=1 -d xdebug.discover_client_host=0 -d xdebug.client_host=127.0.0.1 -d xdebug.client_port=9003 artisan serve --host=0.0.0.0 --port=8484",
+        "queue:xdebug-on": "set XDEBUG_MODE=debug,develop&& set XDEBUG_START_WITH_REQUEST=yes&& php -d xdebug.mode=debug,develop -d xdebug.start_with_request=1 -d xdebug.discover_client_host=0 -d xdebug.client_host=127.0.0.1 -d xdebug.client_port=9003 artisan queue:work",
+        "dev-full:xdebug-on": "concurrently -n vite,server,queue -c green,magenta,yellow \"npm run dev\" \"npm run server:xdebug-on\" \"npm run queue:xdebug-on\"",
         "build": "vite build"
     },
     "devDependencies": {
@@ -21,4 +27,3 @@
         "vite": "^6.2.4"
     }
 }
-

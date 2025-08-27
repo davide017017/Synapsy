@@ -2,7 +2,7 @@
 
 /* ╔═════════════════════════════════════════════════════════════╗
  * ║ CategoriesContext — Categorie: CRUD + Modale + Undo        ║
- * ║ Caching a livello di modulo + coalescing delle fetch       ║
+ * ║ Cache di modulo + coalescing delle fetch                   ║
  * ╚═════════════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import NewCategoryModal from "@/app/(protected)/newCategory/NewCategoryModal";
-import { Category, CategoryBase } from "@/types";
+import type { Category, CategoryBase } from "@/types";
 import {
     getAllCategories,
     createCategory,
@@ -22,9 +22,9 @@ import {
 
 /* ────────────────────────────────────────────────────────────────
  * Cache & promise a livello di modulo
- * - Persistono tra mount/unmount del provider (SSR, StrictMode, hot reload)
- * - Condividono la stessa richiesta in corso tra più consumatori
- * - `refresh()` invalida cache e forza un nuovo fetch
+ * - Persistono tra mount/unmount (SSR, StrictMode, HMR)
+ * - Condividono la stessa richiesta in corso tra più consumer
+ * - `refresh()` invalida e forza un refetch
  * ──────────────────────────────────────────────────────────────── */
 let categoriesCache: Category[] | null = null;
 let categoriesPromise: Promise<Category[]> | null = null;
@@ -72,9 +72,8 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
     const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
 
-    // (facoltativo) per Undo, utile a livello UI
-    const [lastDeleted, setLastDeleted] = useState<Category | null>(null);
-    void lastDeleted; // evita warning se non usato altrove
+    // (facoltativo) Undo: tieni solo il setter per evitare warning "unused state"
+    const [, setLastDeleted] = useState<Category | null>(null);
 
     // Auth
     const { data: session } = useSession();
@@ -82,9 +81,6 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
 
     /* =============================================================
      * Fetch categorie (cache + coalescing)
-     * - Usa cache se presente
-     * - Condivide la stessa promise se una fetch è già in corso
-     * - Invalida cache quando cambia utente (token)
      * ============================================================= */
     const loadCategories = useCallback(
         async (force = false) => {
@@ -136,10 +132,10 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
 
     // Bootstrap iniziale (o quando cambia token)
     useEffect(() => {
-        if (token) loadCategories();
+        if (token) void loadCategories();
     }, [token, loadCategories]);
 
-    // Invalida cache e forza il refetch (ritorno `void` per rispettare la firma)
+    // Invalida cache e forza il refetch
     const refresh = useCallback(() => {
         categoriesCache = null;
         categoriesPromise = null;
@@ -147,9 +143,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     }, [loadCategories]);
 
     /* =============================================================
-     * CRUD
-     *  - Dopo le mutazioni invalidiamo la cache e ricarichiamo
-     *    (semplice e coerente con altri consumer)
+     * CRUD (dopo ogni mutazione → refresh)
      * ============================================================= */
     const create = async (data: CategoryBase, onSuccess?: () => void) => {
         if (!token) return;
@@ -199,7 +193,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
                 action: {
                     label: "Ripristina",
                     onClick: async () => {
-                        if (!token || !cat) return;
+                        if (!token) return;
                         setLoading(true);
                         try {
                             const { id: _omit, ...catBase } = cat;

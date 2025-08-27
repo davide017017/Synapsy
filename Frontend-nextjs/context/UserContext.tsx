@@ -2,7 +2,7 @@
 
 /* ╔══════════════════════════════════════════════════════╗
  * ║ UserContext — Profilo utente + azioni email          ║
- * ║ Cache a livello di modulo + coalescing delle fetch   ║
+ * ║ Cache di modulo + coalescing delle fetch             ║
  * ╚══════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
@@ -99,10 +99,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     // Bootstrap iniziale (o quando cambia token)
     useEffect(() => {
-        if (token) loadUser();
+        if (token) void loadUser();
     }, [token, loadUser]);
 
-    // Invalida cache e forza il refetch (ritorno `void` per rispettare la firma)
+    // Invalida cache e forza il refetch
     const refresh = useCallback(() => {
         userCache = null;
         userPromise = null;
