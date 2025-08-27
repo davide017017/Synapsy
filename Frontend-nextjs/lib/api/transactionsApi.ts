@@ -1,14 +1,27 @@
 // ╔══════════════════════════════════════════════════════╗
 // ║           API: CRUD Transazioni (Entrate/Spese)     ║
-/* ╚══════════════════════════════════════════════════════╝ */
+// ╚══════════════════════════════════════════════════════╝
 
 import type { Transaction } from "@/types/models/transaction";
 import { url } from "@/lib/api/endpoints";
 
-/* ======================================================
- * Fetch: Lista transazioni (overview completa)
- * - supporta AbortController via parametro opzionale `signal`
- * ====================================================== */
+// ──────────────────────────────────────────────────────
+// Helper: parsing numerico robusto (es. "1.234,56" → 1234.56)
+// ──────────────────────────────────────────────────────
+const toNum = (v: any): number => {
+    if (typeof v === "number") return v;
+    if (typeof v === "string") {
+        const clean = v.replace(/\./g, "").replace(",", ".");
+        const n = Number(clean);
+        return Number.isFinite(n) ? n : 0;
+    }
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+};
+
+// ──────────────────────────────────────────────────────
+// Fetch: lista transazioni (normalizza amount, NON toISOString su date)
+// ──────────────────────────────────────────────────────
 export async function fetchTransactions(token: string, signal?: AbortSignal): Promise<Transaction[]> {
     const res = await fetch(`${url("financialOverview")}?sort_by=date&sort_direction=desc`, {
         headers: {
@@ -22,17 +35,28 @@ export async function fetchTransactions(token: string, signal?: AbortSignal): Pr
     if (!res.ok) throw new Error("Errore nel caricamento transazioni");
 
     const raw = await res.text();
+
+    let data: any[];
     try {
-        const data = JSON.parse(raw);
-        return Array.isArray(data) ? data : Object.values(data);
+        const parsed = JSON.parse(raw);
+        data = Array.isArray(parsed) ? parsed : Object.values(parsed);
     } catch {
         throw new Error("Risposta non valida");
     }
+
+    // ⚠ Mantieni `t.date` così com'è (es. "YYYY-MM-DD") per evitare shift di fuso
+    const normalized: Transaction[] = data.map((t: any) => ({
+        ...t,
+        amount: toNum(t.amount),
+        date: t.date, // ← niente toISOString()
+    }));
+
+    return normalized;
 }
 
-/* ======================================================
- * Create: Nuova transazione (entrata/spesa)
- * ====================================================== */
+// ──────────────────────────────────────────────────────
+// Create: nuova transazione (force number su amount, accetta date stringa)
+// ──────────────────────────────────────────────────────
 export async function createTransaction(
     token: string,
     transaction: Omit<Transaction, "id">,
@@ -40,12 +64,11 @@ export async function createTransaction(
 ): Promise<Transaction> {
     const endpoint = type === "entrata" ? url("entrate") : url("spese");
 
-    // Payload pulito
     const payload = {
         description: transaction.description,
-        amount: transaction.amount,
-        date: transaction.date,
-        type: transaction.type, // facoltativo lato backend; mantenuto per compatibilità
+        amount: toNum(transaction.amount), // ← più robusto di Number()
+        date: transaction.date, // ← stringa "YYYY-MM-DD" dal form
+        type: transaction.type,
         category_id: (transaction as any).category_id,
         notes: (transaction as any).notes,
     };
@@ -69,21 +92,19 @@ export async function createTransaction(
     return res.json();
 }
 
-/* ======================================================
- * Update: Modifica transazione (entrata/spesa)
- * ====================================================== */
+// ──────────────────────────────────────────────────────
+// Update: modifica transazione (force number su amount)
+// ──────────────────────────────────────────────────────
 export async function updateTransaction(token: string, transaction: Transaction): Promise<Transaction> {
-    // Usa il tipo dalla categoria oppure dalla proprietà type
     const type = transaction.category?.type || transaction.type;
     if (!type) throw new Error("Tipo transazione non riconosciuto");
 
     const endpoint = type === "entrata" ? url("entrate", transaction.id) : url("spese", transaction.id);
 
-    // Pulisci il payload: niente oggetti annidati
     const { id: _omitId, category: _omitCategory, ...rest } = transaction as unknown as Record<string, any>;
-
     const payload = {
         ...rest,
+        amount: toNum(transaction.amount),
         category_id: transaction.category?.id ?? (transaction as any).category_id,
     };
 
@@ -101,9 +122,9 @@ export async function updateTransaction(token: string, transaction: Transaction)
     return res.json();
 }
 
-/* ======================================================
- * Delete: Elimina transazione (entrata/spesa)
- * ====================================================== */
+// ──────────────────────────────────────────────────────
+// Delete: elimina transazione
+// ──────────────────────────────────────────────────────
 export async function deleteTransaction(token: string, transaction: Transaction): Promise<boolean> {
     const type = transaction.category?.type || transaction.type;
     if (!type) throw new Error("Tipo transazione non riconosciuto");
@@ -122,11 +143,9 @@ export async function deleteTransaction(token: string, transaction: Transaction)
     return true;
 }
 
-/* ======================================================
- * Soft move: cambia tipo di transazione (da entrata a spesa o viceversa)
- * - Crea una nuova transazione nel nuovo tipo, poi cancella l’originale
- *   (NB: se preferisci sicurezza > consistenza temporanea, inverti l’ordine)
- * ====================================================== */
+// ──────────────────────────────────────────────────────
+// Soft move: cambia tipo (delete vecchia → create nuova)
+// ──────────────────────────────────────────────────────
 export async function softMoveTransaction(
     token: string,
     original: Transaction,
@@ -138,15 +157,10 @@ export async function softMoveTransaction(
     if (!typeOld) throw new Error("Tipo transazione originale non riconosciuto");
 
     const deleteEndpoint = typeOld === "entrata" ? url("entrate", original.id) : url("spese", original.id);
-
     const resDelete = await fetch(deleteEndpoint, {
         method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-        },
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
     });
-
     if (!resDelete.ok) {
         const err = await resDelete.json().catch(() => ({}));
         console.error("💥 Errore softMove DELETE:", err);
@@ -155,11 +169,10 @@ export async function softMoveTransaction(
 
     // 2) Crea la nuova col nuovo tipo
     const createEndpoint = newType === "entrata" ? url("entrate") : url("spese");
-
     const payload = {
         description: formData.description,
-        amount: formData.amount,
-        date: formData.date,
+        amount: toNum(formData.amount),
+        date: formData.date, // ← lascia "YYYY-MM-DD"
         type: newType,
         category_id: (formData as any).category_id,
         notes: (formData as any).notes,
@@ -183,3 +196,11 @@ export async function softMoveTransaction(
 
     return resCreate.json();
 }
+
+// ──────────────────────────────────────────────────────
+// Descrizione file:
+// API transazioni con dati coerenti senza shift di fuso.
+// - `fetchTransactions`: amount→number, date lasciata come "YYYY-MM-DD".
+// - payload: `toNum()` su amount per robustezza.
+// Evita errori nei calcoli per mese/settimana/anno.
+// ──────────────────────────────────────────────────────

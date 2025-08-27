@@ -3,9 +3,6 @@
 // ========================================
 "use client";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Sezione: Import
-// ─────────────────────────────────────────────────────────────────────────────
 import React, { useMemo, useCallback } from "react";
 import { useReactTable, getCoreRowModel, flexRender, ColumnResizeMode, Row } from "@tanstack/react-table";
 import { addMonthGroup } from "./table/utils";
@@ -16,27 +13,11 @@ import MonthDividerRow from "./table/MonthDividerRow";
 import YearDividerRow from "./table/YearDividerRow";
 import { useSelection } from "@/context/SelectionContext";
 
-// =========================
-// Helper: normalizza importi
-//  - accetta number, "1.234,56", "1234.56", ecc.
-// =========================
-const toNum = (v: unknown): number => {
-    if (typeof v === "number") return Number.isFinite(v) ? v : 0;
-    if (typeof v === "string") {
-        const s = v.trim();
-        if (!s) return 0;
-        // rimuovi separatore migliaia ".", usa "," come decimale
-        const normalized = s.replace(/\./g, "").replace(",", ".");
-        const n = Number(normalized);
-        return Number.isFinite(n) ? n : 0;
-    }
-    return 0;
-};
+// ── helpers condivisi (stessi del Context) ───────────
+import { toNum } from "@/lib/finance";
 
 // =========================
-// Heuristic: capiamo se gli importi sono in CENTESIMI
-//  - se una quota significativa degli importi è > 10.000 (tipo 163000),
-//    assumiamo che la fonte sia in centesimi e dividiamo per 100.
+// Heuristic centesimi (come Context)
 // =========================
 const useAmountsAreCents = (data: TransactionWithGroup[]) => {
     return useMemo(() => {
@@ -47,13 +28,12 @@ const useAmountsAreCents = (data: TransactionWithGroup[]) => {
             .filter(Boolean);
         if (!nums.length) return false;
         const over10k = nums.filter((n) => n >= 10_000).length;
-        // soglia: almeno il 20% dei sample sopra 10k ⇒ trattiamo come centesimi
         return over10k / nums.length >= 0.2;
     }, [data]);
 };
 
 // =========================
-// Calcolo totali mensili (single pass) con importi normalizzati
+// Calcolo totali mensili (single pass)
 // =========================
 const calcMonthTotals = (rows: Row<TransactionWithGroup>[], amountOf: (tx: TransactionWithGroup) => number) => {
     let entrate = 0;
@@ -66,9 +46,9 @@ const calcMonthTotals = (rows: Row<TransactionWithGroup>[], amountOf: (tx: Trans
     return { entrate, spese, saldo: entrate - spese };
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Sezione: Component
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────
 export default function TransactionTable({
     data,
     onRowClick,
@@ -77,27 +57,19 @@ export default function TransactionTable({
     selectedIds: propSelectedIds,
     setSelectedIds: propSetSelectedIds,
 }: TransactionTableProps) {
-    // ───────────────────────────────────────────────────────────────────────────
     // Selection context (fallback)
-    // ───────────────────────────────────────────────────────────────────────────
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
 
-    // ───────────────────────────────────────────────────────────────────────────
     // Priorità alle props
-    // ───────────────────────────────────────────────────────────────────────────
     const actualIsSelectionMode = propIsSelectionMode ?? isSelectionMode;
     const actualSelectedIds = propSelectedIds ?? selectedIds;
     const actualSetSelectedIds = propSetSelectedIds ?? setSelectedIds;
 
-    // ───────────────────────────────────────────────────────────────────────────
     // Dati + ID memo
-    // ───────────────────────────────────────────────────────────────────────────
     const dataWithGroups = useMemo(() => addMonthGroup(data), [data]);
     const allIds = useMemo(() => dataWithGroups.map((tx) => tx.id), [dataWithGroups]);
 
-    // ───────────────────────────────────────────────────────────────────────────
-    // Importi in centesimi? (auto‑detected)
-    // ───────────────────────────────────────────────────────────────────────────
+    // Importi in centesimi? (auto-detected)
     const amountsAreCents = useAmountsAreCents(dataWithGroups);
     const amountOf = useCallback(
         (tx: TransactionWithGroup) => {
@@ -107,9 +79,7 @@ export default function TransactionTable({
         [amountsAreCents]
     );
 
-    // ───────────────────────────────────────────────────────────────────────────
-    // Handler stabili (useCallback)
-    // ───────────────────────────────────────────────────────────────────────────
+    // Handler stabili
     const handleCheckToggle = useCallback(
         (id: number) => {
             actualSetSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
@@ -124,9 +94,7 @@ export default function TransactionTable({
         [actualSetSelectedIds, allIds]
     );
 
-    // ───────────────────────────────────────────────────────────────────────────
     // Colonne
-    // ───────────────────────────────────────────────────────────────────────────
     const columns = useMemo(
         () =>
             getColumnsWithSelection(
@@ -139,9 +107,7 @@ export default function TransactionTable({
         [actualIsSelectionMode, actualSelectedIds, allIds, handleCheckToggle, handleCheckAllToggle]
     );
 
-    // ───────────────────────────────────────────────────────────────────────────
     // Setup TanStack Table
-    // ───────────────────────────────────────────────────────────────────────────
     const table = useReactTable({
         data: dataWithGroups,
         columns,
@@ -150,9 +116,7 @@ export default function TransactionTable({
         debugTable: false,
     });
 
-    // ───────────────────────────────────────────────────────────────────────────
-    // Raggruppo per YYYY‑MM + totali per anno (importi scalati)
-    // ───────────────────────────────────────────────────────────────────────────
+    // Raggruppo per YYYY-MM + totali per anno
     const groupedRows: Record<string, Row<TransactionWithGroup>[]> = {};
     for (const row of table.getRowModel().rows) {
         const key = row.original.monthGroup;
@@ -171,9 +135,7 @@ export default function TransactionTable({
         }
     });
 
-    // ───────────────────────────────────────────────────────────────────────────
-    // Render tabella
-    // ───────────────────────────────────────────────────────────────────────────
+    // Render
     return (
         <div className="table-container overflow-x-auto bg-[hsl(var(--c-table-bg))] rounded-2xl border border-[hsl(var(--c-table-divider))] shadow">
             <table className="table-base min-w-full">
@@ -210,7 +172,7 @@ export default function TransactionTable({
                             const [year] = monthKey.split("-");
                             const blocco: React.ReactNode[] = [];
 
-                            // ── Divider ANNO ──
+                            // Divider ANNO
                             if (year !== lastYear) {
                                 lastYear = year;
                                 blocco.push(
@@ -226,7 +188,7 @@ export default function TransactionTable({
                                 );
                             }
 
-                            // ── Divider MESE ──
+                            // Divider MESE
                             const m = calcMonthTotals(rows, amountOf);
                             blocco.push(
                                 <MonthDividerRow
@@ -240,7 +202,7 @@ export default function TransactionTable({
                                 />
                             );
 
-                            // ── Righe ordinate per data desc ──
+                            // Righe ordinate per data desc
                             const rowsOrdinati = [...rows].sort(
                                 (a, b) => new Date(b.original.date).getTime() - new Date(a.original.date).getTime()
                             );
@@ -274,3 +236,10 @@ export default function TransactionTable({
         </div>
     );
 }
+
+// ─────────────────────────────────────────────────────
+// Descrizione file:
+// Tabella transazioni. Usa `toNum` condiviso e mantiene
+// la stessa euristica dei centesimi del Context senza
+// duplicare codice. Totali/Divider coerenti con HeroSaldo.
+// ─────────────────────────────────────────────────────

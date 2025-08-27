@@ -11,39 +11,57 @@ const nextConfig = {
     poweredByHeader: false,
 
     // ──────────────────────
-    // Sperimentali utili
+    // Sperimentali (compatibili con Turbopack)
     // ──────────────────────
     experimental: {
+        // Ripristina scroll tra navigazioni
         scrollRestoration: true,
+        // Import ottimizzati (es. lucide-react)
         optimizePackageImports: ["lucide-react"],
     },
 
     // ──────────────────────
-    // Qualità di vita
+    // Qualità di vita / Build
     // ──────────────────────
     productionBrowserSourceMaps: false,
     typescript: { ignoreBuildErrors: false },
+
+    // ──────────────────────
+    // Immagini
+    // ──────────────────────
     images: { unoptimized: true },
 
     // ──────────────────────
-    // Router micro‑ottimizzazioni
+    // Router micro-ottimizzazioni
     // ──────────────────────
     skipTrailingSlashRedirect: true,
     skipMiddlewareUrlNormalize: true,
 
     // ──────────────────────
-    // Webpack (dev) — Windows friendly
+    // Turbopack (dichiara qui alias/rules se servono)
     // ──────────────────────
-    webpack: (config, { dev }) => {
-        if (dev) {
-            config.cache = { type: "memory", maxGenerations: 1 };
-            config.resolve = config.resolve || {};
-            config.resolve.symlinks = false;
-            config.snapshot = config.snapshot || {};
-            config.snapshot.managedPaths = [];
-        }
-        return config;
+    turbopack: {
+        // Esempi (decommenta/adatta se ti servono):
+        // resolveAlias: {
+        //     "@": "./",
+        //     "@components": "./app/components",
+        // },
+        // rules: [
+        //     { test: /\.ya?ml$/, loaders: ["yaml-loader"] },
+        // ],
     },
+
+    // ──────────────────────
+    // Nota: niente sezione `webpack` → evita il warning con Turbopack
+    // ──────────────────────
 };
 
 module.exports = nextConfig;
+
+// ─────────────────────────────────────────────────────────────
+// Descrizione file:
+// Config Next.js per dev/build con Turbopack. Mantiene strict mode,
+// ottimizzazioni router e feature sperimentali supportate. La sezione
+// `turbopack` è pronta per alias/rules futuri. Rimosso `webpack()` per
+// evitare il warning "Webpack is configured while Turbopack is not".
+// ─────────────────────────────────────────────────────────────
