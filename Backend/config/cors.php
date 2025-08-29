@@ -1,7 +1,7 @@
 <?php
 
 // ─────────────────────────────────────────────────────────────────────────────
-// config/cors.php — DEV (token/Bearer, niente cookie)
+// config/cors.php — PROD (Bearer token, no cross-site cookies)
 // ─────────────────────────────────────────────────────────────────────────────
 
 return [
@@ -15,9 +15,15 @@ return [
 
     // ── Metodi / Header ──
     'allowed_methods' => ['*'],
-    'allowed_headers' => ['*'],
+    'allowed_headers' => [
+        'Content-Type',
+        'X-Requested-With',
+        'Authorization',
+        'Accept',
+        'Origin',
+    ],
 
-    // ── Origin del frontend in DEV ──
+    // ── Origin del frontend ──
     'allowed_origins' => [
         'http://localhost:8083',        // Expo Web
         'http://192.168.0.111:8083',    // Expo Web via IP
@@ -28,14 +34,16 @@ return [
         'https://synapsy-frontend.vercel.app',
     ],
 
-    // ── Pattern (non indispensabile qui) ──
-    'allowed_origins_patterns' => [],
+    // ── Pattern per deploy Vercel (preview) ──
+    'allowed_origins_patterns' => [
+        '#^https://synapsy-frontend-.*\\.vercel\\.app$#',
+    ],
 
     // ── Header esposti al browser (se invii token in header) ──
     'exposed_headers' => ['Authorization'],
 
     // ── Cache preflight ──
-    'max_age' => 0,
+    'max_age' => 600,
 
     // ── IMPORTANTE: niente cookie/sessioni cross-site ──
     'supports_credentials' => false,
