@@ -1,3 +1,5 @@
+"use client";
+
 // ====================================================
 // TransactionsList.tsx
 // Lista transazioni con filtro e tabella — uniformata

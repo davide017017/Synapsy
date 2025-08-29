@@ -1,18 +1,40 @@
 // eslint.config.mjs
 // ╔══════════════════════════════════════════════════════╗
-// ║ ESLint 9 Flat Config — Next 15 + regole progetto     ║
+// ║ ESLint 9 Flat Config — Next 15 + FlatCompat + custom ║
 /* ╚══════════════════════════════════════════════════════╝ */
 
-import pluginNext from "@next/eslint-plugin-next";
+import { FlatCompat } from "@eslint/eslintrc";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import tsParser from "@typescript-eslint/parser";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
+// ─────────────────────────────────────────────────────────────
+// Base dir ESM (evita import.meta.dirname che non è standard)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Compat: consente di usare "extends: 'next/core-web-vitals'" in Flat
+const compat = new FlatCompat({
+    baseDirectory: __dirname,
+    // (opzionale, utile in monorepo)
+    resolvePluginsRelativeTo: __dirname,
+});
+
+// ─────────────────────────────────────────────────────────────
+// Esporta Flat Config
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
-    // =========================
-    // Base: parser + plugin
-    // =========================
+    // ==============================================
+    // 1) Preset ufficiale Next via FlatCompat
+    //    (equivale a "extends: ['next', 'next/core-web-vitals']")
+    // ==============================================
+    ...compat.extends("next", "next/core-web-vitals"),
+
+    // ==============================================
+    // 2) Config progetto: parser, plugin e regole custom
+    // ==============================================
     {
         files: ["**/*.{js,jsx,ts,tsx}"],
         languageOptions: {
@@ -27,7 +49,6 @@ export default [
             react: { version: "detect" },
         },
         plugins: {
-            "@next/next": pluginNext,
             react: pluginReact,
             "react-hooks": pluginReactHooks,
 
@@ -58,17 +79,10 @@ export default [
             },
         },
 
-        // =========================
-        // Regole
-        // =========================
+        // ─────────────────────────────────────────────────────────
+        // Regole custom (NON re-importiamo qui le regole Next)
+        // ─────────────────────────────────────────────────────────
         rules: {
-            // Next recommended + core web vitals
-            ...(pluginNext.configs?.recommended?.rules ?? {}),
-            ...(pluginNext.configs?.["core-web-vitals"]?.rules ?? {}),
-
-            // React recommended
-            ...(pluginReact.configs?.recommended?.rules ?? {}),
-
             // Hooks canoniche
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "warn",
@@ -87,10 +101,7 @@ export default [
             "no-restricted-imports": [
                 "error",
                 {
-                    // ⛔ Vietiamo importare i PROVIDER dai loro moduli ovunque...
-                    // (gli hook restano liberi)
                     paths: [
-                        // tua regola preesistente
                         { name: "@/hooks/useTransactions", message: "Importa da '@/context/TransactionsContext'." },
 
                         // Provider bloccati globalmente
@@ -113,35 +124,30 @@ export default [
                 },
             ],
 
-            // 🛡️ Blocca anche gli import namespace (aggiramento tipico)
-            //   Esempio vietato: `import * as Ctx from '@/context/TransactionsContext'`
+            // Blocca import namespace dai context (aggiramento tipico)
             "no-restricted-syntax": [
                 "error",
                 {
                     selector:
                         "ImportDeclaration[source.value='@/context/TransactionsContext'] ImportNamespaceSpecifier",
                     message:
-                        "Evita import namespace da '@/context/TransactionsContext'. Importa solo i nomi necessari (hook ovunque, provider solo dove consentito).",
+                        "Evita import namespace da '@/context/TransactionsContext'. Importa solo i nomi necessari.",
                 },
                 {
                     selector: "ImportDeclaration[source.value='@/context/CategoriesContext'] ImportNamespaceSpecifier",
-                    message:
-                        "Evita import namespace da '@/context/CategoriesContext'. Importa solo i nomi necessari (hook ovunque, provider solo dove consentito).",
+                    message: "Evita import namespace da '@/context/CategoriesContext'. Importa solo i nomi necessari.",
                 },
                 {
                     selector: "ImportDeclaration[source.value='@/context/UserContext'] ImportNamespaceSpecifier",
-                    message:
-                        "Evita import namespace da '@/context/UserContext'. Importa solo i nomi necessari (hook ovunque, provider solo dove consentito).",
+                    message: "Evita import namespace da '@/context/UserContext'. Importa solo i nomi necessari.",
                 },
             ],
         },
     },
 
-    // =========================
-    // Override #1: area protetta (layout)
-    //  - Qui SONO CONSENTITI i provider Transactions + Categories
-    //  - UserProvider resta VIETATO
-    // =========================
+    // ==============================================
+    // 3) Override: area protetta (layout)
+    // ==============================================
     {
         files: ["app/(protected)/layout.tsx"],
         rules: {
@@ -150,7 +156,6 @@ export default [
                 {
                     paths: [
                         { name: "@/hooks/useTransactions", message: "Importa da '@/context/TransactionsContext'." },
-
                         // ❌ Vietato importare UserProvider qui
                         {
                             name: "@/context/UserContext",
@@ -160,15 +165,12 @@ export default [
                     ],
                 },
             ],
-            // Manteniamo il blocco degli import namespace (non serve disattivarlo)
         },
     },
 
-    // =========================
-    // Override #2: app/providers.tsx
-    //  - Qui è CONSENTITO UserProvider
-    //  - Restano VIETATI TransactionsProvider + CategoriesProvider
-    // =========================
+    // ==============================================
+    // 4) Override: app/providers.tsx
+    // ==============================================
     {
         files: ["app/providers.tsx"],
         rules: {
@@ -177,17 +179,16 @@ export default [
                 {
                     paths: [
                         { name: "@/hooks/useTransactions", message: "Importa da '@/context/TransactionsContext'." },
-
-                        // ❌ Vietati gli altri due provider in questo file
+                        // ❌ Vietati gli altri due provider qui
                         {
                             name: "@/context/TransactionsContext",
                             importNames: ["TransactionsProvider"],
-                            message: "TransactionsProvider va montato solo in app/(protected)/layout.tsx",
+                            message: "TransactionsProvider va in app/(protected)/layout.tsx",
                         },
                         {
                             name: "@/context/CategoriesContext",
                             importNames: ["CategoriesProvider"],
-                            message: "CategoriesProvider va montato solo in app/(protected)/layout.tsx",
+                            message: "CategoriesProvider va in app/(protected)/layout.tsx",
                         },
                     ],
                 },
@@ -195,19 +196,19 @@ export default [
         },
     },
 
-    // =========================
-    // Ignora build output
-    // =========================
+    // ==============================================
+    // 5) Ignora build output
+    // ==============================================
     {
         ignores: ["node_modules/", ".next/", "dist/", "build/", "coverage/"],
     },
 ];
 
-// ------------------------------------------------------
-// Spiegazione rapida:
-// - `no-restricted-imports` vieta di importare i *Provider* ovunque.
-// - Due override ri-consentono i provider SOLO nei file giusti.
-// - Blocchiamo anche gli import namespace dai moduli dei context,
-//   così non si può prendere il provider via `Ctx.TransactionsProvider`.
-// - Gli hook (es. `useTransactions`) sono liberi.
-// ------------------------------------------------------
+// ─────────────────────────────────────────────────────────────
+// Descrizione file:
+// Config ESLint Flat con Next 15 usando FlatCompat per includere
+// 'next' e 'next/core-web-vitals' (preset ufficiali). Aggiunge
+// parser TypeScript, plugin React/Hooks e le tue regole custom,
+// con override per dove montare i Provider. Così Next “vede” il
+// suo preset e sparisce il warning sul plugin mancante.
+// ─────────────────────────────────────────────────────────────
