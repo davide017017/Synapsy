@@ -9,16 +9,41 @@ import { url } from "@/lib/api/endpoints";
 // GET profilo corrente
 // ==============================
 export async function fetchUserProfile(token: string): Promise<UserType> {
-    const res = await fetch(url("profile"), {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-        },
-    });
-    if (!res.ok) throw new Error("Errore caricamento profilo");
-    const data = await res.json();
-    return data.data || data;
+    const endpoint = url("profile");
+    try {
+        const res = await fetch(endpoint, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        });
+
+        const bodyText = await res.text();
+        let body: any = null;
+        try {
+            body = JSON.parse(bodyText);
+        } catch {
+            body = bodyText;
+        }
+
+        if (!res.ok) {
+            console.error("[fetchUserProfile] fetch failed", {
+                url: endpoint,
+                status: res.status,
+                body: typeof body === "string" ? body.slice(0, 200) : body,
+            });
+            throw new Error(body?.message || "Errore caricamento profilo");
+        }
+
+        return body.data || body;
+    } catch (err) {
+        console.error("[fetchUserProfile] network error", {
+            url: endpoint,
+            error: err,
+        });
+        throw err;
+    }
 }
 
 // ==============================
