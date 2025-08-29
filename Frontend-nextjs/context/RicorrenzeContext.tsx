@@ -1,58 +1,55 @@
 "use client";
 
-/* ╔════════════════════════════════════════════════════════════╗
- * ║ RicorrenzeContext — CRUD + Undo Delete (Sonner)           ║
- * ║ Cache di modulo + coalescing delle fetch                  ║
- * ╚════════════════════════════════════════════════════════════╝ */
+/* ╔══════════════════════════════════════════════════════════════╗
+ * ║ RicorrenzeContext — CRUD + Modale + Undo (Sonner)           ║
+ * ║ Cache a livello di modulo + coalescing delle fetch           ║
+ * ╚══════════════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-import type { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
+import { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
 import { fetchRicorrenze, createRicorrenza, updateRicorrenza, deleteRicorrenza } from "@/lib/api/ricorrenzeApi";
 import { normalizeRicorrenza } from "@/utils/normalizeRicorrenza";
 import NewRicorrenzaModal from "@/app/(protected)/newRicorrenza/NewRicorrenzaModal";
 
 /* ────────────────────────────────────────────────────────────────
  * Cache & promise a livello di modulo
- * - Persistono tra mount/unmount (SSR, StrictMode, HMR)
- * - Condividono la stessa richiesta in corso tra più consumer
- * - `refresh()` invalida e forza un refetch
  * ──────────────────────────────────────────────────────────────── */
 let ricorrenzeCache: Ricorrenza[] | null = null;
 let ricorrenzePromise: Promise<Ricorrenza[]> | null = null;
 let ricorrenzeToken: string | undefined;
 
-// ===========================================================
-// Tipizzazione context
-// ===========================================================
+/* ===============================================================
+ * Tipi del context
+ * =============================================================== */
 type RicorrenzeContextType = {
     ricorrenze: Ricorrenza[];
     loading: boolean;
     error: string | null;
 
     refresh: () => void;
-
     create: (data: RicorrenzaBase) => Promise<void>;
     update: (id: number, data: RicorrenzaBase) => Promise<void>;
     remove: (id: number) => Promise<void>;
 
+    // Modale
     isOpen: boolean;
     ricorrenzaToEdit: Ricorrenza | null;
     openModal: (ricorrenzaToEdit?: Ricorrenza | null, onSuccess?: (r: Ricorrenza) => void) => void;
     closeModal: () => void;
 };
 
-// ===========================================================
-// Context base
-// ===========================================================
+/* ===============================================================
+ * Context base
+ * =============================================================== */
 const RicorrenzeContext = createContext<RicorrenzeContextType | undefined>(undefined);
 
-// ===========================================================
-// Provider principale
-// ===========================================================
+/* ===============================================================
+ * Provider
+ * =============================================================== */
 export function RicorrenzeProvider({ children }: { children: ReactNode }) {
     const [ricorrenze, setRicorrenze] = useState<Ricorrenza[]>([]);
     const [loading, setLoading] = useState(false);
@@ -63,16 +60,17 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
     const [ricorrenzaToEdit, setRicorrenzaToEdit] = useState<Ricorrenza | null>(null);
     const [onSuccessCallback, setOnSuccessCallback] = useState<((r: Ricorrenza) => void) | null>(null);
 
-    // Undo (tieni solo il setter per evitare warning “unused”)
-    const [, setLastDeleted] = useState<Ricorrenza | null>(null);
+    // Per undo (facoltativo)
+    const [lastDeleted, setLastDeleted] = useState<Ricorrenza | null>(null);
+    void lastDeleted;
 
     // Auth
     const { data: session } = useSession();
     const token = session?.accessToken as string | undefined;
 
-    // =======================================================
-    // Fetch ricorrenze (cache + coalescing)
-    // =======================================================
+    /* =============================================================
+     * Fetch ricorrenze (cache + coalescing)
+     * ============================================================= */
     const loadRicorrenze = useCallback(
         async (force = false) => {
             if (!token) {
@@ -102,18 +100,21 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
             setError(null);
 
             try {
-                const promise = ricorrenzePromise ?? fetchRicorrenze(token);
-                ricorrenzePromise = promise;
+                const promise =
+                    ricorrenzePromise ??
+                    (async () => {
+                        const items = await fetchRicorrenze(token);
+                        return items.map(normalizeRicorrenza);
+                    })();
 
-                const items = await promise;
-                const data = items.map(normalizeRicorrenza);
+                ricorrenzePromise = promise;
+                const data = await promise;
 
                 ricorrenzeCache = data;
                 setRicorrenze(data);
-            } catch (e: any) {
-                const msg = e?.message ?? "Errore caricamento ricorrenze";
-                setError(msg);
-                toast.error(msg);
+            } catch (_e: any) {
+                setError("Errore caricamento ricorrenze");
+                toast.error("Errore caricamento ricorrenze");
             } finally {
                 setLoading(false);
                 ricorrenzePromise = null;
@@ -123,19 +124,19 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
     );
 
     useEffect(() => {
-        if (token) void loadRicorrenze();
+        if (token) loadRicorrenze();
     }, [token, loadRicorrenze]);
 
-    // Invalida cache e forza refetch
+    // Invalida cache e forza il refetch
     const refresh = useCallback(() => {
         ricorrenzeCache = null;
         ricorrenzePromise = null;
         void loadRicorrenze(true);
     }, [loadRicorrenze]);
 
-    // =======================================================
-    // CREATE
-    // =======================================================
+    /* =============================================================
+     * CREATE / UPDATE / DELETE
+     * ============================================================= */
     const create = async (data: RicorrenzaBase) => {
         if (!token) return;
         setLoading(true);
@@ -152,9 +153,6 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    // =======================================================
-    // UPDATE
-    // =======================================================
     const update = async (id: number, data: RicorrenzaBase) => {
         if (!token) return;
         setLoading(true);
@@ -171,9 +169,6 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    // =======================================================
-    // REMOVE + Undo (Sonner)
-    // =======================================================
     const remove = async (id: number) => {
         if (!token) return;
         setLoading(true);
@@ -181,12 +176,10 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
             const ric = ricorrenze.find((r) => r.id === id);
             if (!ric) return;
 
-            // 1) Cancella
             await deleteRicorrenza(token, ric);
             setLastDeleted(ric);
             refresh();
 
-            // 2) Toast con undo
             toast.success("Ricorrenza eliminata!", {
                 description: (
                     <div>
@@ -198,7 +191,7 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
                 action: {
                     label: "Ripristina",
                     onClick: async () => {
-                        if (!token) return;
+                        if (!token || !ric) return;
                         setLoading(true);
                         try {
                             const { id: _omit, ...ricBase } = ric;
@@ -214,17 +207,17 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
                 },
             });
         } catch (e: any) {
-            toast.error(e?.message ?? "Errore eliminazione ricorrenza");
+            toast.error(e?.message || "Errore eliminazione ricorrenza");
         } finally {
             setLoading(false);
         }
     };
 
-    // =======================================================
-    // Gestione Modale
-    // =======================================================
-    const openModal = (r?: Ricorrenza | null, onSuccess?: (res: Ricorrenza) => void) => {
-        setRicorrenzaToEdit(r ?? null);
+    /* =============================================================
+     * Modale
+     * ============================================================= */
+    const openModal = (ricorrenza?: Ricorrenza | null, onSuccess?: (r: Ricorrenza) => void) => {
+        setRicorrenzaToEdit(ricorrenza ?? null);
         setOnSuccessCallback(() => onSuccess || null);
         setIsOpen(true);
     };
@@ -235,9 +228,9 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
         setIsOpen(false);
     };
 
-    // =======================================================
-    // Provider render
-    // =======================================================
+    /* =============================================================
+     * Render
+     * ============================================================= */
     return (
         <RicorrenzeContext.Provider
             value={{
@@ -265,11 +258,20 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
     );
 }
 
-// ===========================================================
-// Hook custom
-// ===========================================================
+/* ===============================================================
+ * Hook custom
+ * =============================================================== */
 export function useRicorrenze() {
-    const context = useContext(RicorrenzeContext);
-    if (!context) throw new Error("useRicorrenze deve essere usato dentro <RicorrenzeProvider>");
-    return context;
+    const ctx = useContext(RicorrenzeContext);
+    if (!ctx) throw new Error("useRicorrenze deve essere usato dentro <RicorrenzeProvider>");
+    return ctx;
+}
+
+/* ===============================================================
+ * Reset cache (uso interno) — chiamato da resetAllProviderCaches()
+ * =============================================================== */
+export function __resetRicorrenzeCache() {
+    ricorrenzeCache = null;
+    ricorrenzePromise = null;
+    ricorrenzeToken = undefined;
 }

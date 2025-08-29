@@ -10,7 +10,7 @@ import { useCategories } from "@/context/CategoriesContext";
 import SelectionToolbar from "./components/SelectionToolbar";
 import dynamic from "next/dynamic";
 import TransactionsListSkeleton from "./skeleton/TransactionsListSkeleton";
-const TransactionsList = dynamic(() => import("./components/TransactionsList"), { suspense: true });
+const TransactionsList = dynamic(() => import("./components/TransactionsList"));
 import TransactionDetailModal from "./modal/TransactionDetailModal";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
 import { Transaction } from "@/types/models/transaction";

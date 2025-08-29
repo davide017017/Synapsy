@@ -2,7 +2,7 @@
 
 /* ╔══════════════════════════════════════════════════════╗
  * ║ UserContext — Profilo utente + azioni email          ║
- * ║ Cache di modulo + coalescing delle fetch             ║
+ * ║ Cache a livello di modulo + coalescing delle fetch   ║
  * ╚══════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
@@ -14,7 +14,7 @@ import type { UserType } from "@/types/models/user";
 import { fetchUserProfile, updateUserProfile, cancelPendingEmail, resendPendingEmail } from "@/lib/api/userApi";
 
 /* ────────────────────────────────────────────────────────────────
- * Cache & promise a livello di modulo per il profilo
+ * Cache & promise a livello di modulo
  * ──────────────────────────────────────────────────────────────── */
 let userCache: UserType | null = null;
 let userPromise: Promise<UserType> | null = null;
@@ -99,7 +99,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     // Bootstrap iniziale (o quando cambia token)
     useEffect(() => {
-        if (token) void loadUser();
+        if (token) loadUser();
     }, [token, loadUser]);
 
     // Invalida cache e forza il refetch
@@ -110,8 +110,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }, [loadUser]);
 
     /* =============================================================
-     * Mutazioni profilo
-     *  - Aggiorniamo sia lo stato locale che la cache di modulo
+     * Mutazioni profilo (aggiorniamo anche la cache)
      * ============================================================= */
     const update = async (data: Partial<UserType>) => {
         if (!token) return;
@@ -189,4 +188,13 @@ export function useUser() {
     const ctx = useContext(UserContext);
     if (!ctx) throw new Error("useUser deve essere usato dentro <UserProvider>");
     return ctx;
+}
+
+/* ===============================================================
+ * Reset cache (uso interno) — chiamato da resetAllProviderCaches()
+ * =============================================================== */
+export function __resetUserCache() {
+    userCache = null;
+    userPromise = null;
+    userToken = undefined;
 }

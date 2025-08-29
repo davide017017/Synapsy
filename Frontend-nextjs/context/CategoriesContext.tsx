@@ -2,7 +2,7 @@
 
 /* ╔═════════════════════════════════════════════════════════════╗
  * ║ CategoriesContext — Categorie: CRUD + Modale + Undo        ║
- * ║ Cache di modulo + coalescing delle fetch                   ║
+ * ║ Cache a livello di modulo + coalescing delle fetch         ║
  * ╚═════════════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import NewCategoryModal from "@/app/(protected)/newCategory/NewCategoryModal";
-import type { Category, CategoryBase } from "@/types";
+import { Category, CategoryBase } from "@/types";
 import {
     getAllCategories,
     createCategory,
@@ -21,10 +21,7 @@ import {
 } from "@/lib/api/categoriesApi";
 
 /* ────────────────────────────────────────────────────────────────
- * Cache & promise a livello di modulo
- * - Persistono tra mount/unmount (SSR, StrictMode, HMR)
- * - Condividono la stessa richiesta in corso tra più consumer
- * - `refresh()` invalida e forza un refetch
+ * Cache & promise a livello di modulo (persiste tra mount/unmount)
  * ──────────────────────────────────────────────────────────────── */
 let categoriesCache: Category[] | null = null;
 let categoriesPromise: Promise<Category[]> | null = null;
@@ -72,8 +69,9 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
     const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
 
-    // (facoltativo) Undo: tieni solo il setter per evitare warning "unused state"
-    const [, setLastDeleted] = useState<Category | null>(null);
+    // (facoltativo) per Undo, utile a livello UI
+    const [lastDeleted, setLastDeleted] = useState<Category | null>(null);
+    void lastDeleted;
 
     // Auth
     const { data: session } = useSession();
@@ -84,7 +82,6 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
      * ============================================================= */
     const loadCategories = useCallback(
         async (force = false) => {
-            // Utente non loggato → reset locale + cache pulita
             if (!token) {
                 setCategories([]);
                 categoriesCache = null;
@@ -132,7 +129,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
 
     // Bootstrap iniziale (o quando cambia token)
     useEffect(() => {
-        if (token) void loadCategories();
+        if (token) loadCategories();
     }, [token, loadCategories]);
 
     // Invalida cache e forza il refetch
@@ -143,7 +140,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     }, [loadCategories]);
 
     /* =============================================================
-     * CRUD (dopo ogni mutazione → refresh)
+     * CRUD (post-mutation → refresh)
      * ============================================================= */
     const create = async (data: CategoryBase, onSuccess?: () => void) => {
         if (!token) return;
@@ -181,7 +178,6 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
             setLastDeleted(cat);
             refresh();
 
-            // Toast con undo
             toast.success("Categoria eliminata!", {
                 description: (
                     <div>
@@ -193,7 +189,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
                 action: {
                     label: "Ripristina",
                     onClick: async () => {
-                        if (!token) return;
+                        if (!token || !cat) return;
                         setLoading(true);
                         try {
                             const { id: _omit, ...catBase } = cat;
@@ -240,7 +236,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     };
 
     /* =============================================================
-     * Render provider
+     * Render
      * ============================================================= */
     return (
         <CategoriesContext.Provider
@@ -260,7 +256,6 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
             }}
         >
             {children}
-            {/* Modale globale riutilizzabile (create/edit) */}
             <NewCategoryModal
                 open={isOpen}
                 onClose={closeModal}
@@ -278,4 +273,13 @@ export function useCategories() {
     const ctx = useContext(CategoriesContext);
     if (!ctx) throw new Error("useCategories deve essere usato dentro <CategoriesProvider>");
     return ctx;
+}
+
+/* ===============================================================
+ * Reset cache (uso interno) — chiamato da resetAllProviderCaches()
+ * =============================================================== */
+export function __resetCategoriesCache() {
+    categoriesCache = null;
+    categoriesPromise = null;
+    categoriesToken = undefined;
 }
