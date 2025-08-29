@@ -49,10 +49,7 @@ export async function fetchUserProfile(token: string): Promise<UserType> {
 // ==============================
 // PUT profilo
 // ==============================
-export async function updateUserProfile(
-    token: string,
-    payload: Partial<UserType>
-): Promise<UserType> {
+export async function updateUserProfile(token: string, payload: Partial<UserType>): Promise<UserType> {
     const res = await fetch(url("profile"), {
         method: "PUT",
         headers: {
@@ -117,3 +114,9 @@ export async function deleteUserProfile(token: string, password: string): Promis
     if (!res.ok) throw new Error(data?.message || "Errore eliminazione profilo");
 }
 
+// ─────────────────────────────────────────────────────────
+// Descrizione file:
+// Wrapper API per profilo utente. Include diagnostica avanzata
+// (log URL, status e snippet body in caso di errore).
+// Funzioni CRUD con Bearer token per l’autenticazione.
+// ─────────────────────────────────────────────────────────
