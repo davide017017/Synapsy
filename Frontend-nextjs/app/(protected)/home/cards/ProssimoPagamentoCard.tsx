@@ -11,9 +11,7 @@ import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
 import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
 import { formatDataIt } from "@/utils/date";
-
-// ── Helper: € formattato ────────────────────────────
-const eur = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
+import { eur } from "@/utils/formatCurrency";
 
 // ===============================
 // Componente principale
@@ -65,7 +63,7 @@ export default function ProssimoPagamentoCard() {
     const data = formatDataIt(prossimo.prossima);
     const isSpesa = prossimo.type === "spesa";
     const importoAbs = Math.abs(Number(prossimo.importo) || 0);
-    const importoTxt = eur.format(importoAbs);
+    const importoTxt = eur(importoAbs);
     const importoClass = isSpesa ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400";
     const simbolo = isSpesa ? "−" : "+";
     const nome = prossimo.nome || "—";

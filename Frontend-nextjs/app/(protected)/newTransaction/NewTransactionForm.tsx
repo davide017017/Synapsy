@@ -190,7 +190,7 @@ export default function NewTransactionForm({
                     onChange={(e) =>
                         setFormData({
                             ...formData,
-                            amount: parseFloat(e.target.value) || 0,
+                            amount: Number(e.target.value) || 0,
                         })
                     }
                     className={cn(errors.amount ? "border-danger" : "")}

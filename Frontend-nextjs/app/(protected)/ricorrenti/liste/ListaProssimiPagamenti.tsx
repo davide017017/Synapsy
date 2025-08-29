@@ -9,6 +9,7 @@ import type { ListaProssimiPagamentiProps, SectionOccorrenzeProps } from "@/type
 import { normalizzaFrequenza, freqToIt, freqToDays } from "../utils/ricorrenza-utils";
 import { Pencil, Trash2 } from "lucide-react";
 import { useCategories } from "@/context/CategoriesContext";
+import { eur } from "@/utils/formatCurrency";
 
 // ============================
 // Props tipizzate
@@ -195,10 +196,10 @@ export default function ListaProssimiPagamenti({
             {/* === Totali riepilogo === */}
             <div className="flex gap-4 mt-1 text-xs text-[hsl(var(--c-text-secondary))] flex-wrap">
                 <span>
-                    Settimana: <b>€{totaleSettimana.toFixed(2)}</b>
+                    Settimana: <b>{eur(totaleSettimana)}</b>
                 </span>
                 <span>
-                    Mese: <b>€{totaleMese.toFixed(2)}</b>
+                    Mese: <b>{eur(totaleMese)}</b>
                 </span>
             </div>
         </div>
@@ -225,7 +226,8 @@ function SectionOccorrenze({
                     className={`ml-2 px-2 py-0.5 rounded-lg text-xs font-bold border ${getBilancioUtility(bilancio)}`}
                     style={{ minWidth: 90, textAlign: "center" }}
                 >
-                    Bilancio: {bilancio >= 0 ? "+" : "–"}€{Math.abs(bilancio).toFixed(2)}
+                    Bilancio: {bilancio >= 0 ? "+" : "–"}
+                    {eur(Math.abs(bilancio))}
                 </span>
             </div>
             <ul className="divide-y divide-[hsl(var(--c-table-divider))]">
@@ -289,7 +291,8 @@ function SectionOccorrenze({
                                         className={`font-mono font-bold pr-1 ${textRow}`}
                                         style={{ minWidth: 64, textAlign: "right" }}
                                     >
-                                        {r.type === "entrata" ? "+" : "–"}€{(r.importo ?? 0).toFixed(2)}
+                                        {r.type === "entrata" ? "+" : "–"}
+                                        {eur(r.importo ?? 0)}
                                     </span>
                                     {/* Pill frequenza */}
                                     <span

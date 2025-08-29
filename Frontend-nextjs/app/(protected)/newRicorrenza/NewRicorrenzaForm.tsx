@@ -172,7 +172,7 @@ export default function NewRicorrenzaForm({ onSave, onCancel, initialValues, onC
                     step="0.01"
                     placeholder="Importo"
                     value={formData.importo === 0 ? "" : formData.importo}
-                    onChange={(e) => setFormData({ ...formData, importo: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) => setFormData({ ...formData, importo: Number(e.target.value) || 0 })}
                     className={errors.importo ? "border-danger" : ""}
                 />
                 {errors.importo && <p className="text-danger text-xs -mt-2">{errors.importo}</p>}

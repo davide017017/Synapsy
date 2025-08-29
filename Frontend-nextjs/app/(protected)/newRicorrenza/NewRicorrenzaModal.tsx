@@ -11,6 +11,7 @@ import NewRicorrenzaForm from "./NewRicorrenzaForm";
 import { useCategories } from "@/context/CategoriesContext";
 import { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
 import type { NewRicorrenzaModalProps } from "@/types";
+import { eur } from "@/utils/formatCurrency";
 
 // ============================
 // Componente principale
@@ -65,7 +66,7 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
                             <>
                                 {`• Nome: "${ricorrenzaToEdit.nome}"`}
                                 <br />
-                                {`• Importo: ${ricorrenzaToEdit.importo} €`}
+                                {`• Importo: ${eur(ricorrenzaToEdit.importo)}`}
                                 <br />
                                 {`• Frequenza: ${ricorrenzaToEdit.frequenza}`}
                                 <br />
@@ -75,7 +76,7 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
                             <>
                                 {`• Nome: "${formValues.nome}"`}
                                 <br />
-                                {formValues.importo && `• Importo: ${formValues.importo} €`}
+                                {formValues.importo && `• Importo: ${eur(formValues.importo)}`}
                                 <br />
                                 {formValues.frequenza && `• Frequenza: ${formValues.frequenza}`}
                                 <br />

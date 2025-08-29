@@ -4,6 +4,7 @@
 // ============================
 
 import { Ricorrenza } from "@/types/models/ricorrenza";
+import { eur } from "@/utils/formatCurrency";
 
 // ╔══════════════════════════════════════════════════════╗
 // ║ 1. COSTANTI: ORDINE FREQUENZA E MOLTIPLICATORI      ║
@@ -146,7 +147,7 @@ export function buildBarChartOptions(saldoPerGiorno: number[] = []) {
                 callbacks: {
                     label: function (ctx: any) {
                         const idx = ctx.dataIndex;
-                        return `Saldo: €${ctx.dataset.data[idx].toFixed(2)}`;
+                        return `Saldo: ${eur(ctx.dataset.data[idx])}`;
                     },
                 },
             },

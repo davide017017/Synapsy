@@ -8,6 +8,7 @@ import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { RicorrenzaItemProps } from "@/types/ricorrenti/liste";
 import { Pencil, Trash2 } from "lucide-react";
 import { getFreqPill } from "../../utils/ricorrenza-utils";
+import { eur } from "@/utils/formatCurrency";
 
 // --------- Utility per stile e simbolo importo ---------
 function getTypeStyle(type: "entrata" | "spesa") {
@@ -90,7 +91,8 @@ export default function RicorrenzaItem({ r, onEdit, onDelete }: RicorrenzaItemPr
 
             {/* Importo (col-2) */}
             <div className={`col-span-2 font-mono text-sm font-bold text-right ${valueClass}`}>
-                {symbol}€{(r.importo ?? 0).toFixed(2)}
+                {symbol}
+                {eur(r.importo ?? 0)}
             </div>
 
             {/* Azioni (col-2, centrato) */}

@@ -4,6 +4,7 @@
 
 import { labelMeseAnno } from "./utils";
 import type { MonthDividerRowProps } from "@/types/transazioni/list";
+import { eur } from "@/utils/formatCurrency";
 
 export default function MonthDividerRow({ monthKey, colSpan, entrate = 0, spese = 0, saldo = 0, className }: MonthDividerRowProps) {
     return (
@@ -22,17 +23,11 @@ export default function MonthDividerRow({ monthKey, colSpan, entrate = 0, spese 
                     <span className="flex gap-3 items-center">
                         {/* Entrate */}
                         <span className="text-[hsl(var(--c-table-success-2))]">
-                            Entrate:{" "}
-                            <span className="font-bold">
-                                {entrate.toLocaleString("it-IT", { minimumFractionDigits: 2 })} €
-                            </span>
+                            Entrate: <span className="font-bold">{eur(entrate)}</span>
                         </span>
                         {/* Spese */}
                         <span className="text-[hsl(var(--c-table-danger-2))]">
-                            Spese:{" "}
-                            <span className="font-bold">
-                                {spese.toLocaleString("it-IT", { minimumFractionDigits: 2 })} €
-                            </span>
+                            Spese: <span className="font-bold">{eur(spese)}</span>
                         </span>
                         {/* Saldo */}
                         <span
@@ -42,10 +37,7 @@ export default function MonthDividerRow({ monthKey, colSpan, entrate = 0, spese 
                                     : "text-[hsl(var(--c-table-danger-2))]"
                             }
                         >
-                            <b>
-                                Saldo: {saldo >= 0 ? "+" : ""}
-                                {saldo.toLocaleString("it-IT", { minimumFractionDigits: 2 })} €
-                            </b>
+                            <b>Saldo: {eur(saldo)}</b>
                         </span>
                     </span>
                 </div>
