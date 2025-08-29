@@ -85,6 +85,12 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                     selectedIds={selectedIds}
                     setSelectedIds={setSelectedIds}
                 />
+                <div className="mt-2 text-xs text-muted-foreground text-center">
+                    {`${Math.min(visible, filtered.length)} di ${filtered.length} transazioni `}
+                    {filter.search !== "" || filter.type !== "tutti" || filter.category !== "tutte"
+                        ? "filtrate"
+                        : "totali"}
+                </div>
                 {visible < filtered.length ? (
                     <div className="text-center mt-4">
                         <button
