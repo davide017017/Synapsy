@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { TransactionWithGroup } from "@/types/transazioni/list";
 import { hexToHSL } from "./utils"; // Importa la funzione dal tuo utils
+import { eur } from "@/utils/formatCurrency";
 
 // ============================
 // Factory: colonne con selezione multipla
@@ -108,11 +109,8 @@ export function getColumnsWithSelection(
                 const type = row.original?.category?.type; // 'entrata' | 'spesa'
                 const sign = type === "entrata" ? "+" : "-";
 
-                // ── 3) Formattazione italiana con 2 decimali (valore assoluto)
-                const formatted = new Intl.NumberFormat("it-IT", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                }).format(Math.abs(safe));
+                // ── 3) Formattazione italiana in euro (valore assoluto)
+                const formatted = eur(Math.abs(safe));
 
                 // ── 4) Rendering con classi colore in base al tipo
                 return (
@@ -125,7 +123,7 @@ export function getColumnsWithSelection(
                         )}
                     >
                         {sign}
-                        {formatted} €
+                        {formatted}
                     </span>
                 );
             },

@@ -9,6 +9,7 @@ import { aggregaRicorrenzePerTipoEFrequenza, frequenzaOrder, sommaTotaleAnnua } 
 import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { CardTotaliAnnuiProps } from "@/types/ricorrenti/card";
 import NewRicorrenzaButton from "@/app/(protected)/newRicorrenza/NewRicorrenzaButton";
+import { eur } from "@/utils/formatCurrency";
 
 // ============================
 // Props tipizzate
@@ -144,17 +145,17 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
                                     </td>
                                     {/* Valori Spese */}
                                     <td className="px-2 py-1 font-mono text-[hsl(var(--c-table-danger-2))]">
-                                        €{(aggregato.spesa[freq]?.totale ?? 0).toFixed(2)}
+                                        {eur(aggregato.spesa[freq]?.totale ?? 0)}
                                     </td>
                                     <td className="px-2 py-1 font-mono text-[hsl(var(--c-table-danger-2))]">
-                                        €{(aggregato.spesa[freq]?.totaleAnnuale ?? 0).toFixed(2)}
+                                        {eur(aggregato.spesa[freq]?.totaleAnnuale ?? 0)}
                                     </td>
                                     {/* Valori Entrate */}
                                     <td className="px-2 py-1 font-mono text-[hsl(var(--c-table-success-2))]">
-                                        €{(aggregato.entrata[freq]?.totale ?? 0).toFixed(2)}
+                                        {eur(aggregato.entrata[freq]?.totale ?? 0)}
                                     </td>
                                     <td className="px-2 py-1 font-mono text-[hsl(var(--c-table-success-2))]">
-                                        €{(aggregato.entrata[freq]?.totaleAnnuale ?? 0).toFixed(2)}
+                                        {eur(aggregato.entrata[freq]?.totaleAnnuale ?? 0)}
                                     </td>
                                 </tr>
                             ))}
@@ -167,11 +168,11 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
                                 </td>
                                 <td className="px-2 py-1 font-bold font-mono text-[hsl(var(--c-table-danger-2))]"></td>
                                 <td className="px-2 py-1 font-bold font-mono text-[hsl(var(--c-table-danger-2))]">
-                                    €{totaleSpeseAnnue.toFixed(2)}
+                                    {eur(totaleSpeseAnnue)}
                                 </td>
                                 <td className="px-2 py-1 font-bold font-mono text-[hsl(var(--c-table-success-2))]"></td>
                                 <td className="px-2 py-1 font-bold font-mono text-[hsl(var(--c-table-success-2))]">
-                                    €{totaleEntrateAnnue.toFixed(2)}
+                                    {eur(totaleEntrateAnnue)}
                                 </td>
                             </tr>
                             <tr>
@@ -188,8 +189,8 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
                                             borderColor: "hsl(var(--c-total-positive-border))",
                                         }}
                                     >
-                                        Bilancio Ricorrenti Annui: {bilancioRicorrenti >= 0 ? "+" : "–"}€
-                                        {Math.abs(bilancioRicorrenti).toFixed(2)}
+                                        Bilancio Ricorrenti Annui: {bilancioRicorrenti >= 0 ? "+" : "–"}
+                                        {eur(Math.abs(bilancioRicorrenti))}
                                     </span>
                                 </td>
                             </tr>

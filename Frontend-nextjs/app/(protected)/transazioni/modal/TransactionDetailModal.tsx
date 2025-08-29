@@ -13,6 +13,7 @@ import TransactionTypeSwitch from "./components/TransactionTypeSwitch";
 import TransactionDetailForm from "./components/TransactionDetailForm";
 import TransactionActionButtons from "./components/TransactionActionButtons";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
+import { eur } from "@/utils/formatCurrency";
 
 // ========== Props tipizzate ==========
 
@@ -173,7 +174,7 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
                     highlight={
                         <div className="flex flex-col items-center">
                             <span className="italic">{transaction.description}</span>
-                            {transaction.amount && <span>{transaction.amount.toFixed(2)}€</span>}
+                            {transaction.amount && <span>{eur(transaction.amount)}</span>}
                             {transaction.category?.name && <span>{transaction.category.name}</span>}
                         </div>
                     }

@@ -6,6 +6,7 @@ import { Transaction } from "@/types/models/transaction";
 import { useTransactions } from "@/context/TransactionsContext";
 import { CATEGORY_ICONS_MAP } from "@/utils/categoryOptions";
 import { toDateInputValue } from "@/utils/date";
+import { eur } from "@/utils/formatCurrency";
 import { FiTag } from "react-icons/fi";
 
 export type DayTransactionsModalProps = {
@@ -22,7 +23,7 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
     const entrate = transactions.filter((t) => t.category?.type === "entrata");
     const spese = transactions.filter((t) => t.category?.type === "spesa");
     const somma = (arr: Transaction[]) =>
-        arr.reduce((tot, t) => tot + (typeof t.amount === "string" ? parseFloat(t.amount as any) : t.amount), 0);
+        arr.reduce((tot, t) => tot + (typeof t.amount === "string" ? Number(t.amount) : t.amount), 0);
     const totalEntrate = somma(entrate);
     const totalSpese = somma(spese);
 
@@ -71,9 +72,9 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                                     </td>
                                 </tr>
                                 <tr className="text-lg font-bold">
-                                    <td className="text-primary">+{totalEntrate.toFixed(2)}€</td>
-                                    <td className="text-orange-500">-{totalSpese.toFixed(2)}€</td>
-                                    <td className="text-primary">{(totalEntrate - totalSpese).toFixed(2)}€</td>
+                                    <td className="text-primary">+{eur(totalEntrate)}</td>
+                                    <td className="text-orange-500">-{eur(totalSpese)}</td>
+                                    <td className="text-primary">{eur(totalEntrate - totalSpese)}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -115,10 +116,11 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                                                 t.category?.type === "entrata" ? "text-primary" : "text-orange-500"
                                             }`}
                                         >
-                                            {typeof t.amount === "string"
-                                                ? parseFloat(t.amount).toFixed(2)
-                                                : t.amount.toFixed(2)}
-                                            €
+                                            {(() => {
+                                                const amount =
+                                                    typeof t.amount === "string" ? Number(t.amount) : t.amount;
+                                                return eur(amount);
+                                            })()}
                                         </span>
                                         <button
                                             type="button"

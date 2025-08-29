@@ -11,7 +11,7 @@ export default function AmountField({ value, onChange, original, showError }: Am
                 min={0.01}
                 step={0.01}
                 value={value}
-                onChange={(e) => onChange(parseFloat(e.target.value))}
+                onChange={(e) => onChange(Number(e.target.value))}
                 className={`w-full text-center rounded-2xl py-3 px-4 border-green-400 shadow-[0_2px_10px_rgba(0,0,0,0.14)] text-lg font-semibold bg-bg-elevate transition ${
                     isModified ? "ring-2 ring-yellow-400" : ""
                 }`}

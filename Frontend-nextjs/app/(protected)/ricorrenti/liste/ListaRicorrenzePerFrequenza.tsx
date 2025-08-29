@@ -10,6 +10,7 @@ import ConfirmDialog from "../../../components/ui/ConfirmDialog";
 import { Repeat } from "lucide-react";
 import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { ListaRicorrenzePerFrequenzaProps } from "@/types/ricorrenti/liste";
+import { eur } from "@/utils/formatCurrency";
 
 // ============================
 // COSTANTI FREQUENZE & LABEL
@@ -99,7 +100,7 @@ export default function ListaRicorrenzePerFrequenza({ ricorrenze, onEdit, onDele
                     toDelete && (
                         <div className="flex flex-col items-center">
                             <span className="italic">{toDelete.nome}</span>
-                            {toDelete.importo && <span>{toDelete.importo.toFixed(2)}€</span>}
+                            {toDelete.importo && <span>{eur(toDelete.importo)}</span>}
                             {toDelete.categoria && <span>{toDelete.categoria}</span>}
                             {toDelete.frequenza && (
                                 <span className="text-xs">

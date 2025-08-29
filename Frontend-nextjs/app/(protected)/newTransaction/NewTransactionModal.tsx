@@ -10,6 +10,7 @@ import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import NewTransactionForm from "./NewTransactionForm";
 import { useTransactions } from "@/context/TransactionsContext";
 import { useCategories } from "@/context/CategoriesContext";
+import { eur } from "@/utils/formatCurrency";
 
 // ============================
 // Componente principale
@@ -72,7 +73,7 @@ export default function NewTransactionModal({
                             <>
                                 {`• Descrizione: "${transactionToEdit.description}"`}
                                 <br />
-                                {`• Importo: ${transactionToEdit.amount} €`}
+                                {`• Importo: ${eur(transactionToEdit.amount)}`}
                                 <br />
                                 {transactionToEdit.date && `• Data: ${transactionToEdit.date}`}
                                 <br />
@@ -82,7 +83,7 @@ export default function NewTransactionModal({
                             <>
                                 {`• Descrizione: "${formValues.description}"`}
                                 <br />
-                                {formValues.amount && `• Importo: ${formValues.amount} €`}
+                                {formValues.amount && `• Importo: ${eur(formValues.amount)}`}
                                 <br />
                                 {formValues.date && `• Data: ${formValues.date}`}
                                 <br />

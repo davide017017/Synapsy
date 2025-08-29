@@ -1,14 +1,8 @@
 "use client";
 
 import { useTransactions } from "@/context/TransactionsContext";
+import { eur } from "@/utils/formatCurrency";
 
-function formatCurrency(value: number) {
-    return value.toLocaleString("it-IT", {
-        style: "currency",
-        currency: "EUR",
-        minimumFractionDigits: 2,
-    });
-}
 function color(value: number) {
     return value >= 0 ? "text-emerald-500" : "text-red-500";
 }
@@ -26,22 +20,22 @@ export default function HeroSaldo() {
 
                 <p className="text-base mb-1">
                     <span className="font-medium">Settimana:</span>{" "}
-                    <span className={`font-semibold ${color(weekBalance)}`}>{formatCurrency(weekBalance)}</span>
+                    <span className={`font-semibold ${color(weekBalance)}`}>{eur(weekBalance)}</span>
                 </p>
 
                 <p className="text-base mb-1">
                     <span className="font-medium">Mese ({currentMonthName}):</span>{" "}
-                    <span className={`font-semibold ${color(monthBalance)}`}>{formatCurrency(monthBalance)}</span>
+                    <span className={`font-semibold ${color(monthBalance)}`}>{eur(monthBalance)}</span>
                 </p>
 
                 <p className="text-base mb-1">
                     <span className="font-medium">Anno ({currentYear}):</span>{" "}
-                    <span className={`font-semibold ${color(yearBalance)}`}>{formatCurrency(yearBalance)}</span>
+                    <span className={`font-semibold ${color(yearBalance)}`}>{eur(yearBalance)}</span>
                 </p>
 
                 <p className="text-base mb-2">
                     <span className="font-medium">Totale:</span>{" "}
-                    <span className={`font-semibold ${color(totalBalance)}`}>{formatCurrency(totalBalance)}</span>
+                    <span className={`font-semibold ${color(totalBalance)}`}>{eur(totalBalance)}</span>
                 </p>
             </div>
         </div>
