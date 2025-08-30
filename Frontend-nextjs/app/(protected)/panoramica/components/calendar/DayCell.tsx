@@ -10,10 +10,10 @@
 import { Transaction } from "@/types/models/transaction";
 import type { DayCellProps } from "@/types";
 import { eur } from "@/utils/formatCurrency";
+import { toNum } from "@/lib/finance";
 
 // ----------- Funzione somma importi ----------- //
-const somma = (arr: Transaction[]) =>
-    arr.reduce((tot, t) => tot + (typeof t.amount === "string" ? Number(t.amount) : t.amount), 0);
+const somma = (arr: Transaction[]) => arr.reduce((tot, t) => tot + toNum((t as any).amount), 0);
 
 // ----------- Componente principale ----------- //
 export default function DayCell({
@@ -115,7 +115,7 @@ export default function DayCell({
                             style={{ height: `${barEntrate}px`, minHeight: `${minHeight}px` }}
                         >
                             <span className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[10px] text-bg font-semibold">
-                                {eur(Math.round(totaleEntrate))}
+                                {eur(totaleEntrate)}
                             </span>
                         </div>
                         <span className="mt-0.5 text-[8px] text-primary font-semibold">Entrate</span>
@@ -129,7 +129,7 @@ export default function DayCell({
                             style={{ height: `${barSpese}px`, minHeight: `${minHeight}px` }}
                         >
                             <span className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[10px] text-bg font-semibold">
-                                {eur(Math.round(totaleSpese))}
+                                {eur(totaleSpese)}
                             </span>
                         </div>
                         <span className="mt-0.5 text-[8px] text-orange-400 font-semibold">Spese</span>

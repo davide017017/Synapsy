@@ -28,7 +28,7 @@ import {
 } from "@/lib/api/transactionsApi";
 
 // ── Helpers condivisi (importi/date/tipo) ──────────────────────────────
-import { parseYMD, typeOf } from "@/lib/finance";
+import { parseYMD, typeOf, toNum } from "@/lib/finance";
 
 // =====================================================================
 // Tipi del context
@@ -178,7 +178,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 return d.getFullYear() === y && d.getMonth() === m;
             })
             .reduce((sum, t) => {
-                const amt = t.amount;
+                const amt = toNum((t as any).amount);
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
@@ -190,7 +190,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         return transactions
             .filter((t) => parseYMD(t.date).getFullYear() === y)
             .reduce((sum, t) => {
-                const amt = t.amount;
+                const amt = toNum((t as any).amount);
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
@@ -213,7 +213,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 return d >= first && d <= last;
             })
             .reduce((sum, t) => {
-                const amt = t.amount;
+                const amt = toNum((t as any).amount);
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
@@ -222,7 +222,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     const totalBalance = useMemo(
             () =>
                 transactions.reduce((sum, t) => {
-                    const amt = t.amount;
+                    const amt = toNum((t as any).amount);
                     const tt = typeOf(t);
                     return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
                 }, 0),

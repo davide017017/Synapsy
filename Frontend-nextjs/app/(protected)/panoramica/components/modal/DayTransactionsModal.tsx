@@ -7,6 +7,7 @@ import { useTransactions } from "@/context/TransactionsContext";
 import { CATEGORY_ICONS_MAP } from "@/utils/categoryOptions";
 import { toDateInputValue } from "@/utils/date";
 import { eur } from "@/utils/formatCurrency";
+import { toNum } from "@/lib/finance";
 import { FiTag } from "react-icons/fi";
 
 export type DayTransactionsModalProps = {
@@ -22,8 +23,7 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
     // Suddividi per tipo e calcola totali
     const entrate = transactions.filter((t) => t.category?.type === "entrata");
     const spese = transactions.filter((t) => t.category?.type === "spesa");
-    const somma = (arr: Transaction[]) =>
-        arr.reduce((tot, t) => tot + (typeof t.amount === "string" ? Number(t.amount) : t.amount), 0);
+    const somma = (arr: Transaction[]) => arr.reduce((tot, t) => tot + toNum((t as any).amount), 0);
     const totalEntrate = somma(entrate);
     const totalSpese = somma(spese);
 
@@ -117,8 +117,7 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                                             }`}
                                         >
                                             {(() => {
-                                                const amount =
-                                                    typeof t.amount === "string" ? Number(t.amount) : t.amount;
+                                                const amount = toNum((t as any).amount);
                                                 return eur(amount);
                                             })()}
                                         </span>
