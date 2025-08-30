@@ -28,7 +28,7 @@ import {
 } from "@/lib/api/transactionsApi";
 
 // ── Helpers condivisi (importi/date/tipo) ──────────────────────────────
-import { parseYMD, detectAmountsAreCents, makeAmountOf, typeOf } from "@/lib/finance";
+import { parseYMD, typeOf } from "@/lib/finance";
 
 // =====================================================================
 // Tipi del context
@@ -165,12 +165,6 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     }, [token, fetchAll]);
 
     // =====================================================================
-    // Importi normalizzati (stessa euristica della tabella)
-    // =====================================================================
-    const amountsAreCents = useMemo(() => detectAmountsAreCents(transactions), [transactions]);
-    const amountOf = useMemo(() => makeAmountOf(amountsAreCents), [amountsAreCents]);
-
-    // =====================================================================
     // KPI / Saldi derivati (allineati alla tabella)
     // =====================================================================
     const monthBalance = useMemo(() => {
@@ -184,11 +178,11 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 return d.getFullYear() === y && d.getMonth() === m;
             })
             .reduce((sum, t) => {
-                const amt = amountOf(t);
+                const amt = t.amount;
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
-    }, [transactions, amountOf]);
+    }, [transactions]);
 
     const yearBalance = useMemo(() => {
         const y = new Date().getFullYear();
@@ -196,11 +190,11 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         return transactions
             .filter((t) => parseYMD(t.date).getFullYear() === y)
             .reduce((sum, t) => {
-                const amt = amountOf(t);
+                const amt = t.amount;
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
-    }, [transactions, amountOf]);
+    }, [transactions]);
 
     const weekBalance = useMemo(() => {
         const now = new Date();
@@ -219,21 +213,21 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 return d >= first && d <= last;
             })
             .reduce((sum, t) => {
-                const amt = amountOf(t);
+                const amt = t.amount;
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
-    }, [transactions, amountOf]);
+    }, [transactions]);
 
     const totalBalance = useMemo(
-        () =>
-            transactions.reduce((sum, t) => {
-                const amt = amountOf(t);
-                const tt = typeOf(t);
-                return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
-            }, 0),
-        [transactions, amountOf]
-    );
+            () =>
+                transactions.reduce((sum, t) => {
+                    const amt = t.amount;
+                    const tt = typeOf(t);
+                    return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
+                }, 0),
+            [transactions]
+        );
 
     // =====================================================================
     // CREATE / UPDATE / DELETE / MOVE — con aggiornamento ottimistico

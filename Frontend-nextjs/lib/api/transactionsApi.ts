@@ -9,10 +9,14 @@ import { url } from "@/lib/api/endpoints";
 // Helper: parsing numerico robusto (es. "1.234,56" → 1234.56)
 // ──────────────────────────────────────────────────────
 const toNum = (v: any): number => {
-    if (typeof v === "number") return v;
+    if (typeof v === "number") return Number.isFinite(v) ? v : 0;
     if (typeof v === "string") {
-        const clean = v.replace(/\./g, "").replace(",", ".");
-        const n = Number(clean);
+        const s = v.trim();
+        if (!s) return 0;
+        const normalized = s.includes(",") && s.includes(".")
+            ? s.replace(/\./g, "").replace(",", ".")
+            : s.replace(",", ".");
+        const n = parseFloat(normalized);
         return Number.isFinite(n) ? n : 0;
     }
     const n = Number(v);

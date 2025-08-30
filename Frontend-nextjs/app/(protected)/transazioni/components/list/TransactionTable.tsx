@@ -17,22 +17,6 @@ import { useSelection } from "@/context/SelectionContext";
 import { toNum } from "@/lib/finance";
 
 // =========================
-// Heuristic centesimi (come Context)
-// =========================
-const useAmountsAreCents = (data: TransactionWithGroup[]) => {
-    return useMemo(() => {
-        const nums = data
-            .slice(0, 100)
-            .map((t) => toNum((t as any).amount))
-            .map(Math.abs)
-            .filter(Boolean);
-        if (!nums.length) return false;
-        const over10k = nums.filter((n) => n >= 10_000).length;
-        return over10k / nums.length >= 0.2;
-    }, [data]);
-};
-
-// =========================
 // Calcolo totali mensili (single pass)
 // =========================
 const calcMonthTotals = (rows: Row<TransactionWithGroup>[], amountOf: (tx: TransactionWithGroup) => number) => {
@@ -69,15 +53,8 @@ export default function TransactionTable({
     const dataWithGroups = useMemo(() => addMonthGroup(data), [data]);
     const allIds = useMemo(() => dataWithGroups.map((tx) => tx.id), [dataWithGroups]);
 
-    // Importi in centesimi? (auto-detected)
-    const amountsAreCents = useAmountsAreCents(dataWithGroups);
-    const amountOf = useCallback(
-        (tx: TransactionWithGroup) => {
-            const n = toNum((tx as any).amount);
-            return amountsAreCents ? n / 100 : n;
-        },
-        [amountsAreCents]
-    );
+    // Importi in euro
+    const amountOf = useCallback((tx: TransactionWithGroup) => toNum((tx as any).amount), []);
 
     // Handler stabili
     const handleCheckToggle = useCallback(
@@ -239,7 +216,6 @@ export default function TransactionTable({
 
 // ─────────────────────────────────────────────────────
 // Descrizione file:
-// Tabella transazioni. Usa `toNum` condiviso e mantiene
-// la stessa euristica dei centesimi del Context senza
-// duplicare codice. Totali/Divider coerenti con HeroSaldo.
+// Tabella transazioni. Usa `toNum` condiviso e importi
+// già in euro. Totali/Divider coerenti con HeroSaldo.
 // ─────────────────────────────────────────────────────
