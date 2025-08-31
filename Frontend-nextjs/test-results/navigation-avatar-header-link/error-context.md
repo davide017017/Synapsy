@@ -1,0 +1,194 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]:
+    - img [ref=e8] [cursor=pointer]
+  - alert [ref=e11]
+  - generic [ref=e12]:
+    - button [ref=e13] [cursor=pointer]:
+      - img [ref=e14] [cursor=pointer]
+    - complementary [ref=e16]:
+      - link "Synapsi Beta" [ref=e17] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e18] [cursor=pointer]: Synapsi
+        - 'generic "Versione Beta: alcuni dati potrebbero essere cancellati; funzionalità e UI potrebbero cambiare senza preavviso; non usare per dati sensibili reali; per feedback scrivi a synapsy.customer@gmail.com." [ref=e19] [cursor=pointer]': Beta
+      - navigation [ref=e20]:
+        - link "Home" [ref=e21] [cursor=pointer]:
+          - /url: /
+          - img [ref=e22] [cursor=pointer]
+          - generic [ref=e25] [cursor=pointer]: Home
+        - link "Panoramica" [ref=e26] [cursor=pointer]:
+          - /url: /panoramica
+          - img [ref=e27] [cursor=pointer]
+          - generic [ref=e28] [cursor=pointer]: Panoramica
+        - link "Transazioni" [ref=e29] [cursor=pointer]:
+          - /url: /transazioni
+          - img [ref=e30] [cursor=pointer]
+          - generic [ref=e33] [cursor=pointer]: Transazioni
+        - link "Ricorrenti" [ref=e34] [cursor=pointer]:
+          - /url: /ricorrenti
+          - img [ref=e35] [cursor=pointer]
+          - generic [ref=e38] [cursor=pointer]: Ricorrenti
+        - link "Categorie" [ref=e39] [cursor=pointer]:
+          - /url: /categorie
+          - img [ref=e40] [cursor=pointer]
+          - generic [ref=e42] [cursor=pointer]: Categorie
+        - link "Profilo" [ref=e43] [cursor=pointer]:
+          - /url: /profilo
+          - img [ref=e44] [cursor=pointer]
+          - generic [ref=e47] [cursor=pointer]: Profilo
+      - generic [ref=e48]:
+        - button "Chiaro" [ref=e49] [cursor=pointer]:
+          - img [ref=e50] [cursor=pointer]
+          - text: Chiaro
+        - button "Scuro" [ref=e56] [cursor=pointer]:
+          - img [ref=e57] [cursor=pointer]
+          - text: Scuro
+        - button "Smeraldo" [ref=e59] [cursor=pointer]
+        - button "Solarizzato" [ref=e60] [cursor=pointer]
+      - generic [ref=e61]:
+        - button "Privacy" [ref=e62] [cursor=pointer]:
+          - img [ref=e63] [cursor=pointer]
+          - text: Privacy
+        - button "Termini" [ref=e66] [cursor=pointer]:
+          - img [ref=e67] [cursor=pointer]
+          - text: Termini
+    - generic [ref=e70]:
+      - banner [ref=e71]:
+        - link "Homepage" [ref=e72] [cursor=pointer]:
+          - /url: /
+          - img "Synapsi logo" [ref=e73] [cursor=pointer]
+          - 'generic "Versione Beta: alcuni dati potrebbero essere cancellati; funzionalità e UI potrebbero cambiare senza preavviso; non usare per dati sensibili reali; per feedback scrivi a synapsy.customer@gmail.com." [ref=e74] [cursor=pointer]': Beta
+        - button "Logout" [ref=e76] [cursor=pointer]:
+          - generic [ref=e77] [cursor=pointer]: Logout
+          - img [ref=e78] [cursor=pointer]
+      - main [ref=e81]:
+        - generic [ref=e82]:
+          - generic [ref=e84]:
+            - generic [ref=e86]:
+              - generic [ref=e90]:
+                - img [ref=e92]
+                - heading "Benvenuto su Synapsi!" [level=1] [ref=e103]
+                - paragraph [ref=e104]:
+                  - text: Monitora le transazioni in tempo reale, analizza le tendenze con precisione e pianifica investimenti basati su dati affidabili.
+                  - generic [ref=e105]: Raggiungi i tuoi obiettivi
+                  - text: .
+                - link "🚀 Inizia Ora" [ref=e107] [cursor=pointer]:
+                  - /url: /panoramica
+              - generic [ref=e111]:
+                - heading "Saldo attuale" [level=2] [ref=e112]
+                - paragraph [ref=e113]:
+                  - generic [ref=e114]: "Settimana:"
+                  - generic [ref=e115]: 0,00 €
+                - paragraph [ref=e116]:
+                  - generic [ref=e117]: "Mese (agosto):"
+                  - generic [ref=e118]: 0,00 €
+                - paragraph [ref=e119]:
+                  - generic [ref=e120]: "Anno (2025):"
+                  - generic [ref=e121]: 0,00 €
+                - paragraph [ref=e122]:
+                  - generic [ref=e123]: "Totale:"
+                  - generic [ref=e124]: 0,00 €
+              - generic [ref=e128]:
+                - heading "Suggerimento 🌱" [level=2] [ref=e129]
+                - paragraph [ref=e130]: Controlla la panoramica per visualizzare il saldo mensile in un attimo.
+                - button "Nuovo suggerimento" [ref=e131] [cursor=pointer]
+                - paragraph [ref=e132]: (Presto suggerimenti personalizzati!)
+            - button "Precedente" [ref=e133] [cursor=pointer]:
+              - img [ref=e134] [cursor=pointer]
+            - button "Successivo" [ref=e136] [cursor=pointer]:
+              - img [ref=e137] [cursor=pointer]
+            - generic [ref=e139]:
+              - button "Vai a slide 1" [ref=e140] [cursor=pointer]
+              - button "Vai a slide 2" [ref=e141] [cursor=pointer]
+              - button "Vai a slide 3" [ref=e142] [cursor=pointer]
+          - generic [ref=e143]:
+            - button "Nuova Transazione" [ref=e144] [cursor=pointer]:
+              - img [ref=e145] [cursor=pointer]
+              - text: Nuova Transazione
+            - button "Nuova Ricorrenza" [ref=e147] [cursor=pointer]:
+              - img [ref=e148] [cursor=pointer]
+              - text: Nuova Ricorrenza
+            - button "Nuova Categoria" [ref=e150] [cursor=pointer]:
+              - img [ref=e151] [cursor=pointer]
+              - text: Nuova Categoria
+          - generic [ref=e153]:
+            - link "Transazioni" [ref=e154] [cursor=pointer]:
+              - /url: /transazioni
+              - generic [ref=e155] [cursor=pointer]:
+                - generic [ref=e156] [cursor=pointer]:
+                  - img [ref=e157] [cursor=pointer]
+                  - text: Transazioni
+                - list [ref=e159] [cursor=pointer]:
+                  - listitem [ref=e160] [cursor=pointer]:
+                    - text: "Totali:"
+                    - generic [ref=e161] [cursor=pointer]: "0"
+                  - listitem [ref=e162] [cursor=pointer]:
+                    - text: "Questa settimana:"
+                    - generic [ref=e163] [cursor=pointer]: "0"
+                  - listitem [ref=e164] [cursor=pointer]:
+                    - text: "Questo mese:"
+                    - generic [ref=e165] [cursor=pointer]: "0"
+                  - listitem [ref=e166] [cursor=pointer]:
+                    - text: "Quest’anno:"
+                    - generic [ref=e167] [cursor=pointer]: "0"
+                  - separator [ref=e168] [cursor=pointer]
+                - generic [ref=e170] [cursor=pointer]:
+                  - text: 0 movimenti • clicca per aprire
+                  - img [ref=e171] [cursor=pointer]
+            - link "Ricorrenti" [ref=e173] [cursor=pointer]:
+              - /url: /ricorrenti
+              - generic [ref=e174] [cursor=pointer]:
+                - generic [ref=e175] [cursor=pointer]:
+                  - img [ref=e176] [cursor=pointer]
+                  - text: Ricorrenti
+                - generic [ref=e181] [cursor=pointer]: "0"
+                - list [ref=e183] [cursor=pointer]:
+                  - listitem [ref=e184] [cursor=pointer]:
+                    - text: "Questa settimana:"
+                    - generic [ref=e185] [cursor=pointer]: "0"
+                  - listitem [ref=e186] [cursor=pointer]:
+                    - text: "Questo mese:"
+                    - generic [ref=e187] [cursor=pointer]: "0"
+                  - listitem [ref=e188] [cursor=pointer]:
+                    - text: "Quest’anno:"
+                    - generic [ref=e189] [cursor=pointer]: "0"
+                  - separator [ref=e190] [cursor=pointer]
+                - generic [ref=e192] [cursor=pointer]:
+                  - text: 0 attive • clicca per gestirle
+                  - img [ref=e193] [cursor=pointer]
+            - link "Categorie" [ref=e195] [cursor=pointer]:
+              - /url: /categorie
+              - generic [ref=e196] [cursor=pointer]:
+                - generic [ref=e197] [cursor=pointer]:
+                  - img [ref=e198] [cursor=pointer]
+                  - text: Categorie
+                - generic [ref=e200] [cursor=pointer]: "0"
+                - generic [ref=e202] [cursor=pointer]:
+                  - generic [ref=e203] [cursor=pointer]:
+                    - generic [ref=e204] [cursor=pointer]:
+                      - text: Entrate
+                      - generic [ref=e205] [cursor=pointer]: "0"
+                    - generic [ref=e207] [cursor=pointer]: "-"
+                  - generic [ref=e208] [cursor=pointer]:
+                    - generic [ref=e209] [cursor=pointer]:
+                      - text: Spese
+                      - generic [ref=e210] [cursor=pointer]: "0"
+                    - generic [ref=e212] [cursor=pointer]: "-"
+                - generic [ref=e214] [cursor=pointer]:
+                  - text: 0 totali • clicca per modificare
+                  - img [ref=e215] [cursor=pointer]
+            - link "Prossimo pagamento" [ref=e217] [cursor=pointer]:
+              - /url: /ricorrenti
+              - generic [ref=e218] [cursor=pointer]:
+                - generic [ref=e219] [cursor=pointer]:
+                  - img [ref=e220] [cursor=pointer]
+                  - text: Prossimo pagamento
+                - generic [ref=e223] [cursor=pointer]: —
+                - generic [ref=e225] [cursor=pointer]: Aggiungi una ricorrenza per vederla qui
+                - generic [ref=e227] [cursor=pointer]:
+                  - text: Nessuna ricorrenza imminente • crea o modifica
+                  - img [ref=e228] [cursor=pointer]
+```

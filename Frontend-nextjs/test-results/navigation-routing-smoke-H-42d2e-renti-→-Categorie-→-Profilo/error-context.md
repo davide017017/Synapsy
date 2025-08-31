@@ -1,0 +1,72 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]:
+    - img [ref=e8] [cursor=pointer]
+  - alert [ref=e11]
+  - generic [ref=e12]:
+    - button [ref=e13] [cursor=pointer]:
+      - img [ref=e14] [cursor=pointer]
+    - complementary [ref=e16]:
+      - link "Synapsi Beta" [ref=e17] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e18] [cursor=pointer]: Synapsi
+        - 'generic "Versione Beta: alcuni dati potrebbero essere cancellati; funzionalità e UI potrebbero cambiare senza preavviso; non usare per dati sensibili reali; per feedback scrivi a synapsy.customer@gmail.com." [ref=e19] [cursor=pointer]': Beta
+      - navigation [ref=e20]:
+        - link "Home" [ref=e21] [cursor=pointer]:
+          - /url: /
+          - img [ref=e22] [cursor=pointer]
+          - generic [ref=e25] [cursor=pointer]: Home
+        - link "Panoramica" [ref=e26] [cursor=pointer]:
+          - /url: /panoramica
+          - img [ref=e27] [cursor=pointer]
+          - generic [ref=e28] [cursor=pointer]: Panoramica
+        - link "Transazioni" [ref=e29] [cursor=pointer]:
+          - /url: /transazioni
+          - img [ref=e30] [cursor=pointer]
+          - generic [ref=e33] [cursor=pointer]: Transazioni
+        - link "Ricorrenti" [ref=e34] [cursor=pointer]:
+          - /url: /ricorrenti
+          - img [ref=e35] [cursor=pointer]
+          - generic [ref=e38] [cursor=pointer]: Ricorrenti
+        - link "Categorie" [ref=e39] [cursor=pointer]:
+          - /url: /categorie
+          - img [ref=e40] [cursor=pointer]
+          - generic [ref=e42] [cursor=pointer]: Categorie
+        - link "Profilo" [ref=e43] [cursor=pointer]:
+          - /url: /profilo
+          - img [ref=e44] [cursor=pointer]
+          - generic [ref=e47] [cursor=pointer]: Profilo
+      - generic [ref=e48]:
+        - button "Chiaro" [ref=e49] [cursor=pointer]:
+          - img [ref=e50] [cursor=pointer]
+          - text: Chiaro
+        - button "Scuro" [ref=e56] [cursor=pointer]:
+          - img [ref=e57] [cursor=pointer]
+          - text: Scuro
+        - button "Smeraldo" [ref=e59] [cursor=pointer]
+        - button "Solarizzato" [ref=e60] [cursor=pointer]
+      - generic [ref=e61]:
+        - button "Privacy" [ref=e62] [cursor=pointer]:
+          - img [ref=e63] [cursor=pointer]
+          - text: Privacy
+        - button "Termini" [ref=e66] [cursor=pointer]:
+          - img [ref=e67] [cursor=pointer]
+          - text: Termini
+    - generic [ref=e70]:
+      - banner [ref=e71]:
+        - link "Homepage" [ref=e72] [cursor=pointer]:
+          - /url: /
+          - img "Synapsi logo" [ref=e73] [cursor=pointer]
+          - 'generic "Versione Beta: alcuni dati potrebbero essere cancellati; funzionalità e UI potrebbero cambiare senza preavviso; non usare per dati sensibili reali; per feedback scrivi a synapsy.customer@gmail.com." [ref=e74] [cursor=pointer]': Beta
+        - button "Logout" [ref=e76] [cursor=pointer]:
+          - generic [ref=e77] [cursor=pointer]: Logout
+          - img [ref=e78] [cursor=pointer]
+      - main [ref=e81]:
+        - generic [ref=e82]:
+          - heading "Si è verificato un errore" [level=2] [ref=e83]
+          - paragraph [ref=e84]: Cannot read properties of undefined (reading 'label')
+          - button "Riprova" [ref=e85] [cursor=pointer]
+```
