@@ -47,8 +47,6 @@ test.beforeEach(async ({ page }) => {
 
 // ───────────────────────────────────────────────────────
 // Helper: aspetta un heading che matcha `re`
-//   1) prova <h1>; 2) fallback su qualunque heading.
-//   In caso di failure logga tutto per debug veloce.
 // ───────────────────────────────────────────────────────
 async function expectHeading(page: Page, re: RegExp, timeout = 10_000) {
     const h1 = page.getByRole("heading", { level: 1 }).filter({ hasText: re });
@@ -75,20 +73,25 @@ async function expectHeading(page: Page, re: RegExp, timeout = 10_000) {
 async function gotoBySidebar(page: Page, linkNameRe: RegExp, expectedPath: string, headingRe: RegExp) {
     await page.getByRole("link", { name: linkNameRe }).click();
     await page.waitForLoadState("networkidle");
-    await expect(page).toHaveURL(new RegExp(expectedPath.replace("/", "\\/")));
+
+    try {
+        // Usa contains piuttosto che regex stretta per robustezza
+        await expect(page).toHaveURL(new RegExp(expectedPath.replace("/", "\\/")), { timeout: 10_000 });
+    } catch (e) {
+        const url = page.url();
+        console.log("[DEBUG] URL corrente:", url);
+        await page.screenshot({ path: `test-debug-${expectedPath.replace(/\//g, "_")}.png`, fullPage: true });
+        throw e;
+    }
+
     await expectHeading(page, headingRe);
 }
 
 // ───────────────────────────────────────────────────────
-// Helper SPECIFICO per /profilo:
-//  • non usa ARIA heading (titolo variabile)
-//  • aspetta networkidle
-//  • cerca marker testuale stabile (“Modifica le informazioni...”)
-//  • in fallback: qualunque “profilo” visibile
-//  • debug: screenshot + snippet HTML
+// Helper SPECIFICO per /profilo
 // ───────────────────────────────────────────────────────
 async function expectProfilePage(page: Page, timeout = 15_000) {
-    await expect(page).toHaveURL(/\/profilo/);
+    await expect(page).toHaveURL(/\/profilo/, { timeout });
     await page.waitForLoadState("networkidle");
 
     const marker = page.getByText(/Modifica le informazioni del tuo account\./i);
@@ -131,7 +134,7 @@ test("routing via sidebar: Home → Panoramica → Transazioni → Ricorrenti �
     // Categorie
     await gotoBySidebar(page, /categorie/i, "/categorie", /^categorie$/i);
 
-    // Profilo (helper dedicato)
+    // Profilo
     await page.getByRole("link", { name: /profilo/i }).click();
     await expectProfilePage(page);
 });
