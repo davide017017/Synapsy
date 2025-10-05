@@ -19,30 +19,31 @@ import LegalLinks from "@/app/components/legal/LegalLinks";
 // ==============================
 export default function LoginPage() {
     // ───── Stato auth sessione ─────
-    const { status } = useSession();
+    const { status, data } = useSession(); // <-- prendiamo anche data
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showReg, setShowReg] = useState(false);
     const [showForgot, setShowForgot] = useState(false);
     const [info, setInfo] = useState<string | null>(null);
 
-    // ───── Redirect se già autenticato ─────
+    // ───── Redirect se davvero autenticato ─────
     useEffect(() => {
-        if (status === "authenticated") {
+        // Evita redirect in stato "loading"; verifica presenza effettiva di user
+        if (status === "authenticated" && data?.user) {
             router.replace("/");
         }
-    }, [status, router]);
+    }, [status, data?.user, router]);
 
+    // ───── Gestione token magic-link + messaggi info ─────
     useEffect(() => {
         const token = searchParams.get("token");
         if (token) {
             handleTokenLogin(token).then((ok) => {
                 if (ok) router.replace("/");
             });
+            return; // evitiamo di processare altro nello stesso pass
         }
-        if (searchParams.get("verified")) {
-            setInfo("Email verificata, ora puoi accedere");
-        }
+        if (searchParams.get("verified")) setInfo("Email verificata, ora puoi accedere");
     }, [searchParams, router]);
 
     // ───── Handler login form (usa helper) ─────
@@ -60,6 +61,15 @@ export default function LoginPage() {
         await onLogin("demo@synapsy.app", "demo");
     }
 
+    // ───── Evita flicker in "loading" ─────
+    if (status === "loading") {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-black">
+                <span className="sr-only">Caricamento…</span>
+            </div>
+        );
+    }
+
     // ==============================
     // RENDER
     // ==============================
@@ -69,6 +79,7 @@ export default function LoginPage() {
             style={{ backgroundImage: "url('/images/bg-login.webp')" }}
         >
             <BetaBadge floating />
+
             {/* Overlay sfocato/oscuro */}
             <div
                 className="absolute inset-0 bg-black z-0 pointer-events-none"
@@ -78,32 +89,28 @@ export default function LoginPage() {
                     WebkitMaskImage: "radial-gradient(circle at center, transparent 20%, black 100%)",
                 }}
             />
+
             {/* Form login */}
-            <div className="z-10 w-full max-w-sm space-y-2">
+            <div className="z-30 w-full max-w-sm space-y-2">
                 {info && <p className="text-success text-center text-sm">{info}</p>}
+
                 <LoginForm
                     onSubmit={onLogin}
                     onOpenRegister={() => setShowReg(true)}
                     onOpenForgot={() => setShowForgot(true)}
                 />
+
                 <button
                     type="button"
                     className="
-                        w-full mt-4 py-2
-                        rounded-2xl
-                        font-semibold
-                        flex justify-center items-center gap-2
-                        text-white
-                        bg-gradient-to-b from-pink-800 to-pink-400
-                        shadow-md
-                        transition-colors duration-800 ease-in-out
-                        hover:from-pink-400 hover:to-pink-800
-                        hover:shadow-xl
-                        hover:shadow-black
-                        hover:-translate-y-1
-                        active:scale-95
-                        focus:outline-none focus:ring-2 focus:ring-pink-400/50
-                    "
+            w-full mt-4 py-2 rounded-2xl font-semibold
+            flex justify-center items-center gap-2 text-white
+            bg-gradient-to-b from-pink-800 to-pink-400
+            shadow-md transition-colors duration-800 ease-in-out
+            hover:from-pink-400 hover:to-pink-800 hover:shadow-xl hover:shadow-black
+            hover:-translate-y-1 active:scale-95
+            focus:outline-none focus:ring-2 focus:ring-pink-400/50
+          "
                     onClick={handleDemoLogin}
                 >
                     <span role="img" aria-label="demo">
@@ -111,6 +118,7 @@ export default function LoginPage() {
                     </span>
                     Accedi come demo
                 </button>
+
                 <LegalLinks className="pt-4" />
             </div>
 
@@ -120,3 +128,11 @@ export default function LoginPage() {
         </div>
     );
 }
+
+/* ------------------------------------------------------
+Descrizione file:
+Pagina Login (Next.js client). Evita flicker post-logout:
+- Non renderizza in status "loading".
+- Redirect solo se status === "authenticated" AND data.user esiste.
+- Gestione token/verified separata per evitare doppi redirect.
+------------------------------------------------------ */

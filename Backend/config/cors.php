@@ -23,17 +23,23 @@ return [
         'Origin',
     ],
 
-    // ── Origin del frontend ──
+    // ── Origin ammessi ──
     'allowed_origins' => [
-        'http://localhost:8083',        // Expo Web
-        'http://192.168.0.111:8083',    // Expo Web via IP
-        'http://localhost:3000',        // Next/CRA locale
-        'http://192.168.0.111:3000',    // Next/CRA via IP
-        // Produzione (ENV fallback a prod URL)
+        // Dev Expo Web
+        'http://localhost:8083',
+        'http://192.168.0.111:8083',
+
+        // Dev Next.js
+        'http://localhost:3000',
+        'http://localhost:3001',       // aggiunto
+        'http://192.168.0.111:3000',
+        'http://192.168.0.111:3001',   // aggiunto
+
+        // Produzione
         env('FRONTEND_URL', 'https://synapsy-frontend.vercel.app'),
     ],
 
-    // ── Pattern per deploy Vercel (preview) ──
+    // ── Pattern deploy Vercel (preview builds) ──
     'allowed_origins_patterns' => [
         '#^https://synapsy-frontend-.*\.vercel\.app$#',
     ],
@@ -50,7 +56,10 @@ return [
 
 // ─────────────────────────────────────────────────────────────
 // Descrizione file:
-// Configurazione CORS per API Laravel con Bearer. Permette header
-// comuni (incluso Authorization), origini locali + prod + preview
-// Vercel, preflight cache 10 min. Nessun supporto a cookie cross-site.
+// Configurazione CORS per API Laravel con Bearer token. Permette:
+// • Origini locali (3000, 3001, 8083 + IP LAN)
+// • Origine prod da .env + preview Vercel
+// • Header comuni incluso Authorization
+// • Cache preflight 10 min
+// • Nessun supporto cookie cross-site
 // ─────────────────────────────────────────────────────────────

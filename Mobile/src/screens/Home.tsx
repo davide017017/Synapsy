@@ -325,6 +325,7 @@ export default function HomeScreen() {
         <View>
             <View style={styles.header}>
                 <Image
+                    // eslint-disable-next-line @typescript-eslint/no-require-imports
                     source={require("../../assets/images/icon_1024x1024.webp")}
                     style={styles.logo}
                     accessibilityLabel="Logo Synapsi"

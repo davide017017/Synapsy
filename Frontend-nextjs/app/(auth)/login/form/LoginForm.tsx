@@ -4,7 +4,7 @@
 // IMPORT PRINCIPALI
 // ==============================
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion"; // <-- aggiunto
 import EmailInput from "./form-components/EmailInput";
 import PasswordInput from "./form-components/PasswordInput";
 import RememberMeSwitch from "./form-components/RememberMeSwitch";
@@ -29,6 +29,9 @@ export default function LoginForm({ onSubmit, onOpenRegister, onOpenForgot }: Lo
     // ───── Stati feedback/modali ─────
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+    // ───── Rispetta prefers-reduced-motion ─────
+    const reduce = useReducedMotion(); // true se l’utente chiede meno animazioni
 
     // ───── Ricorda email al mount ─────
     useEffect(() => {
@@ -115,4 +118,3 @@ export default function LoginForm({ onSubmit, onOpenRegister, onOpenForgot }: Lo
         </>
     );
 }
-
