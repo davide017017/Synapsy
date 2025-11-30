@@ -1,11 +1,6 @@
 "use client";
 
-// ===========================================
-// HomePage.tsx — Dashboard migliorata Synapsi
-// ===========================================
-
-import HeroCarousel from "./hero/HeroCarousel"; // Carosello intro (da implementare)
-
+import HeroCarousel from "./hero/HeroCarousel";
 import TransazioniCard from "./cards/TransazioniCard";
 import RicorrentiCard from "./cards/RicorrentiCard";
 import CategorieCard from "./cards/CategorieCard";
@@ -15,30 +10,26 @@ import NewRicorrenzaButton from "../newRicorrenza/NewRicorrenzaButton";
 import NewCategoryButton from "../newCategory/NewCategoryButton";
 import { useRenderTimer } from "./utils/useRenderTimer";
 
+// ─────────────────────────────────────────
+// HomePage: layout come CategoriesPage
+// ─────────────────────────────────────────
 export default function HomePage() {
     useRenderTimer("HomePage");
-    return (
-        <div className="space-y-8">
-            {/* ====================== */}
-            {/* HERO/CAROUSEL  */}
-            {/* ====================== */}
-            <div className="mb-4">
-                <HeroCarousel />
-            </div>
 
-            {/* ====================== */}
-            {/* BOTTONI AZIONE         */}
-            {/* ====================== */}
+    return (
+        <div className="px-2 md:px-6 pt-6 pb-12 space-y-6">
+            {/* Hero / carosello */}
+            <HeroCarousel />
+
+            {/* Bottoni azione */}
             <div className="flex flex-wrap gap-3 justify-center">
                 <NewTransactionButton />
                 <NewRicorrenzaButton />
                 <NewCategoryButton />
             </div>
 
-            {/* ====================== */}
-            {/* GRIGLIA CARD RIASSUNTIVE */}
-            {/* ====================== */}
-            <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))" }}>
+            {/* Griglia card riassuntive */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
                 <TransazioniCard />
                 <RicorrentiCard />
                 <CategorieCard />
@@ -48,3 +39,10 @@ export default function HomePage() {
     );
 }
 
+// ─────────────────────────────────────────────
+// File: HomePage.tsx
+// Serve: dashboard principale.
+// Come: wrapper con padding come Categories,
+//       HeroCarousel full-width ma con slide
+//       max-w-xl, griglia 1–2–4 colonne.
+// ─────────────────────────────────────────────

@@ -112,86 +112,85 @@ export default function TransactionTable({
         }
     });
 
-    // Render
     return (
-        <div className="table-container overflow-x-auto bg-[hsl(var(--c-table-bg))] rounded-2xl border border-[hsl(var(--c-table-divider))] shadow">
-            <table className="table-base min-w-full">
-                {/* ── Intestazione ── */}
-                <thead className="bg-[hsl(var(--c-table-header-bg))] text-[hsl(var(--c-table-header-text))]">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <tr
-                            key={headerGroup.id}
-                            className="table-header-row border-b border-[hsl(var(--c-table-divider))]"
-                        >
-                            {headerGroup.headers.map((header) => (
-                                <th key={header.id} className="relative font-semibold text-sm px-4 py-2 text-left">
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                    {header.column.getCanResize() && (
-                                        <div
-                                            onMouseDown={header.getResizeHandler()}
-                                            onTouchStart={header.getResizeHandler()}
-                                            className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize select-none"
+        <div className="w-full max-w-full overflow-x-auto">
+            <div className="inline-block min-w-full align-middle bg-[hsl(var(--c-table-bg))] rounded-2xl border border-[hsl(var(--c-table-divider))] shadow">
+                <table className="table-base min-w-full">
+                    {/* ── Intestazione ── */}
+                    <thead className="bg-[hsl(var(--c-table-header-bg))] text-[hsl(var(--c-table-header-text))]">
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <tr
+                                key={headerGroup.id}
+                                className="table-header-row border-b border-[hsl(var(--c-table-divider))]"
+                            >
+                                {headerGroup.headers.map((header) => (
+                                    <th key={header.id} className="relative font-semibold text-sm px-4 py-2 text-left">
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                        {header.column.getCanResize() && (
+                                            <div
+                                                onMouseDown={header.getResizeHandler()}
+                                                onTouchStart={header.getResizeHandler()}
+                                                className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize select-none"
+                                            />
+                                        )}
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+
+                    {/* ── Corpo ── */}
+                    <tbody className="text-[hsl(var(--c-table-text))]">
+                        {(() => {
+                            let lastYear = "";
+                            const blocks = Object.entries(groupedRows).sort(([a], [b]) => b.localeCompare(a));
+
+                            return blocks.flatMap(([monthKey, rows]) => {
+                                const [year] = monthKey.split("-");
+                                const blocco: React.ReactNode[] = [];
+
+                                // Divider ANNO
+                                if (year !== lastYear) {
+                                    lastYear = year;
+                                    blocco.push(
+                                        <YearDividerRow
+                                            key={`anno-${year}`}
+                                            year={year}
+                                            colSpan={columns.length}
+                                            entrate={yearTotals[year].entrate}
+                                            spese={yearTotals[year].spese}
+                                            saldo={yearTotals[year].entrate - yearTotals[year].spese}
+                                            className="rounded-top bg-[hsl(var(--c-table-divider-year-bg))] text-[hsl(var(--c-table-header-text))]"
                                         />
-                                    )}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
+                                    );
+                                }
 
-                {/* ── Corpo ── */}
-                <tbody className="text-[hsl(var(--c-table-text))]">
-                    {(() => {
-                        let lastYear = "";
-                        const blocks = Object.entries(groupedRows).sort(([a], [b]) => b.localeCompare(a));
-
-                        return blocks.flatMap(([monthKey, rows]) => {
-                            const [year] = monthKey.split("-");
-                            const blocco: React.ReactNode[] = [];
-
-                            // Divider ANNO
-                            if (year !== lastYear) {
-                                lastYear = year;
+                                // Divider MESE
+                                const m = calcMonthTotals(rows, amountOf);
                                 blocco.push(
-                                    <YearDividerRow
-                                        key={`anno-${year}`}
-                                        year={year}
+                                    <MonthDividerRow
+                                        key={`mese-${monthKey}`}
+                                        monthKey={monthKey}
                                         colSpan={columns.length}
-                                        entrate={yearTotals[year].entrate}
-                                        spese={yearTotals[year].spese}
-                                        saldo={yearTotals[year].entrate - yearTotals[year].spese}
-                                        className="rounded-top bg-[hsl(var(--c-table-divider-year-bg))] text-[hsl(var(--c-table-header-text))]"
+                                        entrate={m.entrate}
+                                        spese={m.spese}
+                                        saldo={m.saldo}
+                                        className="rounded-top bg-[hsl(var(--c-table-divider-month-bg))] text-[hsl(var(--c-table-header-text))]"
                                     />
                                 );
-                            }
 
-                            // Divider MESE
-                            const m = calcMonthTotals(rows, amountOf);
-                            blocco.push(
-                                <MonthDividerRow
-                                    key={`mese-${monthKey}`}
-                                    monthKey={monthKey}
-                                    colSpan={columns.length}
-                                    entrate={m.entrate}
-                                    spese={m.spese}
-                                    saldo={m.saldo}
-                                    className="rounded-top bg-[hsl(var(--c-table-divider-month-bg))] text-[hsl(var(--c-table-header-text))]"
-                                />
-                            );
+                                const rowsOrdinati = [...rows].sort(
+                                    (a, b) => new Date(b.original.date).getTime() - new Date(a.original.date).getTime()
+                                );
 
-                            // Righe ordinate per data desc
-                            const rowsOrdinati = [...rows].sort(
-                                (a, b) => new Date(b.original.date).getTime() - new Date(a.original.date).getTime()
-                            );
-
-                            rowsOrdinati.forEach((row, idx) => {
-                                const isLast = idx === rowsOrdinati.length - 1;
-                                blocco.push(
-                                    <TableRow
-                                        key={row.id}
-                                        row={row}
-                                        onClick={onRowClick}
-                                        className={`
+                                rowsOrdinati.forEach((row, idx) => {
+                                    const isLast = idx === rowsOrdinati.length - 1;
+                                    blocco.push(
+                                        <TableRow
+                                            key={row.id}
+                                            row={row}
+                                            onClick={onRowClick}
+                                            className={`
                                             ${isLast ? "rounded-b-xl" : ""}
                                             ${
                                                 row.original.id === selectedId
@@ -200,16 +199,17 @@ export default function TransactionTable({
                                             }
                                             border-b border-[hsl(var(--c-table-divider))] transition-colors
                                         `}
-                                        selected={row.original.id === selectedId}
-                                    />
-                                );
-                            });
+                                            selected={row.original.id === selectedId}
+                                        />
+                                    );
+                                });
 
-                            return blocco;
-                        });
-                    })()}
-                </tbody>
-            </table>
+                                return blocco;
+                            });
+                        })()}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }

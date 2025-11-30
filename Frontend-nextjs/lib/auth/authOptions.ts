@@ -1,3 +1,5 @@
+// lib/auth/authOptions.ts
+
 import Credentials from "next-auth/providers/credentials";
 import { type NextAuthOptions } from "next-auth";
 import { url } from "@/lib/api/endpoints";
@@ -11,22 +13,59 @@ export const authOptions: NextAuthOptions = {
                 password: { type: "password" },
             },
             async authorize(credentials) {
+                const payload = {
+                    email: credentials?.email,
+                    password: credentials?.password,
+                };
+
+                console.log("LOGIN URL", url("login"));
+                console.log("LOGIN PAYLOAD", payload);
+
                 const res = await fetch(url("login"), {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(credentials),
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json", // 👈 AGGIUNTO
+                    },
+                    body: JSON.stringify(payload),
                 });
-                if (!res.ok) return null;
-                const data = await res.json();
-                if (!data.token || !data.user) return null;
+
+                console.log("LOGIN STATUS", res.status);
+
+                let data: any = null;
+                try {
+                    data = await res.json();
+                } catch (e) {
+                    console.error("LOGIN JSON PARSE ERROR", e);
+                }
+
+                console.log("LOGIN DATA", data);
+
+                if (!res.ok) {
+                    console.error("LOGIN FAILED (status not ok)");
+                    return null;
+                }
+
+                // compat largo: token + user
+                const token = data?.token ?? data?.access_token ?? data?.data?.token ?? data?.data?.access_token;
+
+                const user = data?.user ?? data?.data?.user ?? data?.data ?? null;
+
+                if (!token || !user) {
+                    console.error("LOGIN FAILED (missing token or user)");
+                    return null;
+                }
+
                 return {
-                    id: data.user.id.toString(),
-                    name: data.user.name ?? undefined,
-                    email: data.user.email ?? undefined,
-                    access_token: data.token,
+                    id: user.id?.toString?.() ?? String(user.id),
+                    name: user.name ?? undefined,
+                    email: user.email ?? undefined,
+                    access_token: token,
                 } as any;
             },
         }),
+
+        // … il secondo provider "token-login" lascialo com’è
         Credentials({
             id: "token-login",
             name: "TokenLogin",
@@ -47,6 +86,7 @@ export const authOptions: NextAuthOptions = {
             },
         }),
     ],
+
     session: {
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60,
@@ -62,7 +102,7 @@ export const authOptions: NextAuthOptions = {
             return token;
         },
         async session({ session, token }) {
-            session.accessToken = token.accessToken;
+            (session as any).accessToken = token.accessToken;
             return session;
         },
     },

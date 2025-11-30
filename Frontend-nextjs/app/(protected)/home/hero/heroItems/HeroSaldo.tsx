@@ -15,7 +15,7 @@ export default function HeroSaldo() {
 
     return (
         <div className="flex flex-col h-full justify-center">
-            <div className="px-4 text-center">
+            <div className="px-4 text-center ">
                 <h2 className="text-lg font-bold mb-2">Saldo attuale</h2>
 
                 <p className="text-base mb-1">

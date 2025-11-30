@@ -62,7 +62,7 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
 
     // ===== Render Responsive =====
     return (
-        <div className="flex flex-col lg:flex-row gap-4 w-full">
+        <div className="flex flex-col lg:flex-row gap-4 w-full max-w-full">
             {/* ====== Filtro (mobile sopra, desktop a lato) ====== */}
             <div className="lg:w-64 w-full flex-shrink-0 mb-2 lg:mb-0">
                 <TransactionListFilter
@@ -75,8 +75,9 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                     iconCategory={<Tag size={16} className="text-accent" />}
                 />
             </div>
+
             {/* ====== Tabella ====== */}
-            <div className="flex-1 min-w-0">
+            <div className="grid min-w-0">
                 <TransactionTable
                     data={filtered.slice(0, visible)}
                     onRowClick={onSelect}

@@ -72,6 +72,13 @@ export default function Sidebar() {
             >
                 {isOpenMobile ? <X size={20} /> : <Menu size={20} />}
             </button>
+            {/* 🔹 OVERLAY MOBILE: click fuori chiude la sidebar */}
+            {isOpenMobile && (
+                <div
+                    className="fixed inset-0 z-10 bg-black/40 backdrop-blur-sm md:hidden"
+                    onClick={() => setIsOpenMobile(false)}
+                />
+            )}
 
             {/* ========== Collapse desktop ========== */}
             <button
@@ -151,4 +158,3 @@ export default function Sidebar() {
         </>
     );
 }
-

@@ -4,7 +4,6 @@
 // IMPORT PRINCIPALI
 // ==============================
 import { useState, useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion"; // <-- aggiunto
 import EmailInput from "./form-components/EmailInput";
 import PasswordInput from "./form-components/PasswordInput";
 import RememberMeSwitch from "./form-components/RememberMeSwitch";
@@ -29,9 +28,6 @@ export default function LoginForm({ onSubmit, onOpenRegister, onOpenForgot }: Lo
     // ───── Stati feedback/modali ─────
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-
-    // ───── Rispetta prefers-reduced-motion ─────
-    const reduce = useReducedMotion(); // true se l’utente chiede meno animazioni
 
     // ───── Ricorda email al mount ─────
     useEffect(() => {
@@ -64,11 +60,13 @@ export default function LoginForm({ onSubmit, onOpenRegister, onOpenForgot }: Lo
     return (
         <>
             {/* ===== CARD LOGIN ===== */}
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="relative z-10 bg-black/70 backdrop-blur-sm p-8 rounded-2xl w-full max-w-md text-white shadow-lg space-y-6"
+            <div
+                className="
+                relative z-10 w-full max-w-md p-8 rounded-2xl text-white
+                bg-black/70 backdrop-blur-sm
+                shadow-2xl shadow-black/50
+                space-y-6
+                "
             >
                 {/* Titolo */}
                 <h1 className="text-2xl font-bold text-center text-primary">Accedi a Synapsi</h1>
@@ -114,7 +112,7 @@ export default function LoginForm({ onSubmit, onOpenRegister, onOpenForgot }: Lo
 
                 {/* Link “registrati/recupera password” */}
                 <AuthLinks onForgotClick={onOpenForgot} onRegisterClick={onOpenRegister} />
-            </motion.div>
+            </div>
         </>
     );
 }

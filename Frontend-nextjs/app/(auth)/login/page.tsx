@@ -76,7 +76,7 @@ export default function LoginPage() {
     return (
         <div
             className="relative min-h-screen flex items-center justify-center bg-no-repeat bg-center bg-cover"
-            style={{ backgroundImage: "url('/images/bg-login.webp')" }}
+            style={{ backgroundImage: "url('/images/bg-login.png')" }}
         >
             <BetaBadge floating />
 
@@ -103,14 +103,14 @@ export default function LoginPage() {
                 <button
                     type="button"
                     className="
-            w-full mt-4 py-2 rounded-2xl font-semibold
-            flex justify-center items-center gap-2 text-white
-            bg-gradient-to-b from-pink-800 to-pink-400
-            shadow-md transition-colors duration-800 ease-in-out
-            hover:from-pink-400 hover:to-pink-800 hover:shadow-xl hover:shadow-black
-            hover:-translate-y-1 active:scale-95
-            focus:outline-none focus:ring-2 focus:ring-pink-400/50
-          "
+                        w-full mt-4 py-2 rounded-2xl font-semibold
+                        flex justify-center items-center gap-2 text-white
+                        bg-gradient-to-b from-pink-800 to-pink-400
+                        shadow-md transition-colors duration-800 ease-in-out
+                        hover:from-pink-400 hover:to-pink-800 hover:shadow-xl hover:shadow-black
+                        hover:-translate-y-1 active:scale-95
+                        focus:outline-none focus:ring-2 focus:ring-pink-400/50
+                    "
                     onClick={handleDemoLogin}
                 >
                     <span role="img" aria-label="demo">

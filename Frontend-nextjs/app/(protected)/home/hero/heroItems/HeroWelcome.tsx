@@ -9,8 +9,7 @@ export default function HeroWelcome() {
             <section
                 className="
                     relative
-                    pt-3 pb-6 px-6
-                    max-w-3xl mx-auto
+                    pt-3 pb-6
                     text-center
                 "
             >
