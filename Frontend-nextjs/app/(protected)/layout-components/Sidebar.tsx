@@ -22,7 +22,8 @@ import {
 } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 import { useThemeContext } from "@/context/ThemeContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import BetaBadge from "@/app/components/BetaBadge";
 import LegalLinks from "@/app/components/legal/LegalLinks";
 import { themeMeta } from "@/lib/themeUtils";
@@ -51,6 +52,15 @@ export default function Sidebar() {
     // ========== Stato sidebar ==========
     const { isCollapsed, toggleSidebar } = useSidebar();
     const [isOpenMobile, setIsOpenMobile] = useState(false);
+
+    // ─────────── LISTENER: chiusura da header ───────────
+    useEffect(() => {
+      const handleCloseSidebar = () => setIsOpenMobile(false);
+
+      window.addEventListener("closeSidebarMobile", handleCloseSidebar);
+      return () => window.removeEventListener("closeSidebarMobile", handleCloseSidebar);
+    }, []);
+
     const pathname = usePathname();
 
     // ========== Gestione temi ==========
@@ -58,7 +68,16 @@ export default function Sidebar() {
     const isDark = theme === "dark";
 
     // ========== Helper ==========
-    const toggleMobile = () => setIsOpenMobile((p) => !p);
+    const toggleMobile = () => {
+      const next = !isOpenMobile;
+
+      // se la sto aprendo → dico all'header di chiudere il suo menu
+      if (next) {
+        window.dispatchEvent(new Event("closeHeaderUserMenu"));
+      }
+
+      setIsOpenMobile(next);
+    };
 
     // ────────────────────────────────
     //           RENDER
@@ -67,7 +86,7 @@ export default function Sidebar() {
         <>
             {/* ========== Burger mobile ========== */}
             <button
-                className="fixed top-4 left-4 z-30 md:hidden p-2 rounded-full bg-primary text-white shadow-lg"
+                className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-full bg-primary text-white shadow-lg"
                 onClick={toggleMobile}
             >
                 {isOpenMobile ? <X size={20} /> : <Menu size={20} />}
@@ -83,7 +102,7 @@ export default function Sidebar() {
             {/* ========== Collapse desktop ========== */}
             <button
                 onClick={toggleSidebar}
-                className={`hidden md:flex fixed top-4 z-30 p-1.5 rounded-full bg-primary text-white shadow-md hover:bg-primary/80 transition ${
+                className={`hidden md:flex fixed top-4 z-50 p-1.5 rounded-full bg-primary text-white shadow-md hover:bg-primary/80 transition ${
                     isCollapsed ? "left-3" : "left-56"
                 }`}
             >
@@ -94,7 +113,7 @@ export default function Sidebar() {
                 Pannello Sidebar principale
             ════════════════════════════════════ */}
             <aside
-                className={`fixed top-0 left-0 h-full z-20 w-56 bg-black/60 backdrop-blur-md border-r border-white/10 text-white
+                className={`fixed top-0 left-0 h-full z-40 w-56 bg-black/60 backdrop-blur-md border-r border-white/10 text-white
                     transform transition-transform duration-300
                     ${isOpenMobile ? "block" : "hidden"} md:block
                     ${isCollapsed ? "-translate-x-full md:-translate-x-56" : "translate-x-0"}`}
