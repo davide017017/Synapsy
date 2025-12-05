@@ -10,5 +10,6 @@ export type NewTransactionFormProps = {
     onCancel?: () => void;
     initialDate?: string;
     initialType?: "entrata" | "spesa";
+    categoryPickerOpen?: boolean;
+    onCategoryPickerOpenChange?: (open: boolean) => void;
 };
-

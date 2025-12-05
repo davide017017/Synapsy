@@ -52,7 +52,6 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                             className="
                                 w-full max-w-lg
                                 rounded-2xl
-                                border border-modal
                                 shadow-2xl shadow-black/90
                                 bg-modal-bg bg-opacity-60
                                 backdrop-blur-md
@@ -73,4 +72,3 @@ export default function Dialog({ open, onClose, title, children }: Props) {
         </Transition>
     );
 }
-

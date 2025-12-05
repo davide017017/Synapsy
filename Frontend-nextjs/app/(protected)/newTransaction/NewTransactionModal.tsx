@@ -1,7 +1,7 @@
 "use client";
 
 // =====================================================
-// NewTransactionModal.tsx — Modale uniforme, utility/semantic
+// NewTransactionModal.tsx — Modale uniforme Tx
 // =====================================================
 
 import { useState, useMemo } from "react";
@@ -22,12 +22,16 @@ export default function NewTransactionModal({
     defaultDate?: string;
     defaultType?: "entrata" | "spesa";
 }) {
+    // ───────── Stato modale / tx ─────────
     const { isOpen, closeModal, transactionToEdit, create, update } = useTransactions();
     const { categories } = useCategories();
     const [loading, setLoading] = useState(false);
     const [formValues, setFormValues] = useState<Partial<any>>({});
 
-    // Nome categoria per overlay info
+    // ───────── Stato: picker categoria aperto? ─────────
+    const [isCategoryPickerOpen, setIsCategoryPickerOpen] = useState(false);
+
+    // ───────── Info per overlay loading ─────────
     const editCategoryName = useMemo(
         () =>
             transactionToEdit?.category_id
@@ -35,12 +39,13 @@ export default function NewTransactionModal({
                 : undefined,
         [transactionToEdit, categories]
     );
+
     const formCategoryName = useMemo(
         () => (formValues.category_id ? categories.find((cat) => cat.id === formValues.category_id)?.name : undefined),
         [formValues.category_id, categories]
     );
 
-    // Salva handler
+    // ───────── Salvataggio ─────────
     const handleSave = async (data: any) => {
         setLoading(true);
         try {
@@ -51,19 +56,29 @@ export default function NewTransactionModal({
         }
     };
 
+    // ───────── Gestione chiusura Dialog ─────────
+    // Se il picker è aperto: chiude SOLO il picker.
+    // Se il picker è chiuso: chiude la modale normalmente.
+    const handleDialogClose = () => {
+        if (isCategoryPickerOpen) {
+            setIsCategoryPickerOpen(false);
+            return;
+        }
+        closeModal?.();
+    };
+
     // ============================
     // Render
     // ============================
     return (
-        <Dialog open={isOpen} onClose={closeModal ?? (() => {})}>
+        <Dialog open={isOpen} onClose={handleDialogClose}>
             <div
                 className="
                     relative w-full max-w-lg min-w-[320px]
-                    text-text rounded-2xl shadow-2xl shadow-black/30 border border-bg-elevate
-                    p-6 
+                    text-text rounded-2xl shadow-2xl shadow-black/30
                 "
             >
-                {/* Overlay loading */}
+                {/* ───────── Overlay loading ───────── */}
                 <LoadingOverlay
                     show={loading}
                     icon="💸"
@@ -95,11 +110,7 @@ export default function NewTransactionModal({
                     }
                 />
 
-                {/* Titolo */}
-                <h2 className="text-xl font-bold mb-4 text-primary">
-                    {transactionToEdit ? "Modifica transazione" : "Aggiungi transazione"}
-                </h2>
-                {/* Form */}
+                {/* ───────── Form ───────── */}
                 <div className={loading ? "pointer-events-none opacity-50" : ""}>
                     <NewTransactionForm
                         onSave={handleSave}
@@ -109,10 +120,12 @@ export default function NewTransactionModal({
                         onCancel={closeModal}
                         initialDate={!transactionToEdit ? defaultDate : undefined}
                         initialType={!transactionToEdit ? defaultType : undefined}
+                        // 🔥 stato picker passato al form
+                        categoryPickerOpen={isCategoryPickerOpen}
+                        onCategoryPickerOpenChange={setIsCategoryPickerOpen}
                     />
                 </div>
             </div>
         </Dialog>
     );
 }
-
