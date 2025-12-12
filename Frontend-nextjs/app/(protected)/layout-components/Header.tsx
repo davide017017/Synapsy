@@ -27,15 +27,15 @@ export default function Header() {
     const username = user?.username;
     const avatarUrl = user ? getAvatarUrl(user) : undefined;
 
-  // ─────────── STATE: menu mobile ───────────
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    // ─────────── STATE: menu mobile ───────────
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // ─────────── LISTENER: chiusura da sidebar ───────────
-  useEffect(() => {
-    const handleCloseHeaderMenu = () => setIsMobileMenuOpen(false);
+    // ─────────── LISTENER: chiusura da sidebar ───────────
+    useEffect(() => {
+        const handleCloseHeaderMenu = () => setIsMobileMenuOpen(false);
 
-      window.addEventListener("closeHeaderUserMenu", handleCloseHeaderMenu);
-      return () => window.removeEventListener("closeHeaderUserMenu", handleCloseHeaderMenu);
+        window.addEventListener("closeHeaderUserMenu", handleCloseHeaderMenu);
+        return () => window.removeEventListener("closeHeaderUserMenu", handleCloseHeaderMenu);
     }, []);
 
     // ─────────── LOGOUT HANDLER ───────────
@@ -46,14 +46,14 @@ export default function Header() {
 
     // ─────────── TOGGLE: menu utente mobile ───────────
     const handleToggleUserMenu = () => {
-      const next = !isMobileMenuOpen;
+        const next = !isMobileMenuOpen;
 
-      // se lo sto aprendo → dico alla sidebar di chiudersi
-      if (next) {
-        window.dispatchEvent(new Event("closeSidebarMobile"));
-      }
+        // se lo sto aprendo → dico alla sidebar di chiudersi
+        if (next) {
+            window.dispatchEvent(new Event("closeSidebarMobile"));
+        }
 
-      setIsMobileMenuOpen(next);
+        setIsMobileMenuOpen(next);
     };
 
     // ────────────────────────────────────────────────
@@ -63,19 +63,15 @@ export default function Header() {
         <>
             {/* OVERLAY FULLSCREEN: chiude cliccando fuori (solo mobile) */}
             {isMobileMenuOpen && (
-              <div
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="fixed inset-x-0 top-12 bottom-0 z-10 sm:hidden backdrop-blur-sm bg-black/10"
-              />
+                <div
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="fixed inset-x-0 top-12 bottom-0 z-10 sm:hidden backdrop-blur-sm bg-black/10"
+                />
             )}
 
             <header className="relative z-30 flex items-center px-4 py-2 border-b border-white/10 bg-black/50 backdrop-blur-sm">
                 {/* LOGO CENTRALE */}
-                <Link
-                    href="/"
-                    className="absolute left-1/2 -translate-x-1/2 flex items-center"
-                    aria-label="Homepage"
-                >
+                <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center" aria-label="Homepage">
                     <Image
                         src="/images/icon_1024x1024.webp"
                         alt="Synapsi logo"
@@ -129,11 +125,11 @@ export default function Header() {
                 {/* MOBILE: ICON BUTTON + MENU COMPATTO (solo sotto sm) */}
                 <div className="flex sm:hidden items-center ml-auto relative">
                     <button
-                          type="button"
-                          onClick={handleToggleUserMenu}
-                          className="flex items-center gap-2 px-2 py-1 rounded-full bg-white/10 ring-1 ring-white/20 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                          aria-label="Menu utente"
-                        >
+                        type="button"
+                        onClick={handleToggleUserMenu}
+                        className="flex items-center gap-2 px-2 py-1 rounded-full bg-white/10 ring-1 ring-white/20 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        aria-label="Menu utente"
+                    >
                         {avatarUrl ? (
                             <Image
                                 src={avatarUrl}
@@ -153,7 +149,7 @@ export default function Header() {
                         <div
                             className="
                                 absolute right-0 top-[160%] z-50
-                                w-40 rounded-xl bg-black/90
+                                w-40 rounded-xl bg-black/70
                                 border border-white/10 shadow-lg
                                 backdrop-blur-md
                             "
