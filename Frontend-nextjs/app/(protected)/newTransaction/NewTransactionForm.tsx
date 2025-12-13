@@ -11,30 +11,8 @@ import type { NewTransactionFormProps } from "@/types";
 import { useCategories } from "@/context/CategoriesContext";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
-
-// ────────────────────────────────────────────────
-// Icone React Icons
-// ────────────────────────────────────────────────
-import { FaCar, FaGift, FaEllipsisH, FaMoneyBillWave, FaChartLine, FaGamepad, FaPlane } from "react-icons/fa";
-import { GiKnifeFork } from "react-icons/gi";
-import { FiHome } from "react-icons/fi";
-import { MdOutlineLightbulb, MdLocalHospital } from "react-icons/md";
-import { PiStudentBold } from "react-icons/pi";
-
-const CATEGORY_ICONS: Record<string, JSX.Element> = {
-    GiKnifeFork: <GiKnifeFork className="text-3xl" />,
-    FaCar: <FaCar className="text-3xl" />,
-    FiHome: <FiHome className="text-3xl" />,
-    MdOutlineLightbulb: <MdOutlineLightbulb className="text-3xl" />,
-    FaGamepad: <FaGamepad className="text-3xl" />,
-    MdLocalHospital: <MdLocalHospital className="text-3xl" />,
-    PiStudentBold: <PiStudentBold className="text-3xl" />,
-    FaPlane: <FaPlane className="text-3xl" />,
-    FaGift: <FaGift className="text-3xl" />,
-    FaEllipsisH: <FaEllipsisH className="text-3xl" />,
-    FaMoneyBillWave: <FaMoneyBillWave className="text-3xl" />,
-    FaChartLine: <FaChartLine className="text-3xl" />,
-};
+import type { IconType } from "react-icons";
+import { getIconComponent } from "@/utils/categoryOptions";
 
 // ────────────────────────────────────────────────
 // Helper per classi dinamiche
@@ -44,13 +22,15 @@ function cn(...classes: string[]) {
 }
 
 // ────────────────────────────────────────────────
-// Icona categoria (usa campo icon se esiste, altrimenti fallback)
+// Icona categoria (usa icon da DB, fallback su frecce)
 // ────────────────────────────────────────────────
 function getCategoryIcon(cat: { icon?: string; type: "entrata" | "spesa" }) {
-    if (cat.icon && CATEGORY_ICONS[cat.icon]) {
-        return CATEGORY_ICONS[cat.icon];
-    }
-    return <span className="text-2xl">{cat.type === "entrata" ? "⬆️" : "⬇️"}</span>;
+    const Icon = getIconComponent(cat.icon as any) as IconType;
+
+    // se non c’è icon in DB → fallback frecce
+    if (!cat.icon) return <span className="text-2xl">{cat.type === "entrata" ? "⬆️" : "⬇️"}</span>;
+
+    return <Icon className="text-3xl" />;
 }
 
 // ────────────────────────────────────────────────
@@ -118,6 +98,11 @@ export default function NewTransactionForm({
 
     const openCategoryPicker = () => onCategoryPickerOpenChange?.(true);
     const closeCategoryPicker = () => onCategoryPickerOpenChange?.(false);
+
+    // ────────────────────────────────────────────────
+    // Preset importi rapidi
+    // ────────────────────────────────────────────────
+    const QUICK_AMOUNTS = [5, 10, 15, 20, 25, 50, 100];
 
     // ────────────────────────────────────────────────
     // Inizializza dati se in edit / reset con iniziali
@@ -364,27 +349,55 @@ export default function NewTransactionForm({
                 {/* ────────────────────────────────────
                  * Importo + Data sulla stessa riga
                  * ──────────────────────────────────── */}
-                <div className="mt-4 flex flex-col sm:flex-row gap-4">
+                <div className="mt-4 flex flex-row gap-4">
                     {/* Importo */}
                     <div className="sm:w-1/2">
                         <label htmlFor="transaction-amount" className="block text-sm font-medium mb-1">
                             Importo
                         </label>
-                        <Input
-                            id="transaction-amount"
-                            name="amount"
-                            type="number"
-                            step="0.01"
-                            placeholder="Importo"
-                            value={formData.amount === 0 ? "" : formData.amount}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    amount: Number(e.target.value) || 0,
-                                })
-                            }
-                            className={cn(errors.amount ? "border-danger" : "")}
-                        />
+                        <div className="relative">
+                            <Input
+                                id="transaction-amount"
+                                name="amount"
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                placeholder="Importo"
+                                value={formData.amount === 0 ? "" : formData.amount}
+                                onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) || 0 })}
+                                className={cn("pr-20", errors.amount ? "border-danger" : "")}
+                            />
+
+                            {/* Controlli custom */}
+                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                                <button
+                                    type="button"
+                                    className="px-2 py-1 rounded-md border bg-bg-elevate hover:bg-bg-soft text-sm"
+                                    onClick={() =>
+                                        setFormData((p) => ({
+                                            ...p,
+                                            amount: Math.max(0, Number((Number(p.amount) - 0.1).toFixed(2))),
+                                        }))
+                                    }
+                                >
+                                    −
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="px-2 py-1 rounded-md border bg-bg-elevate hover:bg-bg-soft text-sm"
+                                    onClick={() =>
+                                        setFormData((p) => ({
+                                            ...p,
+                                            amount: Number((Number(p.amount) + 0.1).toFixed(2)),
+                                        }))
+                                    }
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
+
                         {errors.amount && <p className="text-danger text-xs -mt-2">{errors.amount}</p>}
                     </div>
 
@@ -400,6 +413,48 @@ export default function NewTransactionForm({
                             value={formData.date}
                             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                         />
+                    </div>
+                </div>
+
+                {/* ────────────────────────────────────
+                 * Importi rapidi (quick pick)
+                 * ──────────────────────────────────── */}
+                <div className="mt-2">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-medium text-muted-foreground">Importo rapido</span>
+
+                        {/* Reset veloce */}
+                        <button
+                            type="button"
+                            className="text-xs text-muted-foreground hover:text-text transition"
+                            onClick={() => setFormData({ ...formData, amount: 0 })}
+                            disabled={loading || disabled}
+                        >
+                            reset
+                        </button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        {QUICK_AMOUNTS.map((v) => {
+                            const isActive = Number(formData.amount) === v;
+
+                            return (
+                                <button
+                                    key={v}
+                                    type="button"
+                                    className={cn(
+                                        "px-3 py-1.5 rounded-full border text-sm transition",
+                                        isActive
+                                            ? "border-primary/60 bg-primary/10 text-text"
+                                            : "border-border bg-bg-elevate text-muted-foreground hover:text-text hover:border-primary/40"
+                                    )}
+                                    onClick={() => setFormData({ ...formData, amount: v })}
+                                    disabled={loading || disabled}
+                                >
+                                    € {v}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 

@@ -30,6 +30,19 @@ Stili base (body, html, transizioni globali)
         color: hsl(var(--c-text));
         font-family: var(--font-sans);
     }
+
+    /* ─────────────────────────────────────────
+    Input number – hide native spinner
+    ───────────────────────────────────────── */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
 }
 
 /* ===================================================
