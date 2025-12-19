@@ -13,11 +13,12 @@ import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import type { IconType } from "react-icons";
 import { getIconComponent } from "@/utils/categoryOptions";
+import { FiRotateCcw } from "react-icons/fi";
 
 // ────────────────────────────────────────────────
-// Helper per classi dinamiche
+// Helper per classi dinamiche (accetta falsy)
 // ────────────────────────────────────────────────
-function cn(...classes: string[]) {
+function cn(...classes: Array<string | false | null | undefined>) {
     return classes.filter(Boolean).join(" ");
 }
 
@@ -57,6 +58,56 @@ function getCategoryStyle(cat: { color?: string; type: "entrata" | "spesa" }, is
             : `inset 0 0 14px ${withAlpha(base, "22")}`,
     };
 }
+// ────────────────────────────────────────────────
+// UI: messaggio errore con dismiss (X)
+// ────────────────────────────────────────────────
+function FieldError({ message, onClose }: { message?: string; onClose?: () => void }) {
+    if (!message) return null;
+
+    return (
+        <div
+            className="
+                relative mt-2
+                flex items-center justify-center
+                text-sm font-medium
+                text-rose-200
+                bg-rose-500/10
+                border border-rose-400/25
+                rounded-xl
+                px-4 py-2
+            "
+            role="alert"
+        >
+            <span className="text-center">{message}</span>
+
+            {onClose && (
+                <button
+                    type="button"
+                    onClick={onClose}
+                    aria-label="Chiudi errore"
+                    className="
+                        absolute right-2 top-1/2 -translate-y-1/2
+                        h-6 w-6 rounded-full
+                        flex items-center justify-center
+                        text-rose-300
+                        hover:text-rose-100
+                        hover:bg-rose-500/20
+                        transition
+                    "
+                >
+                    ×
+                </button>
+            )}
+        </div>
+    );
+}
+
+/*
+  File: NewTransactionForm.tsx
+  Scopo: messaggio errore centrato e dismissibile
+  Dipendenze: nessuna
+  Note: la X rimuove solo l’errore UI
+*/
 
 // ╔═══════════════════════════════╗
 // ║      COMPONENTE PRINCIPALE    ║
@@ -102,7 +153,74 @@ export default function NewTransactionForm({
     // ────────────────────────────────────────────────
     // Preset importi rapidi
     // ────────────────────────────────────────────────
-    const QUICK_AMOUNTS = [5, 10, 15, 20, 25, 50, 100];
+    const QUICK_AMOUNTS = [5, 10, 15, 20, 25, 50, 100, 200, 1200];
+
+    // ────────────────────────────────────────────────
+    // Amount helpers (UX stepper: ±1 a sinistra, ±0.1 a destra)
+    // ────────────────────────────────────────────────
+    const AMOUNT_DECIMALS = 2;
+    const AMOUNT_MIN = 0;
+
+    function roundTo(n: number, decimals: number) {
+        const f = Math.pow(10, decimals);
+        return Math.round(n * f) / f;
+    }
+
+    function clampMin(n: number, min: number) {
+        return Math.max(min, n);
+    }
+
+    function parseAmount(raw: string | number) {
+        if (typeof raw === "number") return raw;
+        const s = String(raw ?? "")
+            .trim()
+            .replace(",", ".");
+        const n = Number(s);
+        return Number.isFinite(n) ? n : 0;
+    }
+
+    const applyAmountDelta = (delta: number) => {
+        setFormData((p) => {
+            const current = parseAmount(p.amount as any);
+            const next = clampMin(roundTo(current + delta, AMOUNT_DECIMALS), AMOUNT_MIN);
+            return { ...p, amount: next as any };
+        });
+    };
+
+    // ────────────────────────────────────────────────
+    // Reset helpers (amount/date)
+    // ────────────────────────────────────────────────
+    const getTodayISO = () => new Date().toISOString().split("T")[0];
+
+    const resetAmount = () => setFormData((p) => ({ ...p, amount: 0 as any }));
+
+    const resetDate = () =>
+        setFormData((p) => ({
+            ...p,
+            date: (initialDate || getTodayISO()) as any,
+        }));
+
+    // ────────────────────────────────────────────────
+    const dateInputId = "transaction-date";
+
+    // ────────────────────────────────────────────────
+    // Date helpers UI (dd/MM per quick buttons)
+    // ────────────────────────────────────────────────
+    const fmtDDMM = new Intl.DateTimeFormat("it-IT", { day: "2-digit", month: "2-digit" });
+
+    function toISODate(d: Date) {
+        return d.toISOString().split("T")[0];
+    }
+
+    function formatDDMM(d: Date) {
+        return fmtDDMM.format(d); // es. 19/12
+    }
+
+    const d0 = new Date(); // oggi
+    const d1 = new Date();
+    d1.setDate(d1.getDate() - 1); // ieri
+    const d2 = new Date();
+    d2.setDate(d2.getDate() - 2); // altro ieri
 
     // ────────────────────────────────────────────────
     // Inizializza dati se in edit / reset con iniziali
@@ -260,7 +378,15 @@ export default function NewTransactionForm({
                         <span className="opacity-60 text-xs">▼</span>
                     </button>
 
-                    {errors.category_id && <p className="text-danger text-xs mt-1">{errors.category_id}</p>}
+                    <FieldError
+                        message={errors.category_id}
+                        onClose={() =>
+                            setErrors((e) => {
+                                const { category_id, ...rest } = e;
+                                return rest;
+                            })
+                        }
+                    />
 
                     {/* Overlay fullscreen + picker centrale */}
                     {showCategoryPicker && (
@@ -343,76 +469,412 @@ export default function NewTransactionForm({
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         className={cn(errors.description ? "border-danger" : "")}
                     />
-                    {errors.description && <p className="text-danger text-xs -mt-2">{errors.description}</p>}
+                    <FieldError
+                        message={errors.description}
+                        onClose={() =>
+                            setErrors((e) => {
+                                const { description, ...rest } = e;
+                                return rest;
+                            })
+                        }
+                    />
+                </div>
+                {/* ────────────────────────────────────
+                 * Quick description picks
+                 * ──────────────────────────────────── */}
+
+                <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                        { key: "autostrada", label: "Autostrada", icon: "🚗" },
+                        { key: "benzina", label: "Benzina", icon: "⛽" },
+                        { key: "ristorante", label: "Ristorante", icon: "🍽️" },
+                        { key: "spesa", label: "Spesa", icon: "🛒" },
+                    ].map((q) => (
+                        <button
+                            key={q.key}
+                            type="button"
+                            className="
+                              flex items-center gap-2
+                              px-3 py-2 rounded-xl border
+                              bg-bg-elevate text-muted-foreground text-sm
+                              transition-all duration-150
+
+                              hover:text-text hover:border-sky-400/60
+                              hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
+
+                              active:bg-sky-400/15
+                            "
+                            onClick={() =>
+                                setFormData((p) => ({
+                                    ...p,
+                                    description: q.label,
+                                }))
+                            }
+                            aria-label={`Imposta descrizione: ${q.label}`}
+                        >
+                            <span className="text-lg">{q.icon}</span>
+                            <span className="truncate">{q.label}</span>
+                        </button>
+                    ))}
                 </div>
 
                 {/* ────────────────────────────────────
-                 * Importo + Data sulla stessa riga
+                 * Importo + Data sulla stessa riga (+ reset)
                  * ──────────────────────────────────── */}
+
                 <div className="mt-4 flex flex-row gap-4">
                     {/* Importo */}
                     <div className="sm:w-1/2">
-                        <label htmlFor="transaction-amount" className="block text-sm font-medium mb-1">
-                            Importo
-                        </label>
-                        <div className="relative">
-                            <Input
-                                id="transaction-amount"
-                                name="amount"
-                                type="number"
-                                step="0.1"
-                                min="0"
-                                placeholder="Importo"
-                                value={formData.amount === 0 ? "" : formData.amount}
-                                onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) || 0 })}
-                                className={cn("pr-20", errors.amount ? "border-danger" : "")}
-                            />
+                        <div className="relative flex items-center mb-1">
+                            <button
+                                type="button"
+                                className="
+                                    group flex items-center justify-center
+                                    h-9 w-9 rounded-full
+                                    border border-border
+                                    transition-all duration-150
+                  
+                                    hover:border-yellow-400/60
+                                    hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]
+    
+                                    active:bg-yellow-400/20
+                                    active:border-yellow-400/70
+                                    active:shadow-[0_0_14px_rgba(250,204,21,0.45),inset_0_0_10px_rgba(250,204,21,0.35)]
+                                  "
+                                onClick={resetAmount}
+                                aria-label="Reset importo"
+                            >
+                                <FiRotateCcw
+                                    size={16}
+                                    strokeWidth={2}
+                                    className="
+                                    transition-transform
+                                    group-hover:rotate-[-20deg]
+                                    group-active:rotate-[-200deg]
+                                  "
+                                />
+                            </button>
 
-                            {/* Controlli custom */}
-                            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                            {/* Label IMPORTO — CENTRO reale */}
+                            <label
+                                htmlFor="transaction-amount"
+                                className="
+                                          absolute left-1/2 -translate-x-1/2
+                                          text-sm font-medium
+                                          pointer-events-none
+                                      "
+                            >
+                                Importo
+                            </label>
+                        </div>
+
+                        {/* il tuo layout stepper verticale (quello che hai appena messo) */}
+                        <div className="flex items-stretch gap-1 sm:gap-2 md:gap-2">
+                            <div className="flex flex-col items-center gap-1">
+                                {/* + */}
                                 <button
                                     type="button"
-                                    className="px-2 py-1 rounded-md border bg-bg-elevate hover:bg-bg-soft text-sm"
-                                    onClick={() =>
-                                        setFormData((p) => ({
-                                            ...p,
-                                            amount: Math.max(0, Number((Number(p.amount) - 0.1).toFixed(2))),
-                                        }))
-                                    }
+                                    className="
+                                      h-10 w-6 sm:w-9 rounded-t-full rounded-b-none border bg-bg-elevate text-sm
+                                      transition-all duration-150
+
+                                      hover:border-sky-400/60
+                                      hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
+
+                                      active:bg-sky-400/20
+                                      active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]
+                                    "
+                                    onClick={() => applyAmountDelta(1)}
+                                    disabled={loading || disabled}
+                                    aria-label="Aumenta di 1"
+                                >
+                                    +
+                                </button>
+
+                                {/* STEP INDICATOR — VALORE (€) */}
+                                <div
+                                    className="
+                                    flex items-center gap-1
+                                    px-2 py-0.5 
+                                    text-[11px] font-semibold
+
+                                    border border-yellow-400/40
+                                    text-yellow-400
+                                    bg-yellow-400/10
+                                    
+                                    select-none
+                                  "
+                                    aria-hidden="true"
+                                >
+                                    <span>1&nbsp;€</span>
+                                </div>
+
+                                {/* − */}
+                                <button
+                                    type="button"
+                                    className="
+                                      h-10 w-6 sm:w-9 rounded-b-full rounded-t-none border bg-bg-elevate text-sm
+                                      transition-all duration-150
+
+                                      hover:border-sky-400/60
+                                      hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
+
+                                      active:bg-sky-400/20
+                                      active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]
+                                    "
+                                    onClick={() => applyAmountDelta(-1)}
+                                    disabled={loading || disabled}
+                                    aria-label="Diminuisci di 1"
                                 >
                                     −
                                 </button>
+                            </div>
 
+                            <Input
+                                id="transaction-amount"
+                                name="amount"
+                                type="text"
+                                inputMode="decimal"
+                                placeholder="Imp"
+                                value={String(formData.amount ?? "")}
+                                onChange={(e) => {
+                                    const v = e.target.value;
+                                    if (!/^[0-9.,]*$/.test(v)) return;
+                                    setFormData((p) => ({ ...p, amount: v as any }));
+                                }}
+                                onBlur={() => {
+                                    // NORMALIZZA solo quando l’utente finisce
+                                    const n = parseAmount(formData.amount as any);
+                                    setFormData((p) => ({
+                                        ...p,
+                                        amount: clampMin(roundTo(n, AMOUNT_DECIMALS), AMOUNT_MIN) as any,
+                                    }));
+                                }}
+                                className={cn(
+                                    "flex-1 text-center font-semibold text-base sm:text-lg md:text-xl",
+                                    errors.amount ? "border-danger" : ""
+                                )}
+                            />
+
+                            <div className="flex flex-col items-center gap-1">
+                                {/* + */}
                                 <button
                                     type="button"
-                                    className="px-2 py-1 rounded-md border bg-bg-elevate hover:bg-bg-soft text-sm"
-                                    onClick={() =>
-                                        setFormData((p) => ({
-                                            ...p,
-                                            amount: Number((Number(p.amount) + 0.1).toFixed(2)),
-                                        }))
-                                    }
+                                    className="
+                                      h-10 w-6 sm:w-9 rounded-t-full rounded-b-none border bg-bg-elevate text-sm
+                                      transition-all duration-150
+
+                                      hover:border-sky-400/60
+                                      hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
+
+                                      active:bg-sky-400/20
+                                      active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]
+                                    "
+                                    onClick={() => applyAmountDelta(0.1)}
+                                    disabled={loading || disabled}
+                                    aria-label="Aumenta di 0.1"
                                 >
                                     +
+                                </button>
+
+                                {/* STEP INDICATOR — VALORE (€) */}
+                                <div
+                                    className="
+                                    flex items-center gap-1
+                                    px-2 py-0.5 
+                                    text-[11px] font-semibold
+
+                                    border border-yellow-400/40
+                                    text-yellow-400
+                                    bg-yellow-400/10
+                                    
+                                    select-none
+                                  "
+                                    aria-hidden="true"
+                                >
+                                    <span>0.1&nbsp;€</span>
+                                </div>
+
+                                {/* − */}
+                                <button
+                                    type="button"
+                                    className="
+                                      h-10 w-6 sm:w-9 rounded-b-full rounded-t-none border bg-bg-elevate text-sm
+                                      transition-all duration-150
+
+                                      hover:border-sky-400/60
+                                      hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
+
+                                      active:bg-sky-400/20
+                                      active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]
+                                    "
+                                    onClick={() => applyAmountDelta(-0.1)}
+                                    disabled={loading || disabled}
+                                    aria-label="Diminuisci di 0.1"
+                                >
+                                    −
                                 </button>
                             </div>
                         </div>
 
-                        {errors.amount && <p className="text-danger text-xs -mt-2">{errors.amount}</p>}
+                        <FieldError
+                            message={errors.amount}
+                            onClose={() =>
+                                setErrors((e) => {
+                                    const { amount, ...rest } = e;
+                                    return rest;
+                                })
+                            }
+                        />
                     </div>
 
                     {/* Data */}
                     <div className="sm:w-1/2">
-                        <label htmlFor="transaction-date" className="block text-sm font-medium mb-1">
-                            Data
-                        </label>
-                        <Input
-                            id="transaction-date"
-                            name="date"
-                            type="date"
-                            value={formData.date}
-                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                        />
+                        <div className="relative flex items-center mb-1">
+                            {/* Label centro */}
+                            <label
+                                htmlFor={dateInputId}
+                                className="absolute left-1/2 -translate-x-1/2 text-sm font-medium pointer-events-none"
+                            >
+                                Data
+                            </label>
+
+                            {/* Reset  */}
+                            <button
+                                type="button"
+                                className="
+                                    group flex items-center justify-center
+                                    h-9 w-9 rounded-full
+                                    border border-border
+                                    transition-all duration-150
+
+                                    hover:border-yellow-400/60
+                                    hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]
+
+                                    active:bg-yellow-400/20
+                                    active:border-yellow-400/70
+                                    active:shadow-[0_0_14px_rgba(250,204,21,0.45),inset_0_0_10px_rgba(250,204,21,0.35)]
+                                  "
+                                onClick={resetDate}
+                                disabled={loading || disabled}
+                                aria-label="Reset data"
+                                title="Reset data"
+                            >
+                                <FiRotateCcw
+                                    size={16}
+                                    strokeWidth={2}
+                                    className="
+                                    transition-transform
+                                    group-hover:rotate-[-20deg]
+                                    group-active:rotate-[-200deg]
+                                  "
+                                />
+                            </button>
+                        </div>
+
+                        <div className="relative mx-auto w-full sm:max-w-[220px]">
+                            {/* Bottone calendario */}
+                            <button
+                                type="button"
+                                className="
+                                  absolute left-2 top-1/2 -translate-y-1/2
+                                  h-8 w-8 rounded-full
+                                  border border-border
+                                  text-muted-foreground
+                                  hover:text-text hover:border-sky-400/60
+                                  hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
+                                  active:bg-sky-400/15
+                                  transition
+                                "
+                                onClick={() => {
+                                    const el = document.getElementById(dateInputId) as HTMLInputElement | null;
+                                    // @ts-ignore
+                                    el?.showPicker ? el.showPicker() : el?.focus();
+                                }}
+                                aria-label="Apri calendario"
+                            >
+                                📅
+                            </button>
+
+                            {/* Input */}
+                            <Input
+                                id={dateInputId}
+                                name="date"
+                                type="date"
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                className="
+                                w-full
+                                pl-12   /* spazio per icona */
+                                text-center
+                                [appearance:none]
+                              "
+                            />
+                        </div>
+
+                        {/* Quick date picks */}
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                            {/* Altro ieri */}
+                            <button
+                                type="button"
+                                className="
+                                  px-1 py-3 rounded-2xl border text-sm
+                                  bg-bg-elevate text-muted-foreground
+                                  transition-all duration-150
+                                  hover:text-text hover:border-sky-400/50
+                                  hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
+                                  active:bg-sky-400/15
+                                "
+                                onClick={() => setFormData((p) => ({ ...p, date: toISODate(d2) }))}
+                                disabled={loading || disabled}
+                            >
+                                <span className="block leading-tight">Altro ieri</span>
+                                <span className="block text-[11px] opacity-70 leading-tight mt-0.5">
+                                    {formatDDMM(d2)}
+                                </span>
+                            </button>
+
+                            {/* Ieri */}
+                            <button
+                                type="button"
+                                className=" 
+                                    px-1 py-3 rounded-2xl border text-sm
+                                    bg-bg-elevate text-muted-foreground
+                                    transition-all duration-150
+                                    hover:text-text hover:border-sky-400/50
+                                    hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
+                                    active:bg-sky-400/15
+                                  "
+                                onClick={() => setFormData((p) => ({ ...p, date: toISODate(d1) }))}
+                                disabled={loading || disabled}
+                            >
+                                <span className="block leading-tight">Ieri</span>
+                                <span className="block text-[11px] opacity-70 leading-tight mt-0.5">
+                                    {formatDDMM(d1)}
+                                </span>
+                            </button>
+
+                            {/* Oggi */}
+                            <button
+                                type="button"
+                                className="
+                                  px-1 py-3 rounded-2xl border text-sm
+                                  bg-bg-elevate text-text
+                                  transition-all duration-150
+                                  border-sky-400/40
+                                  hover:border-sky-400/70
+                                  hover:shadow-[0_0_10px_rgba(56,189,248,0.35)]
+                                  active:bg-sky-400/20
+                                "
+                                onClick={() => setFormData((p) => ({ ...p, date: toISODate(d0) }))}
+                                disabled={loading || disabled}
+                            >
+                                <span className="block leading-tight">Oggi</span>
+                                <span className="block text-[11px] opacity-70 leading-tight mt-0.5">
+                                    {formatDDMM(d0)}
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -420,20 +882,6 @@ export default function NewTransactionForm({
                  * Importi rapidi (quick pick)
                  * ──────────────────────────────────── */}
                 <div className="mt-2">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-muted-foreground">Importo rapido</span>
-
-                        {/* Reset veloce */}
-                        <button
-                            type="button"
-                            className="text-xs text-muted-foreground hover:text-text transition"
-                            onClick={() => setFormData({ ...formData, amount: 0 })}
-                            disabled={loading || disabled}
-                        >
-                            reset
-                        </button>
-                    </div>
-
                     <div className="flex flex-wrap gap-2">
                         {QUICK_AMOUNTS.map((v) => {
                             const isActive = Number(formData.amount) === v;
@@ -519,11 +967,9 @@ export default function NewTransactionForm({
     );
 }
 
-// ───────────────────────────────────────────────────────────────
-// Descrizione file:
-// Questo componente React/Next.js gestisce il form di creazione/modifica
-// di una transazione. Mantiene lo stato locale dei campi, filtra le
-// categorie in base al tipo (entrata/spesa), mostra un toggle tipo,
-// offre un picker categoria fullscreen con icone e colori da DB, valida
-// i dati in submit e notifica il parent tramite onSave e onChangeForm.
-// ───────────────────────────────────────────────────────────────
+/*
+  File: NewTransactionForm.tsx
+  Scopo: form creazione/modifica transazioni con picker categoria, quick amounts e stepper importo (±1 / ±0.1)
+  Dipendenze: CategoriesContext, Input, Textarea, getIconComponent
+  Note: input importo custom (decimal) per UX migliore; rounding/clamp per evitare bug float
+*/

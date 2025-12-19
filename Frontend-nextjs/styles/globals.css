@@ -43,6 +43,14 @@ Stili base (body, html, transizioni globali)
     input[type="number"] {
         -moz-appearance: textfield;
     }
+
+    /* ─────────────────────────────────────────────────────────
+    Date input: nasconde icona nativa (Chrome/Edge)
+    ───────────────────────────────────────────────────────── */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        opacity: 0;
+        cursor: pointer;
+    }
 }
 
 /* ===================================================
