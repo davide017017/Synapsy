@@ -23,7 +23,13 @@ type Props = {
 export default function Dialog({ open, onClose, title, children }: Props) {
     return (
         <Transition appear show={open} as={Fragment}>
-            <HDialog as="div" className="relative z-50" onClose={onClose}>
+            <HDialog
+                as="div"
+                className="relative z-50
+                          mt-10
+            "
+                onClose={onClose}
+            >
                 {/* ===== Overlay sfocato ===== */}
                 <Transition.Child
                     as={Fragment}
@@ -34,11 +40,16 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm" />
+                    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm pt-10" />
                 </Transition.Child>
 
                 {/* ===== Box modale centrato ===== */}
-                <div className="fixed inset-0 overflow-y-auto flex items-center justify-center p-4">
+                <div
+                    className="fixed inset-0 overflow-y-auto
+                                flex items-center justify-center p-4
+                                mt-10
+                                "
+                >
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-200"
@@ -57,6 +68,7 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                                 backdrop-blur-md
                                 text-modal-text
                                 relative
+                                mt-10
                             "
                         >
                             {/* Titolo opzionale */}
