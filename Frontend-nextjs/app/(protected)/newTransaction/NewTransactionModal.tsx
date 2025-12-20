@@ -77,8 +77,8 @@ export default function NewTransactionModal({
                   relative w-full max-w-lg min-w-[320px]
                   text-text rounded-2xl shadow-2xl shadow-black/30
 
-                  pt-[calc(env(safe-area-inset-top)+14px)] sm:pt-0
-                  pb-[calc(env(safe-area-inset-bottom)+14px)] sm:pb-0
+                  pt-[calc(env(safe-area-inset-top)+24px)] sm:pt-0
+                  pb-[calc(env(safe-area-inset-bottom)+24px)] sm:pb-0
                 "
             >
                 {/* ───────── Overlay loading ───────── */}

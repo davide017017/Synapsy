@@ -153,7 +153,7 @@ export default function NewTransactionForm({
     // ────────────────────────────────────────────────
     // Preset importi rapidi
     // ────────────────────────────────────────────────
-    const QUICK_AMOUNTS = [5, 20, 50, 100, 200, 1200];
+    const QUICK_AMOUNTS = [5, 20, 50, 100, 1200];
 
     // ────────────────────────────────────────────────
     // Amount helpers (UX stepper: ±1 a sinistra, ±0.1 a destra)
