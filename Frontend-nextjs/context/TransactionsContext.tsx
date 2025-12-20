@@ -134,7 +134,13 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         const p = (async () => {
             try {
                 const data = await fetchTransactions(token, controller.signal);
-                setTransactions(sortByDateDesc(data));
+                // --------------------------------------------------
+                // Safety: dedup per id (se API manda doppioni)
+                // --------------------------------------------------
+                const map = new Map<number, Transaction>();
+                for (const t of data) map.set(t.id, t);
+
+                setTransactions(sortByDateDesc(Array.from(map.values())));
             } catch (e: any) {
                 if (e?.name !== "AbortError") {
                     const msg = e?.message || "Errore caricamento transazioni";
@@ -220,14 +226,14 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     }, [transactions]);
 
     const totalBalance = useMemo(
-            () =>
-                transactions.reduce((sum, t) => {
-                    const amt = toNum((t as any).amount);
-                    const tt = typeOf(t);
-                    return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
-                }, 0),
-            [transactions]
-        );
+        () =>
+            transactions.reduce((sum, t) => {
+                const amt = toNum((t as any).amount);
+                const tt = typeOf(t);
+                return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
+            }, 0),
+        [transactions]
+    );
 
     // =====================================================================
     // CREATE / UPDATE / DELETE / MOVE — con aggiornamento ottimistico

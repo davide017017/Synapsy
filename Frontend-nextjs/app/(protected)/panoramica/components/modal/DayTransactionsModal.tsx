@@ -84,14 +84,14 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                 {/* ===== Lista transazioni ===== */}
                 <ul className="w-full px-0 py-2 max-h-[44vh] overflow-y-auto flex flex-col items-center">
                     {transactions.length > 0 ? (
-                        transactions.map((t) => {
+                        transactions.map((t, index) => {
                             // Prendi icona e colore categoria (fallback icona generica)
                             const iconKey = t.category?.icon as keyof typeof CATEGORY_ICONS_MAP;
                             const IconComp = iconKey && CATEGORY_ICONS_MAP[iconKey];
                             const catColor = t.category?.color || "#ccc";
                             return (
                                 <li
-                                    key={t.id}
+                                    key={`${t.id}-${t.date ?? "nodate"}-${index}`}
                                     className="w-[95%] flex items-center justify-between gap-2 p-2 my-1 bg-bg-elevate rounded-xl border border-bg-soft"
                                 >
                                     {/* Icona categoria */}
@@ -176,4 +176,3 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
         </Dialog>
     );
 }
-

@@ -3,6 +3,7 @@
 // ====================================================
 // TransactionsList.tsx
 // Lista transazioni con filtro e tabella — responsive
+// (Mobile: dense + divider anno/mese con totali e label)
 // ====================================================
 
 import { useState, useMemo, useEffect } from "react";
@@ -35,6 +36,105 @@ function formatDate(dateStr: string) {
     } catch {
         return dateStr;
     }
+}
+
+// ----------------------------------------------
+// Helper: label mese (YYYY-MM -> "Mese YYYY")
+// ----------------------------------------------
+function monthLabel(monthKey: string) {
+    const [y, m] = monthKey.split("-");
+    const dt = new Date(Number(y), Math.max(0, Number(m) - 1), 1);
+    return dt.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+}
+
+// ----------------------------------------------
+// Helper: safe color (CSS var / hex / fallback)
+// ----------------------------------------------
+function safeColor(color?: string | null, fallback = "hsl(var(--c-primary))") {
+    if (!color) return fallback;
+    const c = String(color).trim();
+    if (!c) return fallback;
+    return c;
+}
+
+// ----------------------------------------------
+// Helper: monthKey (YYYY-MM) da date string
+// ----------------------------------------------
+function toMonthKey(dateStr: string) {
+    const s = String(dateStr);
+    const y = s.slice(0, 4);
+    const m = s.slice(5, 7);
+
+    if (y.length === 4 && m.length === 2) return `${y}-${m}`;
+
+    const d = new Date(s);
+    const yy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    return `${yy}-${mm}`;
+}
+
+// ----------------------------------------------
+// Helper: deduci tipo transazione in modo robusto
+// ----------------------------------------------
+function getTxType(t: any): "entrata" | "spesa" {
+    const fromCategory = t?.category?.type;
+    if (fromCategory === "entrata" || fromCategory === "spesa") return fromCategory;
+
+    const fromTx = t?.type;
+    if (fromTx === "entrata" || fromTx === "spesa") return fromTx;
+
+    // Fallback sicuro: meglio spesa che “tutto entrata”
+    return "spesa";
+}
+
+// ----------------------------------------------
+// Helper: crea totali da lista tx
+// ----------------------------------------------
+function calcTotals(list: any[]) {
+    let entrate = 0;
+    let spese = 0;
+
+    for (const t of list) {
+        const type = getTxType(t);
+        const amount = Number(t?.amount ?? 0) || 0;
+
+        if (type === "entrata") entrate += amount;
+        else spese += amount;
+    }
+
+    return { entrate, spese, saldo: entrate - spese };
+}
+
+// ----------------------------------------------
+// Helper: label compatte per i divider (testo esplicito)
+// ----------------------------------------------
+function TotalsInline({ entrate, spese, saldo }: { entrate: number; spese: number; saldo: number }) {
+    const saldoPositivo = saldo >= 0;
+
+    return (
+        <div className="flex items-center gap-3 text-[11px] tabular-nums">
+            <span className="flex items-center gap-1">
+                <span className="opacity-80">Entrate:</span>
+                <span className="text-[hsl(var(--c-success))] font-semibold">+{formatAmount(entrate)}</span>
+            </span>
+
+            <span className="flex items-center gap-1">
+                <span className="opacity-80">Spese:</span>
+                <span className="text-[hsl(var(--c-danger))] font-semibold">-{formatAmount(spese)}</span>
+            </span>
+
+            <span className="flex items-center gap-1">
+                <span className="opacity-80">Saldo:</span>
+                <span
+                    className={`font-bold ${
+                        saldoPositivo ? "text-[hsl(var(--c-success))]" : "text-[hsl(var(--c-danger))]"
+                    }`}
+                >
+                    {formatAmount(saldo)}
+                </span>
+            </span>
+        </div>
+    );
 }
 
 // ----------------------------------------------
@@ -79,6 +179,95 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
         setVisible(filtered.length < 20 ? filtered.length : 20);
     }, [filter, transactions, filtered]);
 
+    // ----------------------------------------------
+    // Dati mostrati
+    // ----------------------------------------------
+    const shown = filtered.slice(0, visible);
+
+    // --------------------------------------------------
+    // MOBILE: raggruppa per mese e calcola totali mese/anno
+    // Hook SEMPRE chiamato (non condizionale)
+    // --------------------------------------------------
+    type Block =
+        | { kind: "year"; year: string; key: string; totals: { entrate: number; spese: number; saldo: number } }
+        | {
+              kind: "month";
+              monthKey: string;
+              key: string;
+              totals: { entrate: number; spese: number; saldo: number };
+          }
+        | { kind: "tx"; key: string; tx: (typeof shown)[number]; index: number };
+
+    const mobileModel = useMemo(() => {
+        if (!shown.length) return { blocks: [] as Block[] };
+
+        // 1) group per monthKey
+        const byMonth = new Map<string, any[]>();
+        for (const t of shown) {
+            const mk = toMonthKey(String(t.date));
+            if (!byMonth.has(mk)) byMonth.set(mk, []);
+            byMonth.get(mk)!.push(t);
+        }
+
+        // 2) totali per mese
+        const monthTotals = new Map<string, { entrate: number; spese: number; saldo: number }>();
+        for (const [mk, list] of byMonth.entries()) monthTotals.set(mk, calcTotals(list));
+
+        // 3) totali per anno (somma dai mesi)
+        const yearTotals = new Map<string, { entrate: number; spese: number; saldo: number }>();
+        for (const [mk, totals] of monthTotals.entries()) {
+            const year = mk.slice(0, 4);
+            const prev = yearTotals.get(year) ?? { entrate: 0, spese: 0, saldo: 0 };
+            yearTotals.set(year, {
+                entrate: prev.entrate + totals.entrate,
+                spese: prev.spese + totals.spese,
+                saldo: prev.saldo + totals.saldo,
+            });
+        }
+
+        // 4) blocks in ordine di shown (già sortato DESC)
+        const blocks: Block[] = [];
+        let lastYear = "";
+        let lastMonthKey = "";
+
+        shown.forEach((tx, index) => {
+            const monthKey = toMonthKey(String(tx.date));
+            const year = monthKey.slice(0, 4);
+
+            if (year !== lastYear) {
+                lastYear = year;
+                lastMonthKey = "";
+
+                blocks.push({
+                    kind: "year",
+                    year,
+                    key: `y-${year}`,
+                    totals: yearTotals.get(year) ?? { entrate: 0, spese: 0, saldo: 0 },
+                });
+            }
+
+            if (monthKey !== lastMonthKey) {
+                lastMonthKey = monthKey;
+
+                blocks.push({
+                    kind: "month",
+                    monthKey,
+                    key: `m-${monthKey}`,
+                    totals: monthTotals.get(monthKey) ?? { entrate: 0, spese: 0, saldo: 0 },
+                });
+            }
+
+            blocks.push({
+                kind: "tx",
+                key: `${tx.id}-${tx.date ?? "nodate"}-${index}`,
+                tx,
+                index,
+            });
+        });
+
+        return { blocks };
+    }, [shown]);
+
     // ===== Render Vuoto =====
     if (!transactions.length) {
         return (
@@ -89,8 +278,6 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
             </div>
         );
     }
-
-    const shown = filtered.slice(0, visible);
 
     // ===== Render Responsive =====
     return (
@@ -144,64 +331,129 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
             </div>
 
             {/* ===================================================
-               CONTENUTO: mobile cards / desktop table
+               CONTENUTO: mobile dense / desktop table
                =================================================== */}
             <div className="grid min-w-0 w-full">
-                {/* ---------- MOBILE: Cards ---------- */}
-                <div className="lg:hidden space-y-2">
-                    {shown.map((t) => {
-                        const isIncome = (t.category?.type ?? "") === "entrata" || t.amount > 0;
+                {/* ---------- MOBILE: Dense list con divider + totali (ESPRESSI) ---------- */}
+                <div className="lg:hidden rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
+                    {mobileModel.blocks.map((b) => {
+                        // --------------------------
+                        // Divider ANNO
+                        // --------------------------
+                        if (b.kind === "year") {
+                            return (
+                                <div
+                                    key={b.key}
+                                    className="px-3 py-2 bg-bg-elevate/55 border-b border-bg-elevate flex items-center justify-between gap-3"
+                                >
+                                    <div className="text-xs font-bold tracking-wider uppercase">Anno {b.year}</div>
+                                    <TotalsInline
+                                        entrate={b.totals.entrate}
+                                        spese={b.totals.spese}
+                                        saldo={b.totals.saldo}
+                                    />
+                                </div>
+                            );
+                        }
+
+                        // --------------------------
+                        // Divider MESE
+                        // --------------------------
+                        if (b.kind === "month") {
+                            return (
+                                <div
+                                    key={b.key}
+                                    className="px-3 py-1.5 bg-bg-elevate/35 border-b border-bg-elevate flex items-center justify-between gap-3"
+                                >
+                                    <div className="text-[11px] font-semibold capitalize text-muted-foreground">
+                                        Totale {monthLabel(b.monthKey)}
+                                    </div>
+                                    <TotalsInline
+                                        entrate={b.totals.entrate}
+                                        spese={b.totals.spese}
+                                        saldo={b.totals.saldo}
+                                    />
+                                </div>
+                            );
+                        }
+
+                        // --------------------------
+                        // Riga transazione (dense)
+                        // --------------------------
+                        const t = b.tx;
+                        const index = b.index;
+
+                        const txType = getTxType(t);
+                        const isIncome = txType === "entrata";
                         const isSelected = selectedId === t.id;
+
+                        const categoryColor = safeColor(t.category?.color, "hsl(var(--c-primary))");
+                        const amountColor = isIncome ? "hsl(var(--c-success))" : "hsl(var(--c-danger))";
 
                         return (
                             <button
-                                key={t.id}
+                                key={b.key ?? `${t.id}-${t.date ?? "nodate"}-${index}`}
                                 type="button"
                                 onClick={() => onSelect(t)}
                                 className={`
-                                    w-full text-left rounded-2xl border
-                                    bg-bg-elevate/30
-                                    px-4 py-3
+                                    w-full text-left
+                                    px-3 py-2
                                     transition
-                                    ${isSelected ? "border-primary/60 shadow-md" : "border-bg-elevate"}
+                                    border-b border-bg-elevate
+                                    ${isSelected ? "bg-bg-elevate/60" : "hover:bg-bg-elevate/40"}
                                 `}
+                                style={{ borderLeft: `4px solid ${categoryColor}` }}
                             >
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            {isIncome ? (
-                                                <ArrowUpRight className="text-success" size={18} />
-                                            ) : (
-                                                <ArrowDownRight className="text-danger" size={18} />
-                                            )}
-                                            <div className="font-semibold truncate">{t.description}</div>
-                                        </div>
+                                <div className="flex items-center gap-2">
+                                    {/* Icon tipo (micro) */}
+                                    <span className="shrink-0" style={{ color: amountColor }}>
+                                        {isIncome ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
+                                    </span>
 
-                                        <div className="mt-1 text-xs text-muted-foreground flex items-center gap-2">
-                                            <span>{formatDate(String(t.date))}</span>
+                                    {/* Centro */}
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <div className="font-semibold text-sm truncate">{t.description}</div>
+
+                                            {/* Pill categoria mini (colorata) */}
                                             {t.category?.name ? (
-                                                <span className="px-2 py-0.5 rounded-full border border-bg-elevate bg-bg-elevate/30">
+                                                <span
+                                                    className="shrink-0 text-[10px] leading-none px-2 py-1 rounded-full border border-bg-elevate"
+                                                    style={{
+                                                        backgroundColor: `${categoryColor}22`,
+                                                        color: categoryColor,
+                                                    }}
+                                                    title={t.category.name}
+                                                >
                                                     {t.category.name}
                                                 </span>
                                             ) : (
-                                                <span className="opacity-70">Senza categoria</span>
+                                                <span className="shrink-0 text-[10px] leading-none px-2 py-1 rounded-full border border-bg-elevate text-muted-foreground">
+                                                    Senza categoria
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="mt-0.5 text-[11px] text-muted-foreground flex items-center gap-2">
+                                            <span>{formatDate(String(t.date))}</span>
+
+                                            {/* Selection hint */}
+                                            {isSelectionMode && (
+                                                <span className="opacity-80">
+                                                    {selectedIds.includes(t.id) ? "Selezionata" : "Tocca per aprire"}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className={`shrink-0 font-bold ${isIncome ? "text-success" : "text-danger"}`}>
+                                    {/* Importo a destra (verde/rosso) */}
+                                    <div
+                                        className="shrink-0 font-bold text-sm tabular-nums"
+                                        style={{ color: amountColor }}
+                                    >
                                         {formatAmount(Number(t.amount))}
                                     </div>
                                 </div>
-
-                                {/* Selection mode: mini hint (solo se attivo) */}
-                                {isSelectionMode && (
-                                    <div className="mt-2 text-xs text-muted-foreground">
-                                        {selectedIds.includes(t.id)
-                                            ? "Selezionata"
-                                            : "Tocca per aprire • usa checkbox nella tabella su desktop"}
-                                    </div>
-                                )}
                             </button>
                         );
                     })}
@@ -261,5 +513,11 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
 /*
 File: TransactionsList.tsx
 Scopo: gestisce filtri, paginazione (visible) e rendering responsive.
-Come: su desktop mostra filtro laterale + tabella; su mobile mostra un toggle filtri e una lista a card più leggibile.
+Come:
+- Desktop: filtro laterale + tabella.
+- Mobile: lista “dense” stile tabella, con divider compatti per ANNO e MESE.
+- Divider ANNO/MESE mostrano esplicitamente: Entrate, Spese, Saldo (etichette chiare).
+- Tipo transazione dedotto robusto: category.type -> tx.type -> fallback "spesa".
+- Importo e icona: verde per entrata, rosso per spesa.
+- Barra sinistra: colore categoria.
 */
