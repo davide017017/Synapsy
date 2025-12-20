@@ -23,36 +23,38 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::create('audit_logs', function (Blueprint $table) {
-            $table->id();
+  public $withinTransaction = false;
 
-            // =========================================================
-            // Foreign key moderna e compatibile
-            // =========================================================
-            $table->foreignId('user_id')
-                ->nullable()
-                ->constrained()
-                ->nullOnDelete();
+  public function up(): void
+  {
+    Schema::create('audit_logs', function (Blueprint $table) {
+      $table->id();
 
-            $table->string('action');           // Azione (es: created, updated, deleted, moved)
-            $table->string('auditable_type');   // Classe modello (es: App\Models\Spesa)
-            $table->bigInteger('auditable_id'); // ID del modello (puoi lasciarlo così, va bene per FK generiche)
+      // =========================================================
+      // Foreign key moderna e compatibile
+      // =========================================================
+      $table->foreignId('user_id')
+        ->nullable()
+        ->constrained()
+        ->nullOnDelete();
 
-            $table->json('old_values')->nullable(); // Stato PRIMA (json, nullable)
-            $table->json('new_values')->nullable(); // Stato DOPO (json, nullable)
+      $table->string('action');           // Azione (es: created, updated, deleted, moved)
+      $table->string('auditable_type');   // Classe modello (es: App\Models\Spesa)
+      $table->bigInteger('auditable_id'); // ID del modello (puoi lasciarlo così, va bene per FK generiche)
 
-            $table->text('reason')->nullable();     // Motivo (testo libero, nullable)
-            $table->string('ip_address', 45)->nullable(); // IP compatibile IPv6
-            $table->text('user_agent')->nullable();       // User Agent (browser, device...)
+      $table->json('old_values')->nullable(); // Stato PRIMA (json, nullable)
+      $table->json('new_values')->nullable(); // Stato DOPO (json, nullable)
 
-            $table->timestamps();
-        });
-    }
+      $table->text('reason')->nullable();     // Motivo (testo libero, nullable)
+      $table->string('ip_address', 45)->nullable(); // IP compatibile IPv6
+      $table->text('user_agent')->nullable();       // User Agent (browser, device...)
 
-    public function down(): void
-    {
-        Schema::dropIfExists('audit_logs');
-    }
+      $table->timestamps();
+    });
+  }
+
+  public function down(): void
+  {
+    Schema::dropIfExists('audit_logs');
+  }
 };

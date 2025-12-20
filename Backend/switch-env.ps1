@@ -1,12 +1,13 @@
 # ==========================================
 # PowerShell script per cambiare il file .env
-# Uso: .\switch-env.ps1 local   --> usa .env.local
-#      .\switch-env.ps1 beta    --> usa .env.beta
-#      .\switch-env.ps1 prod    --> usa .env.prod
+# Uso:    .\switch-env.ps1 local
+#         .\switch-env.ps1 development
+#         .\switch-env.ps1 production
+
 # ==========================================
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateSet("local", "beta", "prod")]
+    [ValidateSet("local", "development", "production")]
     [string]$envType
 )
 

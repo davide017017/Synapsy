@@ -16,3 +16,11 @@
 -   Aggiunta documentazione DB (ERD, overview, renaming plan, constraints, unused).
 -   Local scopes e cleanup PSR-12 in Category/Entrata/Spesa.
 -   Eager loading in servizi per ridurre N+1.
+
+controllare DB
+
+php artisan env
+
+resettare tutto il db con seeder
+
+php artisan migrate:fresh --seed

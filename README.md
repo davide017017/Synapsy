@@ -12,7 +12,7 @@ Synapsy organizza le tue finanze in modo semplice, veloce e (quasi) divertente, 
 
 **🚀 Prova ora Synapsy!**
 👉 **Prova subito la web app qui:**  
-[https://synapsy-frontend.vercel.app/](https://synapsy-frontend.vercel.app/)
+[https://synapsy-dev.vercel.app/](https://synapsy-dev.vercel.app/)
 
 > Puoi accedere in modalità demo per esplorare tutte le funzionalità senza registrazione!
 
@@ -77,10 +77,10 @@ npm run dev
 
 All'interno della cartella [`scripts/`](scripts) trovi alcuni script comuni:
 
-- `audit-all.sh` / `audit-all.ps1` – eseguono lint, typecheck, build e test per Backend, Frontend e ML.
-- `check-routes.mjs` – verifica la raggiungibilità delle rotte API (accetta base URL e token opzionali).
-- `ml_smoke_test.ps1` – smoke test per il microservizio ML e l'endpoint Laravel (`MlBase`, `ApiBase`, `Token`).
-- `dev-all.ps1` – avvia in parallelo i servizi di sviluppo.
+-   `audit-all.sh` / `audit-all.ps1` – eseguono lint, typecheck, build e test per Backend, Frontend e ML.
+-   `check-routes.mjs` – verifica la raggiungibilità delle rotte API (accetta base URL e token opzionali).
+-   `ml_smoke_test.ps1` – smoke test per il microservizio ML e l'endpoint Laravel (`MlBase`, `ApiBase`, `Token`).
+-   `dev-all.ps1` – avvia in parallelo i servizi di sviluppo.
 
 ---
 

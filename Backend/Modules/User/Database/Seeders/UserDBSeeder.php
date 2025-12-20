@@ -46,8 +46,8 @@ class UserDBSeeder extends Seeder
     // =========================================================================
     // 🧪 Generazione utenti fittizi
     // =========================================================================
-    $this->logInfo('User', 'Generazione 1 utente demo...', '🧪');
-    User::factory()->create(['has_accepted_terms' => true]);
+    // $this->logInfo('User', 'Generazione 1 utente demo...', '🧪');
+    // User::factory()->create(['has_accepted_terms' => true]);
 
     // =========================================================================
     // ✅ Fine seeding

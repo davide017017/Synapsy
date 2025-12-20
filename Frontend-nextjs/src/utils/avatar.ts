@@ -19,15 +19,24 @@ export type AvatarUser = {
 // --------------------------------------------------
 function resolvePath(path: string): string {
     const cdn = process.env.NEXT_PUBLIC_CDN_URL;
+
+    // ✅ FIX: se è già un path assoluto locale, non riprefissare
+    if (path.startsWith("/images/avatars/")) {
+        return path;
+    }
+
     const normalized = path.replace(/^\/+/, "");
 
     if (cdn) {
         return `${cdn.replace(/\/+$/, "")}/${normalized}`;
     }
+
     const localBase = "/images/avatars";
+
     if (normalized.startsWith("images/avatars")) {
         return `/${normalized}`;
     }
+
     return `${localBase}/${normalized}`;
 }
 
@@ -49,8 +58,7 @@ export function getAvatarUrl(user: AvatarUser): string {
     }
 
     const initials = (
-        (user.name?.[0] || "") +
-        (user.surname?.[0] || "") ||
+        (user.name?.[0] || "") + (user.surname?.[0] || "") ||
         user.username?.slice(0, 2) ||
         "?"
     ).toUpperCase();

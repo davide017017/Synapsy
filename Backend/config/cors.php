@@ -5,53 +5,55 @@
 // ─────────────────────────────────────────────────────────────
 
 return [
-    // ── Rotte coperte ──
-    'paths' => [
-        'api/*',
-        'v1/*',
-        'v1/jwt/*',
-        'sanctum/csrf-cookie',
-    ],
+  // ── Rotte coperte ──
+  'paths' => [
+    'api/*',
+    'v1/*',
+    'v1/jwt/*',
+    'sanctum/csrf-cookie',
+  ],
 
-    // ── Metodi / Header ──
-    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    'allowed_headers' => [
-        'Content-Type',
-        'X-Requested-With',
-        'Authorization',
-        'Accept',
-        'Origin',
-    ],
+  // ── Metodi / Header ──
+  'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  'allowed_headers' => [
+    'Content-Type',
+    'X-Requested-With',
+    'Authorization',
+    'Accept',
+    'Origin',
+  ],
 
-    // ── Origin ammessi ──
-    'allowed_origins' => [
-        // Dev Expo Web
-        'http://localhost:8083',
-        'http://192.168.0.111:8083',
+  // ── Origin ammessi ──
+  'allowed_origins' => [
+    // Dev Expo Web
+    'http://localhost:8083',
+    'http://192.168.0.111:8083',
 
-        // Dev Next.js
-        'http://localhost:3000',
-        'http://localhost:3001',       // aggiunto
-        'http://192.168.0.111:3000',
-        'http://192.168.0.111:3001',   // aggiunto
+    // Dev Next.js
+    'http://localhost:3000',
+    'http://localhost:3001',       // aggiunto
+    'http://192.168.0.111:3000',
+    'http://192.168.0.111:3001',   // aggiunto
 
-        // Produzione
-        env('FRONTEND_URL', 'https://synapsy-frontend.vercel.app'),
-    ],
+    // Dev
+    env('FRONTEND_URL', 'https://synapsy-dev.vercel.app/'),
+    // Produzione
 
-    // ── Pattern deploy Vercel (preview builds) ──
-    'allowed_origins_patterns' => [
-        '#^https://synapsy-frontend-.*\.vercel\.app$#',
-    ],
+  ],
 
-    // ── Header esposti al browser ──
-    'exposed_headers' => ['Authorization'],
+  // ── Pattern deploy Vercel (preview builds) ──
+  'allowed_origins_patterns' => [
+    '#^https://synapsy-frontend-.*\.vercel\.app$#',
+  ],
 
-    // ── Cache preflight ──
-    'max_age' => 600,
+  // ── Header esposti al browser ──
+  'exposed_headers' => ['Authorization'],
 
-    // ── Nessun cookie cross-site ──
-    'supports_credentials' => false,
+  // ── Cache preflight ──
+  'max_age' => 600,
+
+  // ── Nessun cookie cross-site ──
+  'supports_credentials' => false,
 ];
 
 // ─────────────────────────────────────────────────────────────
