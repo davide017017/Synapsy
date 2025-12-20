@@ -13,46 +13,89 @@ export const authOptions: NextAuthOptions = {
                 password: { type: "password" },
             },
             async authorize(credentials) {
+                // ==================================================
+                // AUTH DEBUG — rimuovere quando backend è stabile
+                // ==================================================
+                const DEBUG_AUTH = process.env.NODE_ENV === "development";
+
                 const payload = {
                     email: credentials?.email,
                     password: credentials?.password,
                 };
 
-                console.log("LOGIN URL", url("login"));
-                console.log("LOGIN PAYLOAD", payload);
+                if (DEBUG_AUTH) {
+                    console.log("LOGIN URL", url("login"));
+                    console.log("LOGIN PAYLOAD", payload);
+                }
 
-                const res = await fetch(url("login"), {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json", // 👈 AGGIUNTO
-                    },
-                    body: JSON.stringify(payload),
-                });
+                let res: Response;
 
-                console.log("LOGIN STATUS", res.status);
+                try {
+                    res = await fetch(url("login"), {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Accept: "application/json",
+                        },
+                        body: JSON.stringify(payload),
+                    });
+                } catch (err) {
+                    console.error("LOGIN NETWORK ERROR", err);
+                    return null;
+                }
 
+                if (DEBUG_AUTH) {
+                    console.log("LOGIN STATUS", res.status);
+                    console.log("LOGIN HEADERS", Object.fromEntries(res.headers.entries()));
+                }
+
+                const contentType = res.headers.get("content-type") || "";
+
+                // --------------------------------------------------
+                // Se NON è JSON → stampa body raw (HTML / PHP error)
+                // --------------------------------------------------
+                if (!contentType.includes("application/json")) {
+                    const raw = await res.text().catch(() => "");
+                    console.error("LOGIN NON-JSON RESPONSE", {
+                        status: res.status,
+                        contentType,
+                        preview: raw.slice(0, 1000),
+                    });
+                    return null;
+                }
+
+                // --------------------------------------------------
+                // Parse JSON sicuro
+                // --------------------------------------------------
                 let data: any = null;
                 try {
                     data = await res.json();
                 } catch (e) {
                     console.error("LOGIN JSON PARSE ERROR", e);
-                }
-
-                console.log("LOGIN DATA", data);
-
-                if (!res.ok) {
-                    console.error("LOGIN FAILED (status not ok)");
                     return null;
                 }
 
-                // compat largo: token + user
+                if (DEBUG_AUTH) {
+                    console.log("LOGIN DATA", data);
+                }
+
+                // --------------------------------------------------
+                // HTTP error (401 / 422 / 500)
+                // --------------------------------------------------
+                if (!res.ok) {
+                    console.error("LOGIN FAILED (status not ok)", data);
+                    return null;
+                }
+
+                // --------------------------------------------------
+                // Compat: token + user (strutture diverse)
+                // --------------------------------------------------
                 const token = data?.token ?? data?.access_token ?? data?.data?.token ?? data?.data?.access_token;
 
                 const user = data?.user ?? data?.data?.user ?? data?.data ?? null;
 
                 if (!token || !user) {
-                    console.error("LOGIN FAILED (missing token or user)");
+                    console.error("LOGIN FAILED (missing token or user)", data);
                     return null;
                 }
 

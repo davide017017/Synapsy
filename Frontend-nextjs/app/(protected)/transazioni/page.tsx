@@ -5,33 +5,53 @@
 // ==============================================
 
 import { useState, Suspense } from "react";
-import { useTransactions } from "@/context/TransactionsContext";
-import { useCategories } from "@/context/CategoriesContext";
-import SelectionToolbar from "./components/SelectionToolbar";
 import dynamic from "next/dynamic";
-import TransactionsListSkeleton from "./skeleton/TransactionsListSkeleton";
-const TransactionsList = dynamic(() => import("./components/TransactionsList"));
-import TransactionDetailModal from "./modal/TransactionDetailModal";
-import NewTransactionButton from "../newTransaction/NewTransactionButton";
-import { Transaction } from "@/types/models/transaction";
-import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import { Loader2 } from "lucide-react";
 
+import { useTransactions } from "@/context/TransactionsContext";
+import { useCategories } from "@/context/CategoriesContext";
+
+import SelectionToolbar from "./components/SelectionToolbar";
+import TransactionsListSkeleton from "./skeleton/TransactionsListSkeleton";
+import TransactionDetailModal from "./modal/TransactionDetailModal";
+import NewTransactionButton from "../newTransaction/NewTransactionButton";
+
+import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
+import { Transaction } from "@/types/models/transaction";
+
+// --------------------------------------------------
+// Lazy list (migliora first render)
+// --------------------------------------------------
+const TransactionsList = dynamic(() => import("./components/TransactionsList"), {
+    loading: () => <TransactionsListSkeleton />,
+    ssr: false,
+});
+
 export default function TransazioniPage() {
+    // ----------------------------
+    // Context
+    // ----------------------------
     const { transactions, loading, error, update, remove } = useTransactions();
     const { categories } = useCategories();
-    const [selected, setSelected] = useState<number | null>(null);
+
+    // ----------------------------
+    // UI state
+    // ----------------------------
+    const [selectedId, setSelectedId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    // ----------------------------
+    // CRUD handlers
+    // ----------------------------
     const handleEdit = async (tx: Transaction) => {
-        setSelected(null);
+        setSelectedId(null);
         setIsLoading(true);
         await update(tx.id, tx);
         setIsLoading(false);
     };
 
     const handleDelete = async (tx: Transaction) => {
-        setSelected(null);
+        setSelectedId(null);
         setIsLoading(true);
         await remove(tx.id);
         setIsLoading(false);
@@ -39,11 +59,18 @@ export default function TransazioniPage() {
 
     const handleDeleteSelectedTransactions = async (ids: number[]) => {
         setIsLoading(true);
+
+        // Nota: semplice e leggibile (come vuoi tu).
+        // Se vuoi, dopo lo rendiamo parallel con Promise.all.
         for (const id of ids) await remove(id);
+
         setIsLoading(false);
     };
 
-    const selectedTx = transactions.find((tx) => tx.id === selected);
+    // ----------------------------
+    // Derived
+    // ----------------------------
+    const selectedTx = transactions.find((tx) => tx.id === selectedId);
 
     return (
         <div className="space-y-5">
@@ -76,6 +103,7 @@ export default function TransazioniPage() {
                         </span>
                         <span>Transazioni</span>
                     </h1>
+
                     <p className="text-sm text-[hsl(var(--c-text-secondary))]">
                         Tieni traccia in modo ordinato delle tue entrate e spese giornaliere.
                     </p>
@@ -96,8 +124,8 @@ export default function TransazioniPage() {
                         <SelectionToolbar onDeleteSelected={handleDeleteSelectedTransactions} />
                         <TransactionsList
                             transactions={transactions}
-                            onSelect={(tx) => setSelected(tx.id)}
-                            selectedId={selected}
+                            onSelect={(tx) => setSelectedId(tx.id)}
+                            selectedId={selectedId}
                         />
                     </>
                 </Suspense>
@@ -112,7 +140,7 @@ export default function TransazioniPage() {
             {selectedTx && (
                 <TransactionDetailModal
                     transaction={selectedTx}
-                    onClose={() => setSelected(null)}
+                    onClose={() => setSelectedId(null)}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     categories={categories}
@@ -135,3 +163,9 @@ export default function TransazioniPage() {
         </div>
     );
 }
+
+/*
+File: page.tsx
+Scopo: pagina Transazioni (lista + toolbar + modale dettaglio) con CRUD via context.
+Come: carica lista (dynamic), gestisce selezione, apre modale, esegue update/remove e mostra overlay di loading.
+*/

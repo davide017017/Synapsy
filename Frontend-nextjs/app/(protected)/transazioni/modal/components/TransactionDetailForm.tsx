@@ -1,13 +1,13 @@
 // ================================
 // TransactionDetailForm.tsx
 // ================================
+
 import AmountField from "./field/AmountField";
 import DateField from "./field/DateField";
 import DescriptionField from "./field/DescriptionField";
 import CategoryField from "./field/CategoryField";
 import NotesField from "./field/NotesField";
-import { Transaction } from "@/types/models/transaction";
-import { Category } from "@/types/models/category";
+
 import type { TransactionDetailFormProps } from "@/types/transazioni/modal";
 
 export default function TransactionDetailForm({
@@ -18,7 +18,9 @@ export default function TransactionDetailForm({
     showErrors,
     transaction,
 }: TransactionDetailFormProps) {
+    // --------------------------------------------------
     // Filtra categorie per tipo selezionato
+    // --------------------------------------------------
     const filteredCategories = categories.filter((c) => c.type === selectedType);
 
     return (
@@ -30,12 +32,14 @@ export default function TransactionDetailForm({
                     original={transaction.amount}
                     showError={showErrors && (!formData.amount || formData.amount <= 0)}
                 />
+
                 <DateField
                     value={formData.date}
                     onChange={(v) => setFormData({ ...formData, date: v })}
                     original={transaction.date}
                 />
             </div>
+
             <div className="w-full flex flex-col items-center">
                 <DescriptionField
                     value={formData.description}
@@ -44,6 +48,7 @@ export default function TransactionDetailForm({
                     showError={showErrors && !formData.description?.trim()}
                 />
             </div>
+
             <div className="w-full flex flex-col items-center">
                 <CategoryField
                     value={formData.category_id}
@@ -53,6 +58,7 @@ export default function TransactionDetailForm({
                     showError={showErrors && !formData.category_id}
                 />
             </div>
+
             <div className="w-full flex flex-col items-center">
                 <NotesField
                     value={formData.notes ?? undefined}
@@ -64,3 +70,8 @@ export default function TransactionDetailForm({
     );
 }
 
+/*
+File: TransactionDetailForm.tsx
+Scopo: form del dettaglio transazione dentro la modale (campi importo/data/descrizione/categoria/note).
+Come: riceve formData + setter, filtra le categorie per tipo (entrata/spesa) e mostra errori minimi.
+*/

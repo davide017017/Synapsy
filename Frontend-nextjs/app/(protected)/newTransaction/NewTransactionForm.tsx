@@ -153,7 +153,7 @@ export default function NewTransactionForm({
     // ────────────────────────────────────────────────
     // Preset importi rapidi
     // ────────────────────────────────────────────────
-    const QUICK_AMOUNTS = [5, 10, 15, 20, 25, 50, 100, 200, 1200];
+    const QUICK_AMOUNTS = [5, 20, 50, 100, 200, 1200];
 
     // ────────────────────────────────────────────────
     // Amount helpers (UX stepper: ±1 a sinistra, ±0.1 a destra)
@@ -907,60 +907,75 @@ export default function NewTransactionForm({
                 </div>
 
                 {/* ────────────────────────────────────
-                 * Note
+                 * NOTE + AZIONI (responsive)
+                 *  - xs/md: note a sinistra + bottoni in colonna a destra
+                 *  - lg+:   stessa idea ma più spazio, bottoni centrati nel box
                  * ──────────────────────────────────── */}
                 <div className="mt-4">
-                    <label htmlFor="transaction-notes" className="block text-sm font-medium mb-1">
-                        Note (opzionale)
-                    </label>
-                    <Textarea
-                        id="transaction-notes"
-                        name="notes"
-                        placeholder="Note (opzionale)"
-                        value={formData.notes || ""}
-                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    />
-                </div>
+                    <div className="flex gap-3 lg:gap-6">
+                        {/* Note (sinistra) */}
+                        <div className="flex-1 min-w-0">
+                            <label htmlFor="transaction-notes" className="block text-sm font-medium mb-1">
+                                Note (opzionale)
+                            </label>
 
-                {/* ────────────────────────────────────
-                 * Azioni — dinamiche per colore tipo
-                 * ──────────────────────────────────── */}
-                <div className="flex gap-2 w-full mt-6">
-                    {/* Bottone ANNULLA (stile neutro) */}
-                    <button
-                        type="button"
-                        className="
-                            w-1/2 bg-bg-elevate text-text border border-bg-soft 
-                            rounded-xl py-2 font-semibold shadow 
-                            focus:ring-2 focus:ring-primary/40 transition
-                        "
-                        onClick={onCancel}
-                        disabled={loading || disabled}
-                    >
-                        Annulla
-                    </button>
+                            <Textarea
+                                id="transaction-notes"
+                                name="notes"
+                                placeholder="Note (opzionale)"
+                                value={formData.notes || ""}
+                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                className="min-h-[120px] lg:min-h-[140px] break-words whitespace-pre-wrap"
+                            />
+                        </div>
 
-                    {/* Bottone CONFERMA — colore dinamico */}
-                    <button
-                        type="submit"
-                        className={cn(
-                            "w-1/2 rounded-xl py-2 font-semibold shadow transition text-white focus:ring-2",
-                            formData.type === "entrata"
-                                ? "bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500/40"
-                                : "bg-rose-600 hover:bg-rose-700 focus:ring-rose-500/40"
-                        )}
-                        disabled={loading || disabled}
-                    >
-                        {loading
-                            ? "Salvataggio…"
-                            : transaction
-                            ? formData.type === "entrata"
-                                ? "Salva entrata"
-                                : "Salva spesa"
-                            : formData.type === "entrata"
-                            ? "Crea entrata"
-                            : "Crea spesa"}
-                    </button>
+                        {/* Bottoni (destra) */}
+                        <div
+                            className="
+                                w-[140px] sm:w-[170px] lg:w-[220px]
+                                flex flex-col gap-2
+                                items-center justify-center
+                            "
+                        >
+                            {/* Bottone CREA/SALVA */}
+                            <button
+                                type="submit"
+                                className={cn(
+                                    "w-full rounded-xl py-2 font-semibold shadow transition text-white focus:ring-2",
+                                    "flex items-center justify-center", // centra testo (orizzontale + verticale)
+                                    formData.type === "entrata"
+                                        ? "bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500/40"
+                                        : "bg-rose-600 hover:bg-rose-700 focus:ring-rose-500/40"
+                                )}
+                                disabled={loading || disabled}
+                            >
+                                {loading
+                                    ? "Salvataggio…"
+                                    : transaction
+                                    ? formData.type === "entrata"
+                                        ? "Salva entrata"
+                                        : "Salva spesa"
+                                    : formData.type === "entrata"
+                                    ? "Crea entrata"
+                                    : "Crea spesa"}
+                            </button>
+
+                            {/* Bottone ANNULLA */}
+                            <button
+                                type="button"
+                                className="
+                                    w-full bg-bg-elevate text-text border border-bg-soft 
+                                    rounded-xl py-2 font-semibold shadow 
+                                    focus:ring-2 focus:ring-primary/40 transition
+                                    flex items-center justify-center  /* centra testo */
+                                "
+                                onClick={onCancel}
+                                disabled={loading || disabled}
+                            >
+                                Annulla
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
