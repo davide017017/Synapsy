@@ -2,44 +2,49 @@
 
 return [
 
-    // Nome dell'applicazione (usato in email, UI, notifiche, ecc.)
-    'name' => env('APP_NAME', 'Laravel'),
+  // Nome dell'applicazione (usato in email, UI, notifiche, ecc.)
+  'name' => env('APP_NAME', 'Laravel'),
 
-    // Ambiente dell'app (local, production, ecc.)
-    'env' => env('APP_ENV', 'production'),
+  // Ambiente dell'app (local, production, ecc.)
+  'env' => env('APP_ENV', 'production'),
 
-    // Modalità debug (true per sviluppo, false in produzione)
-    'debug' => (bool) env('APP_DEBUG', false),
+  // Modalità debug (true per sviluppo, false in produzione)
+  'debug' => (bool) env('APP_DEBUG', false),
 
-    // URL base dell'applicazione
-    'url' => env('APP_URL', 'http://localhost'),
+  // URL base dell'applicazione
+  'url' => env('APP_URL', 'http://localhost'),
 
-    // Fuso orario di default
-    'timezone' => 'UTC',
+  // --------------------------------------------------
+  // Frontend URL (redirect login/verifica)
+  // --------------------------------------------------
+  'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
 
-    // Localizzazione principale
-    'locale' => env('APP_LOCALE', 'en'),
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+  // Fuso orario di default
+  'timezone' => 'UTC',
 
-    // Chiave di cifratura (obbligatoria per la sicurezza)
-    'cipher' => 'AES-256-CBC',
-    'key' => env('APP_KEY'),
+  // Localizzazione principale
+  'locale' => env('APP_LOCALE', 'en'),
+  'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+  'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
-    // Chiavi di cifratura precedenti, se supporti la rotazione
-    'previous_keys' => [
-        ...array_filter(explode(',', env('APP_PREVIOUS_KEYS', ''))),
-    ],
+  // Chiave di cifratura (obbligatoria per la sicurezza)
+  'cipher' => 'AES-256-CBC',
+  'key' => env('APP_KEY'),
 
-    // Modalità di manutenzione
-    'maintenance' => [
-        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
-    ],
+  // Chiavi di cifratura precedenti, se supporti la rotazione
+  'previous_keys' => [
+    ...array_filter(explode(',', env('APP_PREVIOUS_KEYS', ''))),
+  ],
 
-    // Alias globali per classi usabili ovunque (facoltativi)
-    'aliases' => [
-        'ApiResponse' => App\Helpers\ApiResponse::class,
-    ],
+  // Modalità di manutenzione
+  'maintenance' => [
+    'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
+    'store' => env('APP_MAINTENANCE_STORE', 'database'),
+  ],
+
+  // Alias globali per classi usabili ovunque (facoltativi)
+  'aliases' => [
+    'ApiResponse' => App\Helpers\ApiResponse::class,
+  ],
 
 ];

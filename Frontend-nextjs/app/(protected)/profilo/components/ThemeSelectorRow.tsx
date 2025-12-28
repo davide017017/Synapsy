@@ -1,10 +1,12 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sezione: ThemeSelectorRow
-// Dettagli: Selettore tema accessibile con pattern listbox (a11y fix)
+// ThemeSelectorRow — Selettore tema (safe su value null/unknown)
+// - Mostra sempre un label valido (fallback)
+// - In editing usa il value della riga, non il theme globale
 // ─────────────────────────────────────────────────────────────────────────────
-import { useState, useRef, useEffect, useId } from "react";
+
+import { useState, useRef, useEffect, useId, useMemo } from "react";
 import { useThemeContext } from "@/context/ThemeContext";
 import { themeMeta, availableThemes } from "@/lib/themeUtils";
 import { ThemeSelectorRowProps } from "@/types/profilo/row";
@@ -23,11 +25,24 @@ export default function ThemeSelectorRow({
     const containerRef = useRef<HTMLDivElement>(null);
     const listboxId = useId();
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Sezione: Chiusura con ESC / click esterno
-    // ─────────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────
+    // Fallback: valore tema "sicuro" per evitare undefined
+    // ─────────────────────────────────────────────────────────
+    const safeValue = useMemo(() => {
+        const v = (value ?? "").toString().trim();
+        if (v && themeMeta[v as keyof typeof themeMeta]) return v;
+        // fallback 1: tema globale (se valido)
+        if (theme && themeMeta[theme as keyof typeof themeMeta]) return theme;
+        // fallback 2: primo disponibile
+        return availableThemes[0] ?? "dark";
+    }, [value, theme]);
+
+    // ─────────────────────────────────────────────────────────
+    // Chiusura con ESC / click esterno
+    // ─────────────────────────────────────────────────────────
     useEffect(() => {
         if (!open) return;
+
         const handleKey = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 setOpen(false);
@@ -35,6 +50,7 @@ export default function ThemeSelectorRow({
                 buttonRef.current?.focus();
             }
         };
+
         const handleClick = (e: MouseEvent) => {
             if (
                 containerRef.current &&
@@ -45,31 +61,37 @@ export default function ThemeSelectorRow({
                 onCancel();
             }
         };
+
         document.addEventListener("keydown", handleKey);
         document.addEventListener("mousedown", handleClick);
+
         return () => {
             document.removeEventListener("keydown", handleKey);
             document.removeEventListener("mousedown", handleClick);
         };
     }, [open, onCancel]);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Sezione: Selezione tema
-    // ─────────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────
+    // Selezione tema
+    // ─────────────────────────────────────────────────────────
     const handleSelect = (t: string) => {
-        onSave(t); // delega al parent
+        onSave(t);
         setOpen(false);
         buttonRef.current?.focus();
     };
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Sezione: View compatta (non in editing)
-    // ─────────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────
+    // View compatta (non in editing)
+    // ─────────────────────────────────────────────────────────
     if (!editing) {
         return (
             <div className="flex items-center px-3 py-3 gap-4 group border-b border-primary/10">
                 <div className="w-28 font-medium text-sm text-muted-foreground">Tema</div>
-                <div className="flex-1 capitalize">{themeMeta[value as keyof typeof themeMeta].label}</div>
+
+                <div className="flex-1 capitalize">
+                    {themeMeta[safeValue as keyof typeof themeMeta]?.label ?? "Tema"}
+                </div>
+
                 <div>
                     <button
                         className="opacity-70 group-hover:opacity-100 px-2 py-1 rounded-xl font-semibold text-xs transition"
@@ -89,12 +111,13 @@ export default function ThemeSelectorRow({
         );
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Sezione: Selettore a tendina (editing) — pattern listbox
-    // ─────────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────
+    // Selettore a tendina (editing) — pattern listbox
+    // ─────────────────────────────────────────────────────────
     return (
         <div ref={containerRef} className="flex items-center px-3 py-3 gap-4 border-b border-primary/10">
             <div className="w-28 font-medium text-sm text-muted-foreground">Tema</div>
+
             <div className="flex-1 relative">
                 <button
                     ref={buttonRef}
@@ -105,7 +128,8 @@ export default function ThemeSelectorRow({
                     aria-haspopup="listbox"
                     aria-controls={open ? listboxId : undefined}
                 >
-                    <span>{themeMeta[theme as keyof typeof themeMeta].label}</span>
+                    <span>{themeMeta[safeValue as keyof typeof themeMeta]?.label ?? "Tema"}</span>
+
                     <svg width="18" height="18" className="ml-2 opacity-60" viewBox="0 0 20 20" aria-hidden="true">
                         <path d="M5.8 8l4.2 4.2L14.2 8" stroke="currentColor" strokeWidth="2" fill="none" />
                     </svg>
@@ -121,24 +145,23 @@ export default function ThemeSelectorRow({
                             <li
                                 key={t}
                                 role="option"
-                                aria-selected={theme === t} // ✔ valido su role="option"
+                                aria-selected={safeValue === t}
                                 tabIndex={-1}
                                 className="focus:outline-none"
                             >
                                 <button
                                     type="button"
                                     className={`w-full flex items-center gap-2 text-left px-4 py-2 capitalize transition hover:bg-primary/10 ${
-                                        theme === t ? "font-bold text-primary" : ""
+                                        safeValue === t ? "font-bold text-primary" : ""
                                     }`}
                                     onClick={() => handleSelect(t)}
                                 >
-                                    {/* ── Preview colore circolare ── */}
                                     <span
                                         className="inline-block w-4 h-4 rounded-full border border-primary/30"
-                                        style={{ background: themeMeta[t].color }}
+                                        style={{ background: themeMeta[t]?.color }}
                                         aria-hidden="true"
                                     />
-                                    {themeMeta[t].label}
+                                    {themeMeta[t]?.label ?? t}
                                 </button>
                             </li>
                         ))}
@@ -160,3 +183,11 @@ export default function ThemeSelectorRow({
         </div>
     );
 }
+
+/* ------------------------------------------------------
+Descrizione file:
+ThemeSelectorRow — riga profilo per selezione tema.
+Evita crash quando `value` è null/unknown usando `safeValue`
+(fallback su theme globale o primo tema disponibile).
+In editing e preview mostra label/colore sempre in modo sicuro.
+------------------------------------------------------ */

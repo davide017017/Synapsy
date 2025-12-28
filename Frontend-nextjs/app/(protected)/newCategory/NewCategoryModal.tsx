@@ -9,12 +9,7 @@ import Dialog from "@/app/components/ui/Dialog";
 import ModalLayout from "@/app/components/ui/ModalLayout";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import { Category, CategoryBase, NewCategoryModalProps } from "@/types";
-import {
-    CATEGORY_COLORS,
-    CATEGORY_ICONS,
-    getIconComponent,
-    type CategoryIconName,
-} from "@/utils/categoryOptions";
+import { CATEGORY_COLORS, CATEGORY_ICONS, getIconComponent, type CategoryIconName } from "@/utils/categoryOptions";
 
 export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave }: NewCategoryModalProps) {
     // Stato form
@@ -153,10 +148,10 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             className="flex gap-2 overflow-x-auto p-2 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600"
                             style={{ WebkitOverflowScrolling: "touch" }}
                         >
-                            {CATEGORY_COLORS.map((col) => (
+                            {CATEGORY_COLORS.map((col, i) => (
                                 <button
                                     type="button"
-                                    key={col.value}
+                                    key={`${col.value}-${i}`}
                                     title={col.name}
                                     className={`w-8 h-8 rounded-full border-2 transition-all shrink-0
                                         ${
@@ -179,27 +174,26 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                     <div>
                         <label className="block text-sm font-medium mb-1">Icona</label>
                         <div className="flex flex-wrap gap-2 py-1">
-                            {CATEGORY_ICONS.map((iconObj) => {
+                            {CATEGORY_ICONS.map((iconObj, i) => {
                                 const Icon = getIconComponent(iconObj.value);
                                 const selected = icon === iconObj.value;
+
                                 return (
                                     <button
                                         type="button"
-                                        key={iconObj.value}
+                                        key={`${iconObj.value}-${i}`}
                                         title={iconObj.name}
                                         className={`w-9 h-9 rounded-xl flex items-center justify-center border transition
-                                            ${
-                                                selected
-                                                    ? "ring-2 ring-primary border-primary bg-primary/10"
-                                                    : "border-zinc-300 dark:border-zinc-700 bg-bg-elevate"
-                                            }
-                                        `}
+                                          ${
+                                              selected
+                                                  ? "ring-2 ring-primary border-primary bg-primary/10"
+                                                  : "border-zinc-300 dark:border-zinc-700 bg-bg-elevate"
+                                          }
+                                      `}
                                         onClick={() => setIcon(iconObj.value)}
                                         aria-label={`Scegli l'icona ${iconObj.name}`}
-                                        tabIndex={0}
                                     >
                                         <Icon size={22} style={{ color: selected ? color : "inherit" }} />
-                                        <title>{iconObj.name}</title>
                                     </button>
                                 );
                             })}
@@ -239,4 +233,3 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
         </Dialog>
     );
 }
-

@@ -1,122 +1,236 @@
 "use client";
 
-// =======================================================
-// RicorrenzaItem.tsx — Compatto, riga uniforme
-// =======================================================
+/* =======================================================
+RicorrenzaItem.tsx — Riga uniforme (responsive)
+- Mobile: 2 righe + pill frequenza
+- Desktop:
+  - md: Data + Categoria in colonna (anti-schiacciamento)
+  - lg+: 1 riga compatta (data inline + categoria a destra)
+- Bordo sinistro: colore frequenza (come mobile)
+======================================================= */
 
-import { Ricorrenza } from "@/types/models/ricorrenza";
 import type { RicorrenzaItemProps } from "@/types/ricorrenti/liste";
 import { Pencil, Trash2 } from "lucide-react";
 import { getFreqPill } from "../../utils/ricorrenza-utils";
 import { eur } from "@/utils/formatCurrency";
 
-// --------- Utility per stile e simbolo importo ---------
-function getTypeStyle(type: "entrata" | "spesa") {
-    if (type === "entrata") {
-        return {
-            symbol: "+",
-            valueClass: "text-green-700",
-            bgClass: "bg-[hsl(var(--c-success-bg),_#f0fff4)] border-green-200",
-        };
-    } else {
-        return {
-            symbol: "–",
-            valueClass: "text-red-700",
-            bgClass: "bg-[hsl(var(--c-danger-bg),_#fff0f3)] border-red-200",
-        };
-    }
+// ────────────────────────────────
+// Helper: tipo robusto
+// ────────────────────────────────
+function getRType(r: any): "entrata" | "spesa" {
+    const t = String(r?.type ?? r?.tipo ?? "").toLowerCase();
+    return t === "entrata" ? "entrata" : "spesa";
 }
 
-// ============================
-// Props tipizzate
-// ============================
+// ────────────────────────────────
+// Helper: data prossima (robusto)
+// ────────────────────────────────
+function getRDate(r: any): string {
+    return (
+        String(
+            r?.prossima ??
+                r?.next_occurrence_date ??
+                r?.nextOccurrenceDate ??
+                r?.start_date ??
+                r?.startDate ??
+                r?.date ??
+                r?.data ??
+                ""
+        ) || ""
+    );
+}
+
+function formatDateShort(dateStr?: string) {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+// ────────────────────────────────
+// Helper: colore bordo da style frequenza
+// ────────────────────────────────
+function getFreqBorderColor(style?: React.CSSProperties) {
+    return (style?.borderColor as string) || "rgba(255,255,255,0.15)";
+}
+
+// ────────────────────────────────
+// UI: bottoni azioni (uguali al mobile)
+// ────────────────────────────────
+function ActionEditButton({ onClick }: { onClick: () => void }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition"
+            aria-label="Modifica ricorrenza"
+            title="Modifica"
+        >
+            <Pencil size={16} />
+        </button>
+    );
+}
+
+function ActionDeleteButton({ onClick }: { onClick: () => void }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/15 text-red-400 transition"
+            aria-label="Elimina ricorrenza"
+            title="Elimina"
+        >
+            <Trash2 size={16} />
+        </button>
+    );
+}
 
 // =======================================================
-// COMPONENTE: Singola ricorrenza compatta
+// COMPONENTE
 // =======================================================
 export default function RicorrenzaItem({ r, onEdit, onDelete }: RicorrenzaItemProps) {
-    const { symbol, valueClass, bgClass } = getTypeStyle(r.type);
-    const { label, style } = getFreqPill(r.frequenza); // <--- aggiunto
+    const tipo = getRType(r as any);
+    const isIncome = tipo === "entrata";
+
+    const { label: freqLabel, style: freqStyle } = getFreqPill((r as any)?.frequenza);
+    const freqBorderColor = getFreqBorderColor(freqStyle);
+
+    const dateLabel = formatDateShort(getRDate(r as any));
+
+    const amountNum = Number((r as any)?.importo ?? 0) || 0;
+    const amountPrefix = isIncome ? "+" : "-";
+    const amountColor = isIncome ? "hsl(var(--c-success))" : "hsl(var(--c-danger))";
+
+    const name = String((r as any)?.nome ?? "");
+    const catLabel = String((r as any)?.categoria ?? "");
+    const catColor = (r as any)?.category_color ? String((r as any)?.category_color) : "";
+
+    const CategoryPill = catLabel ? (
+        <span
+            className="inline-flex max-w-full text-[10px] leading-none px-2 py-1 rounded-full border truncate"
+            style={{
+                borderColor: catColor ? `${catColor}55` : "rgba(255,255,255,0.15)",
+                backgroundColor: catColor ? `${catColor}22` : "rgba(255,255,255,0.06)",
+                color: catColor || "rgba(255,255,255,0.75)",
+            }}
+            title={catLabel}
+        >
+            {catLabel}
+        </span>
+    ) : (
+        <span className="inline-flex text-[10px] leading-none px-2 py-1 rounded-full border border-white/15 text-white/55">
+            Senza categoria
+        </span>
+    );
 
     return (
         <li
-            className={`
-                grid grid-cols-12 items-center gap-2
-                rounded-xl border p-2 mb-1 shadow-sm transition
-                ${bgClass} hover:shadow-lg hover:scale-[1.01]
-                text-xs
-            `}
+            className="
+                rounded-xl border border-white/10
+                bg-black/20
+                p-1 mb-1
+                transition
+                hover:bg-black/25
+            "
+            style={{ borderLeft: `4px solid ${freqBorderColor}` }}
         >
-            {/* Nome (col-4) */}
-            <div className="col-span-4 font-semibold truncate" title={r.nome}>
-                {r.nome}
-                {r.notes && (
-                    <span className="ml-1 text-[10px] text-zinc-400 font-normal italic" title={r.notes}>
-                        • {r.notes}
+            {/* ===================================================
+               MOBILE: 2 righe + pill frequenza
+               =================================================== */}
+            <div className="md:hidden">
+                {/* Riga 1: Nome + pill categoria */}
+                <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                        <div className="font-semibold text-sm break-words" title={name}>
+                            {name}
+                        </div>
+                        {dateLabel && <div className="text-[11px] text-muted-foreground mt-0.5">{dateLabel}</div>}
+                    </div>
+
+                    {CategoryPill}
+                </div>
+
+                {/* Riga 2: freq + importo + azioni */}
+                <div className="mt-2 flex items-center justify-between gap-2">
+                    <span className="shrink-0 text-[10px] leading-none px-2 py-1 rounded-full border" style={freqStyle}>
+                        {freqLabel}
                     </span>
-                )}
+
+                    <div className="ml-auto font-bold text-sm tabular-nums" style={{ color: amountColor }} title={tipo}>
+                        {amountPrefix}
+                        {eur(amountNum)}
+                    </div>
+
+                    <div className="shrink-0 flex items-center gap-1">
+                        <ActionEditButton onClick={() => onEdit?.(r)} />
+                        <ActionDeleteButton onClick={() => onDelete?.(r)} />
+                    </div>
+                </div>
             </div>
 
-            {/* Categoria (col-2, come pill colorata) */}
-            <div className="col-span-2 flex items-center justify-start truncate">
-                {r.categoria && (
-                    <span
-                        title={r.categoria}
-                        className={`
-                            px-2 py-0.5 rounded-full font-medium text-[11px] border border-zinc-200
-                            shadow-sm whitespace-nowrap
-                        `}
-                        style={{
-                            color: r.category_color ? r.category_color : undefined,
-                            borderColor: r.category_color ? r.category_color : undefined,
-                            background: r.category_color
-                                ? `${r.category_color}15` // Aggiunge trasparenza (es: #22c55e15)
-                                : undefined,
-                            maxWidth: "100%",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                        }}
-                    >
-                        {r.categoria}
-                    </span>
-                )}
-            </div>
+            {/* ===================================================
+               DESKTOP:
+               - md: data + categoria in colonna (anti-schiacciamento)
+               - lg+: data inline e categoria a destra (1 riga)
+               =================================================== */}
+            <div className="hidden md:flex items-center gap-3">
+                {/* Nome + (md) meta sotto / (lg) meta inline */}
+                <div className="min-w-0 flex-1">
+                    {/* Riga nome */}
+                    <div className="font-semibold text-sm truncate" title={name}>
+                        {name}
+                    </div>
 
-            {/* Frequenza come pill (col-2) */}
-            <div className="col-span-2 flex justify-center">
-                <span className="px-2 py-0.5 rounded-full border" style={style}>
-                    {label}
-                </span>
-            </div>
+                    {/* md: colonna (data sopra, categoria sotto) */}
+                    <div className="mt-1 flex flex-col gap-1 lg:hidden">
+                        {dateLabel && <div className="text-[11px] text-muted-foreground">{dateLabel}</div>}
+                        {CategoryPill}
+                    </div>
 
-            {/* Importo (col-2) */}
-            <div className={`col-span-2 font-mono text-sm font-bold text-right ${valueClass}`}>
-                {symbol}
-                {eur(r.importo ?? 0)}
-            </div>
+                    {/* lg+: inline */}
+                    <div className="hidden lg:flex items-baseline gap-2 min-w-0 mt-0.5">
+                        {dateLabel && (
+                            <div className="text-[11px] text-muted-foreground shrink-0" title="Prossima ricorrenza">
+                                {dateLabel}
+                            </div>
+                        )}
+                    </div>
+                </div>
 
-            {/* Azioni (col-2, centrato) */}
-            <div className="col-span-2 flex gap-1 justify-center">
-                <button
-                    className="p-1 rounded hover:bg-primary/10 text-primary transition hover:scale-110"
-                    title="Modifica"
-                    onClick={() => onEdit?.(r)}
+                {/* lg+: categoria a destra */}
+                <div className="hidden lg:block shrink-0 max-w-[180px]">{CategoryPill}</div>
+
+                {/* Importo */}
+                <div
+                    className="
+                        font-bold text-sm tabular-nums text-right whitespace-nowrap
+                        flex-shrink min-w-[80px] max-w-[100px]
+                      "
+                    style={{ color: amountColor }}
+                    title={tipo}
                 >
-                    <Pencil className="w-4 h-4" />
-                </button>
-                <button
-                    className="p-1 rounded hover:bg-red-100 text-red-600 transition hover:scale-110"
-                    title="Elimina"
-                    onClick={() => onDelete?.(r)}
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
+                    {amountPrefix}
+                    {eur(amountNum)}
+                </div>
+
+                {/* Azioni */}
+                <div className="shrink-0 flex items-center gap-1">
+                    <ActionEditButton onClick={() => onEdit?.(r)} />
+                    <ActionDeleteButton onClick={() => onDelete?.(r)} />
+                </div>
             </div>
         </li>
     );
 }
 
-// ============================
-// END RicorrenzaItem.tsx
-// ============================
-
+/*
+File: RicorrenzaItem.tsx
+Scopo: riga ricorrenza uniforme e leggibile.
+Come:
+- Mobile: 2 righe con pill frequenza.
+- Desktop: bordo sinistro colore frequenza; NO pill frequenza per riga.
+  - md: data + categoria in colonna per evitare compressione.
+  - lg+: data inline + categoria a destra (1 riga compatta).
+- Importi: + verde (entrata), - rosso (spesa).
+- Pill categoria: colorata con category_color.
+*/

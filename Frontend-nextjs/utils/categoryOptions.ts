@@ -154,7 +154,7 @@ export const CATEGORY_COLORS = [
     // Marroni / Taupe / Oro
     // ======================================================
     { value: "#92400e", name: "Marrone" }, // tailwind amber-900
-    { value: "#b45309", name: "Marrone Scuro" }, // tailwind amber-700
+    { value: "#78350f", name: "Marrone Scuro" }, // tailwind amber-700
     { value: "#a16207", name: "Bronzo" }, // tailwind yellow-800
     { value: "#b6ad90", name: "Taupe" }, // custom
     { value: "#e5e7eb", name: "Grigio Chiaro Sabbia" }, // tailwind gray-200
@@ -358,4 +358,3 @@ export function getIconComponent(name?: CategoryIconName): IconType {
     if (name && CATEGORY_ICONS_MAP[name]) return CATEGORY_ICONS_MAP[name];
     return FiTag;
 }
-

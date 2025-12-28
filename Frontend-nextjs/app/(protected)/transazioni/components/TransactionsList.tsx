@@ -3,7 +3,7 @@
 // ====================================================
 // TransactionsList.tsx
 // Lista transazioni con filtro e tabella — responsive
-// (Mobile: dense + divider anno/mese con totali e label)
+// (Mobile: dense + divider anno/mese/giorno con totali e label)
 // ====================================================
 
 import { useState, useMemo, useEffect } from "react";
@@ -45,6 +45,37 @@ function monthLabel(monthKey: string) {
     const [y, m] = monthKey.split("-");
     const dt = new Date(Number(y), Math.max(0, Number(m) - 1), 1);
     return dt.toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+}
+
+// ----------------------------------------------
+// Helper: dayKey (YYYY-MM-DD) da date string
+// ----------------------------------------------
+function toDayKey(dateStr: string) {
+    const s = String(dateStr);
+    const y = s.slice(0, 4);
+    const m = s.slice(5, 7);
+    const d = s.slice(8, 10);
+
+    if (y.length === 4 && m.length === 2 && d.length === 2) return `${y}-${m}-${d}`;
+
+    const dt = new Date(s);
+    const yy = dt.getFullYear();
+    const mm = String(dt.getMonth() + 1).padStart(2, "0");
+    const dd = String(dt.getDate()).padStart(2, "0");
+    return `${yy}-${mm}-${dd}`;
+}
+
+// ----------------------------------------------
+// Helper: label giorno (YYYY-MM-DD -> "sab 28/12")
+// ----------------------------------------------
+function dayLabel(dayKey: string) {
+    const [y, m, d] = dayKey.split("-");
+    const dt = new Date(Number(y), Math.max(0, Number(m) - 1), Number(d));
+
+    const weekday = dt.toLocaleDateString("it-IT", { weekday: "short" });
+    const ddmm = dt.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
+
+    return `${weekday} ${ddmm}`;
 }
 
 // ----------------------------------------------
@@ -90,7 +121,9 @@ function getTxType(t: any): "entrata" | "spesa" {
 // ----------------------------------------------
 // Helper: crea totali da lista tx
 // ----------------------------------------------
-function calcTotals(list: any[]) {
+type Totals = { entrate: number; spese: number; saldo: number };
+
+function calcTotals(list: any[]): Totals {
     let entrate = 0;
     let spese = 0;
 
@@ -108,7 +141,7 @@ function calcTotals(list: any[]) {
 // ----------------------------------------------
 // Helper: label compatte per i divider (testo esplicito)
 // ----------------------------------------------
-function TotalsInline({ entrate, spese, saldo }: { entrate: number; spese: number; saldo: number }) {
+function TotalsInline({ entrate, spese, saldo }: Totals) {
     const saldoPositivo = saldo >= 0;
 
     return (
@@ -132,6 +165,26 @@ function TotalsInline({ entrate, spese, saldo }: { entrate: number; spese: numbe
                 >
                     {formatAmount(saldo)}
                 </span>
+            </span>
+        </div>
+    );
+}
+
+// ----------------------------------------------
+// Helper: saldo (solo) per divider giorno
+// ----------------------------------------------
+function DaySaldoInline({ saldo }: { saldo: number }) {
+    const saldoPositivo = saldo >= 0;
+
+    return (
+        <div className="text-[11px] tabular-nums flex items-center gap-2">
+            <span className="opacity-70">Saldo:</span>
+            <span
+                className={`font-bold ${
+                    saldoPositivo ? "text-[hsl(var(--c-success))]" : "text-[hsl(var(--c-danger))]"
+                }`}
+            >
+                {formatAmount(saldo)}
             </span>
         </div>
     );
@@ -185,17 +238,13 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
     const shown = filtered.slice(0, visible);
 
     // --------------------------------------------------
-    // MOBILE: raggruppa per mese e calcola totali mese/anno
+    // MOBILE: raggruppa per anno/mese/giorno + totali
     // Hook SEMPRE chiamato (non condizionale)
     // --------------------------------------------------
     type Block =
-        | { kind: "year"; year: string; key: string; totals: { entrate: number; spese: number; saldo: number } }
-        | {
-              kind: "month";
-              monthKey: string;
-              key: string;
-              totals: { entrate: number; spese: number; saldo: number };
-          }
+        | { kind: "year"; year: string; key: string; totals: Totals }
+        | { kind: "month"; monthKey: string; key: string; totals: Totals }
+        | { kind: "day"; dayKey: string; key: string; totals: Totals }
         | { kind: "tx"; key: string; tx: (typeof shown)[number]; index: number };
 
     const mobileModel = useMemo(() => {
@@ -210,11 +259,11 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
         }
 
         // 2) totali per mese
-        const monthTotals = new Map<string, { entrate: number; spese: number; saldo: number }>();
+        const monthTotals = new Map<string, Totals>();
         for (const [mk, list] of byMonth.entries()) monthTotals.set(mk, calcTotals(list));
 
         // 3) totali per anno (somma dai mesi)
-        const yearTotals = new Map<string, { entrate: number; spese: number; saldo: number }>();
+        const yearTotals = new Map<string, Totals>();
         for (const [mk, totals] of monthTotals.entries()) {
             const year = mk.slice(0, 4);
             const prev = yearTotals.get(year) ?? { entrate: 0, spese: 0, saldo: 0 };
@@ -225,18 +274,32 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
             });
         }
 
-        // 4) blocks in ordine di shown (già sortato DESC)
+        // 4) totali per giorno (diretto dalle tx)
+        const byDay = new Map<string, any[]>();
+        for (const t of shown) {
+            const dk = toDayKey(String(t.date));
+            if (!byDay.has(dk)) byDay.set(dk, []);
+            byDay.get(dk)!.push(t);
+        }
+
+        const dayTotals = new Map<string, Totals>();
+        for (const [dk, list] of byDay.entries()) dayTotals.set(dk, calcTotals(list));
+
+        // 5) blocks in ordine di shown (già sortato DESC)
         const blocks: Block[] = [];
         let lastYear = "";
         let lastMonthKey = "";
+        let lastDayKey = "";
 
         shown.forEach((tx, index) => {
             const monthKey = toMonthKey(String(tx.date));
             const year = monthKey.slice(0, 4);
+            const dayKey = toDayKey(String(tx.date));
 
             if (year !== lastYear) {
                 lastYear = year;
                 lastMonthKey = "";
+                lastDayKey = "";
 
                 blocks.push({
                     kind: "year",
@@ -248,12 +311,24 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
 
             if (monthKey !== lastMonthKey) {
                 lastMonthKey = monthKey;
+                lastDayKey = "";
 
                 blocks.push({
                     kind: "month",
                     monthKey,
                     key: `m-${monthKey}`,
                     totals: monthTotals.get(monthKey) ?? { entrate: 0, spese: 0, saldo: 0 },
+                });
+            }
+
+            if (dayKey !== lastDayKey) {
+                lastDayKey = dayKey;
+
+                blocks.push({
+                    kind: "day",
+                    dayKey,
+                    key: `d-${dayKey}`,
+                    totals: dayTotals.get(dayKey) ?? { entrate: 0, spese: 0, saldo: 0 },
                 });
             }
 
@@ -334,7 +409,7 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                CONTENUTO: mobile dense / desktop table
                =================================================== */}
             <div className="grid min-w-0 w-full">
-                {/* ---------- MOBILE: Dense list con divider + totali (ESPRESSI) ---------- */}
+                {/* ---------- MOBILE: Dense list con divider + totali ---------- */}
                 <div className="lg:hidden rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
                     {mobileModel.blocks.map((b) => {
                         // --------------------------
@@ -376,6 +451,34 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                                 </div>
                             );
                         }
+                        // --------------------------
+                        // Divider GIORNO (one-line) + SALDO (con gradient leggero)
+                        // --------------------------
+                        if (b.kind === "day") {
+                            return (
+                                <div
+                                    key={b.key}
+                                    className="px-3 py-0.5 border-b border-bg-elevate flex items-center justify-between gap-3"
+                                    style={{
+                                        background: `
+                    linear-gradient(
+                        to bottom,
+                        hsl(var(--c-bg-elevate) / 0.55),
+                        hsl(var(--c-bg-elevate) / 0.15)
+                    )
+                `,
+                                    }}
+                                >
+                                    <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground leading-none">
+                                        {dayLabel(b.dayKey)}
+                                    </div>
+
+                                    <div className="leading-none">
+                                        <DaySaldoInline saldo={b.totals.saldo} />
+                                    </div>
+                                </div>
+                            );
+                        }
 
                         // --------------------------
                         // Riga transazione (dense)
@@ -399,7 +502,6 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                                     w-full text-left
                                     px-3 py-2
                                     transition
-                                    border-b border-bg-elevate
                                     ${isSelected ? "bg-bg-elevate/60" : "hover:bg-bg-elevate/40"}
                                 `}
                                 style={{ borderLeft: `4px solid ${categoryColor}` }}
@@ -434,13 +536,19 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                                             )}
                                         </div>
 
+                                        {/* Riga info (tolta la data: ora c’è il divider giorno) */}
                                         <div className="mt-0.5 text-[11px] text-muted-foreground flex items-center gap-2">
-                                            <span>{formatDate(String(t.date))}</span>
-
                                             {/* Selection hint */}
                                             {isSelectionMode && (
                                                 <span className="opacity-80">
                                                     {selectedIds.includes(t.id) ? "Selezionata" : "Tocca per aprire"}
+                                                </span>
+                                            )}
+
+                                            {/* Fallback extra: se vuoi tenere la data “solo tooltip”, lasciala nel title */}
+                                            {!isSelectionMode && (
+                                                <span className="opacity-60" title={formatDate(String(t.date))}>
+                                                    {/* vuoto intenzionale */}
                                                 </span>
                                             )}
                                         </div>
@@ -515,8 +623,10 @@ File: TransactionsList.tsx
 Scopo: gestisce filtri, paginazione (visible) e rendering responsive.
 Come:
 - Desktop: filtro laterale + tabella.
-- Mobile: lista “dense” stile tabella, con divider compatti per ANNO e MESE.
-- Divider ANNO/MESE mostrano esplicitamente: Entrate, Spese, Saldo (etichette chiare).
+- Mobile: lista “dense” stile tabella, con divider compatti per ANNO, MESE e GIORNO.
+- Divider ANNO/MESE mostrano: Entrate, Spese, Saldo (etichette chiare).
+- Divider GIORNO: una riga minimal con label giorno + SALDO del giorno.
+- La data non è più ripetuta in ogni riga mobile (ora è nel divider giorno).
 - Tipo transazione dedotto robusto: category.type -> tx.type -> fallback "spesa".
 - Importo e icona: verde per entrata, rosso per spesa.
 - Barra sinistra: colore categoria.

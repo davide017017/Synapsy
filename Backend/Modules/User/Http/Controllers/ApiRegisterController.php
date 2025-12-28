@@ -9,24 +9,46 @@ use Modules\User\Models\User;
 
 class ApiRegisterController extends Controller
 {
-    public function register(RegisterRequest $request): JsonResponse
-    {
-        $data = $request->validated();
+  // --------------------------------------------------
+  // register: crea utente + invia email verifica
+  // --------------------------------------------------
+  public function register(RegisterRequest $request): JsonResponse
+  {
+    $data = $request->validated();
 
-        $user = User::create([
-            'name' => $data['name'],
-            'surname' => $data['surname'] ?? null,
-            'email' => $data['email'],
-            'username' => $data['username'],
-            'password' => $data['password'],
-            'theme' => $data['theme'] ?? null,
-            'has_accepted_terms' => $data['has_accepted_terms'],
-            'avatar' => 'images/avatars/avatar_01_boy.webp', // Default avatar
-            'is_admin' => false,
-        ]);
+    // ─────────────────────────────────────────
+    // Default avatar (standard: SOLO filename)
+    // ─────────────────────────────────────────
+    $avatar = 'avatar_01_boy.webp';
 
-        $user->sendEmailVerificationNotification();
+    $user = User::create([
+      'name'              => $data['name'],
+      'surname'           => $data['surname'] ?? null,
+      'email'             => $data['email'],
+      'username'          => $data['username'],
+      'password'          => $data['password'],
+      'theme'             => $data['theme'] ?? null,
+      'has_accepted_terms' => (bool)$data['has_accepted_terms'],
+      'avatar'            => $avatar,
+      'is_admin'          => false,
+    ]);
 
-        return ApiResponse::success('Registrazione completata. Controlla la tua email per confermare l\'account.', null, 201);
-    }
+    // ─────────────────────────────────────────
+    // Email verifica (dipende da MAIL/QUEUE)
+    // ─────────────────────────────────────────
+    $user->sendEmailVerificationNotification();
+
+    return ApiResponse::success(
+      "Registrazione completata. Controlla la tua email per confermare l'account.",
+      null,
+      201
+    );
+  }
 }
+
+/* ------------------------------------------------------
+Descrizione file:
+ApiRegisterController.php: gestisce registrazione API.
+Crea un nuovo utente con avatar di default (standardizzato)
+e invia email di verifica tramite notification Laravel.
+------------------------------------------------------ */

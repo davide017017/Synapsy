@@ -1,6 +1,6 @@
 // ========================================
 // TransactionTable.tsx
-// Look: divider anno/mese compatti + parziali (entrate/spese/saldo)
+// Look: divider anno/mese/giorno compatti + parziali (entrate/spese/saldo)
 // ========================================
 "use client";
 
@@ -36,9 +36,56 @@ function monthLabel(monthKey: string) {
 }
 
 // =========================
+// Helper: dayKey (YYYY-MM-DD) da date string
+// =========================
+function toDayKey(dateStr: string) {
+    const s = String(dateStr);
+    const y = s.slice(0, 4);
+    const m = s.slice(5, 7);
+    const d = s.slice(8, 10);
+
+    if (y.length === 4 && m.length === 2 && d.length === 2) return `${y}-${m}-${d}`;
+
+    const dt = new Date(s);
+    const yy = dt.getFullYear();
+    const mm = String(dt.getMonth() + 1).padStart(2, "0");
+    const dd = String(dt.getDate()).padStart(2, "0");
+    return `${yy}-${mm}-${dd}`;
+}
+
+// =========================
+// Helper: label giorno (YYYY-MM-DD -> "sab 28/12")
+// =========================
+function dayLabel(dayKey: string) {
+    const [y, m, d] = dayKey.split("-");
+    const dt = new Date(Number(y), Math.max(0, Number(m) - 1), Number(d));
+
+    const weekday = dt.toLocaleDateString("it-IT", { weekday: "short" });
+    const ddmm = dt.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
+
+    return `${weekday} ${ddmm}`;
+}
+
+// =========================
 // Helper: calcolo totali mese (single pass)
 // =========================
 const calcMonthTotals = (rows: Row<TransactionWithGroup>[], amountOf: (tx: TransactionWithGroup) => number) => {
+    let entrate = 0;
+    let spese = 0;
+
+    for (const r of rows) {
+        const amount = amountOf(r.original);
+        if (r.original.category?.type === "entrata") entrate += amount;
+        else if (r.original.category?.type === "spesa") spese += amount;
+    }
+
+    return { entrate, spese, saldo: entrate - spese };
+};
+
+// =========================
+// Helper: calcolo totali giorno (single pass)
+// =========================
+const calcDayTotals = (rows: Row<TransactionWithGroup>[], amountOf: (tx: TransactionWithGroup) => number) => {
     let entrate = 0;
     let spese = 0;
 
@@ -142,7 +189,7 @@ export default function TransactionTable({
     });
 
     // --------------------------------------------------
-    // Helper: render divider compatti (anno/mese) con parziali
+    // Helper: divider compatti (anno/mese) con parziali
     // --------------------------------------------------
     const Divider = ({
         label,
@@ -171,7 +218,7 @@ export default function TransactionTable({
 
         return (
             <tr className={`${baseBg} text-[hsl(var(--c-table-header-text))]`}>
-                <td colSpan={colSpan} className="px-4 py-2 border-b border-[hsl(var(--c-table-divider))]">
+                <td colSpan={colSpan} className="px-4 py-2 ">
                     <div className="flex items-center justify-between gap-3">
                         <div className={labelClass}>{label}</div>
 
@@ -209,6 +256,47 @@ export default function TransactionTable({
         );
     };
 
+    // --------------------------------------------------
+    // Helper: divider giorno (one-line) con SOLO saldo
+    // --------------------------------------------------
+    const DayDivider = ({ label, saldo, colSpan }: { label: string; saldo: number; colSpan: number }) => {
+        const saldoPositive = saldo >= 0;
+
+        return (
+            <tr
+                className="text-[hsl(var(--c-table-header-text))]"
+                style={{
+                    background: `
+        linear-gradient(
+            to bottom,
+            hsl(var(--c-table-divider) / 0.35),
+            transparent
+        )
+    `,
+                }}
+            >
+                <td colSpan={colSpan} className="px-4 py-0.5 ">
+                    <div className="flex items-center justify-between gap-3 leading-none">
+                        <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                            {label}
+                        </div>
+
+                        <div className="text-[11px] tabular-nums flex items-center gap-2">
+                            <span className="opacity-70">Saldo:</span>
+                            <span
+                                className={`font-bold ${
+                                    saldoPositive ? "text-[hsl(var(--c-success))]" : "text-[hsl(var(--c-danger))]"
+                                }`}
+                            >
+                                {formatAmount(saldo)}
+                            </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        );
+    };
+
     return (
         <div className="w-full max-w-full overflow-x-auto">
             <div className="inline-block min-w-full align-middle bg-[hsl(var(--c-table-bg))] rounded-2xl border border-[hsl(var(--c-table-divider))] shadow">
@@ -216,10 +304,7 @@ export default function TransactionTable({
                     {/* ── Intestazione ── */}
                     <thead className="bg-[hsl(var(--c-table-header-bg))] text-[hsl(var(--c-table-header-text))]">
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <tr
-                                key={headerGroup.id}
-                                className="table-header-row border-b border-[hsl(var(--c-table-divider))]"
-                            >
+                            <tr key={headerGroup.id} className="table-header-row ">
                                 {headerGroup.headers.map((header) => (
                                     <th key={header.id} className="relative font-semibold text-sm px-4 py-2 text-left">
                                         {flexRender(header.column.columnDef.header, header.getContext())}
@@ -240,6 +325,8 @@ export default function TransactionTable({
                     <tbody className="text-[hsl(var(--c-table-text))]">
                         {(() => {
                             let lastYear = "";
+                            let lastDayKey = "";
+
                             const blocks = Object.entries(groupedRows).sort(([a], [b]) => b.localeCompare(a));
 
                             return blocks.flatMap(([monthKey, rows]) => {
@@ -249,6 +336,7 @@ export default function TransactionTable({
                                 // Divider ANNO (compatto + parziali)
                                 if (year !== lastYear) {
                                     lastYear = year;
+                                    lastDayKey = "";
 
                                     const y = yearTotals[year] ?? { entrate: 0, spese: 0, saldo: 0 };
                                     blocco.push(
@@ -278,30 +366,62 @@ export default function TransactionTable({
                                     />
                                 );
 
+                                // Righe ordinate per data DESC
                                 const rowsOrdinati = [...rows].sort(
                                     (a, b) => new Date(b.original.date).getTime() - new Date(a.original.date).getTime()
                                 );
 
-                                rowsOrdinati.forEach((row, idx) => {
-                                    const isLast = idx === rowsOrdinati.length - 1;
+                                // Group per giorno dentro al mese
+                                const byDay: Record<string, Row<TransactionWithGroup>[]> = {};
+                                for (const r of rowsOrdinati) {
+                                    const dk = toDayKey(String(r.original.date));
+                                    if (!byDay[dk]) byDay[dk] = [];
+                                    byDay[dk].push(r);
+                                }
 
-                                    blocco.push(
-                                        <TableRow
-                                            key={`${row.original.id}-${row.original.date}-${row.id}`}
-                                            row={row}
-                                            onClick={onRowClick}
-                                            className={`
-                                                ${isLast ? "rounded-b-xl" : ""}
-                                                ${
-                                                    row.original.id === selectedId
-                                                        ? "bg-[hsl(var(--c-table-row-selected))] border-l-4 border-[hsl(var(--c-primary))] shadow-inner"
-                                                        : "hover:bg-[hsl(var(--c-table-row-hover))]"
-                                                }
-                                                border-b border-[hsl(var(--c-table-divider))] transition-colors
-                                            `}
-                                            selected={row.original.id === selectedId}
-                                        />
-                                    );
+                                // Giorni in ordine DESC (dk = YYYY-MM-DD)
+                                const dayKeys = Object.keys(byDay).sort((a, b) => b.localeCompare(a));
+
+                                dayKeys.forEach((dk) => {
+                                    // Divider GIORNO (solo saldo)
+                                    if (dk !== lastDayKey) {
+                                        lastDayKey = dk;
+
+                                        const dTotals = calcDayTotals(byDay[dk], amountOf);
+                                        blocco.push(
+                                            <DayDivider
+                                                key={`giorno-${monthKey}-${dk}`}
+                                                label={dayLabel(dk)}
+                                                saldo={dTotals.saldo}
+                                                colSpan={columns.length}
+                                            />
+                                        );
+                                    }
+
+                                    // Righe del giorno
+                                    const dayRows = byDay[dk];
+
+                                    dayRows.forEach((row, idx) => {
+                                        const isLastInDay = idx === dayRows.length - 1;
+
+                                        blocco.push(
+                                            <TableRow
+                                                key={`${row.original.id}-${row.original.date}-${row.id}`}
+                                                row={row}
+                                                onClick={onRowClick}
+                                                className={`
+                                                    ${isLastInDay ? "" : ""}
+                                                    ${
+                                                        row.original.id === selectedId
+                                                            ? "bg-[hsl(var(--c-table-row-selected))] border-l-4 border-[hsl(var(--c-primary))] shadow-inner"
+                                                            : "hover:bg-[hsl(var(--c-table-row-hover))]"
+                                                    }
+                                                    transition-colors
+                                                `}
+                                                selected={row.original.id === selectedId}
+                                            />
+                                        );
+                                    });
                                 });
 
                                 return blocco;
@@ -316,10 +436,10 @@ export default function TransactionTable({
 
 /*
 File: TransactionTable.tsx
-Scopo: tabella transazioni con raggruppamento per mese/anno e selection mode.
+Scopo: tabella transazioni con raggruppamento per mese/anno/giorno e selection mode.
 Come:
 - Usa TanStack Table + addMonthGroup().
-- Divider compatti per ANNO e MESE dentro <tbody>.
-- Divider mostrano: Entrate (verde), Spese (rosso), Saldo (verde/rosso) con etichette chiare.
+- Divider compatti per ANNO e MESE dentro <tbody> con Entrate/Spese/Saldo.
+- Divider GIORNO (one-line) con SOLO saldo del giorno.
 - Righe: gestite da TableRow (stile/selection invariati).
 */

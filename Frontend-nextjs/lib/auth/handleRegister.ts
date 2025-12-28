@@ -12,17 +12,30 @@ export interface RegisterPayload {
     has_accepted_terms: boolean;
 }
 
-export async function handleRegister(payload: RegisterPayload): Promise<{success:boolean; message:string}> {
-    const res = await fetch(url("register"), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-        const msg = data.message || 'Errore di registrazione';
-        return { success: false, message: msg };
+export async function handleRegister(payload: RegisterPayload): Promise<{ success: boolean; message: string }> {
+    try {
+        const res = await fetch(url("register"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const text = await res.text();
+        const data = text ? JSON.parse(text) : {};
+
+        if (!res.ok) {
+            return { success: false, message: data?.message || "Errore di registrazione" };
+        }
+
+        return { success: true, message: data?.message || "Registrazione completata" };
+    } catch {
+        return { success: false, message: "Errore di rete o risposta non valida" };
     }
-    return { success: true, message: data.message || 'Registrazione completata' };
 }
 
+/* ------------------------------------------------------
+Descrizione file:
+handleRegister.ts: invia una POST al backend verso l’endpoint "register".
+Gestisce risposta ok/errore e ritorna {success,message}.
+Include parsing robusto (text→JSON) per evitare crash su risposte non JSON.
+------------------------------------------------------ */

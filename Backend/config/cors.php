@@ -32,8 +32,16 @@ return [
     // Dev Next.js
     'http://localhost:3000',
     'http://localhost:3001',       // aggiunto
+
+    'http://192.168.0.100:3000',
+    'http://192.168.0.100:3001',
+
     'http://192.168.0.111:3000',
     'http://192.168.0.111:3001',   // aggiunto
+
+    '#^http://192\.168\.0\.\d{1,3}:3000$#',
+    '#^http://192\.168\.0\.\d{1,3}:3001$#',
+    '#^https://synapsy-frontend-.*\.vercel\.app$#',
 
     // Dev
     env('FRONTEND_URL', 'https://synapsy-dev.vercel.app/'),

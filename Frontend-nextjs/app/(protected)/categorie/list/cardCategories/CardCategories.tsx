@@ -10,9 +10,12 @@ import { getIconComponent } from "@/utils/categoryOptions";
 import { Pencil, Trash2 } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 
+// ============================
+// Lista cards (grid responsive)
+// ============================
 export default function CardCategories({ categories, onEdit, onDelete }: CardCategoriesProps) {
     return (
-        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-4">
             {categories.map((cat) => (
                 <CategoryCard key={cat.id} cat={cat} onEdit={onEdit} onDelete={onDelete} />
             ))}
@@ -20,6 +23,9 @@ export default function CardCategories({ categories, onEdit, onDelete }: CardCat
     );
 }
 
+// ============================
+// Singola card categoria
+// ============================
 function CategoryCard({ cat, onEdit, onDelete }: CategoryCardProps) {
     const Icon = getIconComponent(cat.icon);
 
@@ -31,13 +37,14 @@ function CategoryCard({ cat, onEdit, onDelete }: CategoryCardProps) {
         if (el) setShowTooltip(el.scrollWidth > el.clientWidth);
     }, [cat.name]);
 
-    // Colore accent (bordi, glow): resta dinamico, ma bg/text sono da custom property
+    // Colore accent (bordi, glow)
     const accent = cat.color || (cat.type === "entrata" ? "#16f5c7" : "#fd518d");
 
     return (
         <li
             className={`
-                relative rounded-2xl p-4 min-h-[140px] flex flex-col justify-between
+                relative rounded-2xl p-3 sm:p-4 min-h-[72px] sm:min-h-[100px]
+                flex flex-col justify-between
                 shadow-lg hover:shadow-2xl border-l-8 transition-all
             `}
             style={{
@@ -47,18 +54,43 @@ function CategoryCard({ cat, onEdit, onDelete }: CategoryCardProps) {
                 boxShadow: `0 0 6px 0 ${accent}99, 0 4px 16px 0 #0006`,
             }}
         >
-            {/* Icona di sfondo */}
+            {/* ----------------------------
+               Icona grande di sfondo
+            ---------------------------- */}
             <div className="absolute inset-0 pointer-events-none z-0">
-                <div className="absolute bottom-1 right-1 opacity-20 text-[110px]" style={{ color: accent }}>
+                <div
+                    className="absolute bottom-1 right-1 opacity-20 text-[70px] sm:text-[100px]"
+                    style={{ color: accent }}
+                >
                     <Icon />
                 </div>
             </div>
 
-            {/* Etichetta tipo */}
-            <div className="flex items-center gap-2 mb-2 z-10">
+            {/* ----------------------------
+               Header row: Nome + Badge
+               (stessa riga, più compatto)
+            ---------------------------- */}
+            <div className="flex items-center justify-between gap-2 mb-2 z-10">
+                {/* Nome categoria */}
+                <div
+                    ref={nameRef}
+                    className={`
+                        font-semibold text-base sm:text-lg text-left truncate
+                        max-w-[120px] sm:max-w-[170px]
+                        ${showTooltip ? "cursor-help" : ""}
+                    `}
+                    style={{ color: "hsl(var(--c-category-div-text))" }}
+                    title={showTooltip ? cat.name : ""}
+                >
+                    {cat.name}
+                </div>
+
+                {/* Badge tipo */}
                 <span
                     className={`
-                        inline-block px-3 py-1 rounded-full text-xs font-semibold border
+                        inline-flex items-center shrink-0
+                        px-2 sm:px-3 py-0.5 sm:py-1
+                        rounded-full text-[11px] sm:text-xs font-semibold border
                         shadow shadow-black/40 bg-opacity-30
                     `}
                     style={{
@@ -71,24 +103,9 @@ function CategoryCard({ cat, onEdit, onDelete }: CategoryCardProps) {
                 </span>
             </div>
 
-            {/* Nome categoria */}
-            <div className="w-full flex justify-left mb-2 z-10">
-                <div
-                    ref={nameRef}
-                    className={`
-                        font-semibold text-lg text-left truncate max-w-[170px]
-                        ${showTooltip ? "cursor-help" : ""}
-                    `}
-                    style={{
-                        color: "hsl(var(--c-category-div-text))",
-                    }}
-                    title={showTooltip ? cat.name : ""}
-                >
-                    {cat.name}
-                </div>
-            </div>
-
-            {/* Bottoni */}
+            {/* ----------------------------
+               Bottoni azioni
+            ---------------------------- */}
             <div className="flex gap-2 justify-left mt-auto z-10">
                 <button
                     className="p-2 rounded-full bg-transparent hover:bg-blue-600/80 hover:text-white text-blue-500 transition"
@@ -109,5 +126,8 @@ function CategoryCard({ cat, onEdit, onDelete }: CategoryCardProps) {
     );
 }
 
-// ===================== END CardCategories =====================
-
+// ===================================================
+// Questo file renderizza la griglia di cards categoria.
+// Ogni card mostra nome + badge tipo sulla stessa riga
+// (più compatto su mobile), icona di sfondo e azioni.
+// ===================================================
