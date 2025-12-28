@@ -8,9 +8,8 @@
 import { useState } from "react";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
 import { Ricorrenza } from "@/types/models/ricorrenza";
-// Percorsi corretti per le card (sensibili al case su Linux)
-import CardTotaliAnnui from "./cardaaaaa/CardTotaliAnnui";
-import CardGraficoPagamenti from "./cardaaaaa/CardGraficoPagamenti";
+import CardTotaliAnnui from "./card/CardTotaliAnnui";
+import CardGraficoPagamenti from "./card/CardGraficoPagamenti";
 import ListaRicorrenzePerFrequenza from "./liste/ListaRicorrenzePerFrequenza";
 import ListaProssimiPagamenti from "./liste/ListaProssimiPagamenti";
 import AreaGraficiRicorrenze from "./grafici/AreaGraficiRicorrenze";
