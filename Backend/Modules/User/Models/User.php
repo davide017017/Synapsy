@@ -38,116 +38,115 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
  */
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+  use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    // ===================================================================
-    // JWT Auth
-    // ===================================================================
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
+  // ===================================================================
+  // JWT Auth
+  // ===================================================================
+  public function getJWTIdentifier()
+  {
+    return $this->getKey();
+  }
 
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
+  public function getJWTCustomClaims()
+  {
+    return [];
+  }
 
-    // ===================================================================
-    // Fillable
-    // ===================================================================
-    protected $fillable = [
-        'name',
-        'surname',
-        'username',         // NEW: username univoco
-        'email',
-        'password',
-        'avatar',           // NEW: url o path avatar
-        'theme',            // NEW: tema preferito utente
-        'pending_email',    // NEW: email in attesa di conferma
-        'has_accepted_terms',
-        // 'birthdate',     // Opzionale: data di nascita
-        // 'phone',         // Opzionale: telefono
-        // 'locale',        // Opzionale: lingua preferita
-        'is_admin',
+  // ===================================================================
+  // Fillable
+  // ===================================================================
+  protected $fillable = [
+    'name',
+    'surname',
+    'username',
+    'email',
+    'password',
+    'avatar',
+    'theme',
+    'pending_email',
+    'has_accepted_terms',
+    'is_admin',
+    'email_verified_at',
+  ];
+
+
+  // ===================================================================
+  // Hidden
+  // ===================================================================
+  protected $hidden = [
+    'password',
+    'remember_token',
+  ];
+
+  // ===================================================================
+  // Casts
+  // ===================================================================
+  protected function casts(): array
+  {
+    return [
+      'email_verified_at' => 'datetime',
+      'password' => 'hashed',
+      'is_admin' => 'boolean',
+      'avatar' => 'string',
+      'theme' => 'string',
+      'pending_email' => 'string',
+      'has_accepted_terms' => 'boolean',
+      'birthdate' => 'date:Y-m-d', // se usi la colonna
     ];
+  }
 
-    // ===================================================================
-    // Hidden
-    // ===================================================================
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+  // ===================================================================
+  // Notifiche email custom
+  // ===================================================================
+  public function sendEmailVerificationNotification(): void
+  {
+    $this->notify(new CustomVerifyEmail);
+  }
 
-    // ===================================================================
-    // Casts
-    // ===================================================================
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_admin' => 'boolean',
-            'avatar' => 'string',
-            'theme' => 'string',
-            'pending_email' => 'string',
-            'has_accepted_terms' => 'boolean',
-            'birthdate' => 'date:Y-m-d', // se usi la colonna
-        ];
+  public function sendPendingEmailVerificationNotification(): void
+  {
+    if ($this->pending_email) {
+      $this->notify(new \Modules\User\Notifications\VerifyNewEmail($this->pending_email));
     }
+  }
 
-    // ===================================================================
-    // Notifiche email custom
-    // ===================================================================
-    public function sendEmailVerificationNotification(): void
-    {
-        $this->notify(new CustomVerifyEmail);
-    }
+  // ===================================================================
+  // RELAZIONI
+  // ===================================================================
+  public function spese(): HasMany
+  {
+    return $this->hasMany(Spesa::class);
+  }
 
-    public function sendPendingEmailVerificationNotification(): void
-    {
-        if ($this->pending_email) {
-            $this->notify(new \Modules\User\Notifications\VerifyNewEmail($this->pending_email));
-        }
-    }
+  public function entrate(): HasMany
+  {
+    return $this->hasMany(Entrata::class);
+  }
 
-    // ===================================================================
-    // RELAZIONI
-    // ===================================================================
-    public function spese(): HasMany
-    {
-        return $this->hasMany(Spesa::class);
-    }
+  public function categories(): HasMany
+  {
+    return $this->hasMany(Category::class);
+  }
 
-    public function entrate(): HasMany
-    {
-        return $this->hasMany(Entrata::class);
-    }
+  public function recurringOperations(): HasMany
+  {
+    return $this->hasMany(RecurringOperation::class);
+  }
 
-    public function categories(): HasMany
-    {
-        return $this->hasMany(Category::class);
-    }
+  // ===================================================================
+  // Helpers
+  // ===================================================================
+  public function isAdmin(): bool
+  {
+    return (bool) $this->is_admin;
+  }
 
-    public function recurringOperations(): HasMany
-    {
-        return $this->hasMany(RecurringOperation::class);
-    }
-
-    // ===================================================================
-    // Helpers
-    // ===================================================================
-    public function isAdmin(): bool
-    {
-        return (bool) $this->is_admin;
-    }
-
-    // ===================================================================
-    // Factory
-    // ===================================================================
-    public static function newFactory(): UserFactory
-    {
-        return UserFactory::new();
-    }
+  // ===================================================================
+  // Factory
+  // ===================================================================
+  public static function newFactory(): UserFactory
+  {
+    return UserFactory::new();
+  }
 }

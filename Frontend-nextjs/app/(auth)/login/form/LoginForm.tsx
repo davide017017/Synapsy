@@ -111,7 +111,10 @@ export default function LoginForm({ onSubmit, onOpenRegister, onOpenForgot }: Lo
                 </form>
 
                 {/* Link “registrati/recupera password” */}
+                {/*  Da sviluppare bene  */}
+                {/*                 
                 <AuthLinks onForgotClick={onOpenForgot} onRegisterClick={onOpenRegister} />
+            */}
             </div>
         </>
     );

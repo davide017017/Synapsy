@@ -215,9 +215,7 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
                             animate="center"
                             exit="exit"
                             transition={{ duration: 0.18 }}
-                            className={`grid gap-2 ${
-                                isLg ? "grid-cols-[auto_repeat(7,_1fr)]" : "grid-cols-3 sm:grid-cols-4 md:grid-cols-5"
-                            }`}
+                            className={`grid gap-1 ${isLg ? "grid-cols-[auto_repeat(7,_1fr)]" : "grid-cols-1"}`}
                         >
                             {isLg
                                 ? weeks!.map((week) => {
@@ -232,21 +230,33 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
                                           />
                                       );
                                   })
-                                : cells.map((cell) => {
-                                      const dayTx = getTxForDate(cell.date);
-                                      return (
-                                          <DayCell
-                                              key={`day-${localDateKey(cell.date)}`}
-                                              day={cell.day}
-                                              date={cell.date}
-                                              monthDelta={cell.monthDelta}
-                                              transactions={dayTx}
-                                              showWeekDay={false}
-                                              maxImporto={maxImportoGriglia}
-                                              onClickDay={onDayClick}
-                                          />
-                                      );
-                                  })}
+                                : weeks!.map((week) => (
+                                      <div key={week.weekNumber} className="relative">
+                                          {/* Week number overlay (non altera la griglia) */}
+                                          <div className="absolute -left-6 top-1/2 -translate-y-1/2 text-[10px] font-semibold opacity-60 select-none">
+                                              {week.weekNumber}
+                                          </div>
+
+                                          {/* 7 giorni uguali */}
+                                          <div className="grid grid-cols-7 gap-1">
+                                              {week.days.map((cell) => {
+                                                  const dayTx = getTxForDate(cell.date);
+                                                  return (
+                                                      <DayCell
+                                                          key={`day-${localDateKey(cell.date)}`}
+                                                          day={cell.day}
+                                                          date={cell.date}
+                                                          monthDelta={cell.monthDelta}
+                                                          transactions={dayTx}
+                                                          showWeekDay={false}
+                                                          maxImporto={maxImportoGriglia}
+                                                          onClickDay={onDayClick}
+                                                      />
+                                                  );
+                                              })}
+                                          </div>
+                                      </div>
+                                  ))}
                         </motion.div>
                     </AnimatePresence>
                 )}
