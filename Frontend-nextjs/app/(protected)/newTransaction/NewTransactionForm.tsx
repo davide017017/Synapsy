@@ -288,6 +288,31 @@ export default function NewTransactionForm({
         }
     };
 
+    const [isResetAmountAnimating, setIsResetAmountAnimating] = useState(false);
+    const [isResetDateAnimating, setIsResetDateAnimating] = useState(false);
+
+    const handleResetAmount = () => {
+        if (isResetAmountAnimating) return;
+
+        resetAmount();
+
+        setIsResetAmountAnimating(true);
+        setTimeout(() => {
+            setIsResetAmountAnimating(false);
+        }, 1300);
+    };
+
+    const handleResetDate = () => {
+        if (isResetDateAnimating) return;
+
+        resetDate();
+
+        setIsResetDateAnimating(true);
+        setTimeout(() => {
+            setIsResetDateAnimating(false);
+        }, 1300);
+    };
+
     // ╔═══════════════════════════════╗
     // ║          RENDER FORM          ║
     // ╚═══════════════════════════════╝
@@ -532,36 +557,40 @@ export default function NewTransactionForm({
                  * Importo + Data sulla stessa riga (+ reset)
                  * ──────────────────────────────────── */}
 
-                <div className="mt-4 flex flex-col gap-2 md:gap-4 sm:flex-row">
+                <div className="mt-4 grid grid-cols-1 gap-1 md:gap-2">
                     {/* Importo */}
-                    <div className="sm:w-1/2">
+                    <div className="w-full">
                         <div className="relative flex items-center mb-1">
                             <button
                                 type="button"
-                                className="
+                                onClick={handleResetAmount}
+                                aria-label="Reset importo"
+                                className={cn(
+                                    `
                                     group flex items-center justify-center
                                     h-9 w-9 rounded-full
-                                    border border-border
-                                    transition-all duration-150
-                  
-                                    hover:border-yellow-400/60
-                                    hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]
-    
-                                    active:bg-yellow-400/20
-                                    active:border-yellow-400/70
-                                    active:shadow-[0_0_14px_rgba(250,204,21,0.45),inset_0_0_10px_rgba(250,204,21,0.35)]
-                                  "
-                                onClick={resetAmount}
-                                aria-label="Reset importo"
+                                    border transition-all duration-300
+                                    `,
+                                    isResetAmountAnimating
+                                        ? `
+                                          border-yellow-400
+                                          bg-yellow-400/20
+                                          shadow-[0_0_16px_rgba(250,204,21,0.55)]
+                                          `
+                                        : `
+                                          border-border
+                                          hover:border-yellow-400/60
+                                          hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]
+                                        `,
+                                )}
                             >
                                 <FiRotateCcw
                                     size={16}
                                     strokeWidth={2}
-                                    className="
-                                    transition-transform
-                                    group-hover:rotate-[-20deg]
-                                    group-active:rotate-[-200deg]
-                                  "
+                                    className={cn(
+                                        "transition-transform",
+                                        isResetAmountAnimating ? "animate-spin-slow" : "group-hover:rotate-[-20deg]",
+                                    )}
                                 />
                             </button>
 
@@ -584,6 +613,70 @@ export default function NewTransactionForm({
 
                         {/* il tuo layout stepper verticale (quello che hai appena messo) */}
                         <div className="flex items-stretch gap-1 sm:gap-2 md:gap-2">
+                            <div className="flex flex-col items-center gap-1">
+                                {/* +10 */}
+                                <button
+                                    type="button"
+                                    className="
+                                      h-10 w-7 sm:h-11 sm:w-10
+                                      rounded-t-full rounded-b-none
+                                      border bg-bg-elevate text-sm font-semibold
+                                      transition-all duration-150
+
+                                      hover:border-orange-500/70
+                                      hover:shadow-[0_0_10px_rgba(249,115,22,0.35)]
+
+                                      active:bg-orange-500/25
+                                      active:shadow-[inset_0_0_10px_rgba(249,115,22,0.45)]
+                                    "
+                                    onClick={() => applyAmountDelta(10)}
+                                    disabled={loading || disabled}
+                                    aria-label="Aumenta di 10"
+                                >
+                                    +10
+                                </button>
+
+                                {/* STEP INDICATOR */}
+                                <div
+                                    className="
+                                      flex items-center
+                                      px-2 py-0.5
+                                      text-[11px] font-semibold
+                                      border border-yellow-400/40
+                                      text-yellow-400
+                                      bg-yellow-400/10
+
+                                      select-none
+                                    "
+                                    aria-hidden="true"
+                                >
+                                    10&nbsp;€
+                                </div>
+
+                                {/* −10 */}
+                                <button
+                                    type="button"
+                                    className="
+                                      h-10 w-7 sm:h-11 sm:w-10
+                                      rounded-b-full rounded-t-none
+                                      border bg-bg-elevate text-sm font-semibold
+                                      transition-all duration-150
+
+                                    hover:border-orange-500/70
+                                    hover:shadow-[0_0_10px_rgba(249,115,22,0.35)]
+
+                                    active:bg-orange-500/25
+                                    active:shadow-[inset_0_0_10px_rgba(249,115,22,0.45)]
+
+                                    "
+                                    onClick={() => applyAmountDelta(-10)}
+                                    disabled={loading || disabled}
+                                    aria-label="Diminuisci di 10"
+                                >
+                                    −10
+                                </button>
+                            </div>
+
                             <div className="flex flex-col items-center gap-1">
                                 {/* + */}
                                 <button
@@ -649,7 +742,7 @@ export default function NewTransactionForm({
                                 name="amount"
                                 type="text"
                                 inputMode="decimal"
-                                placeholder="Imp"
+                                placeholder="€"
                                 value={String(formData.amount ?? "")}
                                 onChange={(e) => {
                                     const v = e.target.value;
@@ -679,11 +772,12 @@ export default function NewTransactionForm({
                                       h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-base font-semibold
                                       transition-all duration-150
 
-                                      hover:border-sky-400/60
-                                      hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
+                                      hover:border-amber-400/60
+                                      hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]
 
-                                      active:bg-sky-400/20
-                                      active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]
+                                      active:bg-stone-400/20
+                                      active:shadow-[inset_0_0_10px_rgba(168,162,158,0.35)]
+
                                     "
                                     onClick={() => applyAmountDelta(0.1)}
                                     disabled={loading || disabled}
@@ -717,15 +811,78 @@ export default function NewTransactionForm({
                                       h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-base font-semibold
                                       transition-all duration-150
 
-                                      hover:border-sky-400/60
-                                      hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
+                                      hover:border-amber-400/60
+                                      hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]
 
-                                      active:bg-sky-400/20
-                                      active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]
+                                      active:bg-stone-400/20
+                                      active:shadow-[inset_0_0_10px_rgba(168,162,158,0.35)]
                                     "
                                     onClick={() => applyAmountDelta(-0.1)}
                                     disabled={loading || disabled}
                                     aria-label="Diminuisci di 0.1"
+                                >
+                                    −
+                                </button>
+                            </div>
+
+                            <div className="flex flex-col items-center gap-1">
+                                {/* +0.01 */}
+                                <button
+                                    type="button"
+                                    className="
+                                      h-10 w-7 sm:h-11 sm:w-10
+                                      rounded-t-full rounded-b-none
+                                      border bg-bg-elevate text-xs font-semibold
+                                      transition-all duration-150
+
+                                    hover:border-amber-700/70
+                                    hover:shadow-[0_0_10px_rgba(180,83,9,0.35)]
+
+                                    active:bg-amber-700/25
+                                    active:shadow-[inset_0_0_10px_rgba(180,83,9,0.45)]
+
+        "
+                                    onClick={() => applyAmountDelta(0.01)}
+                                    disabled={loading || disabled}
+                                    aria-label="Aumenta di 0.01"
+                                >
+                                    +
+                                </button>
+
+                                {/* STEP INDICATOR */}
+                                <div
+                                    className="
+                                    flex items-center
+                                    px-2 py-0.5
+                                    text-[10px] font-semibold
+                                    border border-yellow-500/40
+                                    text-yellow-500
+                                    bg-yellow-500/10
+                                    select-none
+                                  "
+                                    aria-hidden="true"
+                                >
+                                    0.01&nbsp;€
+                                </div>
+
+                                {/* −0.01 */}
+                                <button
+                                    type="button"
+                                    className="
+                                      h-10 w-7 sm:h-11 sm:w-10
+                                      rounded-b-full rounded-t-none
+                                      border bg-bg-elevate text-xs font-semibold
+                                      transition-all duration-150
+
+                                    hover:border-amber-700/70
+                                      hover:shadow-[0_0_10px_rgba(180,83,9,0.35)]
+
+                                    active:bg-amber-700/25
+                                      active:shadow-[inset_0_0_10px_rgba(180,83,9,0.45)]
+                                      "
+                                    onClick={() => applyAmountDelta(-0.01)}
+                                    disabled={loading || disabled}
+                                    aria-label="Diminuisci di 0.01"
                                 >
                                     −
                                 </button>
@@ -743,8 +900,36 @@ export default function NewTransactionForm({
                         />
                     </div>
 
+                    {/* ────────────────────────────────────
+                     * Importi rapidi (quick pick)
+                     * ──────────────────────────────────── */}
+                    <div className="mt-2">
+                        <div className="flex flex-wrap gap-2 items-center justify-center">
+                            {QUICK_AMOUNTS.map((v) => {
+                                const isActive = Number(formData.amount) === v;
+
+                                return (
+                                    <button
+                                        key={v}
+                                        type="button"
+                                        className={cn(
+                                            "px-2.5 py-1 rounded-full border text-xs font-medium transition-all duration-150",
+                                            isActive
+                                                ? "border-primary bg-primary/30 text-primary shadow-[0_0_8px_rgba(56,189,248,0.45)]"
+                                                : "border-border/50 bg-transparent text-muted-foreground hover:bg-primary/15 hover:border-primary/60 hover:text-text",
+                                        )}
+                                        onClick={() => setFormData({ ...formData, amount: v })}
+                                        disabled={loading || disabled}
+                                    >
+                                        € {v}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
                     {/* Data */}
-                    <div className="sm:w-1/2">
+                    <div className="w-full">
                         <div className="relative flex items-center mb-1">
                             {/* Label centro */}
                             <label
@@ -757,20 +942,25 @@ export default function NewTransactionForm({
                             {/* Reset  */}
                             <button
                                 type="button"
-                                className="
+                                className={cn(
+                                    `
                                     group flex items-center justify-center
                                     h-9 w-9 rounded-full
-                                    border border-border
-                                    transition-all duration-150
-
+                                    border transition-all duration-300
+                                    `,
+                                    isResetDateAnimating
+                                        ? `
+                                    border-yellow-400
+                                    bg-yellow-400/20
+                                    shadow-[0_0_16px_rgba(250,204,21,0.55)]
+                                    `
+                                        : `
+                                    border-border
                                     hover:border-yellow-400/60
                                     hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]
-
-                                    active:bg-yellow-400/20
-                                    active:border-yellow-400/70
-                                    active:shadow-[0_0_14px_rgba(250,204,21,0.45),inset_0_0_10px_rgba(250,204,21,0.35)]
-                                  "
-                                onClick={resetDate}
+                                  `,
+                                )}
+                                onClick={handleResetDate}
                                 disabled={loading || disabled}
                                 aria-label="Reset data"
                                 title="Reset data"
@@ -778,11 +968,10 @@ export default function NewTransactionForm({
                                 <FiRotateCcw
                                     size={16}
                                     strokeWidth={2}
-                                    className="
-                                    transition-transform
-                                    group-hover:rotate-[-20deg]
-                                    group-active:rotate-[-200deg]
-                                  "
+                                    className={cn(
+                                        "transition-transform",
+                                        isResetDateAnimating ? "animate-spin-slow" : "group-hover:rotate-[-20deg]",
+                                    )}
                                 />
                             </button>
                         </div>
@@ -899,34 +1088,6 @@ export default function NewTransactionForm({
                                 </span>
                             </button>
                         </div>
-                    </div>
-                </div>
-
-                {/* ────────────────────────────────────
-                 * Importi rapidi (quick pick)
-                 * ──────────────────────────────────── */}
-                <div className="mt-2">
-                    <div className="flex flex-wrap gap-2">
-                        {QUICK_AMOUNTS.map((v) => {
-                            const isActive = Number(formData.amount) === v;
-
-                            return (
-                                <button
-                                    key={v}
-                                    type="button"
-                                    className={cn(
-                                        "px-3 py-1.5 rounded-full border text-sm transition",
-                                        isActive
-                                            ? "border-primary/60 bg-primary/10 text-text"
-                                            : "border-border bg-bg-elevate text-muted-foreground hover:text-text hover:border-primary/40",
-                                    )}
-                                    onClick={() => setFormData({ ...formData, amount: v })}
-                                    disabled={loading || disabled}
-                                >
-                                    € {v}
-                                </button>
-                            );
-                        })}
                     </div>
                 </div>
 

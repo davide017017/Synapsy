@@ -17,7 +17,9 @@ Stili base (body, html, transizioni globali)
 @layer base {
     /* ----- Root HTML ----- */
     html {
-        transition: background-color 0.3s, color 0.3s;
+        transition:
+            background-color 0.3s,
+            color 0.3s;
     }
 
     /* ----- Body base ----- */
@@ -51,6 +53,19 @@ Stili base (body, html, transizioni globali)
         opacity: 0;
         cursor: pointer;
     }
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 1.3s ease-in-out;
 }
 
 /* ===================================================
