@@ -153,7 +153,7 @@ export default function NewTransactionForm({
     // ────────────────────────────────────────────────
     // Preset importi rapidi
     // ────────────────────────────────────────────────
-    const QUICK_AMOUNTS = [5, 20, 50, 100, 1200];
+    const QUICK_AMOUNTS = [4.8, 20, 50, 100];
 
     // ────────────────────────────────────────────────
     // Amount helpers (UX stepper: ±1 a sinistra, ±0.1 a destra)
@@ -257,7 +257,7 @@ export default function NewTransactionForm({
     // ────────────────────────────────────────────────
     const filteredCategories = useMemo(
         () => categories.filter((cat) => cat.type === formData.type),
-        [categories, formData.type]
+        [categories, formData.type],
     );
 
     // ────────────────────────────────────────────────
@@ -292,11 +292,12 @@ export default function NewTransactionForm({
     // ║          RENDER FORM          ║
     // ╚═══════════════════════════════╝
     return (
-        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+        <form onSubmit={handleSubmit} className="space-y-4 pb-2" autoComplete="off">
             <div
                 className={cn(
-                    "rounded-2xl border px-4 py-4 mb-1 transition-colors",
-                    formData.type === "entrata" ? "border-emerald-500/80" : "border-rose-500/80"
+                    "rounded-2xl border transition-colors pb-safe",
+                    "px-3 py-3 sm:px-4 sm:py-4", // 👈 QUI
+                    formData.type === "entrata" ? "border-emerald-500/80" : "border-rose-500/80",
                 )}
             >
                 {/* ────────────────────────────────────
@@ -318,7 +319,7 @@ export default function NewTransactionForm({
                             "flex-1 flex flex-col items-center justify-center rounded-xl border px-4 py-3 transition",
                             formData.type === "entrata"
                                 ? "border-emerald-500 text-emerald-400 shadow"
-                                : "border-border text-muted-foreground hover:border-emerald-500/60 hover:text-emerald-300/90"
+                                : "border-border text-muted-foreground hover:border-emerald-500/60 hover:text-emerald-300/90",
                         )}
                     >
                         <span className="text-base font-bold tracking-wide">ENTRATA</span>
@@ -340,7 +341,7 @@ export default function NewTransactionForm({
                             "flex-1 flex flex-col items-center justify-center rounded-xl border px-4 py-3 transition",
                             formData.type === "spesa"
                                 ? "border-rose-500 text-rose-400 shadow"
-                                : "border-border text-muted-foreground hover:border-rose-500/60 hover:text-rose-300/90"
+                                : "border-border text-muted-foreground hover:border-rose-500/60 hover:text-rose-300/90",
                         )}
                     >
                         <span className="text-base font-bold tracking-wide">SPESA</span>
@@ -351,7 +352,7 @@ export default function NewTransactionForm({
                 {/* ────────────────────────────────────
                  * Categoria dinamica — Picker fullscreen
                  * ──────────────────────────────────── */}
-                <div className="relative mt-4">
+                <div className="relative mt-2 md:mt-4">
                     <label htmlFor="transaction-category" className="block text-sm font-medium mb-1">
                         Categoria
                     </label>
@@ -365,15 +366,15 @@ export default function NewTransactionForm({
                         className={cn(
                             "w-full flex items-center justify-between px-3 py-2 rounded-xl border text-sm transition",
                             "bg-bg text-text focus:ring-2 focus:ring-primary/40",
-                            errors.category_id ? "border-danger" : "border-border"
+                            errors.category_id ? "border-danger" : "border-border",
                         )}
                     >
                         <span className={formData.category_id ? "" : "text-muted-foreground"}>
                             {loadingCategories
                                 ? "Caricamento..."
                                 : formData.category_id
-                                ? filteredCategories.find((c) => c.id === formData.category_id)?.name ?? "Categoria"
-                                : "Seleziona categoria"}
+                                  ? (filteredCategories.find((c) => c.id === formData.category_id)?.name ?? "Categoria")
+                                  : "Seleziona categoria"}
                         </span>
                         <span className="opacity-60 text-xs">▼</span>
                     </button>
@@ -426,7 +427,7 @@ export default function NewTransactionForm({
                                                     "transition-all duration-200",
                                                     isActive
                                                         ? "scale-[1.03] text-white"
-                                                        : "hover:scale-[1.02] text-muted-foreground hover:text-text"
+                                                        : "hover:scale-[1.02] text-muted-foreground hover:text-text",
                                                 )}
                                                 onClick={() => {
                                                     setFormData({ ...formData, category_id: cat.id });
@@ -456,7 +457,7 @@ export default function NewTransactionForm({
                 {/* ────────────────────────────────────
                  * Descrizione
                  * ──────────────────────────────────── */}
-                <div className="mt-4">
+                <div className="mt-2 md:mt-4">
                     <label htmlFor="transaction-description" className="block text-sm font-medium mb-1">
                         Descrizione
                     </label>
@@ -483,27 +484,31 @@ export default function NewTransactionForm({
                  * Quick description picks
                  * ──────────────────────────────────── */}
 
-                <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="mt-3 grid grid-cols-5 gap-2">
                     {[
                         { key: "autostrada", label: "Autostrada", icon: "🚗" },
                         { key: "benzina", label: "Benzina", icon: "⛽" },
-                        { key: "ristorante", label: "Ristorante", icon: "🍽️" },
-                        { key: "spesa", label: "Spesa", icon: "🛒" },
+                        { key: "pellet", label: "Pellet", icon: "🔥" },
+                        { key: "taglio", label: "Taglio", icon: "✂️" },
+                        { key: "busta", label: "Busta", icon: "✉️" },
                     ].map((q) => (
                         <button
                             key={q.key}
                             type="button"
                             className="
-                              flex items-center gap-2
-                              px-3 py-2 rounded-xl border
-                              bg-bg-elevate text-muted-foreground text-sm
-                              transition-all duration-150
+              flex flex-col items-center justify-center
+              gap-0.5
+              px-2 py-2
+              rounded-xl border
+              bg-bg-elevate
+              text-muted-foreground
+              transition-all duration-150
 
-                              hover:text-text hover:border-sky-400/60
-                              hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
+              hover:text-text hover:border-sky-400/60
+              hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
 
-                              active:bg-sky-400/15
-                            "
+              active:bg-sky-400/15
+            "
                             onClick={() =>
                                 setFormData((p) => ({
                                     ...p,
@@ -512,8 +517,13 @@ export default function NewTransactionForm({
                             }
                             aria-label={`Imposta descrizione: ${q.label}`}
                         >
-                            <span className="text-lg">{q.icon}</span>
-                            <span className="truncate">{q.label}</span>
+                            {/* Icona */}
+                            <span className="text-xl leading-none">{q.icon}</span>
+
+                            {/* Label sotto */}
+                            <span className="text-[10px] leading-tight text-center truncate max-w-[64px]">
+                                {q.label}
+                            </span>
                         </button>
                     ))}
                 </div>
@@ -522,7 +532,7 @@ export default function NewTransactionForm({
                  * Importo + Data sulla stessa riga (+ reset)
                  * ──────────────────────────────────── */}
 
-                <div className="mt-4 flex flex-row gap-4">
+                <div className="mt-4 flex flex-col gap-2 md:gap-4 sm:flex-row">
                     {/* Importo */}
                     <div className="sm:w-1/2">
                         <div className="relative flex items-center mb-1">
@@ -559,10 +569,14 @@ export default function NewTransactionForm({
                             <label
                                 htmlFor="transaction-amount"
                                 className="
-                                          absolute left-1/2 -translate-x-1/2
-                                          text-sm font-medium
-                                          pointer-events-none
-                                      "
+                                  absolute left-1/2 -translate-x-1/2
+                                  text-base sm:text-lg
+                                  font-semibold
+                                  tracking-wider
+                                  uppercase
+                                  opacity-80
+                                  pointer-events-none
+                                "
                             >
                                 Importo
                             </label>
@@ -575,7 +589,7 @@ export default function NewTransactionForm({
                                 <button
                                     type="button"
                                     className="
-                                      h-10 w-6 sm:w-9 rounded-t-full rounded-b-none border bg-bg-elevate text-sm
+                                      h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-sm
                                       transition-all duration-150
 
                                       hover:border-sky-400/60
@@ -613,7 +627,7 @@ export default function NewTransactionForm({
                                 <button
                                     type="button"
                                     className="
-                                      h-10 w-6 sm:w-9 rounded-b-full rounded-t-none border bg-bg-elevate text-sm
+                                      h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-sm
                                       transition-all duration-150
 
                                       hover:border-sky-400/60
@@ -651,8 +665,9 @@ export default function NewTransactionForm({
                                     }));
                                 }}
                                 className={cn(
-                                    "flex-1 text-center font-semibold text-base sm:text-lg md:text-xl",
-                                    errors.amount ? "border-danger" : ""
+                                    "text-center font-bold tracking-wide",
+                                    "!text-4xl sm:!text-2xl",
+                                    errors.amount ? "border-danger" : "",
                                 )}
                             />
 
@@ -661,7 +676,7 @@ export default function NewTransactionForm({
                                 <button
                                     type="button"
                                     className="
-                                      h-10 w-6 sm:w-9 rounded-t-full rounded-b-none border bg-bg-elevate text-sm
+                                      h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-base font-semibold
                                       transition-all duration-150
 
                                       hover:border-sky-400/60
@@ -699,7 +714,7 @@ export default function NewTransactionForm({
                                 <button
                                     type="button"
                                     className="
-                                      h-10 w-6 sm:w-9 rounded-b-full rounded-t-none border bg-bg-elevate text-sm
+                                      h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-base font-semibold
                                       transition-all duration-150
 
                                       hover:border-sky-400/60
@@ -818,7 +833,10 @@ export default function NewTransactionForm({
                             <button
                                 type="button"
                                 className="
-                                  px-1 py-3 rounded-2xl border text-sm
+                                  px-1 py-2 sm:py-3
+                                  rounded-2xl border
+                                  text-xs sm:text-sm
+
                                   bg-bg-elevate text-muted-foreground
                                   transition-all duration-150
                                   hover:text-text hover:border-sky-400/50
@@ -838,7 +856,10 @@ export default function NewTransactionForm({
                             <button
                                 type="button"
                                 className=" 
-                                    px-1 py-3 rounded-2xl border text-sm
+                                    px-1 py-2 sm:py-3
+                                    rounded-2xl border
+                                    text-xs sm:text-sm
+
                                     bg-bg-elevate text-muted-foreground
                                     transition-all duration-150
                                     hover:text-text hover:border-sky-400/50
@@ -858,7 +879,10 @@ export default function NewTransactionForm({
                             <button
                                 type="button"
                                 className="
-                                  px-1 py-3 rounded-2xl border text-sm
+                                  px-1 py-2 sm:py-3
+                                  rounded-2xl border
+                                  text-xs sm:text-sm
+
                                   bg-bg-elevate text-text
                                   transition-all duration-150
                                   border-sky-400/40
@@ -894,7 +918,7 @@ export default function NewTransactionForm({
                                         "px-3 py-1.5 rounded-full border text-sm transition",
                                         isActive
                                             ? "border-primary/60 bg-primary/10 text-text"
-                                            : "border-border bg-bg-elevate text-muted-foreground hover:text-text hover:border-primary/40"
+                                            : "border-border bg-bg-elevate text-muted-foreground hover:text-text hover:border-primary/40",
                                     )}
                                     onClick={() => setFormData({ ...formData, amount: v })}
                                     disabled={loading || disabled}
@@ -945,19 +969,19 @@ export default function NewTransactionForm({
                                     "flex items-center justify-center", // centra testo (orizzontale + verticale)
                                     formData.type === "entrata"
                                         ? "bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500/40"
-                                        : "bg-rose-600 hover:bg-rose-700 focus:ring-rose-500/40"
+                                        : "bg-rose-600 hover:bg-rose-700 focus:ring-rose-500/40",
                                 )}
                                 disabled={loading || disabled}
                             >
                                 {loading
                                     ? "Salvataggio…"
                                     : transaction
-                                    ? formData.type === "entrata"
-                                        ? "Salva entrata"
-                                        : "Salva spesa"
-                                    : formData.type === "entrata"
-                                    ? "Crea entrata"
-                                    : "Crea spesa"}
+                                      ? formData.type === "entrata"
+                                          ? "Salva entrata"
+                                          : "Salva spesa"
+                                      : formData.type === "entrata"
+                                        ? "Crea entrata"
+                                        : "Crea spesa"}
                             </button>
 
                             {/* Bottone ANNULLA */}

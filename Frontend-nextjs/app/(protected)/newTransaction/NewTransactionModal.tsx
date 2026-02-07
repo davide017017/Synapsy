@@ -37,12 +37,12 @@ export default function NewTransactionModal({
             transactionToEdit?.category_id
                 ? categories.find((cat) => cat.id === transactionToEdit.category_id)?.name
                 : undefined,
-        [transactionToEdit, categories]
+        [transactionToEdit, categories],
     );
 
     const formCategoryName = useMemo(
         () => (formValues.category_id ? categories.find((cat) => cat.id === formValues.category_id)?.name : undefined),
-        [formValues.category_id, categories]
+        [formValues.category_id, categories],
     );
 
     // ───────── Salvataggio ─────────
@@ -74,9 +74,15 @@ export default function NewTransactionModal({
         <Dialog open={isOpen} onClose={handleDialogClose}>
             <div
                 className="
-                  relative w-full max-w-lg min-w-[320px]
-                  text-text rounded-2xl shadow-2xl shadow-black/30
-                "
+                relative w-full max-w-lg min-w-[320px]
+                max-h-[90vh]              /* 👈 limite viewport */
+                overflow-y-auto           /* 👈 scroll interno */
+                overscroll-contain
+                text-text rounded-2xl
+                shadow-2xl shadow-black/30
+                bg-bg
+                p-4 sm:p-5
+              "
             >
                 {/* ───────── Overlay loading ───────── */}
                 <LoadingOverlay
