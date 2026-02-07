@@ -94,10 +94,6 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
 
     return (
         <div className="rounded-2xl border border-bg-elevate bg-bg-elevate/70 p-4 flex flex-col gap-3 shadow-md min-h-[180px]">
-            <div>
-                <NewRicorrenzaButton />
-            </div>
-
             {/* ======================================================== */}
             {/* Intestazione Hero centrata */}
             <div className="relative flex flex-col items-center justify-center mb-4">
@@ -108,7 +104,7 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
                 />
                 <div className="relative z-10 flex items-center gap-3">
                     <Repeat className="w-8 h-8 text-primary drop-shadow" />
-                    <span className="text-2xl md:text-3xl font-extrabold font-serif tracking-tight text-center text-[hsl(var(--c-primary-dark))]">
+                    <span className="text-xl md:text-3xl font-extrabold font-serif tracking-tight text-center text-[hsl(var(--c-primary-dark))]">
                         Riepilogo Ricorrenze Annue
                     </span>
                 </div>
@@ -148,7 +144,7 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
                                 {/* saldo freq colorato */}
                                 <span
                                     className={`text-[11px] tabular-nums whitespace-nowrap font-semibold ${getSaldoTextClass(
-                                        saldoFreq
+                                        saldoFreq,
                                     )}`}
                                     title={f === "annually" ? "Saldo (già annuale)" : "Saldo annuo frequenza"}
                                 >
@@ -227,7 +223,7 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
                     <div className="mt-2 text-center">
                         <span
                             className={`text-base font-bold px-3 py-1 rounded-xl border shadow-sm inline-block max-w-full ${getBilancioColor(
-                                bilancioRicorrenti
+                                bilancioRicorrenti,
                             )}`}
                             style={{
                                 borderWidth: 1,
@@ -342,7 +338,7 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
 
                                     <td
                                         className={`px-2 py-1 font-mono font-bold whitespace-nowrap ${getSaldoTextClass(
-                                            saldo
+                                            saldo,
                                         )}`}
                                         title={isAnnually ? "Saldo (già annuale)" : "Saldo annuo frequenza"}
                                     >
@@ -369,7 +365,7 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
                             </td>
                             <td
                                 className={`px-2 py-1 font-bold font-mono whitespace-nowrap ${getSaldoTextClass(
-                                    bilancioRicorrenti
+                                    bilancioRicorrenti,
                                 )}`}
                                 title="Saldo annuo totale"
                             >
@@ -382,7 +378,7 @@ export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
                             <td className="px-2 py-2 font-bold text-center" colSpan={7}>
                                 <span
                                     className={`text-lg font-bold px-4 py-1 rounded-xl border shadow-sm ${getBilancioColor(
-                                        bilancioRicorrenti
+                                        bilancioRicorrenti,
                                     )}`}
                                     style={{
                                         minWidth: 140,

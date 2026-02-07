@@ -13,6 +13,7 @@ import { useSelection } from "@/context/SelectionContext";
 import { useCategories } from "@/context/CategoriesContext";
 import { Funnel, Search, Tag, RefreshCw, SlidersHorizontal, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import type { TransactionsListProps } from "@/types/transazioni/list";
+import SelectionToolbar from "./SelectionToolbar";
 
 // ----------------------------------------------
 // Helper: format importo (fallback semplice)
@@ -31,7 +32,7 @@ function formatAmount(amount: number) {
 function formatDate(dateStr: string) {
     try {
         return new Intl.DateTimeFormat("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" }).format(
-            new Date(dateStr)
+            new Date(dateStr),
         );
     } catch {
         return dateStr;
@@ -193,7 +194,12 @@ function DaySaldoInline({ saldo }: { saldo: number }) {
 // ----------------------------------------------
 // Componente principale lista + filtro + tabella
 // ----------------------------------------------
-export default function TransactionsList({ transactions, onSelect, selectedId }: TransactionsListProps) {
+export default function TransactionsList({
+    transactions,
+    onSelect,
+    selectedId,
+    onDeleteSelected,
+}: TransactionsListProps) {
     // ===== Stato filtro frontend =====
     const [filter, setFilter] = useState({
         search: "",
@@ -206,10 +212,35 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
 
     const [visible, setVisible] = useState(20);
 
+    const [selectedYear, setSelectedYear] = useState<"all" | string>("all");
+    const [selectedMonth, setSelectedMonth] = useState<"all" | string>("all");
+
     // --------------------------------------------------
     // UI: toggle filtri su mobile
     // --------------------------------------------------
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
+    // --------------------------------------------------
+    const availableYears = useMemo(() => {
+        const set = new Set<string>();
+        transactions.forEach((t) => {
+            set.add(String(t.date).slice(0, 4));
+        });
+        return Array.from(set).sort((a, b) => b.localeCompare(a));
+    }, [transactions]);
+
+    const availableMonths = useMemo(() => {
+        const set = new Set<string>();
+
+        transactions.forEach((t) => {
+            const year = String(t.date).slice(0, 4);
+            if (selectedYear === "all" || year === selectedYear) {
+                set.add(toMonthKey(String(t.date)));
+            }
+        });
+
+        return Array.from(set).sort((a, b) => b.localeCompare(a));
+    }, [transactions, selectedYear]);
 
     // --------------------------------------------------
     // Applica filtri e ordina dalla più recente alla più vecchia
@@ -217,13 +248,20 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
     const filtered = useMemo(() => {
         return transactions
             .filter((t) => {
+                const year = String(t.date).slice(0, 4);
+                const monthKey = toMonthKey(String(t.date));
+
+                const matchYear = selectedYear === "all" || year === selectedYear;
+                const matchMonth = selectedMonth === "all" || monthKey === selectedMonth;
+
                 const matchType = filter.type === "tutti" || t.category?.type === filter.type;
                 const matchCategory = filter.category === "tutte" || String(t.category?.id) === filter.category;
                 const matchSearch = t.description.toLowerCase().includes(filter.search.toLowerCase());
-                return matchType && matchCategory && matchSearch;
+
+                return matchYear && matchMonth && matchType && matchCategory && matchSearch;
             })
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    }, [transactions, filter]);
+    }, [transactions, filter, selectedYear, selectedMonth]);
 
     useEffect(() => {
         // --------------------------------------------------
@@ -236,6 +274,17 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
     // Dati mostrati
     // ----------------------------------------------
     const shown = filtered.slice(0, visible);
+
+    const selectedPreview = useMemo(() => {
+        return shown
+            .filter((t) => selectedIds.includes(t.id))
+            .map((t) => ({
+                id: t.id,
+                description: t.description,
+                amount: Number(t.amount),
+                date: t.date,
+            }));
+    }, [shown, selectedIds]);
 
     // --------------------------------------------------
     // MOBILE: raggruppa per anno/mese/giorno + totali
@@ -356,45 +405,47 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
 
     // ===== Render Responsive =====
     return (
-        <div className="flex flex-col lg:flex-row gap-4 w-full max-w-full">
+        <div className="flex flex-col lg:flex-row gap-2 w-full max-w-full">
             {/* ===================================================
                MOBILE: barra filtri (collapsible)
                =================================================== */}
-            <div className="lg:hidden w-full">
-                <button
-                    type="button"
-                    onClick={() => setIsMobileFiltersOpen((v) => !v)}
-                    className="
-                        w-full rounded-2xl border border-bg-elevate bg-bg-elevate/40
-                        px-4 py-3 flex items-center justify-between
-                        shadow-sm
-                    "
-                >
-                    <span className="flex items-center gap-2 font-semibold">
-                        <SlidersHorizontal size={18} />
-                        Filtri
-                    </span>
-                    <span className="text-sm text-muted-foreground">{isMobileFiltersOpen ? "Chiudi" : "Apri"}</span>
-                </button>
+
+            {/* ================= MOBILE: Filtri + Selezione (stessa riga) ================= */}
+            <div className="lg:hidden w-full space-y-1">
+                <div className="flex items-center gap-2">
+                    {/* Bottone filtri */}
+                    {/* Selection toolbar */}
+                    <button
+                        type="button"
+                        onClick={() => setIsMobileFiltersOpen((v) => !v)}
+                        className="
+                            flex-1 rounded-2xl border border-bg-elevate bg-bg-elevate/40
+                            px-4 py-1 flex items-center justify-between
+                            shadow-sm
+                        "
+                    >
+                        <span className="flex items-center gap-2 font-semibold">
+                            <SlidersHorizontal size={18} />
+                            Filtri
+                        </span>
+                        <span className="text-sm text-muted-foreground">{isMobileFiltersOpen ? "Chiudi" : "Apri"}</span>
+                    </button>
+                </div>
 
                 {isMobileFiltersOpen && (
-                    <div className="mt-3">
-                        <TransactionListFilter
-                            filter={filter}
-                            setFilter={setFilter}
-                            categories={categories}
-                            iconSearch={<Search size={16} className="text-primary" />}
-                            iconType={<Funnel size={16} className="text-secondary" />}
-                            iconCategory={<Tag size={16} className="text-accent" />}
-                        />
-                    </div>
+                    <TransactionListFilter
+                        filter={filter}
+                        setFilter={setFilter}
+                        categories={categories}
+                        iconSearch={<Search size={16} className="text-primary" />}
+                        iconType={<Funnel size={16} className="text-secondary" />}
+                        iconCategory={<Tag size={16} className="text-accent" />}
+                    />
                 )}
             </div>
 
-            {/* ===================================================
-               DESKTOP: filtro a lato (invariato)
-               =================================================== */}
-            <div className="hidden lg:block lg:w-64 w-full flex-shrink-0 mb-2 lg:mb-0">
+            {/* ================= DESKTOP: Filtro laterale ================= */}
+            <div className="hidden lg:block lg:w-64 w-full flex-shrink-0">
                 <TransactionListFilter
                     filter={filter}
                     setFilter={setFilter}
@@ -409,6 +460,91 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                CONTENUTO: mobile dense / desktop table
                =================================================== */}
             <div className="grid min-w-0 w-full">
+                {/* ===== Barra ANNI / MESI + Seleziona più ===== */}
+                <div className="flex items-center gap-2 w-full mb-2">
+                    {/* SINISTRA — anni + mesi (scrollabili) */}
+                    <div className="flex-1 min-w-0">
+                        {/* ANNI */}
+                        <div className="flex gap-1 overflow-x-auto py-0.5 px-1 scrollbar-hide">
+                            <button
+                                onClick={() => {
+                                    setSelectedYear("all");
+                                    setSelectedMonth("all");
+                                }}
+                                className={`
+                                  px-3 py-1 rounded-full text-[12px] font-semibold border leading-tight
+                                  ${
+                                      selectedYear === "all"
+                                          ? "bg-primary text-white border-primary"
+                                          : "bg-bg-elevate text-muted-foreground hover:bg-bg-elevate/70"
+                                  }
+                              `}
+                            >
+                                Tutti
+                            </button>
+
+                            {availableYears.map((year) => (
+                                <button
+                                    key={year}
+                                    onClick={() => {
+                                        setSelectedYear(year);
+                                        setSelectedMonth("all");
+                                    }}
+                                    className={`
+                                      px-3 py-1 rounded-full text-[12px] font-semibold leading-tight
+                                      ${
+                                          selectedYear === year
+                                              ? "bg-primary text-white"
+                                              : "bg-bg-elevate text-muted-foreground hover:bg-bg-elevate/70"
+                                      }
+                                  `}
+                                >
+                                    {year}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* MESI */}
+                        <div className="flex gap-1 overflow-x-auto py-0.5 px-1 scrollbar-hide">
+                            <button
+                                onClick={() => setSelectedMonth("all")}
+                                className={`
+                                  px-2.5 py-0.5 rounded-full text-[11px] border leading-tight
+                                  ${
+                                      selectedMonth === "all"
+                                          ? "bg-primary/20 border-primary text-primary"
+                                          : "bg-bg-elevate text-muted-foreground hover:bg-bg-elevate/70"
+                                  }
+                              `}
+                            >
+                                Tutti i mesi
+                            </button>
+
+                            {availableMonths.map((month) => (
+                                <button
+                                    key={month}
+                                    onClick={() => setSelectedMonth(month)}
+                                    className={`
+                                      px-2.5 py-0.5 rounded-full text-[11px] border leading-tight
+                                      ${
+                                          selectedMonth === month
+                                              ? "bg-primary/20 border-primary text-primary"
+                                              : "bg-bg-elevate text-muted-foreground hover:bg-bg-elevate/70"
+                                      }
+                                  `}
+                                >
+                                    {monthLabel(month)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* DESTRA — Seleziona più (solo il suo spazio) */}
+                    <div className="shrink-0  flex justify-center items-center">
+                        <SelectionToolbar onDeleteSelected={onDeleteSelected} selectedPreview={selectedPreview} />
+                    </div>
+                </div>
+
                 {/* ---------- MOBILE: Dense list con divider + totali ---------- */}
                 <div className="lg:hidden rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
                     {mobileModel.blocks.map((b) => {
@@ -488,7 +624,7 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
 
                         const txType = getTxType(t);
                         const isIncome = txType === "entrata";
-                        const isSelected = selectedId === t.id;
+                        const isSelected = isSelectionMode ? selectedIds.includes(t.id) : selectedId === t.id;
 
                         const categoryColor = safeColor(t.category?.color, "hsl(var(--c-primary))");
                         const amountColor = isIncome ? "hsl(var(--c-success))" : "hsl(var(--c-danger))";
@@ -497,12 +633,26 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                             <button
                                 key={b.key ?? `${t.id}-${t.date ?? "nodate"}-${index}`}
                                 type="button"
-                                onClick={() => onSelect(t)}
+                                onClick={() => {
+                                    if (isSelectionMode) {
+                                        setSelectedIds((prev) =>
+                                            prev.includes(t.id) ? prev.filter((id) => id !== t.id) : [...prev, t.id],
+                                        );
+                                    } else {
+                                        onSelect(t);
+                                    }
+                                }}
                                 className={`
                                     w-full text-left
                                     px-3 py-2
-                                    transition
-                                    ${isSelected ? "bg-bg-elevate/60" : "hover:bg-bg-elevate/40"}
+                                    transition-all duration-150
+                                    ${
+                                        isSelected
+                                            ? "bg-primary/15 border-l-[4px] border-primary shadow-sm scale-[1.01] hover:bg-primary/20"
+                                            : isSelectionMode
+                                              ? "hover:bg-primary/5"
+                                              : "hover:bg-bg-elevate/40"
+                                    }
                                 `}
                                 style={{ borderLeft: `4px solid ${categoryColor}` }}
                             >
@@ -532,23 +682,6 @@ export default function TransactionsList({ transactions, onSelect, selectedId }:
                                             ) : (
                                                 <span className="shrink-0 text-[10px] leading-none px-2 py-1 rounded-full border border-bg-elevate text-muted-foreground">
                                                     Senza categoria
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* Riga info (tolta la data: ora c’è il divider giorno) */}
-                                        <div className="mt-0.5 text-[11px] text-muted-foreground flex items-center gap-2">
-                                            {/* Selection hint */}
-                                            {isSelectionMode && (
-                                                <span className="opacity-80">
-                                                    {selectedIds.includes(t.id) ? "Selezionata" : "Tocca per aprire"}
-                                                </span>
-                                            )}
-
-                                            {/* Fallback extra: se vuoi tenere la data “solo tooltip”, lasciala nel title */}
-                                            {!isSelectionMode && (
-                                                <span className="opacity-60" title={formatDate(String(t.date))}>
-                                                    {/* vuoto intenzionale */}
                                                 </span>
                                             )}
                                         </div>

@@ -11,7 +11,6 @@ import { Loader2 } from "lucide-react";
 import { useTransactions } from "@/context/TransactionsContext";
 import { useCategories } from "@/context/CategoriesContext";
 
-import SelectionToolbar from "./components/SelectionToolbar";
 import TransactionsListSkeleton from "./skeleton/TransactionsListSkeleton";
 import TransactionDetailModal from "./modal/TransactionDetailModal";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
@@ -73,12 +72,14 @@ export default function TransazioniPage() {
     const selectedTx = transactions.find((tx) => tx.id === selectedId);
 
     return (
-        <div className="space-y-5">
+        <div className="space-y-2 md:space-y-4">
             {/* ===================== Header ===================== */}
-            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-6 shadow-md overflow-hidden animate-fade-in">
+
+            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-4 md:p-6 shadow-md overflow-hidden animate-fade-in">
+                {/* Background icon */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <svg
-                        className="w-[180px] h-[180px] text-[hsl(var(--c-secondary))] opacity-5"
+                        className="w-[140px] h-[140px] md:w-[180px] md:h-[180px] text-[hsl(var(--c-secondary))] opacity-5"
                         style={{ filter: "blur(2px)" }}
                         viewBox="0 0 24 24"
                         fill="none"
@@ -87,32 +88,38 @@ export default function TransazioniPage() {
                     </svg>
                 </div>
 
-                <div className="relative z-10 text-center max-w-xl mx-auto space-y-2">
-                    <h1 className="text-2xl md:text-3xl font-serif font-bold flex justify-center items-center gap-3 text-[hsl(var(--c-primary-dark))] drop-shadow-sm">
-                        <span className="inline-block w-7 h-7 text-[hsl(var(--c-primary))]">
-                            <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                className="w-7 h-7"
-                                stroke="currentColor"
-                                strokeWidth={1.8}
-                            >
-                                <rect x="2" y="6" width="20" height="12" rx="3" stroke="currentColor" strokeWidth="2" />
-                                <path d="M2 10h20" stroke="currentColor" strokeWidth="2" />
-                            </svg>
-                        </span>
-                        <span>Transazioni</span>
-                    </h1>
+                <div className="relative z-10 space-y-2">
+                    {/* ───────── Header row (mobile compatto) ───────── */}
+                    <div className="flex items-center justify-between md:justify-center md:flex-col md:gap-2">
+                        <h1 className="text-lg md:text-3xl font-serif font-bold flex items-center gap-2 text-[hsl(var(--c-primary-dark))]">
+                            <span className="inline-block w-5 h-5 md:w-7 md:h-7 text-[hsl(var(--c-primary))]">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    className="w-full h-full"
+                                    stroke="currentColor"
+                                    strokeWidth={2}
+                                >
+                                    <rect x="2" y="6" width="20" height="12" rx="3" />
+                                    <path d="M2 10h20" />
+                                </svg>
+                            </span>
+                            <span>Transazioni</span>
+                        </h1>
 
-                    <p className="text-sm text-[hsl(var(--c-text-secondary))]">
+                        {/* Bottone: inline su mobile, sotto su desktop */}
+                        <div className="md:mt-2">
+                            <NewTransactionButton />
+                        </div>
+                    </div>
+
+                    {/* ───────── Subtitle ───────── */}
+                    <p className="text-xs md:text-sm text-[hsl(var(--c-text-secondary))] text-left md:text-center">
                         Tieni traccia in modo ordinato delle tue entrate e spese giornaliere.
                     </p>
                 </div>
-
-                <div className="relative z-10 mt-4 flex justify-center">
-                    <NewTransactionButton />
-                </div>
             </div>
+
             {/* ===================== /Header ===================== */}
 
             {/* ===================== Lista ====================== */}
@@ -121,11 +128,11 @@ export default function TransazioniPage() {
             ) : (
                 <Suspense fallback={<TransactionsListSkeleton />}>
                     <>
-                        <SelectionToolbar onDeleteSelected={handleDeleteSelectedTransactions} />
                         <TransactionsList
                             transactions={transactions}
                             onSelect={(tx) => setSelectedId(tx.id)}
                             selectedId={selectedId}
+                            onDeleteSelected={handleDeleteSelectedTransactions}
                         />
                     </>
                 </Suspense>
