@@ -516,41 +516,51 @@ export default function NewTransactionForm({
                         { key: "pellet", label: "Pellet", icon: "🔥" },
                         { key: "taglio", label: "Taglio", icon: "✂️" },
                         { key: "busta", label: "Busta", icon: "✉️" },
-                    ].map((q) => (
-                        <button
-                            key={q.key}
-                            type="button"
-                            className="
-              flex flex-col items-center justify-center
-              gap-0.5
-              px-2 py-2
-              rounded-xl border
-              bg-bg-elevate
-              text-muted-foreground
-              transition-all duration-150
+                    ].map((q) => {
+                        const active = formData.description === q.label;
 
-              hover:text-text hover:border-sky-400/60
-              hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
+                        return (
+                            <button
+                                key={q.key}
+                                type="button"
+                                className={cn(
+                                    `
+                    flex flex-col items-center justify-center
+                    gap-0.5
+                    px-2 py-2
+                    rounded-xl border
+                    transition-all duration-150
+                    transform
+                    `,
+                                    active
+                                        ? "border-primary bg-primary/20 text-primary shadow-[0_0_10px_rgba(56,189,248,0.35)] scale-[1.03]"
+                                        : `
+                          bg-bg-elevate
+                          text-muted-foreground
+                          border-border/50
+                          hover:text-text
+                          hover:border-primary/50
+                          hover:bg-primary/10
+                        `,
+                                )}
+                                onClick={() =>
+                                    setFormData((p) => ({
+                                        ...p,
+                                        description: q.label,
+                                    }))
+                                }
+                                aria-label={`Imposta descrizione: ${q.label}`}
+                            >
+                                {/* Icona */}
+                                <span className="text-xl leading-none">{q.icon}</span>
 
-              active:bg-sky-400/15
-            "
-                            onClick={() =>
-                                setFormData((p) => ({
-                                    ...p,
-                                    description: q.label,
-                                }))
-                            }
-                            aria-label={`Imposta descrizione: ${q.label}`}
-                        >
-                            {/* Icona */}
-                            <span className="text-xl leading-none">{q.icon}</span>
-
-                            {/* Label sotto */}
-                            <span className="text-[10px] leading-tight text-center truncate max-w-[64px]">
-                                {q.label}
-                            </span>
-                        </button>
-                    ))}
+                                {/* Label sotto */}
+                                <span className="text-[10px] leading-tight text-center truncate max-w-[64px]">
+                                    {q.label}
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* ────────────────────────────────────
@@ -1018,75 +1028,39 @@ export default function NewTransactionForm({
 
                         {/* Quick date picks */}
                         <div className="mt-2 grid grid-cols-3 gap-2">
-                            {/* Altro ieri */}
-                            <button
-                                type="button"
-                                className="
-                                  px-1 py-2 sm:py-3
-                                  rounded-2xl border
-                                  text-xs sm:text-sm
+                            {[
+                                { label: "Altro ieri", date: toISODate(d2), ddmm: formatDDMM(d2) },
+                                { label: "Ieri", date: toISODate(d1), ddmm: formatDDMM(d1) },
+                                { label: "Oggi", date: toISODate(d0), ddmm: formatDDMM(d0) },
+                            ].map((item) => {
+                                const active = formData.date === item.date;
 
-                                  bg-bg-elevate text-muted-foreground
-                                  transition-all duration-150
-                                  hover:text-text hover:border-sky-400/50
-                                  hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
-                                  active:bg-sky-400/15
-                                "
-                                onClick={() => setFormData((p) => ({ ...p, date: toISODate(d2) }))}
-                                disabled={loading || disabled}
-                            >
-                                <span className="block leading-tight">Altro ieri</span>
-                                <span className="block text-[11px] opacity-70 leading-tight mt-0.5">
-                                    {formatDDMM(d2)}
-                                </span>
-                            </button>
-
-                            {/* Ieri */}
-                            <button
-                                type="button"
-                                className=" 
-                                    px-1 py-2 sm:py-3
-                                    rounded-2xl border
-                                    text-xs sm:text-sm
-
-                                    bg-bg-elevate text-muted-foreground
-                                    transition-all duration-150
-                                    hover:text-text hover:border-sky-400/50
-                                    hover:shadow-[0_0_8px_rgba(56,189,248,0.25)]
-                                    active:bg-sky-400/15
-                                  "
-                                onClick={() => setFormData((p) => ({ ...p, date: toISODate(d1) }))}
-                                disabled={loading || disabled}
-                            >
-                                <span className="block leading-tight">Ieri</span>
-                                <span className="block text-[11px] opacity-70 leading-tight mt-0.5">
-                                    {formatDDMM(d1)}
-                                </span>
-                            </button>
-
-                            {/* Oggi */}
-                            <button
-                                type="button"
-                                className="
-                                  px-1 py-2 sm:py-3
-                                  rounded-2xl border
-                                  text-xs sm:text-sm
-
-                                  bg-bg-elevate text-text
-                                  transition-all duration-150
-                                  border-sky-400/40
-                                  hover:border-sky-400/70
-                                  hover:shadow-[0_0_10px_rgba(56,189,248,0.35)]
-                                  active:bg-sky-400/20
-                                "
-                                onClick={() => setFormData((p) => ({ ...p, date: toISODate(d0) }))}
-                                disabled={loading || disabled}
-                            >
-                                <span className="block leading-tight">Oggi</span>
-                                <span className="block text-[11px] opacity-70 leading-tight mt-0.5">
-                                    {formatDDMM(d0)}
-                                </span>
-                            </button>
+                                return (
+                                    <button
+                                        key={item.label}
+                                        type="button"
+                                        className={cn(
+                                            `
+                                            px-1 py-2 sm:py-3
+                                            rounded-2xl border
+                                            text-xs sm:text-sm
+                                            transition-all duration-150
+                                            flex flex-col items-center
+                                            `,
+                                            active
+                                                ? "border-primary bg-primary/20 text-primary shadow-[0_0_10px_rgba(56,189,248,0.35)]"
+                                                : "bg-bg-elevate text-muted-foreground border-border/50 hover:bg-primary/10 hover:border-primary/50 hover:text-text",
+                                        )}
+                                        onClick={() => setFormData((p) => ({ ...p, date: item.date }))}
+                                        disabled={loading || disabled}
+                                    >
+                                        <span className="block leading-tight">{item.label}</span>
+                                        <span className="block text-[11px] opacity-70 leading-tight mt-0.5">
+                                            {item.ddmm}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

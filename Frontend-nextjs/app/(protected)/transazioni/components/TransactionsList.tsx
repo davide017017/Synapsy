@@ -192,6 +192,19 @@ function DaySaldoInline({ saldo }: { saldo: number }) {
 }
 
 // ----------------------------------------------
+// Helper: verifica se data è futura rispetto ad oggi
+// ----------------------------------------------
+function isFutureDate(dateStr: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const d = new Date(dateStr);
+    d.setHours(0, 0, 0, 0);
+
+    return d.getTime() > today.getTime();
+}
+
+// ----------------------------------------------
 // Componente principale lista + filtro + tabella
 // ----------------------------------------------
 export default function TransactionsList({
@@ -620,6 +633,8 @@ export default function TransactionsList({
                         // Riga transazione (dense)
                         // --------------------------
                         const t = b.tx;
+                        const isFuture = isFutureDate(t.date);
+
                         const index = b.index;
 
                         const txType = getTxType(t);
@@ -646,6 +661,7 @@ export default function TransactionsList({
                                     w-full text-left
                                     px-3 py-2
                                     transition-all duration-150
+                                    ${isFuture ? "opacity-10 " : ""}
                                     ${
                                         isSelected
                                             ? "bg-primary/15 border-l-[4px] border-primary shadow-sm scale-[1.01] hover:bg-primary/20"
