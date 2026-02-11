@@ -630,7 +630,8 @@ export default function NewTransactionForm({
                                     className="
                                       h-10 w-7 sm:h-11 sm:w-10
                                       rounded-t-full rounded-b-none
-                                      border bg-bg-elevate text-sm font-semibold
+                                      border bg-bg-elevate  font-semibold
+                                      flex items-center justify-center 
                                       transition-all duration-150
 
                                       hover:border-orange-500/70
@@ -643,7 +644,7 @@ export default function NewTransactionForm({
                                     disabled={loading || disabled}
                                     aria-label="Aumenta di 10"
                                 >
-                                    +10
+                                    <span className="text-2xl font-bold leading-none">+</span>
                                 </button>
 
                                 {/* STEP INDICATOR */}
@@ -669,7 +670,8 @@ export default function NewTransactionForm({
                                     className="
                                       h-10 w-7 sm:h-11 sm:w-10
                                       rounded-b-full rounded-t-none
-                                      border bg-bg-elevate text-sm font-semibold
+                                      border bg-bg-elevate  
+                                      flex items-center justify-center 
                                       transition-all duration-150
 
                                     hover:border-orange-500/70
@@ -683,7 +685,7 @@ export default function NewTransactionForm({
                                     disabled={loading || disabled}
                                     aria-label="Diminuisci di 10"
                                 >
-                                    −10
+                                    <span className="text-2xl font-bold leading-none">−</span>
                                 </button>
                             </div>
 
@@ -694,6 +696,7 @@ export default function NewTransactionForm({
                                     className="
                                       h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-sm
                                       transition-all duration-150
+                                      flex items-center justify-center 
 
                                       hover:border-sky-400/60
                                       hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
@@ -705,15 +708,17 @@ export default function NewTransactionForm({
                                     disabled={loading || disabled}
                                     aria-label="Aumenta di 1"
                                 >
-                                    +
+                                    <span className="text-base font-semibold leading-none">+</span>
                                 </button>
 
                                 {/* STEP INDICATOR — VALORE (€) */}
                                 <div
                                     className="
-                                    flex items-center gap-1
+                                    flex items-center justify-center 
+                                    gap-1
                                     px-2 py-0.5 
                                     text-[11px] font-semibold
+                                    
 
                                     border border-yellow-400/40
                                     text-yellow-400
@@ -732,6 +737,7 @@ export default function NewTransactionForm({
                                     className="
                                       h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-sm
                                       transition-all duration-150
+                                      flex items-center justify-center 
 
                                       hover:border-sky-400/60
                                       hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
@@ -743,7 +749,7 @@ export default function NewTransactionForm({
                                     disabled={loading || disabled}
                                     aria-label="Diminuisci di 1"
                                 >
-                                    −
+                                    <span className="text-base font-semibold leading-none">−</span>
                                 </button>
                             </div>
 
@@ -781,6 +787,7 @@ export default function NewTransactionForm({
                                     className="
                                       h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-base font-semibold
                                       transition-all duration-150
+                                      flex items-center justify-center 
 
                                       hover:border-amber-400/60
                                       hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]
@@ -793,7 +800,7 @@ export default function NewTransactionForm({
                                     disabled={loading || disabled}
                                     aria-label="Aumenta di 0.1"
                                 >
-                                    +
+                                    <span className="text-base font-semibold leading-none">+</span>
                                 </button>
 
                                 {/* STEP INDICATOR — VALORE (€) */}
@@ -820,6 +827,7 @@ export default function NewTransactionForm({
                                     className="
                                       h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-base font-semibold
                                       transition-all duration-150
+                                      flex items-center justify-center 
 
                                       hover:border-amber-400/60
                                       hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]
@@ -844,6 +852,7 @@ export default function NewTransactionForm({
                                       rounded-t-full rounded-b-none
                                       border bg-bg-elevate text-xs font-semibold
                                       transition-all duration-150
+                                      flex items-center justify-center 
 
                                     hover:border-amber-700/70
                                     hover:shadow-[0_0_10px_rgba(180,83,9,0.35)]
@@ -856,7 +865,7 @@ export default function NewTransactionForm({
                                     disabled={loading || disabled}
                                     aria-label="Aumenta di 0.01"
                                 >
-                                    +
+                                    <span className="text-sm font-medium leading-none">+</span>
                                 </button>
 
                                 {/* STEP INDICATOR */}
@@ -883,6 +892,7 @@ export default function NewTransactionForm({
                                       rounded-b-full rounded-t-none
                                       border bg-bg-elevate text-xs font-semibold
                                       transition-all duration-150
+                                      flex items-center justify-center 
 
                                     hover:border-amber-700/70
                                       hover:shadow-[0_0_10px_rgba(180,83,9,0.35)]
