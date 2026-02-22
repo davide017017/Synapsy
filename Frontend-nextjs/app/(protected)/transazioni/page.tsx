@@ -36,7 +36,7 @@ export default function TransazioniPage() {
     // ----------------------------
     // UI state
     // ----------------------------
-    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     // ----------------------------
@@ -56,12 +56,13 @@ export default function TransazioniPage() {
         setIsLoading(false);
     };
 
-    const handleDeleteSelectedTransactions = async (ids: number[]) => {
+    const handleDeleteSelectedTransactions = async (ids: string[]) => {
         setIsLoading(true);
 
-        // Nota: semplice e leggibile (come vuoi tu).
-        // Se vuoi, dopo lo rendiamo parallel con Promise.all.
-        for (const id of ids) await remove(id);
+        for (const uid of ids) {
+            const [, rawId] = uid.split("-");
+            await remove(Number(rawId));
+        }
 
         setIsLoading(false);
     };
@@ -69,7 +70,7 @@ export default function TransazioniPage() {
     // ----------------------------
     // Derived
     // ----------------------------
-    const selectedTx = transactions.find((tx) => tx.id === selectedId);
+    const selectedTx = transactions.find((tx) => `${tx.type}-${tx.id}` === selectedId);
 
     return (
         <div className="space-y-2 md:space-y-4">
@@ -130,7 +131,7 @@ export default function TransazioniPage() {
                     <>
                         <TransactionsList
                             transactions={transactions}
-                            onSelect={(tx) => setSelectedId(tx.id)}
+                            onSelect={(tx) => setSelectedId(`${tx.type}-${tx.id}`)}
                             selectedId={selectedId}
                             onDeleteSelected={handleDeleteSelectedTransactions}
                         />

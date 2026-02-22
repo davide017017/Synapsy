@@ -3,9 +3,9 @@ import type { Transaction } from "@/types/models/transaction";
 
 export type TransactionsListProps = {
     transactions: Transaction[];
-    selectedId: number | null;
+    selectedId: string | null;
     onSelect: (tx: Transaction) => void;
-    onDeleteSelected: (ids: number[]) => Promise<void>;
+    onDeleteSelected: (ids: string[]) => Promise<void>;
 };
 
 export type Filter = {
@@ -32,10 +32,10 @@ export type TransactionListFilterProps = {
 export type TransactionTableProps = {
     data: Transaction[];
     onRowClick: (t: Transaction) => void;
-    selectedId?: number | null;
     isSelectionMode?: boolean;
-    selectedIds?: number[];
-    setSelectedIds?: Dispatch<SetStateAction<number[]>>;
+    selectedId?: string | null;
+    selectedIds?: string[];
+    setSelectedIds?: Dispatch<SetStateAction<string[]>>;
 };
 
 export type SelectedPreviewItem = {
@@ -46,7 +46,7 @@ export type SelectedPreviewItem = {
 };
 
 export type SelectionToolbarProps = {
-    onDeleteSelected: (ids: number[]) => Promise<void>;
+    onDeleteSelected: (ids: string[]) => Promise<void>;
     selectedPreview?: SelectedPreviewItem[];
 };
 

@@ -2,7 +2,7 @@
 
 /* ╔══════════════════════════════════════════════════════════╗
  * ║ SelectionContext — Multi-selezione globale               ║
- * ║ Gestisce modalità selezione e lista di ID selezionati    ║
+ * ║ Gestisce modalità selezione e lista di UID selezionati   ║
  * ╚══════════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
@@ -14,11 +14,12 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 type SelectionContextType = {
     isSelectionMode: boolean;
     setIsSelectionMode: (v: boolean) => void;
-    selectedIds: number[];
-    setSelectedIds: React.Dispatch<React.SetStateAction<number[]>>;
 
-    // helper opzionali
-    toggleId: (id: number) => void;
+    // ⚠️ ORA STRING[]
+    selectedIds: string[];
+    setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
+
+    toggleId: (id: string) => void;
     clear: () => void;
 };
 
@@ -32,9 +33,11 @@ const SelectionContext = createContext<SelectionContextType | undefined>(undefin
 // ============================
 export function SelectionProvider({ children }: { children: ReactNode }) {
     const [isSelectionMode, setIsSelectionMode] = useState(false);
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-    const toggleId = useCallback((id: number) => {
+    // ⚠️ ORA STRING[]
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+    const toggleId = useCallback((id: string) => {
         setSelectedIds((curr) => (curr.includes(id) ? curr.filter((x) => x !== id) : [...curr, id]));
     }, []);
 
@@ -42,7 +45,14 @@ export function SelectionProvider({ children }: { children: ReactNode }) {
 
     return (
         <SelectionContext.Provider
-            value={{ isSelectionMode, setIsSelectionMode, selectedIds, setSelectedIds, toggleId, clear }}
+            value={{
+                isSelectionMode,
+                setIsSelectionMode,
+                selectedIds,
+                setSelectedIds,
+                toggleId,
+                clear,
+            }}
         >
             {children}
         </SelectionContext.Provider>

@@ -281,7 +281,7 @@ export default function TransactionsList({
 
     const selectedPreview = useMemo(() => {
         return shown
-            .filter((t) => selectedIds.includes(t.id))
+            .filter((t) => selectedIds.includes(`${t.type}-${t.id}`))
             .map((t) => ({
                 id: t.id,
                 description: t.description,
@@ -630,7 +630,9 @@ export default function TransactionsList({
 
                         const txType = getTxType(t);
                         const isIncome = txType === "entrata";
-                        const isSelected = isSelectionMode ? selectedIds.includes(t.id) : selectedId === t.id;
+                        const isSelected = isSelectionMode
+                            ? selectedIds.includes(`${t.type}-${t.id}`)
+                            : selectedId === `${t.type}-${t.id}`;
 
                         const categoryColor = safeColor(t.category?.color, "hsl(var(--c-primary))");
                         const amountColor = isIncome ? "hsl(var(--c-success))" : "hsl(var(--c-danger))";
@@ -642,7 +644,9 @@ export default function TransactionsList({
                                 onClick={() => {
                                     if (isSelectionMode) {
                                         setSelectedIds((prev) =>
-                                            prev.includes(t.id) ? prev.filter((id) => id !== t.id) : [...prev, t.id],
+                                            prev.includes(`${t.type}-${t.id}`)
+                                                ? prev.filter((id) => id !== `${t.type}-${t.id}`)
+                                                : [...prev, `${t.type}-${t.id}`],
                                         );
                                     } else {
                                         onSelect(t);

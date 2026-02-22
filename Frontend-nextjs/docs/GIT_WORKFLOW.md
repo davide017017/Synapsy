@@ -4,19 +4,19 @@ Questo documento descrive il **workflow Git ufficiale** usato nel progetto **Syn
 
 L’obiettivo è:
 
--   lavorare **solo su `main`**
--   usare `beta` come **staging**
--   usare `prod` come **produzione**
--   evitare merge complessi e conflitti
+- lavorare **solo su `main`**
+- usare `beta` come **staging**
+- usare `prod` come **produzione**
+- evitare merge complessi e conflitti
 
 ---
 
 ## Regole fondamentali
 
--   ❌ **NON lavorare direttamente su `beta` o `prod`**
--   ❌ **NON usare `git merge` su `beta` o `prod`**
--   ✅ Tutto il codice nasce su **`main`**
--   ✅ `beta` e `prod` vengono **allineati forzatamente** (reset hard)
+- ❌ **NON lavorare direttamente su `beta` o `prod`**
+- ❌ **NON usare `git merge` su `beta` o `prod`**
+- ✅ Tutto il codice nasce su **`main`**
+- ✅ `beta` e `prod` vengono **allineati forzatamente** (reset hard)
 
 Schema mentale:
 
@@ -158,6 +158,8 @@ git sync-beta
 
 Per aggiornare prod
 git sync-prod
+
+git checkout main
 
 Stop. Nient’altro.
 ❌ mai git merge
