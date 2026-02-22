@@ -9,7 +9,9 @@ import { useSelection } from "@/context/SelectionContext";
 
 export default function TableRow({ row, onClick, className }: TableRowProps) {
     const { isSelectionMode, selectedIds } = useSelection();
-    const isChecked = selectedIds.includes(row.original.id);
+
+    const uid = `${row.original.type}-${row.original.id}`;
+    const isChecked = selectedIds.includes(uid);
 
     return (
         <tr
@@ -21,7 +23,7 @@ export default function TableRow({ row, onClick, className }: TableRowProps) {
                 // Riga selezionata: verde soft traslucido, bordo menta
                 isChecked
                     ? "bg-[hsl(var(--c-table-row-selected))] border-l-4 border-[hsl(var(--c-primary))] shadow-inner"
-                    : "hover:bg-[hsl(var(--c-table-row-hover))] cursor-pointer transition-colors"
+                    : "hover:bg-[hsl(var(--c-table-row-hover))] cursor-pointer transition-colors",
             )}
             onClick={() => !isSelectionMode && onClick?.(row.original)}
             tabIndex={0}
