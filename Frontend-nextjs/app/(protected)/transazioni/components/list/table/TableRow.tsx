@@ -15,7 +15,6 @@ export default function TableRow({ row, onClick, className }: TableRowProps) {
 
     return (
         <tr
-            key={row.id}
             className={clsx(
                 className,
                 // ✅ forza rimozione bordi (override CSS table-base)

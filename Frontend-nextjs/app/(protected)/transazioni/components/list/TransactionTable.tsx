@@ -407,7 +407,7 @@ export default function TransactionTable({
 
                                         blocco.push(
                                             <TableRow
-                                                key={`${row.original.id}-${row.original.date}-${row.id}`}
+                                                key={`${row.original.type}-${row.original.id}-${row.original.date}`}
                                                 row={row}
                                                 onClick={onRowClick}
                                                 className={`
