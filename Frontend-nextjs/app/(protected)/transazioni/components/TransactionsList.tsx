@@ -643,9 +643,9 @@ export default function TransactionsList({
                                 type="button"
                                 onClick={() => {
                                     if (isSelectionMode) {
-                                        setSelectedIds((prev) =>
+                                        setSelectedIds((prev: string[]) =>
                                             prev.includes(`${t.type}-${t.id}`)
-                                                ? prev.filter((id) => id !== `${t.type}-${t.id}`)
+                                                ? prev.filter((id: string) => id !== `${t.type}-${t.id}`)
                                                 : [...prev, `${t.type}-${t.id}`],
                                         );
                                     } else {
