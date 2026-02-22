@@ -89,7 +89,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // ── Sort coerente (usa parseYMD, no timezone shift) ──────────────────
     const sortByDateDesc = useCallback(
         (list: Transaction[]) => [...list].sort((a, b) => (parseYMD(a.date) < parseYMD(b.date) ? 1 : -1)),
-        []
+        [],
     );
 
     // =====================================================================
@@ -134,13 +134,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         const p = (async () => {
             try {
                 const data = await fetchTransactions(token, controller.signal);
-                // --------------------------------------------------
-                // Safety: dedup per id (se API manda doppioni)
-                // --------------------------------------------------
-                const map = new Map<number, Transaction>();
-                for (const t of data) map.set(t.id, t);
-
-                setTransactions(sortByDateDesc(Array.from(map.values())));
+                setTransactions(sortByDateDesc(data));
             } catch (e: any) {
                 if (e?.name !== "AbortError") {
                     const msg = e?.message || "Errore caricamento transazioni";
@@ -232,7 +226,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0),
-        [transactions]
+        [transactions],
     );
 
     // =====================================================================
@@ -265,7 +259,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
             return Promise.resolve();
         },
-        [token, transactions, sortByDateDesc, fetchAll, closeModal]
+        [token, transactions, sortByDateDesc, fetchAll, closeModal],
     );
 
     const update = useCallback(
@@ -298,7 +292,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
             return Promise.resolve();
         },
-        [token, transactions, sortByDateDesc, fetchAll, closeModal]
+        [token, transactions, sortByDateDesc, fetchAll, closeModal],
     );
 
     const remove = useCallback(
@@ -356,7 +350,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
             return Promise.resolve();
         },
-        [token, transactions, sortByDateDesc, fetchAll]
+        [token, transactions, sortByDateDesc, fetchAll],
     );
 
     const softMove = useCallback(
@@ -382,7 +376,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
             return Promise.resolve();
         },
-        [token, transactions, sortByDateDesc, fetchAll, closeModal]
+        [token, transactions, sortByDateDesc, fetchAll, closeModal],
     );
 
     // =====================================================================
