@@ -156,6 +156,7 @@ export default function TransactionTable({
     const table = useReactTable({
         data: dataWithGroups,
         columns,
+        getRowId: (row) => `${row.type}-${row.id}`, // ✅ FIX DUPLICATI
         getCoreRowModel: getCoreRowModel(),
         columnResizeMode: "onChange" as ColumnResizeMode,
         debugTable: false,
