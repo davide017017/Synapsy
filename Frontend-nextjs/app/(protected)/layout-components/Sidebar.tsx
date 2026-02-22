@@ -55,10 +55,10 @@ export default function Sidebar() {
 
     // ─────────── LISTENER: chiusura da header ───────────
     useEffect(() => {
-      const handleCloseSidebar = () => setIsOpenMobile(false);
+        const handleCloseSidebar = () => setIsOpenMobile(false);
 
-      window.addEventListener("closeSidebarMobile", handleCloseSidebar);
-      return () => window.removeEventListener("closeSidebarMobile", handleCloseSidebar);
+        window.addEventListener("closeSidebarMobile", handleCloseSidebar);
+        return () => window.removeEventListener("closeSidebarMobile", handleCloseSidebar);
     }, []);
 
     const pathname = usePathname();
@@ -69,14 +69,14 @@ export default function Sidebar() {
 
     // ========== Helper ==========
     const toggleMobile = () => {
-      const next = !isOpenMobile;
+        const next = !isOpenMobile;
 
-      // se la sto aprendo → dico all'header di chiudere il suo menu
-      if (next) {
-        window.dispatchEvent(new Event("closeHeaderUserMenu"));
-      }
+        // se la sto aprendo → dico all'header di chiudere il suo menu
+        if (next) {
+            window.dispatchEvent(new Event("closeHeaderUserMenu"));
+        }
 
-      setIsOpenMobile(next);
+        setIsOpenMobile(next);
     };
 
     // ────────────────────────────────
@@ -137,7 +137,7 @@ export default function Sidebar() {
                                 key={href}
                                 href={href}
                                 onClick={() => setIsOpenMobile(false)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition ${
+                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
                                     active
                                         ? "bg-[hsl(var(--c-primary))] text-white"
                                         : "text-gray-400 hover:text-white hover:bg-white/10"
@@ -163,7 +163,7 @@ export default function Sidebar() {
                             <button
                                 key={t}
                                 onClick={() => setTheme(t as any)}
-                                className={`flex items-center justify-center gap-2 py-2 rounded font-medium transition
+                                className={`flex items-center justify-center gap-2 py-2 rounded-md font-medium transition
                                     ${isActive ? "bg-primary text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
                             >
                                 {icon}
