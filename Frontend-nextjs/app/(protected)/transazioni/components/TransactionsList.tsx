@@ -223,8 +223,6 @@ export default function TransactionsList({
     const { categories } = useCategories();
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
 
-    const [visible, setVisible] = useState(20);
-
     const [selectedYear, setSelectedYear] = useState<"all" | string>("all");
     const [selectedMonth, setSelectedMonth] = useState<"all" | string>("all");
 
@@ -267,7 +265,7 @@ export default function TransactionsList({
                 const matchYear = selectedYear === "all" || year === selectedYear;
                 const matchMonth = selectedMonth === "all" || monthKey === selectedMonth;
 
-                const matchType = filter.type === "tutti" || t.category?.type === filter.type;
+                const matchType = filter.type === "tutti" || getTxType(t) === filter.type;
                 const matchCategory = filter.category === "tutte" || String(t.category?.id) === filter.category;
                 const matchSearch = t.description.toLowerCase().includes(filter.search.toLowerCase());
 
@@ -276,17 +274,10 @@ export default function TransactionsList({
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }, [transactions, filter, selectedYear, selectedMonth]);
 
-    useEffect(() => {
-        // --------------------------------------------------
-        // Mostra almeno un blocco di 20 risultati se disponibili
-        // --------------------------------------------------
-        setVisible(filtered.length < 20 ? filtered.length : 20);
-    }, [filter, transactions, filtered]);
-
     // ----------------------------------------------
     // Dati mostrati
     // ----------------------------------------------
-    const shown = filtered.slice(0, visible);
+    const shown = filtered;
 
     const selectedPreview = useMemo(() => {
         return shown
@@ -730,38 +721,11 @@ export default function TransactionsList({
 
                 {/* ---------- Footer conteggio ---------- */}
                 <div className="mt-2 text-xs text-muted-foreground text-center">
-                    {`${Math.min(visible, filtered.length)} di ${filtered.length} transazioni `}
+                    {`${filtered.length} transazioni`}
                     {filter.search !== "" || filter.type !== "tutti" || filter.category !== "tutte"
                         ? "filtrate"
                         : "totali"}
                 </div>
-
-                {/* ---------- Load more ---------- */}
-                {visible < filtered.length ? (
-                    <div className="text-center mt-4">
-                        <button
-                            onClick={() => setVisible((v) => v + 20)}
-                            className="
-                                w-full py-2 rounded-2xl font-semibold
-                                flex justify-center items-center gap-2
-                                text-white shadow-md
-                                transition-all duration-200
-                                hover:shadow-2xl hover:-translate-y-0.5
-                                active:scale-95
-                                focus:outline-none focus:ring-2 focus:ring-primary/40
-                            "
-                            style={{ background: "var(--c-primary-gradient)" }}
-                            aria-label="Carica altre transazioni"
-                        >
-                            <RefreshCw size={18} className="mr-2" />
-                            Carica altre transazioni
-                        </button>
-                    </div>
-                ) : (
-                    <div className="text-center text-sm text-muted-foreground mt-4">
-                        Hai visualizzato tutte le transazioni.
-                    </div>
-                )}
             </div>
         </div>
     );
