@@ -119,24 +119,24 @@ export default function TransactionTable({
 
     // Dati + ID memo
     const dataWithGroups = useMemo(() => addMonthGroup(data), [data]);
-    const allIds = useMemo(() => dataWithGroups.map((tx) => tx.id), [dataWithGroups]);
 
+    const allIds = useMemo(() => dataWithGroups.map((tx) => `${tx.type}-${tx.id}`), [dataWithGroups]);
     // Importi in euro
     const amountOf = useCallback((tx: TransactionWithGroup) => toNum((tx as any).amount), []);
 
     // Handler stabili
     const handleCheckToggle = useCallback(
-        (id: number) => {
-            actualSetSelectedIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
+        (uid: string) => {
+            actualSetSelectedIds((ids) => (ids.includes(uid) ? ids.filter((x) => x !== uid) : [...ids, uid]));
         },
-        [actualSetSelectedIds]
+        [actualSetSelectedIds],
     );
 
     const handleCheckAllToggle = useCallback(
         (checked: boolean) => {
             actualSetSelectedIds((ids) => (checked ? allIds : ids.filter((id) => !allIds.includes(id))));
         },
-        [actualSetSelectedIds, allIds]
+        [actualSetSelectedIds, allIds],
     );
 
     // Colonne
@@ -147,9 +147,9 @@ export default function TransactionTable({
                 actualSelectedIds,
                 handleCheckToggle,
                 handleCheckAllToggle,
-                allIds
+                allIds,
             ),
-        [actualIsSelectionMode, actualSelectedIds, allIds, handleCheckToggle, handleCheckAllToggle]
+        [actualIsSelectionMode, actualSelectedIds, allIds, handleCheckToggle, handleCheckAllToggle],
     );
 
     // Setup TanStack Table
@@ -348,7 +348,7 @@ export default function TransactionTable({
                                             spese={y.spese}
                                             saldo={y.saldo}
                                             colSpan={columns.length}
-                                        />
+                                        />,
                                     );
                                 }
 
@@ -363,12 +363,12 @@ export default function TransactionTable({
                                         spese={m.spese}
                                         saldo={m.saldo}
                                         colSpan={columns.length}
-                                    />
+                                    />,
                                 );
 
                                 // Righe ordinate per data DESC
                                 const rowsOrdinati = [...rows].sort(
-                                    (a, b) => new Date(b.original.date).getTime() - new Date(a.original.date).getTime()
+                                    (a, b) => new Date(b.original.date).getTime() - new Date(a.original.date).getTime(),
                                 );
 
                                 // Group per giorno dentro al mese
@@ -394,7 +394,7 @@ export default function TransactionTable({
                                                 label={dayLabel(dk)}
                                                 saldo={dTotals.saldo}
                                                 colSpan={columns.length}
-                                            />
+                                            />,
                                         );
                                     }
 
@@ -412,14 +412,14 @@ export default function TransactionTable({
                                                 className={`
                                                     ${isLastInDay ? "" : ""}
                                                     ${
-                                                        row.original.id === selectedId
+                                                        `${row.original.type}-${row.original.id}` === selectedId
                                                             ? "bg-[hsl(var(--c-table-row-selected))] border-l-4 border-[hsl(var(--c-primary))] shadow-inner"
                                                             : "hover:bg-[hsl(var(--c-table-row-hover))]"
                                                     }
                                                     transition-colors
                                                 `}
-                                                selected={row.original.id === selectedId}
-                                            />
+                                                selected={`${row.original.type}-${row.original.id}` === selectedId}
+                                            />,
                                         );
                                     });
                                 });

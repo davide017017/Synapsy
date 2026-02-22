@@ -14,13 +14,12 @@ import { eur } from "@/utils/formatCurrency";
 // ============================
 export function getColumnsWithSelection(
     isSelectionMode: boolean,
-    selectedIds: number[],
-    onCheckToggle: (id: number) => void,
+    selectedIds: string[],
+    onCheckToggle: (uid: string) => void,
     onCheckAllToggle?: (checked: boolean) => void,
-    allIds: number[] = []
+    allIds: string[] = [],
 ): ColumnDef<TransactionWithGroup, any>[] {
     return [
-        // Checkbox selezione multipla
         {
             id: "select",
             header: isSelectionMode
@@ -28,7 +27,7 @@ export function getColumnsWithSelection(
                       return (
                           <input
                               type="checkbox"
-                              checked={allIds.length > 0 && allIds.every((id) => selectedIds.includes(id))}
+                              checked={allIds.length > 0 && allIds.every((uid) => selectedIds.includes(uid))}
                               ref={(input) => {
                                   if (input) {
                                       input.indeterminate =
@@ -44,17 +43,20 @@ export function getColumnsWithSelection(
                   }
                 : () => <span className="block w-4 h-4 opacity-0 pointer-events-none" />,
             size: 32,
-            cell: ({ row }) =>
-                isSelectionMode ? (
+            cell: ({ row }) => {
+                if (!isSelectionMode) return <span className="block w-4 h-4 opacity-0 pointer-events-none" />;
+
+                const uid = `${row.original.type}-${row.original.id}`;
+
+                return (
                     <input
                         type="checkbox"
-                        checked={selectedIds.includes(row.original.id)}
-                        onChange={() => onCheckToggle(row.original.id)}
+                        checked={selectedIds.includes(uid)}
+                        onChange={() => onCheckToggle(uid)}
                         className="mx-auto"
                     />
-                ) : (
-                    <span className="block w-4 h-4 opacity-0 pointer-events-none" />
-                ),
+                );
+            },
             enableResizing: false,
         },
 
@@ -119,7 +121,7 @@ export function getColumnsWithSelection(
                             "font-mono font-semibold",
                             type === "entrata"
                                 ? "text-[hsl(var(--c-table-success-2))]"
-                                : "text-[hsl(var(--c-table-danger-2))]"
+                                : "text-[hsl(var(--c-table-danger-2))]",
                         )}
                     >
                         {sign}
