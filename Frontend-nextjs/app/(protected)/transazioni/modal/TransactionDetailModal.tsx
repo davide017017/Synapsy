@@ -17,7 +17,13 @@ import { eur } from "@/utils/formatCurrency";
 
 // ========== Props tipizzate ==========
 
-export default function TransactionDetailModal({ transaction, onClose, categories, onEdit, onDelete }: TransactionDetailModalProps) {
+export default function TransactionDetailModal({
+    transaction,
+    onClose,
+    categories,
+    onEdit,
+    onDelete,
+}: TransactionDetailModalProps) {
     // Stato UI
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -25,7 +31,7 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
     // Stato form
     const [formData, setFormData] = useState<Transaction>({ ...transaction });
     const [selectedType, setSelectedType] = useState<"entrata" | "spesa">(
-        transaction.category?.type === "entrata" ? "entrata" : "spesa"
+        transaction.category?.type === "entrata" ? "entrata" : "spesa",
     );
     const [showErrors, setShowErrors] = useState(false);
     const [loading, setLoading] = useState<"save" | "delete" | null>(null);
@@ -58,8 +64,8 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
     const categoryError = !formData.category_id
         ? "Seleziona una categoria per poter salvare la transazione."
         : filteredCategories.find((c) => c.id === formData.category_id)
-        ? ""
-        : "La categoria selezionata non è valida per questo tipo.";
+          ? ""
+          : "La categoria selezionata non è valida per questo tipo.";
     const descriptionError = !formData.description?.trim() ? "La descrizione è obbligatoria." : "";
     const amountError = !formData.amount || formData.amount <= 0 ? "Importo obbligatorio e maggiore di zero." : "";
     const isSaveDisabled = !!descriptionError || !!categoryError || !!amountError;
@@ -192,4 +198,3 @@ export default function TransactionDetailModal({ transaction, onClose, categorie
 }
 // ==========================================
 // END TransactionDetailModal.tsx
-

@@ -8,7 +8,6 @@
 
 import { useState, useMemo, useEffect } from "react";
 import TransactionListFilter from "./list/TransactionListFilter";
-import TransactionTable from "./list/TransactionTable";
 import { useSelection } from "@/context/SelectionContext";
 import { useCategories } from "@/context/CategoriesContext";
 import { Funnel, Search, Tag, RefreshCw, SlidersHorizontal, ArrowUpRight, ArrowDownRight } from "lucide-react";
@@ -550,7 +549,7 @@ export default function TransactionsList({
                 </div>
 
                 {/* ---------- MOBILE: Dense list con divider + totali ---------- */}
-                <div className="lg:hidden rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
+                <div className="rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
                     {mobileModel.blocks.map((b) => {
                         // --------------------------
                         // Divider ANNO
@@ -709,18 +708,6 @@ export default function TransactionsList({
                             </button>
                         );
                     })}
-                </div>
-
-                {/* ---------- DESKTOP: Tabella ---------- */}
-                <div className="hidden lg:block">
-                    <TransactionTable
-                        data={shown}
-                        onRowClick={onSelect}
-                        selectedId={selectedId}
-                        isSelectionMode={isSelectionMode}
-                        selectedIds={selectedIds}
-                        setSelectedIds={setSelectedIds}
-                    />
                 </div>
 
                 {/* ---------- Footer conteggio ---------- */}
