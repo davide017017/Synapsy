@@ -49,5 +49,3 @@ export type SelectionToolbarProps = {
     onDeleteSelected: (ids: string[]) => Promise<void>;
     selectedPreview?: SelectedPreviewItem[];
 };
-
-export * from "./table";
