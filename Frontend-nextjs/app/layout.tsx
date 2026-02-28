@@ -20,6 +20,11 @@ import Providers from "./providers";
 export const metadata: Metadata = {
     title: "Synapsy",
     description: "Gestione finanziaria personale",
+    manifest: "/manifest.json",
+    themeColor: "#0f172a",
+    icons: {
+        apple: "/icons/icon-180.png",
+    },
 };
 
 // ----------------------
@@ -61,6 +66,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             Head del documento: qui è consentito inserire <Script />
             ──────────────────────────────────────────────────────────────── */}
             <head>
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                <link rel="apple-touch-icon" href="/icons/icon-180.png" />
+
                 {/* No-flash Theme Script (prima della hydration) */}
                 <Script id="theme-init" strategy="beforeInteractive">
                     {`
