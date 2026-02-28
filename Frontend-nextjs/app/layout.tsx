@@ -21,10 +21,12 @@ export const metadata: Metadata = {
     title: "Synapsy",
     description: "Gestione finanziaria personale",
     manifest: "/manifest.json",
-    themeColor: "#0f172a",
     icons: {
         apple: "/icons/icon-180.png",
     },
+};
+export const viewport = {
+    themeColor: "#0f172a",
 };
 
 // ----------------------

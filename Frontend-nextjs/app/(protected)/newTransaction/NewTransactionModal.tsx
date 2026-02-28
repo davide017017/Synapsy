@@ -75,7 +75,7 @@ export default function NewTransactionModal({
             <div
                 className="
                 relative w-full max-w-lg min-w-[320px]
-                max-h-[90vh]              /* 👈 limite viewport */
+                max-h-[100vh]              /* 👈 limite viewport */
                 overflow-y-auto           /* 👈 scroll interno */
                 overscroll-contain
                 text-text rounded-2xl

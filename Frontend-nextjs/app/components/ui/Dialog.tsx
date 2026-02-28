@@ -40,14 +40,14 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm pt-10" />
+                    <div className="fixed inset-0 bg-black/10 backdrop-blur-sm " />
                 </Transition.Child>
 
                 {/* ===== Box modale centrato ===== */}
                 <div
                     className="fixed inset-0 overflow-y-auto
                                 flex items-center justify-center p-4
-                                mt-10
+                                
                                 "
                 >
                     <Transition.Child
@@ -68,7 +68,7 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                                 backdrop-blur-md
                                 text-modal-text
                                 relative
-                                mt-10
+                              
                             "
                         >
                             {/* Titolo opzionale */}
