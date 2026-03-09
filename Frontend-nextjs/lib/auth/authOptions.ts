@@ -1,7 +1,8 @@
 // lib/auth/authOptions.ts
 
 import Credentials from "next-auth/providers/credentials";
-import { type NextAuthOptions, type JWT } from "next-auth";
+import { type NextAuthOptions } from "next-auth";
+import { type JWT } from "next-auth/jwt";
 import { url } from "@/lib/api/endpoints";
 
 // ──────────────────────────────────────────────────────────
