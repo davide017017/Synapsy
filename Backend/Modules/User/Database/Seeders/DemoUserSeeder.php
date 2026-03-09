@@ -43,6 +43,7 @@ class DemoUserSeeder extends Seeder
       'theme'              => 'dark',
       'avatar'             => 'avatar_12_pink_beta.webp',
       'is_admin'           => false,
+      'is_demo'            => true,
       'email_verified_at'  => now(),
       'remember_token'     => Str::random(10),
       'has_accepted_terms' => true,

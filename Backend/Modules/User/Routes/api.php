@@ -62,6 +62,8 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [ApiLoginController::class, 'logout'])
             ->name('logout');
+        Route::post('refresh-token', [ApiLoginController::class, 'refreshToken'])
+            ->name('refresh-token');
         Route::get('me', fn (Request $r) => $r->user())
             ->name('me.show');
         Route::middleware('block-demo-user')->group(function () {

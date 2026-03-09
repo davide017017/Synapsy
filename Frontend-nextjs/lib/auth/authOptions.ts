@@ -1,8 +1,47 @@
 // lib/auth/authOptions.ts
 
 import Credentials from "next-auth/providers/credentials";
-import { type NextAuthOptions } from "next-auth";
+import { type NextAuthOptions, type JWT } from "next-auth";
 import { url } from "@/lib/api/endpoints";
+
+// ──────────────────────────────────────────────────────────
+// Soglia di refresh: il token backend viene rinnovato se la
+// scadenza JWT è a meno di 5 minuti. Il JWT NextAuth ha
+// maxAge 15 min, quindi il refresh avviene intorno al min 10.
+// ──────────────────────────────────────────────────────────
+const TOKEN_REFRESH_THRESHOLD_SECONDS = 5 * 60;
+
+async function refreshAccessToken(token: JWT): Promise<JWT> {
+    try {
+        const res = await fetch(url("refreshToken"), {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token.accessToken as string}`,
+                Accept: "application/json",
+            },
+        });
+
+        if (!res.ok) throw new Error(`Refresh failed: ${res.status}`);
+
+        const data = await res.json();
+        const newToken = data?.token ?? data?.access_token;
+
+        if (!newToken) throw new Error("Refresh response missing token");
+
+        return {
+            ...token,
+            accessToken: newToken,
+            tokenExpiresAt: Math.floor(Date.now() / 1000) + 15 * 60,
+            refreshError: undefined,
+        };
+    } catch (err) {
+        console.error("[NextAuth] refreshAccessToken error:", err);
+        return {
+            ...token,
+            refreshError: "RefreshAccessTokenError",
+        };
+    }
+}
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -51,9 +90,6 @@ export const authOptions: NextAuthOptions = {
 
                 const contentType = res.headers.get("content-type") || "";
 
-                // --------------------------------------------------
-                // Se NON è JSON → stampa body raw (HTML / PHP error)
-                // --------------------------------------------------
                 if (!contentType.includes("application/json")) {
                     const raw = await res.text().catch(() => "");
                     console.error("LOGIN NON-JSON RESPONSE", {
@@ -64,9 +100,6 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                // --------------------------------------------------
-                // Parse JSON sicuro
-                // --------------------------------------------------
                 let data: any = null;
                 try {
                     data = await res.json();
@@ -79,18 +112,16 @@ export const authOptions: NextAuthOptions = {
                     console.log("LOGIN DATA", data);
                 }
 
-                // --------------------------------------------------
-                // HTTP error (401 / 422 / 500)
-                // --------------------------------------------------
                 if (!res.ok) {
                     console.error("LOGIN FAILED (status not ok)", data);
                     return null;
                 }
 
-                // --------------------------------------------------
-                // Compat: token + user (strutture diverse)
-                // --------------------------------------------------
-                const token = data?.token ?? data?.access_token ?? data?.data?.token ?? data?.data?.access_token;
+                const token =
+                    data?.token ??
+                    data?.access_token ??
+                    data?.data?.token ??
+                    data?.data?.access_token;
 
                 const user = data?.user ?? data?.data?.user ?? data?.data ?? null;
 
@@ -108,7 +139,7 @@ export const authOptions: NextAuthOptions = {
             },
         }),
 
-        // … il secondo provider "token-login" lascialo com’è
+        // … il secondo provider "token-login" lascialo com'è
         Credentials({
             id: "token-login",
             name: "TokenLogin",
@@ -132,23 +163,42 @@ export const authOptions: NextAuthOptions = {
 
     session: {
         strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60,
+        maxAge: 30 * 24 * 60 * 60, // 30 giorni
     },
     jwt: {
-        maxAge: 15 * 60,
+        maxAge: 15 * 60, // 15 minuti
     },
+
     callbacks: {
         async jwt({ token, user }) {
+            // Prima autenticazione: salva il token e imposta la scadenza
             if (user) {
                 token.accessToken = (user as any).access_token;
+                token.tokenExpiresAt = Math.floor(Date.now() / 1000) + 15 * 60;
+                return token;
             }
+
+            // Rotazioni successive: verifica se il token backend deve essere rinnovato
+            const expiresAt = token.tokenExpiresAt as number | undefined;
+            const now = Math.floor(Date.now() / 1000);
+
+            if (expiresAt && now >= expiresAt - TOKEN_REFRESH_THRESHOLD_SECONDS) {
+                return refreshAccessToken(token);
+            }
+
             return token;
         },
+
         async session({ session, token }) {
             (session as any).accessToken = token.accessToken;
+            // Espone l'errore di refresh al client (per mostrare un avviso UX)
+            if (token.refreshError) {
+                (session as any).error = token.refreshError;
+            }
             return session;
         },
     },
+
     pages: {
         signIn: "/login",
         error: "/login?error=true",

@@ -13,24 +13,19 @@ class ApiLoginController extends Controller
      */
     public function login(Request $request)
     {
-        // 1. Validazione input
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // 2. Trova utente
         $user = \Modules\User\Models\User::where('email', $credentials['email'])->first();
 
-        // 3. Verifica credenziali
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // 4. Crea il token Sanctum (Bearer)
         $token = $user->createToken('api-token')->plainTextToken;
 
-        // 5. Risposta
         return response()->json([
             'token' => $token,
             'user' => $user,
@@ -45,5 +40,27 @@ class ApiLoginController extends Controller
         optional($request->user()?->currentAccessToken())->delete();
 
         return response()->json(['message' => 'Logout effettuato']);
+    }
+
+    /**
+     * Refresh token: revoca il token corrente e ne emette uno nuovo.
+     *
+     * POST /api/v1/refresh-token (auth:sanctum)
+     * Utile quando il JWT lato NextAuth si avvicina alla scadenza.
+     */
+    public function refreshToken(Request $request)
+    {
+        $user = $request->user();
+
+        // Revoca il token attuale
+        $request->user()->currentAccessToken()->delete();
+
+        // Emette un nuovo token Sanctum
+        $newToken = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'token' => $newToken,
+            'user'  => $user,
+        ]);
     }
 }

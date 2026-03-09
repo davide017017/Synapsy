@@ -6,7 +6,7 @@
  * ╚══════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -164,18 +164,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const contextValue = useMemo(
+        () => ({ user, loading, error, refresh, update, cancelPending, resendPending }),
+        [user, loading, error, refresh, update, cancelPending, resendPending],
+    );
+
     return (
-        <UserContext.Provider
-            value={{
-                user,
-                loading,
-                error,
-                refresh,
-                update,
-                cancelPending,
-                resendPending,
-            }}
-        >
+        <UserContext.Provider value={contextValue}>
             {children}
         </UserContext.Provider>
     );

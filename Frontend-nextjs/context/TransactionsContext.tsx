@@ -382,33 +382,35 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // =====================================================================
     // Render provider + modale
     // =====================================================================
+    const contextValue = useMemo(
+        () => ({
+            transactions,
+            loading,
+            error,
+            fetchAll,
+            create,
+            update,
+            remove,
+            softMove,
+            isOpen,
+            transactionToEdit,
+            defaultDate,
+            defaultType,
+            openModal,
+            closeModal,
+            monthBalance,
+            yearBalance,
+            weekBalance,
+            totalBalance,
+        }),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [transactions, loading, error, fetchAll, create, update, remove, softMove,
+         isOpen, transactionToEdit, defaultDate, defaultType, openModal, closeModal,
+         monthBalance, yearBalance, weekBalance, totalBalance],
+    );
+
     return (
-        <TransactionsContext.Provider
-            value={{
-                transactions,
-                loading,
-                error,
-
-                fetchAll,
-
-                create,
-                update,
-                remove,
-                softMove,
-
-                isOpen,
-                transactionToEdit,
-                defaultDate,
-                defaultType,
-                openModal,
-                closeModal,
-
-                monthBalance,
-                yearBalance,
-                weekBalance,
-                totalBalance,
-            }}
-        >
+        <TransactionsContext.Provider value={contextValue}>
             {children}
             <NewTransactionModal defaultDate={defaultDate ?? undefined} defaultType={defaultType ?? undefined} />
         </TransactionsContext.Provider>

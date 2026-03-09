@@ -6,7 +6,7 @@
  * ╚══════════════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -231,22 +231,25 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
     /* =============================================================
      * Render
      * ============================================================= */
+    const contextValue = useMemo(
+        () => ({
+            ricorrenze,
+            loading,
+            error,
+            refresh,
+            create,
+            update,
+            remove,
+            isOpen,
+            ricorrenzaToEdit,
+            openModal,
+            closeModal,
+        }),
+        [ricorrenze, loading, error, refresh, create, update, remove, isOpen, ricorrenzaToEdit, openModal, closeModal],
+    );
+
     return (
-        <RicorrenzeContext.Provider
-            value={{
-                ricorrenze,
-                loading,
-                error,
-                refresh,
-                create,
-                update,
-                remove,
-                isOpen,
-                ricorrenzaToEdit,
-                openModal,
-                closeModal,
-            }}
-        >
+        <RicorrenzeContext.Provider value={contextValue}>
             {children}
             <NewRicorrenzaModal
                 open={isOpen}

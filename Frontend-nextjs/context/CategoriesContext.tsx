@@ -6,7 +6,7 @@
  * ╚═════════════════════════════════════════════════════════════╝ */
 
 import type { ReactNode } from "react";
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -238,23 +238,26 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     /* =============================================================
      * Render
      * ============================================================= */
+    const contextValue = useMemo(
+        () => ({
+            categories,
+            loading,
+            error,
+            refresh,
+            create,
+            update,
+            remove,
+            moveAndDelete,
+            openModal,
+            closeModal,
+            isOpen,
+            categoryToEdit,
+        }),
+        [categories, loading, error, refresh, create, update, remove, moveAndDelete, openModal, closeModal, isOpen, categoryToEdit],
+    );
+
     return (
-        <CategoriesContext.Provider
-            value={{
-                categories,
-                loading,
-                error,
-                refresh,
-                create,
-                update,
-                remove,
-                moveAndDelete,
-                openModal,
-                closeModal,
-                isOpen,
-                categoryToEdit,
-            }}
-        >
+        <CategoriesContext.Provider value={contextValue}>
             {children}
             <NewCategoryModal
                 open={isOpen}

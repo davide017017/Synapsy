@@ -1,11 +1,5 @@
 <?php
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Controller: RecurringOperationController
-// Dettagli: API JSON per operazioni ricorrenti (index/show/store/update/destroy)
-//           + utility: moveCategory, getNextOccurrences
-// ─────────────────────────────────────────────────────────────────────────────
-
 namespace Modules\RecurringOperations\Http\Controllers;
 
 use ApiResponse;
@@ -20,9 +14,6 @@ use Modules\RecurringOperations\Services\RecurringOperationService;
 
 class RecurringOperationController extends Controller
 {
-    // ============================
-    // Costruttore
-    // ============================
     public function __construct(protected RecurringOperationService $service)
     {
         $this->middleware('auth:sanctum');
@@ -30,54 +21,80 @@ class RecurringOperationController extends Controller
     }
 
     // ============================
-    // Index - Lista operazioni ricorrenti
+    // Index — con paginazione opzionale (backward compat)
     // ============================
     public function index(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'start_date'                 => 'date|nullable',
+            'end_date'                   => 'date|nullable',
+            'next_occurrence_start_date' => 'date|nullable',
+            'next_occurrence_end_date'   => 'date|nullable',
+            'description'                => 'string|nullable',
+            'category_id'                => 'integer|nullable',
+            'type'                       => 'in:entrata,spesa|nullable',
+            'is_active'                  => 'nullable',
+            'sort_by'                    => 'string|nullable',
+            'sort_direction'             => 'in:asc,desc|nullable',
+            'page'                       => 'integer|min:1|nullable',
+            'per_page'                   => 'integer|min:1|max:100|nullable',
+        ]);
+
         $user = $request->user();
 
         $filters = [
-            'start_date'                => $request->input('start_date'),
-            'end_date'                  => $request->input('end_date'),
-            'next_occurrence_start_date' => $request->input('next_occurrence_start_date'),
-            'next_occurrence_end_date'  => $request->input('next_occurrence_end_date'),
-            'description'               => $request->input('description'),
-            'category_id'               => $request->input('category_id'),
-            'type'                      => $request->input('type'),
-            'is_active'                 => $request->input('is_active'),
+            'start_date'                 => $validated['start_date'] ?? null,
+            'end_date'                   => $validated['end_date'] ?? null,
+            'next_occurrence_start_date' => $validated['next_occurrence_start_date'] ?? null,
+            'next_occurrence_end_date'   => $validated['next_occurrence_end_date'] ?? null,
+            'description'                => $validated['description'] ?? null,
+            'category_id'                => $validated['category_id'] ?? null,
+            'type'                       => $validated['type'] ?? null,
+            'is_active'                  => $validated['is_active'] ?? null,
         ];
 
-        $sortBy = in_array($request->query('sort_by'), [
-            'description',
-            'amount',
-            'type',
-            'start_date',
-            'next_occurrence_date',
-            'is_active',
-        ], true) ? $request->query('sort_by') : 'next_occurrence_date';
+        $sortBy        = $validated['sort_by'] ?? 'next_occurrence_date';
+        $sortDirection = $validated['sort_direction'] ?? 'asc';
 
-        $sortDirection = in_array($request->query('sort_direction'), ['asc', 'desc'], true)
-            ? $request->query('sort_direction')
-            : 'asc';
+        // ── backward compat: senza page/per_page → risposta flat legacy ──────
+        $legacy = ! $request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
 
-        $items = $this->service->getFilteredAndSortedForUser($user, $filters, $sortBy, $sortDirection);
+        if ($legacy) {
+            $items = $this->service->getFilteredAndSortedForUser($user, $filters, $sortBy, $sortDirection);
+
+            return ApiResponse::success('Operazioni ricorrenti caricate.', [
+                'items'   => $items,
+                'sort'    => ['by' => $sortBy, 'direction' => $sortDirection],
+                'filters' => $filters,
+            ]);
+        }
+
+        $page      = (int) ($validated['page'] ?? 1);
+        $perPage   = (int) ($validated['per_page'] ?? 50);
+        $paginated = $this->service->getFilteredAndSortedForUserPaginated(
+            $user, $filters, $sortBy, $sortDirection, $page, $perPage
+        );
 
         return ApiResponse::success('Operazioni ricorrenti caricate.', [
-            'items' => $items,
-            'sort'  => ['by' => $sortBy, 'direction' => $sortDirection],
+            'items'      => $paginated->items(),
+            'pagination' => [
+                'current_page' => $paginated->currentPage(),
+                'per_page'     => $paginated->perPage(),
+                'total'        => $paginated->total(),
+                'last_page'    => $paginated->lastPage(),
+                'has_more'     => $paginated->hasMorePages(),
+            ],
+            'sort'    => ['by' => $sortBy, 'direction' => $sortDirection],
             'filters' => $filters,
         ]);
     }
 
     // ============================
-    // Store - Crea nuova regola
+    // Store
     // ============================
     public function store(StoreRecurringOperationRequest $request): JsonResponse
     {
-        $user = $request->user();
-        $validated = $request->validated();
-
-        $operation = $this->service->createOperation($validated, $user);
+        $operation = $this->service->createOperation($request->validated(), $request->user());
 
         if ($request->boolean('generate_past_now')) {
             ProcessRecurringOperation::dispatch($operation);
@@ -87,7 +104,7 @@ class RecurringOperationController extends Controller
     }
 
     // ============================
-    // Show - Dettaglio
+    // Show
     // ============================
     public function show(Request $request, RecurringOperation $recurringOperation): JsonResponse
     {
@@ -97,19 +114,17 @@ class RecurringOperationController extends Controller
     }
 
     // ============================
-    // Update - Aggiorna regola
+    // Update
     // ============================
     public function update(UpdateRecurringOperationRequest $request, RecurringOperation $recurringOperation): JsonResponse
     {
-        $validated = $request->validated();
-
-        $this->service->updateOperation($recurringOperation, $validated);
+        $this->service->updateOperation($recurringOperation, $request->validated());
 
         return ApiResponse::success('Operazione aggiornata.', $recurringOperation);
     }
 
     // ============================
-    // Destroy - Elimina regola
+    // Destroy
     // ============================
     public function destroy(Request $request, RecurringOperation $recurringOperation): JsonResponse
     {
@@ -118,15 +133,9 @@ class RecurringOperationController extends Controller
         return response()->json(null, 204);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Utility: moveCategory (PATCH /api/v1/recurring-operations/move-category)
-    // Input:
-    //  - ids[] (opzionale): array di ID da spostare; se assente → sposta tutte le tue
-    //  - category_id (nullable): nuova categoria o null per rimuoverla
-    // Sicurezza:
-    //  - filtra sempre per user_id
-    //  - nessun ModelNotFound → mai 404
-    // ─────────────────────────────────────────────────────────────────────────
+    // ────────────────────────────────────────────────────────────────────────
+    // Utility: moveCategory
+    // ────────────────────────────────────────────────────────────────────────
     public function moveCategory(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -135,8 +144,7 @@ class RecurringOperationController extends Controller
             'category_id' => ['nullable', 'integer', 'min:1'],
         ]);
 
-        $q = RecurringOperation::query()
-            ->where('user_id', $request->user()->id);
+        $q = RecurringOperation::query()->where('user_id', $request->user()->id);
 
         if (! empty($data['ids'])) {
             $q->whereIn('id', $data['ids']);
@@ -147,24 +155,17 @@ class RecurringOperationController extends Controller
         return ApiResponse::success('Categoria aggiornata.', ['updated' => $updated]);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Utility: getNextOccurrences (GET /api/v1/recurring-operations/next-occurrences)
-    // Input:
-    //  - days (int, default 30): orizzonte massimo per cercare next_occurrence_date
-    // Output: lista (anche vuota) di occorrenze previste ordinate per data
-    // Note: risposta 200 anche se vuota → niente 404
-    // ─────────────────────────────────────────────────────────────────────────
+    // ────────────────────────────────────────────────────────────────────────
+    // Utility: getNextOccurrences
+    // ────────────────────────────────────────────────────────────────────────
     public function getNextOccurrences(Request $request): JsonResponse
     {
         $user = $request->user();
-        $days = (int) $request->query('days', 30);
-        $days = $days > 0 ? $days : 30;
+        $days = max(1, (int) $request->query('days', 30));
 
         $from = now()->startOfDay();
         $to   = now()->addDays($days)->endOfDay();
 
-        // Filtro semplice su next_occurrence_date; se in futuro gestisci cron/recurrence rules,
-        // calcola qui le date derivate.
         $operations = RecurringOperation::query()
             ->where('user_id', $user->id)
             ->where('is_active', true)
@@ -174,8 +175,8 @@ class RecurringOperationController extends Controller
             ->get(['id', 'description', 'amount', 'type', 'next_occurrence_date', 'category_id']);
 
         return ApiResponse::success('Prossime occorrenze.', [
-            'from' => $from->toDateString(),
-            'to'   => $to->toDateString(),
+            'from'  => $from->toDateString(),
+            'to'    => $to->toDateString(),
             'items' => $operations,
         ]);
     }

@@ -67,6 +67,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     'pending_email',
     'has_accepted_terms',
     'is_admin',
+    'is_demo',
     'email_verified_at',
   ];
 
@@ -88,6 +89,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
       'email_verified_at' => 'datetime',
       'password' => 'hashed',
       'is_admin' => 'boolean',
+      'is_demo'  => 'boolean',
       'avatar' => 'string',
       'theme' => 'string',
       'pending_email' => 'string',
@@ -140,6 +142,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
   public function isAdmin(): bool
   {
     return (bool) $this->is_admin;
+  }
+
+  public function isDemo(): bool
+  {
+    return (bool) $this->is_demo;
   }
 
   // ===================================================================

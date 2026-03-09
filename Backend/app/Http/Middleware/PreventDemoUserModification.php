@@ -9,13 +9,16 @@ use Illuminate\Http\Request;
 class PreventDemoUserModification
 {
     /**
-     * Handle an incoming request.
+     * Blocca le operazioni di scrittura per l'utente demo.
+     *
+     * Usa la colonna is_demo invece del fragile confronto sull'email,
+     * in modo da supportare futuri utenti demo senza toccare il middleware.
      */
     public function handle(Request $request, Closure $next)
     {
         $user = $request->user();
 
-        if ($user && $user->email === 'demo@synapsy.app' && ! in_array($request->method(), ['GET', 'HEAD'])) {
+        if ($user && $user->is_demo && ! in_array($request->method(), ['GET', 'HEAD'])) {
             $message = "L'utente demo non può essere modificato";
 
             return $request->expectsJson()
