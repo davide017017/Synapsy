@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
         // =========================================================================
         // Modulo RecurringOperations – Generazione ricorrenze
         // =========================================================================
-        $schedule->command('recurring:generate')
+        $schedule->command('custom:generate-recurring-operations')
             ->everyMinute()
             ->withoutOverlapping()
             ->appendOutputTo(storage_path('logs/recurring_generate.log'));

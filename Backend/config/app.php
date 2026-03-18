@@ -19,6 +19,11 @@ return [
   // --------------------------------------------------
   'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
 
+  // --------------------------------------------------
+  // Cron secret (webhook ricorrenti per Render.com free)
+  // --------------------------------------------------
+  'cron_secret' => env('CRON_SECRET'),
+
   // Fuso orario di default
   'timezone' => 'UTC',
 
