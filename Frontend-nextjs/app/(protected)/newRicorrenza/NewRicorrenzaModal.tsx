@@ -17,7 +17,17 @@ import { eur } from "@/utils/formatCurrency";
 // Componente principale
 // ============================
 export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, onSave }: NewRicorrenzaModalProps) {
-    const [loading, setLoading] = useState(false);
+    const [loadingAction, setLoadingAction] = useState<"save" | "delete" | null>(null);
+    const [isCategoryPickerOpen, setIsCategoryPickerOpen] = useState(false);
+
+    // Intercetta la chiusura del Dialog: se il picker è aperto, chiude solo il picker
+    const handleClose = () => {
+        if (isCategoryPickerOpen) {
+            setIsCategoryPickerOpen(false);
+            return;
+        }
+        onClose();
+    };
     const [formValues, setFormValues] = useState<Partial<RicorrenzaBase>>({});
     const { categories } = useCategories();
 
@@ -34,13 +44,25 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
         [formValues.category_id, categories]
     );
 
+    // ────────────────────────────────────────────────
+    // Derived loading state
+    // ────────────────────────────────────────────────
+    const isLoading = !!loadingAction;
+
+    const overlayMessage =
+        loadingAction === "delete"
+            ? "Eliminazione in corso…"
+            : ricorrenzaToEdit
+              ? "Sto salvando la modifica…"
+              : "Sto creando la ricorrenza…";
+
     // Salva handler
     const handleSave = async (data: RicorrenzaBase) => {
-        setLoading(true);
+        setLoadingAction("save");
         try {
             await onSave(data);
         } finally {
-            setLoading(false);
+            setLoadingAction(null);
         }
     };
 
@@ -48,19 +70,20 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
     // Render
     // ============================
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={handleClose}>
             <div
                 className="
                     relative w-full max-w-lg min-w-[320px]
-                    text-text rounded-2xl shadow-2xl shadow-black/30 border border-bg-elevate
+                    max-h-[90vh] overflow-y-auto overscroll-contain
+                    bg-bg text-text rounded-2xl shadow-2xl shadow-black/30
                     p-6
                 "
             >
                 {/* Overlay loading */}
                 <LoadingOverlay
-                    show={loading}
+                    show={isLoading}
                     icon="🔁"
-                    message={ricorrenzaToEdit ? "Sto aggiornando la ricorrenza…" : "Sto creando la ricorrenza…"}
+                    message={overlayMessage}
                     subMessage={
                         ricorrenzaToEdit ? (
                             <>
@@ -96,8 +119,10 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
                 <NewRicorrenzaForm
                     initialValues={ricorrenzaToEdit || undefined}
                     onSave={handleSave}
-                    onCancel={onClose}
+                    onCancel={handleClose}
                     onChangeForm={setFormValues}
+                    categoryPickerOpen={isCategoryPickerOpen}
+                    onCategoryPickerOpenChange={setIsCategoryPickerOpen}
                 />
             </div>
         </Dialog>

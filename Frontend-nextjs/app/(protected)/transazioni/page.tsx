@@ -9,14 +9,11 @@ import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
 
 import { useTransactions } from "@/context/TransactionsContext";
-import { useCategories } from "@/context/CategoriesContext";
 
 import TransactionsListSkeleton from "./skeleton/TransactionsListSkeleton";
-import TransactionDetailModal from "./modal/TransactionDetailModal";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
 
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
-import { Transaction } from "@/types/models/transaction";
 
 // --------------------------------------------------
 // Lazy list (migliora first render)
@@ -30,32 +27,16 @@ export default function TransazioniPage() {
     // ----------------------------
     // Context
     // ----------------------------
-    const { transactions, loading, error, update, remove } = useTransactions();
-    const { categories } = useCategories();
+    const { transactions, loading, error, remove, openModal, transactionToEdit } = useTransactions();
 
     // ----------------------------
     // UI state
     // ----------------------------
-    const [selectedId, setSelectedId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     // ----------------------------
     // CRUD handlers
     // ----------------------------
-    const handleEdit = async (tx: Transaction) => {
-        setSelectedId(null);
-        setIsLoading(true);
-        await update(tx.id, tx);
-        setIsLoading(false);
-    };
-
-    const handleDelete = async (tx: Transaction) => {
-        setSelectedId(null);
-        setIsLoading(true);
-        await remove(tx.id);
-        setIsLoading(false);
-    };
-
     const handleDeleteSelectedTransactions = async (ids: string[]) => {
         setIsLoading(true);
 
@@ -66,11 +47,6 @@ export default function TransazioniPage() {
 
         setIsLoading(false);
     };
-
-    // ----------------------------
-    // Derived
-    // ----------------------------
-    const selectedTx = transactions.find((tx) => `${tx.type}-${tx.id}` === selectedId);
 
     return (
         <div className="space-y-2 md:space-y-4">
@@ -131,8 +107,8 @@ export default function TransazioniPage() {
                     <>
                         <TransactionsList
                             transactions={transactions}
-                            onSelect={(tx) => setSelectedId(`${tx.type}-${tx.id}`)}
-                            selectedId={selectedId}
+                            onSelect={(tx) => openModal(tx)}
+                            selectedId={transactionToEdit ? `${transactionToEdit.type}-${transactionToEdit.id}` : null}
                             onDeleteSelected={handleDeleteSelectedTransactions}
                         />
                     </>
@@ -143,18 +119,6 @@ export default function TransazioniPage() {
             {/* ===================== Error ====================== */}
             {error && <div className="p-4 text-danger text-sm">{error}</div>}
             {/* ===================== /Error ===================== */}
-
-            {/* =================== Modale Dettaglio ============== */}
-            {selectedTx && (
-                <TransactionDetailModal
-                    transaction={selectedTx}
-                    onClose={() => setSelectedId(null)}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    categories={categories}
-                />
-            )}
-            {/* =============== /Modale Dettaglio ================= */}
 
             {/* ============== Spinner full screen ================ */}
             {isLoading && (
@@ -174,6 +138,7 @@ export default function TransazioniPage() {
 
 /*
 File: page.tsx
-Scopo: pagina Transazioni (lista + toolbar + modale dettaglio) con CRUD via context.
-Come: carica lista (dynamic), gestisce selezione, apre modale, esegue update/remove e mostra overlay di loading.
+Scopo: pagina Transazioni (lista + toolbar) con CRUD via context.
+Come: carica lista (dynamic), click su riga chiama openModal(tx) per aprire la modale unificata,
+      gestisce bulk delete con overlay di loading locale.
 */

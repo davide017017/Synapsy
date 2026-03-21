@@ -12,4 +12,5 @@ export type NewTransactionFormProps = {
     initialType?: "entrata" | "spesa";
     categoryPickerOpen?: boolean;
     onCategoryPickerOpenChange?: (open: boolean) => void;
+    onDelete?: () => void;
 };

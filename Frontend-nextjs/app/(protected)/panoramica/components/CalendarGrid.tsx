@@ -71,7 +71,10 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
     // Navigazione mesi
     // ──────────────────────────────────────────────────────────────
     const prevMonth = () => {
+        if (!canGoPrev) return; // ⛔ blocco
+
         setDirection(-1);
+
         if (viewMonth === 0) {
             setViewMonth(11);
             setViewYear((y) => y - 1);
@@ -122,7 +125,7 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
     const visibleGridTx = useMemo(() => cells.flatMap((c) => getTxForDate(c.date)), [cells, getTxForDate]);
     const maxEntrata = Math.max(
         0,
-        ...visibleGridTx.filter((t) => t.category?.type === "entrata").map((t) => +t.amount)
+        ...visibleGridTx.filter((t) => t.category?.type === "entrata").map((t) => +t.amount),
     );
     const maxSpesa = Math.max(0, ...visibleGridTx.filter((t) => t.category?.type === "spesa").map((t) => +t.amount));
     const maxImportoGriglia = Math.max(maxEntrata, maxSpesa, 1);
@@ -139,6 +142,28 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
     // ── skeleton al primo mount (no flash SSR)
     const showSkeleton = !mounted;
 
+    // ---------------------------
+    // Min date (prima transazione)
+    // ---------------------------
+    const minDate = useMemo(() => {
+        if (!transactions.length) return null;
+
+        return new Date(Math.min(...transactions.map((t) => new Date(t.date as any).getTime())));
+    }, [transactions]);
+
+    const minYear = minDate?.getFullYear();
+    const yearOptions = useMemo(() => {
+        return [...new Set([minYear ?? viewYear, viewYear, viewYear + 1, viewYear + 2])];
+    }, [minYear, viewYear]);
+
+    const canGoPrev = useMemo(() => {
+        if (!minDate) return true;
+
+        return (
+            viewYear > minDate.getFullYear() || (viewYear === minDate.getFullYear() && viewMonth > minDate.getMonth())
+        );
+    }, [viewYear, viewMonth, minDate]);
+
     // ╔═══════════════════════════════════════════════════════════════╗
     // ║ Render                                                        ║
     // ╚═══════════════════════════════════════════════════════════════╝
@@ -147,30 +172,19 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
             {/* ── Header calendario ─────────────────────────────────── */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 opacity-70" />
-                    <h2 className="text-lg font-semibold">
-                        {monthNames[viewMonth]} {viewYear}
-                    </h2>
-                </div>
-
-                <div className="flex items-center gap-2">
                     <button
                         type="button"
                         onClick={prevMonth}
-                        className="inline-flex items-center justify-center rounded-md border px-2 py-1 hover:bg-white/5"
-                        aria-label="Mese precedente"
+                        disabled={!canGoPrev}
+                        className="inline-flex items-center justify-center rounded-md border px-2 py-1 hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                         <ChevronLeft className="h-4 w-4" />
                     </button>
 
-                    <button
-                        type="button"
-                        onClick={goToToday}
-                        disabled={isCurrentMonth}
-                        className="inline-flex items-center justify-center rounded-md border px-3 py-1 text-sm disabled:opacity-50"
-                    >
-                        Oggi
-                    </button>
+                    <Calendar className="h-5 w-5 opacity-70" />
+                    <h2 className="text-lg font-semibold">
+                        {monthNames[viewMonth]} {viewYear}
+                    </h2>
 
                     <button
                         type="button"
@@ -180,11 +194,25 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
                     >
                         <ChevronRight className="h-4 w-4" />
                     </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={goToToday}
+                        disabled={isCurrentMonth}
+                        className="inline-flex items-center justify-center rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+                    >
+                        Oggi
+                    </button>
 
                     <YearDropdown
                         value={viewYear}
-                        options={[viewYear - 1, viewYear, viewYear + 1, viewYear + 2]}
-                        onChange={(y) => setViewYear(y)}
+                        options={yearOptions} // 🔥 QUI
+                        onChange={(y) => {
+                            if (minYear && y < minYear) return;
+                            setViewYear(y);
+                        }}
                     />
                 </div>
             </div>

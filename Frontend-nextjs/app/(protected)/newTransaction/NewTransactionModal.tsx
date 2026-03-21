@@ -11,6 +11,7 @@ import NewTransactionForm from "./NewTransactionForm";
 import { useTransactions } from "@/context/TransactionsContext";
 import { useCategories } from "@/context/CategoriesContext";
 import { eur } from "@/utils/formatCurrency";
+import ConfirmDialog from "@/app/components/ui/ConfirmDialog";
 
 // ============================
 // Componente principale
@@ -23,9 +24,10 @@ export default function NewTransactionModal({
     defaultType?: "entrata" | "spesa";
 }) {
     // ───────── Stato modale / tx ─────────
-    const { isOpen, closeModal, transactionToEdit, create, update } = useTransactions();
+    const { isOpen, closeModal, transactionToEdit, create, update, remove } = useTransactions();
     const { categories } = useCategories();
-    const [loading, setLoading] = useState(false);
+    const [loadingAction, setLoadingAction] = useState<"save" | "delete" | null>(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [formValues, setFormValues] = useState<Partial<any>>({});
 
     // ───────── Stato: picker categoria aperto? ─────────
@@ -47,12 +49,24 @@ export default function NewTransactionModal({
 
     // ───────── Salvataggio ─────────
     const handleSave = async (data: any) => {
-        setLoading(true);
+        setLoadingAction("save");
         try {
             if (transactionToEdit) await update(transactionToEdit.id, data);
             else await create(data);
         } finally {
-            setLoading(false);
+            setLoadingAction(null);
+        }
+    };
+
+    // ───────── Eliminazione ─────────
+    const handleDelete = async () => {
+        if (!transactionToEdit) return;
+        setShowDeleteConfirm(false);
+        setLoadingAction("delete");
+        try {
+            await remove(transactionToEdit.id);
+        } finally {
+            setLoadingAction(null);
         }
     };
 
@@ -66,6 +80,49 @@ export default function NewTransactionModal({
         }
         closeModal?.();
     };
+
+    // ────────────────────────────────────────────────
+    // Derived loading state
+    // ────────────────────────────────────────────────
+    const isLoading = !!loadingAction;
+
+    const overlayMessage =
+        loadingAction === "delete"
+            ? "Eliminazione in corso…"
+            : transactionToEdit
+              ? "Sto salvando la tua modifica…"
+              : "Sto creando la nuova transazione!";
+
+    const overlaySubMessage =
+        loadingAction === "delete" ? (
+            <>
+                {transactionToEdit && `• "${transactionToEdit.description}"`}
+                <br />
+                {transactionToEdit?.amount && `• ${eur(transactionToEdit.amount)}`}
+            </>
+        ) : transactionToEdit ? (
+            <>
+                {`• Descrizione: "${transactionToEdit.description}"`}
+                <br />
+                {`• Importo: ${eur(transactionToEdit.amount)}`}
+                <br />
+                {transactionToEdit.date && `• Data: ${transactionToEdit.date}`}
+                <br />
+                {editCategoryName && `• Categoria: ${editCategoryName}`}
+            </>
+        ) : formValues.description ? (
+            <>
+                {`• Descrizione: "${formValues.description}"`}
+                <br />
+                {formValues.amount && `• Importo: ${eur(formValues.amount)}`}
+                <br />
+                {formValues.date && `• Data: ${formValues.date}`}
+                <br />
+                {formCategoryName && `• Categoria: ${formCategoryName}`}
+            </>
+        ) : (
+            "Un attimo di pazienza!"
+        );
 
     // ============================
     // Render
@@ -86,42 +143,18 @@ export default function NewTransactionModal({
             >
                 {/* ───────── Overlay loading ───────── */}
                 <LoadingOverlay
-                    show={loading}
+                    show={isLoading}
                     icon="💸"
-                    message={transactionToEdit ? "Sto salvando la tua modifica…" : "Sto creando la nuova transazione!"}
-                    subMessage={
-                        transactionToEdit ? (
-                            <>
-                                {`• Descrizione: "${transactionToEdit.description}"`}
-                                <br />
-                                {`• Importo: ${eur(transactionToEdit.amount)}`}
-                                <br />
-                                {transactionToEdit.date && `• Data: ${transactionToEdit.date}`}
-                                <br />
-                                {editCategoryName && `• Categoria: ${editCategoryName}`}
-                            </>
-                        ) : formValues.description ? (
-                            <>
-                                {`• Descrizione: "${formValues.description}"`}
-                                <br />
-                                {formValues.amount && `• Importo: ${eur(formValues.amount)}`}
-                                <br />
-                                {formValues.date && `• Data: ${formValues.date}`}
-                                <br />
-                                {formCategoryName && `• Categoria: ${formCategoryName}`}
-                            </>
-                        ) : (
-                            "Un attimo di pazienza!"
-                        )
-                    }
+                    message={overlayMessage}
+                    subMessage={overlaySubMessage}
                 />
 
                 {/* ───────── Form ───────── */}
-                <div className={loading ? "pointer-events-none opacity-50" : ""}>
+                <div className={isLoading ? "pointer-events-none opacity-50" : ""}>
                     <NewTransactionForm
                         onSave={handleSave}
                         transaction={transactionToEdit ?? undefined}
-                        disabled={loading}
+                        disabled={isLoading}
                         onChangeForm={setFormValues}
                         onCancel={closeModal}
                         initialDate={!transactionToEdit ? defaultDate : undefined}
@@ -129,9 +162,29 @@ export default function NewTransactionModal({
                         // 🔥 stato picker passato al form
                         categoryPickerOpen={isCategoryPickerOpen}
                         onCategoryPickerOpenChange={setIsCategoryPickerOpen}
+                        onDelete={transactionToEdit ? () => setShowDeleteConfirm(true) : undefined}
                     />
                 </div>
             </div>
+
+            {/* ───────── Conferma eliminazione ───────── */}
+            <ConfirmDialog
+                open={showDeleteConfirm}
+                type="delete"
+                title="Confermi di voler eliminare la transazione?"
+                highlight={
+                    transactionToEdit ? (
+                        <div className="flex flex-col items-center">
+                            <span className="italic">{transactionToEdit.description}</span>
+                            {transactionToEdit.amount && <span>{eur(transactionToEdit.amount)}</span>}
+                            {transactionToEdit.category?.name && <span>{transactionToEdit.category.name}</span>}
+                        </div>
+                    ) : undefined
+                }
+                onConfirm={handleDelete}
+                onCancel={() => setShowDeleteConfirm(false)}
+                loading={loadingAction === "delete"}
+            />
         </Dialog>
     );
 }

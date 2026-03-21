@@ -122,6 +122,7 @@ export default function NewTransactionForm({
     initialType,
     categoryPickerOpen,
     onCategoryPickerOpenChange,
+    onDelete,
 }: NewTransactionFormProps) {
     // ────────────────────────────────────────────────
     // Stato form
@@ -231,7 +232,7 @@ export default function NewTransactionForm({
                 description: transaction.description,
                 amount: transaction.amount,
                 date: transaction.date.split("T")[0],
-                category_id: transaction.category_id,
+                category_id: transaction.category_id ?? transaction.category?.id,
                 notes: transaction.notes || "",
                 type: transaction.type,
             });
@@ -313,6 +314,22 @@ export default function NewTransactionForm({
         }, 1300);
     };
 
+    // ────────────────────────────────────────────────
+    // Reset form ai valori originali (solo edit mode)
+    // ────────────────────────────────────────────────
+    const handleReset = () => {
+        if (!transaction) return;
+        setFormData({
+            description: transaction.description,
+            amount: transaction.amount,
+            date: transaction.date.split("T")[0],
+            category_id: transaction.category_id ?? transaction.category?.id,
+            notes: transaction.notes || "",
+            type: transaction.type,
+        });
+        setErrors({});
+    };
+
     // ╔═══════════════════════════════╗
     // ║          RENDER FORM          ║
     // ╚═══════════════════════════════╝
@@ -339,7 +356,6 @@ export default function NewTransactionForm({
                                 category_id: 0,
                             })
                         }
-                        disabled={!!transaction}
                         className={cn(
                             "flex-1 flex flex-col items-center justify-center rounded-xl border px-4 py-3 transition",
                             formData.type === "entrata"
@@ -361,7 +377,6 @@ export default function NewTransactionForm({
                                 category_id: 0,
                             })
                         }
-                        disabled={!!transaction}
                         className={cn(
                             "flex-1 flex flex-col items-center justify-center rounded-xl border px-4 py-3 transition",
                             formData.type === "spesa"
@@ -1133,8 +1148,8 @@ export default function NewTransactionForm({
                             <button
                                 type="button"
                                 className="
-                                    w-full bg-bg-elevate text-text border border-bg-soft 
-                                    rounded-xl py-2 font-semibold shadow 
+                                    w-full bg-bg-elevate text-text border border-bg-soft
+                                    rounded-xl py-2 font-semibold shadow
                                     focus:ring-2 focus:ring-primary/40 transition
                                     flex items-center justify-center  /* centra testo */
                                 "
@@ -1143,6 +1158,44 @@ export default function NewTransactionForm({
                             >
                                 Annulla
                             </button>
+
+                            {/* Bottone RESET — solo in edit mode */}
+                            {!!transaction && (
+                                <button
+                                    type="button"
+                                    className="
+                                        w-full bg-bg-elevate text-warning border border-warning/40
+                                        rounded-xl py-2 font-semibold shadow
+                                        hover:bg-warning/10 hover:border-warning/70
+                                        focus:ring-2 focus:ring-warning/40 transition
+                                        flex items-center justify-center gap-1
+                                    "
+                                    onClick={handleReset}
+                                    disabled={loading || disabled}
+                                    title="Ripristina i valori originali"
+                                >
+                                    <FiRotateCcw size={15} />
+                                    Reset
+                                </button>
+                            )}
+
+                            {/* Bottone ELIMINA — solo se onDelete è definito */}
+                            {!!onDelete && (
+                                <button
+                                    type="button"
+                                    className="
+                                        w-full bg-bg-elevate text-danger border border-danger/40
+                                        rounded-xl py-2 font-semibold shadow
+                                        hover:bg-danger/10 hover:border-danger/70
+                                        focus:ring-2 focus:ring-danger/40 transition
+                                        flex items-center justify-center
+                                    "
+                                    onClick={onDelete}
+                                    disabled={loading || disabled}
+                                >
+                                    Elimina
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

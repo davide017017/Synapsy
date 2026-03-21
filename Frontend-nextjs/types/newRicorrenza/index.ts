@@ -10,6 +10,8 @@ export type NewRicorrenzaFormProps = {
     onCancel: () => void;
     initialValues?: Partial<import("@/types/models/ricorrenza").RicorrenzaBase>;
     onChangeForm?: (data: Partial<import("@/types/models/ricorrenza").RicorrenzaBase>) => void;
+    categoryPickerOpen?: boolean;
+    onCategoryPickerOpenChange?: (open: boolean) => void;
 };
 
 export type NewRicorrenzaButtonProps = {

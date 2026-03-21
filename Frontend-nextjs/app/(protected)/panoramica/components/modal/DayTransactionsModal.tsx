@@ -9,6 +9,7 @@ import { toDateInputValue } from "@/utils/date";
 import { eur } from "@/utils/formatCurrency";
 import { toNum } from "@/lib/finance";
 import { FiTag } from "react-icons/fi";
+import { motion } from "framer-motion";
 
 export type DayTransactionsModalProps = {
     open: boolean;
@@ -155,21 +156,21 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                         type="button"
                         onClick={() => {
                             onClose();
-                            openModal(null, isoDate, "spesa");
-                        }}
-                        className="flex items-center gap-2 px-3 py-2 bg-orange-500 text-bg rounded-xl shadow hover:opacity-90 transition text-sm font-semibold active:scale-100"
-                    >
-                        <ArrowDownCircle size={18} /> Aggiungi spesa
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            onClose();
                             openModal(null, isoDate, "entrata");
                         }}
                         className="flex items-center gap-2 px-3 py-2 bg-primary-dark text-bg rounded-xl shadow hover:opacity-90 transition text-sm font-semibold active:scale-100"
                     >
                         <ArrowUpCircle size={18} /> Aggiungi entrata
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            onClose();
+                            openModal(null, isoDate, "spesa");
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 bg-orange-500 text-bg rounded-xl shadow hover:opacity-90 transition text-sm font-semibold active:scale-100"
+                    >
+                        <ArrowDownCircle size={18} /> Aggiungi spesa
                     </button>
                 </div>
             </div>
