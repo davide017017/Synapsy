@@ -23,8 +23,8 @@ export default function PanoramicaPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-4 md:p-6 shadow-md overflow-hidden animate-fade-in">
+        <div className="space-y-2">
+            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-2 md:p-4 shadow-md overflow-hidden animate-fade-in">
                 {/* -------- Icona sfumata di sfondo -------- */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <svg
@@ -55,7 +55,7 @@ export default function PanoramicaPage() {
                                     <path d="M16 2v4" />
                                 </svg>
                             </span>
-                            <span>Riepilogo</span>
+                            <span>Panoramica</span>
                         </h1>
 
                         {/* Bottone: inline su mobile, sotto su desktop */}
@@ -63,11 +63,6 @@ export default function PanoramicaPage() {
                             <NewTransactionButton />
                         </div>
                     </div>
-
-                    {/* ───────── Subtitle ───────── */}
-                    <p className="text-xs md:text-sm text-[hsl(var(--c-text-secondary))] text-left md:text-center">
-                        Visualizza entrate e spese giorno per giorno in modo ordinato e intuitivo.
-                    </p>
                 </div>
             </div>
 

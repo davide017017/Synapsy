@@ -13,16 +13,16 @@ export default function HeroWelcome() {
                     text-center
                 "
             >
-                {/* Animazione sinaptica (sempre visibile) */}
+                {/* Animazione sinaptica */}
                 <SynapsiNetwork />
 
-                {/* Titolo: solo movimento verticale, niente opacity */}
+                {/* Titolo */}
                 <motion.h1
                     initial={{ y: 18 }}
                     animate={{ y: 0 }}
                     transition={{ delay: 0.15, duration: 0.45, ease: "easeOut" }}
                     className="
-                        text-4xl sm:text-5xl font-extrabold
+                        text-4xl sm:text-5xl font-extrabold 
                         text-secondary-900 dark:text-secondary-100
                         mb-4
                     "
@@ -30,43 +30,19 @@ export default function HeroWelcome() {
                     Benvenuto su Synapsi!
                 </motion.h1>
 
-                {/* Sottotitolo: solo movimento verticale */}
+                {/* Sottotitolo */}
                 <motion.p
                     initial={{ y: 12 }}
                     animate={{ y: 0 }}
                     transition={{ delay: 0.25, duration: 0.45, ease: "easeOut" }}
                     className="
-                        text-lg
-                        text-secondary-600 dark:text-secondary-400
-                        mb-3
-                    "
+                  text-xl tracking-[0.2em]
+                  text-primary-300 dark:text-primary-200
+                  mb-3
+                "
                 >
-                    Monitora le transazioni in tempo reale, analizza le tendenze con precisione e pianifica investimenti
-                    basati su dati affidabili.{" "}
-                    <span className="text-primary-400 font-semibold">Raggiungi i tuoi obiettivi</span>.
+                    Sapere - Controllo - Potere
                 </motion.p>
-
-                {/* CTA: solo scale, mai nascosta */}
-                <motion.div
-                    initial={{ scale: 0.96 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.35, duration: 0.4, ease: "easeOut" }}
-                >
-                    <a
-                        href="/panoramica"
-                        className="
-                            inline-block
-                            px-3 py-1
-                            bg-primary-100 hover:bg-primary-200
-                            text-primary-600
-                            font-medium
-                            rounded-lg shadow-lg
-                            transition
-                        "
-                    >
-                        🚀 Inizia Ora
-                    </a>
-                </motion.div>
             </section>
         </div>
     );

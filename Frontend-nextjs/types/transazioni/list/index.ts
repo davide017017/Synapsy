@@ -6,6 +6,7 @@ export type TransactionsListProps = {
     selectedId: string | null;
     onSelect: (tx: Transaction) => void;
     onDeleteSelected: (ids: string[]) => Promise<void>;
+    initialCategoryFilter?: string;
 };
 
 export type Filter = {

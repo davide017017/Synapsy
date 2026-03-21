@@ -9,21 +9,10 @@ import { useState } from "react";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
 import { Ricorrenza } from "@/types/models/ricorrenza";
 import CardTotaliAnnui from "./card/CardTotaliAnnui";
-import CardGraficoPagamenti from "./card/CardGraficoPagamenti";
 import ListaRicorrenzePerFrequenza from "./liste/ListaRicorrenzePerFrequenza";
 import ListaProssimiPagamenti from "./liste/ListaProssimiPagamenti";
-import AreaGraficiRicorrenze from "./grafici/AreaGraficiRicorrenze";
 import RicorrentiPageSkeleton from "./skeleton/RicorrentiPageSkeleton";
-import {
-    ordinaPerPrezzo,
-    calcolaTotaliAnnuiPerFrequenza,
-    filtraPagamentiEntro,
-    totalePagamenti,
-    daysArr,
-    buildBarChartOptions,
-} from "./utils/ricorrenza-utils";
-import { deleteRicorrenza } from "@/lib/api/ricorrenzeApi";
-import { useSession } from "next-auth/react";
+import { ordinaPerPrezzo, filtraPagamentiEntro, totalePagamenti } from "./utils/ricorrenza-utils";
 import { Repeat } from "lucide-react";
 import NewRicorrenzaButton from "../newRicorrenza/NewRicorrenzaButton";
 
@@ -36,12 +25,9 @@ export default function RicorrentiPage() {
 
     // ----- Dati dal context -----
     const { ricorrenze, loading, refresh, openModal, remove } = useRicorrenze();
-    const { data: session } = useSession();
-    const token = session?.accessToken as string;
 
     // ----- Dati per cards -----
     const ricorrenzePerFrequenza = ordinaPerPrezzo(ricorrenze);
-    const totaliAnnui = calcolaTotaliAnnuiPerFrequenza(ricorrenze);
 
     // ----- Filtri scadenze -----
     let pagamentiDaMostrare = [...ricorrenze];
@@ -64,8 +50,8 @@ export default function RicorrentiPage() {
     if (loading) return <RicorrentiPageSkeleton />;
 
     return (
-        <div className="space-y-8">
-            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-4 md:p-6 shadow-md overflow-hidden animate-fade-in">
+        <div className="space-y-2">
+            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-2 md:p-4 shadow-md overflow-hidden animate-fade-in">
                 {/* -------- Icona sfumata di sfondo -------- */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <Repeat
@@ -79,7 +65,7 @@ export default function RicorrentiPage() {
                     <div className="flex items-center justify-between md:justify-center md:flex-col md:gap-2">
                         <h1 className="text-lg md:text-3xl font-serif font-bold flex items-center gap-2 text-[hsl(var(--c-primary-dark))]">
                             <Repeat className="w-5 h-5 md:w-7 md:h-7 text-[hsl(var(--c-primary))]" />
-                            <span>Ricorrenze</span>
+                            <span>Ricorrenti</span>
                         </h1>
 
                         {/* Bottone: inline su mobile, sotto su desktop */}
@@ -87,19 +73,11 @@ export default function RicorrentiPage() {
                             <NewRicorrenzaButton />
                         </div>
                     </div>
-
-                    {/* ───────── Subtitle ───────── */}
-                    <p className="text-xs md:text-sm text-[hsl(var(--c-text-secondary))] text-left md:text-center">
-                        Tieni sotto controllo abbonamenti e pagamenti ricorrenti nel tempo.
-                    </p>
                 </div>
             </div>
 
-            {/* === Cards principali === */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <CardTotaliAnnui ricorrenze={ricorrenze} />
-                <CardGraficoPagamenti ricorrenze={ricorrenze} />
-            </div>
+            {/* === Card riepilogo === */}
+            <CardTotaliAnnui ricorrenze={ricorrenze} />
             {/* --------------------------------------------------- */}
 
             {/* === Liste principali === */}
@@ -118,9 +96,6 @@ export default function RicorrentiPage() {
                 />
             </div>
             {/* --------------------------------------------------- */}
-
-            {/* === Area grafici avanzati (opzionale) === */}
-            <AreaGraficiRicorrenze />
         </div>
     );
 }

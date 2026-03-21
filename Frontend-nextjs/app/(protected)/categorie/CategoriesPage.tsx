@@ -10,10 +10,10 @@ import { LayoutGrid } from "lucide-react";
 
 export default function CategoriesPage() {
     return (
-        <div className="px-2 md:px-6 pt-6 pb-12 space-y-6">
+        <div className="space-y-2">
             {/* ----------- Blocco superiore con sfondo ----------- */}
 
-            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-4 md:p-6 shadow-md overflow-hidden animate-fade-in">
+            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-2 md:p-4 shadow-md overflow-hidden animate-fade-in">
                 {/* -------- Icona sfumata di sfondo -------- */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <LayoutGrid
@@ -35,11 +35,6 @@ export default function CategoriesPage() {
                             <NewCategoryButton />
                         </div>
                     </div>
-
-                    {/* ───────── Subtitle ───────── */}
-                    <p className="text-xs md:text-sm text-[hsl(var(--c-text-secondary))] text-left md:text-center">
-                        Gestisci in modo ordinato le categorie di entrate e spese.
-                    </p>
                 </div>
             </div>
 

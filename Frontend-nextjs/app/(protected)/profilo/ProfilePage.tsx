@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image"; // ← Next Image per evitare warning @next/next/no-img-element
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import ProfileRow from "./components/ProfileRow";
 import ThemeSelectorRow from "./components/ThemeSelectorRow";
 import AvatarPickerModal from "./components/AvatarPickerModal";
@@ -71,7 +71,7 @@ export default function ProfilePage() {
 
     const handleAvatarChange = async (val: string) => {
         await update({ avatar: val });
-        setShowPicker(false);
+        // setShowPicker(false) è gestito da onExitComplete nel modal
     };
 
     const avatarUrl = getAvatarUrl(form);
@@ -215,15 +215,13 @@ export default function ProfilePage() {
             {/* ───────────────────────────── */}
             {/* Modale scelta avatar         */}
             {/* ───────────────────────────── */}
-            <AnimatePresence>
-                {showPicker && !isDemo && (
-                    <AvatarPickerModal
-                        selected={form.avatar}
-                        onSelect={handleAvatarChange}
-                        onClose={() => setShowPicker(false)}
-                    />
-                )}
-            </AnimatePresence>
+            {showPicker && !isDemo && (
+                <AvatarPickerModal
+                    selected={form.avatar}
+                    onSelect={handleAvatarChange}
+                    onClose={() => setShowPicker(false)}
+                />
+            )}
 
             <DeleteAccountSection />
             <LegalLinks className="p-4 border-t border-white/10 text-center" />

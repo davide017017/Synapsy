@@ -17,7 +17,7 @@ export default function HomePage() {
     useRenderTimer("HomePage");
 
     return (
-        <div className="px-2 md:px-6 pt-6 pb-12 space-y-6">
+        <div className="px-2 md:px-6 space-y-2">
             {/* Hero / carosello */}
             <HeroCarousel />
 

@@ -6,7 +6,7 @@
 // (Mobile: dense + divider anno/mese/giorno con totali e label)
 // ====================================================
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import TransactionListFilter from "./list/TransactionListFilter";
 import { useSelection } from "@/context/SelectionContext";
 import { useCategories } from "@/context/CategoriesContext";
@@ -211,13 +211,23 @@ export default function TransactionsList({
     onSelect,
     selectedId,
     onDeleteSelected,
+    initialCategoryFilter,
 }: TransactionsListProps) {
     // ===== Stato filtro frontend =====
     const [filter, setFilter] = useState({
         search: "",
         type: "tutti",
-        category: "tutte",
+        category: initialCategoryFilter ?? "tutte",
     });
+
+    // Applica initialCategoryFilter se arriva dopo il mount (dynamic import + useEffect timing)
+    const appliedInitialFilter = useRef(false);
+    useEffect(() => {
+        if (initialCategoryFilter && !appliedInitialFilter.current) {
+            appliedInitialFilter.current = true;
+            setFilter((f) => ({ ...f, category: initialCategoryFilter }));
+        }
+    }, [initialCategoryFilter]);
 
     const { categories } = useCategories();
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();

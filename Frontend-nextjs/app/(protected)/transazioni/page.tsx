@@ -4,7 +4,7 @@
 // Pagina principale lista transazioni — CRUD sync
 // ==============================================
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
 
@@ -33,6 +33,16 @@ export default function TransazioniPage() {
     // UI state
     // ----------------------------
     const [isLoading, setIsLoading] = useState(false);
+    const [initialCategoryFilter, setInitialCategoryFilter] = useState<string | undefined>(undefined);
+
+    // Legge il filtro categoria salvato da CategoryTransactionsModal
+    useEffect(() => {
+        const saved = sessionStorage.getItem("filterCategory");
+        if (saved) {
+            sessionStorage.removeItem("filterCategory");
+            setInitialCategoryFilter(saved);
+        }
+    }, []);
 
     // ----------------------------
     // CRUD handlers
@@ -49,10 +59,10 @@ export default function TransazioniPage() {
     };
 
     return (
-        <div className="space-y-2 md:space-y-4">
+        <div className="space-y-2 md:space-y-2">
             {/* ===================== Header ===================== */}
 
-            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-4 md:p-6 shadow-md overflow-hidden animate-fade-in">
+            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-2 md:p-4 shadow-md overflow-hidden animate-fade-in">
                 {/* Background icon */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <svg
@@ -89,11 +99,6 @@ export default function TransazioniPage() {
                             <NewTransactionButton />
                         </div>
                     </div>
-
-                    {/* ───────── Subtitle ───────── */}
-                    <p className="text-xs md:text-sm text-[hsl(var(--c-text-secondary))] text-left md:text-center">
-                        Tieni traccia in modo ordinato delle tue entrate e spese giornaliere.
-                    </p>
                 </div>
             </div>
 
@@ -110,6 +115,7 @@ export default function TransazioniPage() {
                             onSelect={(tx) => openModal(tx)}
                             selectedId={transactionToEdit ? `${transactionToEdit.type}-${transactionToEdit.id}` : null}
                             onDeleteSelected={handleDeleteSelectedTransactions}
+                            initialCategoryFilter={initialCategoryFilter}
                         />
                     </>
                 </Suspense>

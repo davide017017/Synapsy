@@ -25,7 +25,7 @@ export default function HeroCarousel() {
             { id: "saldo", node: <HeroSaldo /> },
             { id: "suggerimento", node: <HeroSuggerimento /> },
         ],
-        []
+        [],
     );
 
     const [index, setIndex] = useState(0);
@@ -71,12 +71,12 @@ export default function HeroCarousel() {
                 onClick={() => go(index - 1)}
                 aria-label="Precedente"
                 className="
-          absolute
-          left-4 top-1/2 -translate-y-1/2
-          p-2 rounded-full
-          bg-white/20 hover:bg-white/30
-          transition-colors
-        "
+                  absolute
+                  left-4 top-[25%] -translate-y-1/2
+                  p-2 rounded-full
+                  bg-white/20 hover:bg-white/30
+                  transition-colors
+                "
             >
                 <ArrowLeft size={22} />
             </button>
@@ -85,12 +85,12 @@ export default function HeroCarousel() {
                 onClick={() => go(index + 1)}
                 aria-label="Successivo"
                 className="
-          absolute
-          right-4 top-1/2 -translate-y-1/2
-          p-2 rounded-full
-          bg-white/20 hover:bg-white/30
-          transition-colors
-        "
+                absolute
+                right-4 top-[25%] -translate-y-1/2
+                p-2 rounded-full
+                bg-white/20 hover:bg-white/30
+                transition-colors
+              "
             >
                 <ArrowRight size={22} />
             </button>

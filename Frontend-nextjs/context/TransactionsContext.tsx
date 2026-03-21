@@ -29,6 +29,7 @@ import {
 
 // ── Helpers condivisi (importi/date/tipo) ──────────────────────────────
 import { parseYMD, typeOf, toNum } from "@/lib/finance";
+import { useCategories } from "@/context/CategoriesContext";
 
 // =====================================================================
 // Tipi del context
@@ -85,6 +86,9 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     // ── Auth ─────────────────────────────────────────────────────────────
     const { data: session } = useSession();
     const token = session?.accessToken as string | undefined;
+
+    // ── Categorie (per arricchire ottimistico e risposta API) ─────────────
+    const { categories } = useCategories();
 
     // ── Sort coerente (usa parseYMD, no timezone shift) ──────────────────
     const sortByDateDesc = useCallback(
@@ -240,13 +244,33 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
             const prev = transactions;
             const tempId = Date.now() * -1;
-            const optimisticTx: Transaction = { id: tempId, ...data } as Transaction;
+
+            // Arricchisci subito l'ottimistico con l'oggetto categoria completo
+            const optimisticCat = categories.find((c) => c.id === (data as any).category_id);
+            const optimisticTx: Transaction = {
+                id: tempId,
+                ...data,
+                type: data.type,
+                category: optimisticCat,
+            } as Transaction;
 
             setTransactions((curr) => sortByDateDesc([...curr, optimisticTx]));
 
             try {
                 const saved = await createTransaction(token, data, data.type);
-                setTransactions((curr) => sortByDateDesc(curr.map((t) => (t.id === tempId ? saved : t))));
+
+                // L'API restituisce solo category_id senza eager loading:
+                // inietta l'oggetto categoria e il type come fallback
+                const savedCat = categories.find(
+                    (c) => c.id === ((saved as any).category_id ?? (data as any).category_id),
+                );
+                const enrichedSaved = {
+                    ...saved,
+                    type: saved.type ?? data.type,
+                    category: saved.category ?? savedCat,
+                } as Transaction;
+
+                setTransactions((curr) => sortByDateDesc(curr.map((t) => (t.id === tempId ? enrichedSaved : t))));
                 toast.success("Transazione creata!");
                 closeModal();
             } catch (e: any) {
@@ -259,7 +283,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
             return Promise.resolve();
         },
-        [token, transactions, sortByDateDesc, fetchAll, closeModal],
+        [token, transactions, categories, sortByDateDesc, fetchAll, closeModal],
     );
 
     const update = useCallback(
@@ -274,12 +298,32 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 return Promise.resolve();
             }
 
-            const optimisticTx: Transaction = { ...target, ...data, id } as Transaction;
+            // Arricchisci l'ottimistico: usa la nuova categoria dal form se cambiata
+            const updateOptCat =
+                categories.find((c) => c.id === (data as any).category_id) ?? target.category;
+            const optimisticTx: Transaction = {
+                ...target,
+                ...data,
+                id,
+                type: data.type ?? target.type,
+                category: updateOptCat,
+            } as Transaction;
             setTransactions((curr) => sortByDateDesc(curr.map((t) => (t.id === id ? optimisticTx : t))));
 
             try {
                 const saved = await updateTransaction(token, { ...data, id } as unknown as Transaction);
-                setTransactions((curr) => sortByDateDesc(curr.map((t) => (t.id === id ? saved : t))));
+
+                // Stessa logica di create: API potrebbe non restituire category eager-loaded
+                const updateSavedCat = categories.find(
+                    (c) => c.id === ((saved as any).category_id ?? (data as any).category_id),
+                );
+                const enrichedSaved = {
+                    ...saved,
+                    type: saved.type ?? data.type ?? target.type,
+                    category: saved.category ?? updateSavedCat,
+                } as Transaction;
+
+                setTransactions((curr) => sortByDateDesc(curr.map((t) => (t.id === id ? enrichedSaved : t))));
                 toast.success("Transazione aggiornata!");
                 closeModal();
             } catch (e: any) {
@@ -292,7 +336,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
             return Promise.resolve();
         },
-        [token, transactions, sortByDateDesc, fetchAll, closeModal],
+        [token, transactions, categories, sortByDateDesc, fetchAll, closeModal],
     );
 
     const remove = useCallback(

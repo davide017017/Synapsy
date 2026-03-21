@@ -21,7 +21,7 @@
 // =======================================================
 
 import React, { useMemo, useState } from "react";
-import { Repeat, Pencil, Trash2 } from "lucide-react";
+import { Repeat, Pencil, Trash2, ChartNoAxesCombined, Clock, CalendarDays, Calendar, Star } from "lucide-react";
 
 import RicorrenzaGroup from "./ListaRicorrenzeComponents/RicorrenzaGroup";
 import ConfirmDialog from "../../../components/ui/ConfirmDialog";
@@ -65,7 +65,7 @@ function getCategoryColor(r: any) {
             r?.color ??
             r?.categoriaColor ??
             r?.category?.color,
-        "hsl(var(--c-primary))"
+        "hsl(var(--c-primary))",
     );
 }
 
@@ -79,7 +79,7 @@ function getRDate(r: any): string {
                 r?.startDate ??
                 r?.date ??
                 r?.data ??
-                ""
+                "",
         ) || ""
     );
 }
@@ -94,7 +94,7 @@ function formatDateSmall(dateStr: string) {
     if (!dateStr) return "";
     try {
         return new Intl.DateTimeFormat("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" }).format(
-            new Date(dateStr)
+            new Date(dateStr),
         );
     } catch {
         return dateStr;
@@ -117,6 +117,24 @@ function calcGroupTotals(list: Ricorrenza[]) {
     }
 
     return { entrate, spese, saldo: entrate - spese };
+}
+
+// =======================================================
+// UI — icona frequenza per divider mobile
+// =======================================================
+function FreqIcon({ freq, size = 14 }: { freq: string; size?: number }) {
+    switch (freq) {
+        case "daily":
+            return <Clock size={size} />;
+        case "weekly":
+            return <CalendarDays size={size} />;
+        case "monthly":
+            return <Calendar size={size} />;
+        case "annually":
+            return <Star size={size} />;
+        default:
+            return null;
+    }
 }
 
 // =======================================================
@@ -265,7 +283,7 @@ export default function ListaRicorrenzePerFrequenza({
         <div className="rounded-2xl border border-bg-elevate bg-[hsl(var(--c-bg-elevate),_#fafbfc)] p-0 pt-1 shadow-xl min-h-[180px]">
             <h2 className="font-semibold text-lg mb-2 text-primary flex items-center justify-center gap-2">
                 <Repeat className="w-5 h-5" />
-                Ricorrenze per frequenza
+                Ricorrenti per frequenza
             </h2>
 
             {gruppiPresenti.length === 0 ? (
@@ -289,22 +307,18 @@ export default function ListaRicorrenzePerFrequenza({
                                 <div
                                     key={`div-${freq}`}
                                     className="px-2 py-1.5 bg-bg-elevate/55 border-b border-bg-elevate"
-                                    style={{ borderLeft: `4px solid ${borderLeft}` }}
+                                    style={{ borderLeft: `10px solid ${borderLeft}` }}
                                 >
-                                    <div className="flex items-center justify-between gap-2">
-                                        <div className="text-[11px] font-bold tracking-wider uppercase text-center md:text-left w-full">
+                                    {/* Unica riga: label + totali + contatore voci */}
+                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] tabular-nums">
+                                        <span className="flex items-center gap-1 text-xl  shrink-0">
+                                            <FreqIcon freq={freq} size={19} />
                                             {meta.label}
-                                        </div>
+                                        </span>
 
-                                        <div className="text-[10px] tabular-nums opacity-80 whitespace-nowrap">
-                                            {items.length} voci
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] tabular-nums justify-center">
                                         <span className="flex items-center gap-1">
                                             <span className="opacity-80">Entrate:</span>
-                                            <span className="text-[hsl(var(--c-success))] font-semibold">
+                                            <span className="text-[hsl(var(--c-success))] ">
                                                 +{eur(totals.entrate)}
                                             </span>
                                         </span>
@@ -328,8 +342,13 @@ export default function ListaRicorrenzePerFrequenza({
                                                 {eur(totals.saldo)}
                                             </span>
                                         </span>
+
+                                        <span className="flex items-center gap-1 opacity-60 ml-auto shrink-0 text-xl ">
+                                            <ChartNoAxesCombined size={18} />
+                                            {items.length}
+                                        </span>
                                     </div>
-                                </div>
+                                </div>,
                             );
 
                             // Righe compact (NO pill frequenza) — 1 riga (wrap se serve)
@@ -367,9 +386,7 @@ export default function ListaRicorrenzePerFrequenza({
                                             <div className="flex items-center gap-2">
                                                 {/* Nome */}
                                                 <div className="min-w-0 flex-1">
-                                                    <div className="font-semibold text-[13px] truncate">
-                                                        {(r as any)?.nome}
-                                                    </div>
+                                                    <div className=" text-[13px] truncate">{(r as any)?.nome}</div>
                                                 </div>
 
                                                 {/* Data */}
@@ -425,7 +442,7 @@ export default function ListaRicorrenzePerFrequenza({
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>,
                                 );
                             });
 
