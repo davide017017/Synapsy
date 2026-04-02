@@ -511,8 +511,9 @@ export default function NewTransactionForm({
                                                     {getCategoryIcon(cat as any)}
                                                 </div>
                                                 <span className="text-xs text-center">{cat.name}</span>
+
                                                 {(categoryUsageCount[cat.id] ?? 0) > 0 && (
-                                                    <span className="absolute bottom-0 right-2 text-[10px] font-medium opacity-50 leading-none">
+                                                    <span className="absolute  bottom-0 right-2 text-[10px] font-medium opacity-50 leading-none">
                                                         {categoryUsageCount[cat.id]}
                                                     </span>
                                                 )}
