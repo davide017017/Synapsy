@@ -9,6 +9,7 @@ import type { CSSProperties } from "react";
 import { TransactionBase } from "@/types";
 import type { NewTransactionFormProps } from "@/types";
 import { useCategories } from "@/context/CategoriesContext";
+import { useTransactions } from "@/context/TransactionsContext";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import type { IconType } from "react-icons";
@@ -133,15 +134,16 @@ export default function NewTransactionForm({
         date: initialDate || new Date().toISOString().split("T")[0],
         category_id: 0,
         notes: "",
-        type: initialType || "entrata",
+        type: initialType || "spesa",
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
 
     // ────────────────────────────────────────────────
-    // Context categorie
+    // Context categorie + transazioni (per ordinamento per frequenza)
     // ────────────────────────────────────────────────
     const { categories, loading: loadingCategories } = useCategories();
+    const { transactions } = useTransactions();
 
     // ────────────────────────────────────────────────
     // Picker categoria (stato gestito dal parent)
@@ -254,11 +256,42 @@ export default function NewTransactionForm({
     }, [formData]);
 
     // ────────────────────────────────────────────────
-    // Filtra categorie per tipo corrente
+    // Conta utilizzi per categoria (tutte le transazioni)
+    // ────────────────────────────────────────────────
+    const categoryUsageCount = useMemo(() => {
+        const counts: Record<number, number> = {};
+        for (const tx of transactions) {
+            const id = tx.category_id ?? tx.category?.id;
+            if (id) counts[id] = (counts[id] ?? 0) + 1;
+        }
+        return counts;
+    }, [transactions]);
+
+    // ────────────────────────────────────────────────
+    // Top 5 descrizioni più frequenti per tipo corrente
+    // ────────────────────────────────────────────────
+    const topDescriptions = useMemo(() => {
+        const counts: Record<string, number> = {};
+        for (const tx of transactions) {
+            if (tx.type !== formData.type) continue;
+            const desc = tx.description?.trim();
+            if (desc) counts[desc] = (counts[desc] ?? 0) + 1;
+        }
+        return Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([label, count]) => ({ label, count }));
+    }, [transactions, formData.type]);
+
+    // ────────────────────────────────────────────────
+    // Filtra categorie per tipo corrente + ordina per frequenza d'uso
     // ────────────────────────────────────────────────
     const filteredCategories = useMemo(
-        () => categories.filter((cat) => cat.type === formData.type),
-        [categories, formData.type],
+        () =>
+            categories
+                .filter((cat) => cat.type === formData.type)
+                .sort((a, b) => (categoryUsageCount[b.id] ?? 0) - (categoryUsageCount[a.id] ?? 0)),
+        [categories, formData.type, categoryUsageCount],
     );
 
     // ────────────────────────────────────────────────
@@ -463,7 +496,7 @@ export default function NewTransactionForm({
                                                 type="button"
                                                 style={getCategoryStyle(cat as any, isActive)}
                                                 className={cn(
-                                                    "rounded-xl border px-3 py-3 flex flex-col items-center justify-center gap-2",
+                                                    "relative rounded-xl border px-3 py-3 flex flex-col items-center justify-center gap-2",
                                                     "transition-all duration-200",
                                                     isActive
                                                         ? "scale-[1.03] text-white"
@@ -478,6 +511,11 @@ export default function NewTransactionForm({
                                                     {getCategoryIcon(cat as any)}
                                                 </div>
                                                 <span className="text-xs text-center">{cat.name}</span>
+                                                {(categoryUsageCount[cat.id] ?? 0) > 0 && (
+                                                    <span className="absolute bottom-0 right-2 text-[10px] font-medium opacity-50 leading-none">
+                                                        {categoryUsageCount[cat.id]}
+                                                    </span>
+                                                )}
                                             </button>
                                         );
                                     })}
@@ -521,62 +559,60 @@ export default function NewTransactionForm({
                     />
                 </div>
                 {/* ────────────────────────────────────
-                 * Quick description picks
+                 * Quick description picks (top 5 dinamiche)
                  * ──────────────────────────────────── */}
 
-                <div className="mt-3 grid grid-cols-5 gap-2">
-                    {[
-                        { key: "autostrada", label: "Autostrada", icon: "🚗" },
-                        { key: "benzina", label: "Benzina", icon: "⛽" },
-                        { key: "pellet", label: "Pellet", icon: "🔥" },
-                        { key: "taglio", label: "Taglio", icon: "✂️" },
-                        { key: "busta", label: "Busta", icon: "✉️" },
-                    ].map((q) => {
-                        const active = formData.description === q.label;
+                {topDescriptions.length > 0 && (
+                    <div className="mt-3 grid grid-cols-5 gap-2">
+                        {topDescriptions.map(({ label, count }) => {
+                            const active = formData.description === label;
 
-                        return (
-                            <button
-                                key={q.key}
-                                type="button"
-                                className={cn(
-                                    `
-                    flex flex-col items-center justify-center
-                    gap-0.5
-                    px-2 py-2
-                    rounded-xl border
-                    transition-all duration-150
-                    transform
-                    `,
-                                    active
-                                        ? "border-primary bg-primary/20 text-primary shadow-[0_0_10px_rgba(56,189,248,0.35)] scale-[1.03]"
-                                        : `
-                          bg-bg-elevate
-                          text-muted-foreground
-                          border-border/50
-                          hover:text-text
-                          hover:border-primary/50
-                          hover:bg-primary/10
+                            return (
+                                <button
+                                    key={label}
+                                    type="button"
+                                    className={cn(
+                                        `
+                        relative
+                        flex flex-col items-center justify-center
+                        gap-0.5
+                        px-2 py-2
+                        rounded-xl border
+                        transition-all duration-150
+                        transform
                         `,
-                                )}
-                                onClick={() =>
-                                    setFormData((p) => ({
-                                        ...p,
-                                        description: q.label,
-                                    }))
-                                }
-                                aria-label={`Imposta descrizione: ${q.label}`}
-                            >
-                                {/* Icona */}
-                                <span className="text-xl leading-none">{q.icon}</span>
-
-                                {/* Label sotto */}
-                                <span className="text-[10px] leading-tight text-center truncate max-w-[64px]">
-                                    {q.label}
-                                </span>
-                            </button>
-                        );
-                    })}
-                </div>
+                                        active
+                                            ? "border-primary bg-primary/20 text-primary shadow-[0_0_10px_rgba(56,189,248,0.35)] scale-[1.03]"
+                                            : `
+                              bg-bg-elevate
+                              text-muted-foreground
+                              border-border/50
+                              hover:text-text
+                              hover:border-primary/50
+                              hover:bg-primary/10
+                            `,
+                                    )}
+                                    onClick={() =>
+                                        setFormData((p) => ({
+                                            ...p,
+                                            description: label,
+                                        }))
+                                    }
+                                    aria-label={`Imposta descrizione: ${label}`}
+                                >
+                                    <span className="text-[10px] leading-tight text-center line-clamp-2 max-w-[64px]">
+                                        {label}
+                                    </span>
+                                    {count > 0 && (
+                                        <span className="absolute bottom-1.5 right-2 text-[10px] font-medium opacity-50 leading-none">
+                                            {count}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
 
                 {/* ────────────────────────────────────
                  * Importo + Data sulla stessa riga (+ reset)

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Sidebar from "./layout-components/Sidebar";
 import Header from "./layout-components/Header";
+import BottomNav from "./layout-components/BottomNav";
 import { useSidebar } from "@/context/SidebarContext";
 
 // ==============================
@@ -35,8 +36,10 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
             {/* ===== AREA CONTENUTO ===== */}
             <div className={`flex flex-col flex-1 transition-all duration-300 ${isCollapsed ? "md:pl-0" : "md:pl-56"}`}>
                 <Header />
-                <main className="flex-1 p-4">{children}</main>
+                <main className="flex-1 p-4 pb-20 md:pb-4">{children}</main>
             </div>
+            {/* ===== BOTTOM NAV (solo mobile) ===== */}
+            <BottomNav />
         </div>
     );
 }
