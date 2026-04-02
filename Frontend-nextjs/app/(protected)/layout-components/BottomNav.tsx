@@ -5,140 +5,102 @@ import { usePathname } from "next/navigation";
 import { BarChart2, List, CalendarCheck, Folder, Plus } from "lucide-react";
 import { useTransactions } from "@/context/TransactionsContext";
 
-// ─────────────────────────────────────────
-// CONFIG TAB
-// ─────────────────────────────────────────
 const TABS = [
-    { href: "/panoramica", label: "Panoramica", Icon: BarChart2, col: 0 },
-    { href: "/transazioni", label: "Transazioni", Icon: List, col: 1 },
-    { href: "/ricorrenti", label: "Ricorrenti", Icon: CalendarCheck, col: 3 },
-    { href: "/categorie", label: "Categorie", Icon: Folder, col: 4 },
+    { href: "/panoramica", label: "Panoramica", Icon: BarChart2 },
+    { href: "/transazioni", label: "Transazioni", Icon: List },
+    { href: "/ricorrenti", label: "Ricorrenti", Icon: CalendarCheck },
+    { href: "/categorie", label: "Categorie", Icon: Folder },
 ];
 
-// ─────────────────────────────────────────
-// NOTCH PATH (simmetrico smooth)
-// ─────────────────────────────────────────
-const NOTCH_PATH = "M 0 0 C 20 0 20 40 50 40 C 80 40 80 0 100 0";
-
-// ─────────────────────────────────────────
-// COMPONENT
-// ─────────────────────────────────────────
-export default function BottomNav() {
+export default function BottomNavModern() {
     const pathname = usePathname();
     const { openModal } = useTransactions();
 
     const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
-    const activeTab = TABS.find((t) => isActive(t.href));
+    const activeIndex = TABS.findIndex((t) => isActive(t.href));
 
     return (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg h-16 overflow-visible">
-            {/* ─────────────────────────────────────────
-          BORDER FULL WIDTH (LINEA REALE)
-      ───────────────────────────────────────── */}
-            <div className="absolute inset-x-0 top-0 h-px bg-border" />
-
-            {/* ─────────────────────────────────────────
-          NOTCH (overlay sopra il bordo)
-      ───────────────────────────────────────── */}
-            <div className="absolute inset-x-0 top-0 h-16 pointer-events-none overflow-visible">
-                <svg viewBox="0 0 500 60" preserveAspectRatio="none" className="w-full h-full">
-                    {/* LINEA COMPLETA */}
-                    <line x1="0" y1="0" x2="500" y2="0" stroke="hsl(var(--c-border))" strokeWidth="1.5" />
-
-                    {/* NOTCH */}
-                    {activeTab && (
-                        <g transform={`translate(${activeTab.col * 100}, 0)`}>
-                            {/* copertura */}
-                            <path d={NOTCH_PATH} fill="hsl(var(--c-bg))" />
-
-                            {/* bordo notch */}
-                            <path
-                                d={NOTCH_PATH}
-                                fill="none"
-                                vectorEffect="non-scaling-stroke"
-                                stroke="hsl(var(--c-border))"
-                                strokeWidth="1.5"
-                            />
-
-                            {/* glow */}
-                            <path
-                                d={NOTCH_PATH}
-                                fill="none"
-                                vectorEffect="non-scaling-stroke"
-                                stroke="hsl(var(--c-primary))"
-                                strokeWidth="4"
-                                opacity="0.12"
-                            />
-                        </g>
-                    )}
-                </svg>
-            </div>
-
-            {/* ─────────────────────────────────────────
-          TAB
-      ───────────────────────────────────────── */}
-            <div className="flex items-end h-full">
-                <NavTab tab={TABS[0]} active={isActive(TABS[0].href)} />
-                <NavTab tab={TABS[1]} active={isActive(TABS[1].href)} />
-
-                {/* ───── ➕ CENTRALE ───── */}
-                <div className="flex-1 flex items-end justify-center pb-2">
-                    <button
-                        onClick={() => openModal()}
-                        aria-label="Nuova transazione"
-                        className="
-              flex items-center justify-center
-              w-14 h-14 rounded-full
-              bg-primary hover:bg-primary-light active:bg-primary-dark
-              shadow-[0_4px_20px_hsl(var(--c-primary)/0.45)]
-              transition-all duration-150 active:scale-95
-              -translate-y-3
-            "
-                    >
-                        <Plus size={28} strokeWidth={2.5} className="text-text-invert" />
-                    </button>
-                </div>
-
-                <NavTab tab={TABS[2]} active={isActive(TABS[2].href)} />
-                <NavTab tab={TABS[3]} active={isActive(TABS[3].href)} />
-            </div>
-        </nav>
-    );
-}
-
-// ─────────────────────────────────────────
-// TAB COMPONENT
-// ─────────────────────────────────────────
-function NavTab({ tab, active }: { tab: (typeof TABS)[number]; active: boolean }) {
-    return (
-        <Link
-            href={tab.href}
-            aria-current={active ? "page" : undefined}
-            className="flex-1 flex flex-col items-center justify-end pb-1.5 gap-0.5"
-        >
-            {/* ───── ICON ───── */}
+        <div className="md:hidden fixed bottom-4 left-0 right-0 z-50 flex justify-center">
+            {/* CONTAINER GLASS */}
             <div
-                className={[
-                    "flex items-center justify-center rounded-full",
-                    "transition-all duration-300 ease-in-out",
-                    active
-                        ? "w-11 h-11 bg-primary/20 shadow-[0_4px_16px_hsl(var(--c-primary)/0.35)] -translate-y-3 text-primary"
-                        : "w-8 h-8 text-text-tertiary hover:text-text-secondary",
-                ].join(" ")}
+                className="
+        relative
+        w-[92%] max-w-md
+        h-16
+        rounded-2xl
+        backdrop-blur-xl
+        bg-white/5
+        border border-white/10
+        shadow-[0_10px_30px_rgba(0,0,0,0.35)]
+        flex items-center
+        px-2
+      "
             >
-                <tab.Icon size={22} strokeWidth={active ? 2.5 : 1.8} />
-            </div>
+                {/* ACTIVE PILL */}
+                <div
+                    className="
+                  absolute top-1 bottom-1
+                  rounded-xl
+                  bg-primary/20
+                  shadow-[0_0_20px_hsl(var(--c-primary)/0.35)]
+                  transition-all duration-300 ease-in-out
+                "
+                    style={{
+                        width: `${100 / TABS.length}%`,
+                        left: `${(100 / TABS.length) * activeIndex}%`,
+                    }}
+                />
 
-            {/* ───── LABEL ───── */}
-            <span
-                className={[
-                    "text-[10px] font-medium transition-colors duration-200",
-                    active ? "text-primary" : "text-text-tertiary",
-                ].join(" ")}
-            >
-                {tab.label}
-            </span>
-        </Link>
+                {/* TABS */}
+                {TABS.map((tab, i) => {
+                    const active = i === activeIndex;
+
+                    return (
+                        <Link
+                            key={tab.href}
+                            href={tab.href}
+                            className="
+                relative z-10
+                flex-1 flex flex-col items-center justify-center
+                transition-all duration-300
+              "
+                        >
+                            <div
+                                className={[
+                                    "flex flex-col items-center justify-center gap-1",
+                                    active ? "text-primary scale-105" : "text-white/50 hover:text-white/80",
+                                ].join(" ")}
+                            >
+                                <tab.Icon
+                                    size={22}
+                                    strokeWidth={active ? 2.6 : 1.8}
+                                    className={active ? "drop-shadow-[0_0_6px_rgba(56,189,248,0.6)]" : ""}
+                                />
+
+                                <span className="text-[10px] font-medium">{tab.label}</span>
+                            </div>
+                        </Link>
+                    );
+                })}
+
+                {/* FAB CENTRALE */}
+                <button
+                    onClick={() => openModal()}
+                    className="
+            absolute left-1/2 -translate-x-1/2 -top-5
+            w-14 h-14
+            rounded-full
+            bg-primary
+            flex items-center justify-center
+            shadow-[0_10px_25px_hsl(var(--c-primary)/0.5)]
+            transition-all duration-200
+            active:scale-95
+          "
+                >
+                    <Plus size={28} strokeWidth={2.5} className="text-white" />
+                </button>
+            </div>
+        </div>
     );
 }
