@@ -513,7 +513,7 @@ export default function NewTransactionForm({
                                                 <span className="text-xs text-center">{cat.name}</span>
 
                                                 {(categoryUsageCount[cat.id] ?? 0) > 0 && (
-                                                    <span className="absolute  bottom-0 right-2 text-[10px] font-medium opacity-50 leading-none">
+                                                    <span className="absolute  bottom-2 right-2 text-[10px] font-medium opacity-50 leading-none">
                                                         {categoryUsageCount[cat.id]}
                                                     </span>
                                                 )}
@@ -605,7 +605,7 @@ export default function NewTransactionForm({
                                         {label}
                                     </span>
                                     {count > 0 && (
-                                        <span className="absolute bottom-1.5 right-2 text-[10px] font-medium opacity-50 leading-none">
+                                        <span className="absolute bottom-0 right-2 text-[10px] font-medium opacity-50 leading-none">
                                             {count}
                                         </span>
                                     )}
