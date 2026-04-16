@@ -37,20 +37,22 @@ export default function BottomNavModern() {
         px-2
       "
             >
-                {/* ACTIVE PILL */}
-                <div
-                    className="
-                  absolute top-1 bottom-1
-                  rounded-xl
-                  bg-primary/20
-                  shadow-[0_0_20px_hsl(var(--c-primary)/0.35)]
-                  transition-all duration-300 ease-in-out
-                "
-                    style={{
-                        width: `${100 / TABS.length}%`,
-                        left: `${(100 / TABS.length) * activeIndex}%`,
-                    }}
-                />
+                {/* ACTIVE PILL — solo se il path corrente è uno dei tab */}
+                {activeIndex >= 0 && (
+                    <div
+                        className="
+                      absolute top-1 bottom-1
+                      rounded-xl
+                      bg-primary/20
+                      shadow-[0_0_20px_hsl(var(--c-primary)/0.35)]
+                      transition-all duration-300 ease-in-out
+                    "
+                        style={{
+                            width: `${100 / TABS.length}%`,
+                            left: `${(100 / TABS.length) * activeIndex}%`,
+                        }}
+                    />
+                )}
 
                 {/* TABS */}
                 {TABS.map((tab, i) => {
@@ -84,11 +86,12 @@ export default function BottomNavModern() {
                     );
                 })}
 
-                {/* FAB CENTRALE */}
+                {/* FAB CENTRALE — z-20 > z-10 dei tab link, altrimenti i tab intercettano i click */}
                 <button
                     onClick={() => openModal()}
                     className="
             absolute left-1/2 -translate-x-1/2 -top-5
+            z-20
             w-14 h-14
             rounded-full
             bg-primary
