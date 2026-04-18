@@ -11,7 +11,7 @@ import type { NewTransactionButtonProps } from "@/types";
 // ============================
 // Bottone per aprire la modale
 // ============================
-export default function NewTransactionButton({ label = "Nuova Transazione" }: NewTransactionButtonProps) {
+export default function NewTransactionButton({ label = "Transazione" }: NewTransactionButtonProps) {
     const { openModal } = useTransactions();
 
     return (
@@ -19,7 +19,7 @@ export default function NewTransactionButton({ label = "Nuova Transazione" }: Ne
             type="button"
             className="
                 inline-flex items-center gap-2
-                px-3 py-1.5 rounded-xl
+                px-2 py-1.5 rounded-xl
                 bg-primary-dark text-bg
                 hover:opacity-90
                 text-sm font-medium
@@ -34,4 +34,3 @@ export default function NewTransactionButton({ label = "Nuova Transazione" }: Ne
         </button>
     );
 }
-

@@ -8,13 +8,13 @@ import ProssimoPagamentoCard from "./cards/ProssimoPagamentoCard";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
 import NewRicorrenzaButton from "../newRicorrenza/NewRicorrenzaButton";
 import NewCategoryButton from "../newCategory/NewCategoryButton";
-import { useRenderTimer } from "./utils/useRenderTimer";
+// import { useRenderTimer } from "./utils/useRenderTimer";
 
 // ─────────────────────────────────────────
 // HomePage: layout come CategoriesPage
 // ─────────────────────────────────────────
 export default function HomePage() {
-    useRenderTimer("HomePage");
+    // useRenderTimer("HomePage");
 
     return (
         <div className="px-2 md:px-6 space-y-2">
@@ -22,7 +22,7 @@ export default function HomePage() {
             <HeroCarousel />
 
             {/* Bottoni azione */}
-            <div className="flex flex-wrap gap-3 justify-center">
+            <div className="flex gap-2 justify-center">
                 <NewTransactionButton />
                 <NewRicorrenzaButton />
                 <NewCategoryButton />

@@ -9,7 +9,7 @@ import { CalendarCheck, ArrowRight } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
-import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
+// import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
 import { formatDataIt } from "@/utils/date";
 import { eur } from "@/utils/formatCurrency";
 
@@ -17,7 +17,7 @@ import { eur } from "@/utils/formatCurrency";
 // Componente principale
 // ===============================
 export default function ProssimoPagamentoCard() {
-    useRenderTimer("ProssimoPagamentoCard");
+    // useRenderTimer("ProssimoPagamentoCard");
     const { ricorrenze, loading } = useRicorrenze();
 
     // ── Loading ────────────────────────────────────────

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, List, CalendarCheck, Folder, Plus } from "lucide-react";
+import { BarChart2, List, CalendarCheck, Folder } from "lucide-react";
 import { useTransactions } from "@/context/TransactionsContext";
 
 const TABS = [
@@ -89,19 +89,46 @@ export default function BottomNavModern() {
                 {/* FAB CENTRALE — z-20 > z-10 dei tab link, altrimenti i tab intercettano i click */}
                 <button
                     onClick={() => openModal()}
+                    aria-label="Aggiungi transazione"
                     className="
-            absolute left-1/2 -translate-x-1/2 -top-5
+            absolute left-1/2 -translate-x-1/2 -top-9
             z-20
             w-14 h-14
-            rounded-full
-            bg-primary
             flex items-center justify-center
-            shadow-[0_10px_25px_hsl(var(--c-primary)/0.5)]
-            transition-all duration-200
+            transition-transform duration-200
             active:scale-95
+            focus-visible:outline-none
+            focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2
+            focus-visible:ring-offset-transparent
+            rounded-lg
           "
                 >
-                    <Plus size={28} strokeWidth={2.5} className="text-white" />
+                    {/* halo radiale */}
+                    <span
+                        aria-hidden
+                        className="absolute inset-[-14px] rounded-full pointer-events-none"
+                        style={{
+                            background: "radial-gradient(circle, hsl(var(--c-primary) / 0.40) 0%, transparent 65%)",
+                        }}
+                    />
+                    {/* braccio orizzontale */}
+                    <span
+                        aria-hidden
+                        className="absolute left-0 right-0 top-1/2 -translate-y-1/2 bg-primary rounded-lg"
+                        style={{
+                            height: "16px",
+                            filter: "drop-shadow(0 0 18px hsl(var(--c-primary) / 0.55))",
+                        }}
+                    />
+                    {/* braccio verticale */}
+                    <span
+                        aria-hidden
+                        className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 bg-primary rounded-lg"
+                        style={{
+                            width: "16px",
+                            filter: "drop-shadow(0 0 18px hsl(var(--c-primary) / 0.55))",
+                        }}
+                    />
                 </button>
             </div>
         </div>

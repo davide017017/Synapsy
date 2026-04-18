@@ -31,7 +31,7 @@ export function useRenderTimer(name: string, options?: Options) {
 
         const duration = performance.now() - startRef.current;
         if (duration >= thresholdRef.current) {
-            console.log(`%c[RenderTimer] ${nameRef.current}: ${duration.toFixed(2)}ms`, "color:orange;");
+            // console.log(`%c[RenderTimer] ${nameRef.current}: ${duration.toFixed(2)}ms`, "color:orange;");
         }
 
         if (mode === "mount") didLogRef.current = true;

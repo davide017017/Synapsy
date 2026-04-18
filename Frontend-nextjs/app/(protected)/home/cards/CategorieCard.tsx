@@ -10,7 +10,7 @@ import { FiTag } from "react-icons/fi";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useCategories } from "@/context/CategoriesContext";
-import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
+// import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
 import { getIconComponent } from "@/utils/categoryOptions";
 import type { Category } from "@/types/models/category";
 import { ReactNode } from "react";
@@ -65,7 +65,7 @@ function CategoryIconGrid({
 // Componente principale
 // ===============================
 export default function CategorieCard() {
-    useRenderTimer("CategorieCard");
+    // useRenderTimer("CategorieCard");
     const { categories, loading, error } = useCategories();
 
     // ── Loading ────────────────────────────────────────

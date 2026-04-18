@@ -9,16 +9,13 @@ import { PlusCircle } from "lucide-react";
 import { useCategories } from "@/context/CategoriesContext";
 import type { NewCategoryButtonProps } from "@/types";
 
-export default function NewCategoryButton({
-    label = "Nuova Categoria",
-    onSuccess,
-}: NewCategoryButtonProps) {
+export default function NewCategoryButton({ label = "Categoria", onSuccess }: NewCategoryButtonProps) {
     const { openModal } = useCategories();
 
     return (
         <button
             type="button"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary-dark text-bg hover:opacity-90 text-sm font-medium transition shadow-lg active:scale-95"
+            className="inline-flex items-center gap-2 px-2 py-1.5 rounded-xl bg-primary-dark text-bg hover:opacity-90 text-sm font-medium transition shadow-lg active:scale-95"
             onClick={() => openModal()}
         >
             <PlusCircle size={16} />
@@ -26,4 +23,3 @@ export default function NewCategoryButton({
         </button>
     );
 }
-
