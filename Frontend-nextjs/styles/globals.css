@@ -20,6 +20,9 @@ Stili base (body, html, transizioni globali)
         transition:
             background-color 0.3s,
             color 0.3s;
+        touch-action: manipulation;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
     }
 
     /* ----- Body base ----- */
@@ -31,6 +34,13 @@ Stili base (body, html, transizioni globali)
         background-color: hsl(var(--c-bg));
         color: hsl(var(--c-text));
         font-family: var(--font-sans);
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ----- App-like touch behavior ----- */
+    * {
+        touch-action: manipulation;
     }
 
     /* ─────────────────────────────────────────
