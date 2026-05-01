@@ -10,6 +10,7 @@ import Sidebar from "./layout-components/Sidebar";
 import Header from "./layout-components/Header";
 import BottomNav from "./layout-components/BottomNav";
 import { useSidebar } from "@/context/SidebarContext";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 
 // ==============================
 // LAYOUT PROTETTO CON SIDEBAR E HEADER
@@ -19,6 +20,8 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
     const { status } = useSession();
     const { isCollapsed } = useSidebar();
     const router = useRouter();
+
+    usePullToRefresh();
 
     // ───── Redirect se non autenticato ─────
     useEffect(() => {
