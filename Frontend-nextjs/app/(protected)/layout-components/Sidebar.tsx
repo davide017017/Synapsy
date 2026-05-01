@@ -123,6 +123,7 @@ export default function Sidebar() {
                 <Link
                     href="/"
                     className="flex items-center justify-center p-4 border-b border-white/10 hover:opacity-90"
+                    style={{ paddingTop: "env(safe-area-inset-top)" }}
                     onClick={() => setIsOpenMobile(false)}
                 >
                     <span className="ml-2 text-xl font-bold text-primary">Synapsi</span>

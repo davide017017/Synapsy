@@ -14,7 +14,7 @@ export function usePullToRefresh() {
         const indicator = document.createElement("div");
         Object.assign(indicator.style, {
             position: "fixed",
-            top: "calc(env(safe-area-inset-top) + 12px)",
+            top: "calc(env(safe-area-inset-top) + 8px)",
             left: "50%",
             height: `${INDICATOR_H}px`,
             transform: `translateX(-50%) translateY(-${INDICATOR_H}px)`,
