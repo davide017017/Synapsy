@@ -43,7 +43,6 @@ class Spesa extends Model
     protected function casts(): array
     {
         return [
-            'amount' => 'float',
             'amount' => 'decimal:2',
             'date' => 'date',
         ];

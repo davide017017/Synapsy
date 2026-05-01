@@ -30,13 +30,13 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
 
     // ───── Layout principale protetto ─────
     return (
-        <div className="flex h-screen">
+        <div className="flex h-screen" style={{ paddingTop: "env(safe-area-inset-top)" }}>
             {/* ===== SIDEBAR ===== */}
             <Sidebar />
             {/* ===== AREA CONTENUTO ===== */}
-            <div className={`flex flex-col flex-1 transition-all duration-300 ${isCollapsed ? "md:pl-0" : "md:pl-56"}`}>
+            <div className={`flex flex-col flex-1 min-w-0 overflow-x-hidden transition-all duration-300 ${isCollapsed ? "md:pl-0" : "md:pl-56"}`}>
                 <Header />
-                <main className="flex-1 p-4 pb-20 md:pb-4">{children}</main>
+                <main className="flex-1 overflow-x-hidden p-4 pb-20 md:pb-4">{children}</main>
             </div>
             {/* ===== BOTTOM NAV (solo mobile) ===== */}
             <BottomNav />

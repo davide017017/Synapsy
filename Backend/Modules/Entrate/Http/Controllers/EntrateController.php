@@ -3,6 +3,7 @@
 namespace Modules\Entrate\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -127,7 +128,14 @@ class EntrateController extends Controller
     // Store (API JSON)
     public function storeApi(StoreEntrataRequest $request): JsonResponse
     {
-        $entrata = $this->service->createForUser($request->validated(), $request->user());
+        try {
+            $entrata = $this->service->createForUser($request->validated(), $request->user());
+        } catch (UniqueConstraintViolationException) {
+            return response()->json([
+                'message' => "Esiste già un'entrata con questa descrizione e data.",
+                'errors'  => ['description' => ['Descrizione già presente per questa data.']],
+            ], 422);
+        }
 
         return response()->json($entrata, 201);
     }
@@ -135,9 +143,16 @@ class EntrateController extends Controller
     // Update (API JSON)
     public function updateApi(UpdateEntrataRequest $request, Entrata $entrata): JsonResponse
     {
-        $this->service->update($entrata, $request->validated());
+        try {
+            $this->service->update($entrata, $request->validated());
+        } catch (UniqueConstraintViolationException) {
+            return response()->json([
+                'message' => "Esiste già un'entrata con questa descrizione e data.",
+                'errors'  => ['description' => ['Descrizione già presente per questa data.']],
+            ], 422);
+        }
 
-        return response()->json($entrata);
+        return response()->json($entrata->fresh());
     }
 
     // Destroy (API JSON)

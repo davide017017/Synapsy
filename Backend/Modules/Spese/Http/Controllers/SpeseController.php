@@ -3,6 +3,7 @@
 namespace Modules\Spese\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -154,7 +155,14 @@ class SpeseController extends Controller
     // Store (API)
     public function storeApi(StoreSpesaRequest $request): JsonResponse
     {
-        $spesa = $this->service->createForUser($request->validated(), $request->user());
+        try {
+            $spesa = $this->service->createForUser($request->validated(), $request->user());
+        } catch (UniqueConstraintViolationException) {
+            return response()->json([
+                'message' => 'Esiste già una spesa con questa descrizione e data.',
+                'errors'  => ['description' => ['Descrizione già presente per questa data.']],
+            ], 422);
+        }
 
         return response()->json($spesa, 201);
     }
@@ -162,9 +170,16 @@ class SpeseController extends Controller
     // Update (API)
     public function updateApi(UpdateSpesaRequest $request, Spesa $spesa): JsonResponse
     {
-        $this->service->update($spesa, $request->validated());
+        try {
+            $this->service->update($spesa, $request->validated());
+        } catch (UniqueConstraintViolationException) {
+            return response()->json([
+                'message' => 'Esiste già una spesa con questa descrizione e data.',
+                'errors'  => ['description' => ['Descrizione già presente per questa data.']],
+            ], 422);
+        }
 
-        return response()->json($spesa);
+        return response()->json($spesa->fresh());
     }
 
     // Destroy (API)

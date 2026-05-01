@@ -418,7 +418,7 @@ export default function TransactionsList({
 
     // ===== Render Responsive =====
     return (
-        <div className="flex flex-col lg:flex-row gap-2 w-full max-w-full">
+        <div className="flex flex-col lg:flex-row gap-2 w-full max-w-full min-w-0 overflow-x-hidden">
             {/* ===================================================
                MOBILE: barra filtri (collapsible)
                =================================================== */}
@@ -472,7 +472,7 @@ export default function TransactionsList({
             {/* ===================================================
                CONTENUTO: mobile dense / desktop table
                =================================================== */}
-            <div className="grid min-w-0 w-full">
+            <div className="grid min-w-0 w-full overflow-x-hidden">
                 {/* ===== Barra ANNI / MESI + Seleziona più ===== */}
                 <div className="flex items-center gap-2 w-full mb-2">
                     {/* SINISTRA — anni + mesi (scrollabili) */}
@@ -568,7 +568,7 @@ export default function TransactionsList({
                             return (
                                 <div
                                     key={b.key}
-                                    className="px-3 py-2 bg-bg-elevate/55 border-b border-bg-elevate flex items-center justify-between gap-3"
+                                    className="px-3 py-2 bg-bg-elevate/55 border-b border-bg-elevate flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
                                 >
                                     <div className="text-xs font-bold tracking-wider uppercase">Anno {b.year}</div>
                                     <TotalsInline
@@ -587,7 +587,7 @@ export default function TransactionsList({
                             return (
                                 <div
                                     key={b.key}
-                                    className="px-3 py-1.5 bg-bg-elevate/35 border-b border-bg-elevate flex items-center justify-between gap-3"
+                                    className="px-3 py-1.5 bg-bg-elevate/35 border-b border-bg-elevate flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
                                 >
                                     <div className="text-[11px] font-semibold capitalize text-muted-foreground">
                                         Totale {monthLabel(b.monthKey)}
