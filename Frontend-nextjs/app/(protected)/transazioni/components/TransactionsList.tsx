@@ -474,7 +474,8 @@ export default function TransactionsList({
                =================================================== */}
             <div className="grid min-w-0 w-full overflow-x-hidden">
                 {/* ===== Barra ANNI / MESI + Seleziona più ===== */}
-                <div className="flex items-center gap-2 w-full mb-2">
+                <div className="flex items-center gap-2 w-full min-w-0 overflow-x-hidden mb-2">
+                    {" "}
                     {/* SINISTRA — anni + mesi (scrollabili) */}
                     <div className="flex-1 min-w-0">
                         {/* ANNI */}
@@ -551,7 +552,6 @@ export default function TransactionsList({
                             ))}
                         </div>
                     </div>
-
                     {/* DESTRA — Seleziona più (solo il suo spazio) */}
                     <div className="shrink-0  flex justify-center items-center">
                         <SelectionToolbar onDeleteSelected={onDeleteSelected} selectedPreview={selectedPreview} />
@@ -685,7 +685,9 @@ export default function TransactionsList({
                                     {/* Centro */}
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 min-w-0">
-                                            <div className="min-w-0 flex-1 font-semibold text-sm truncate">{t.description}</div>
+                                            <div className="min-w-0 flex-1 font-semibold text-sm truncate">
+                                                {t.description}
+                                            </div>
 
                                             {/* Pill categoria mini (colorata) */}
                                             {t.category?.name ? (

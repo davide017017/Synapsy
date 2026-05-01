@@ -86,7 +86,8 @@ export default function Sidebar() {
         <>
             {/* ========== Burger mobile ========== */}
             <button
-                className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-full bg-primary text-white shadow-lg"
+                className="fixed left-4 z-50 md:hidden p-2 rounded-full bg-primary text-white shadow-lg"
+                style={{ top: "calc(env(safe-area-inset-top) + 12px)" }}
                 onClick={toggleMobile}
             >
                 {isOpenMobile ? <X size={20} /> : <Menu size={20} />}
