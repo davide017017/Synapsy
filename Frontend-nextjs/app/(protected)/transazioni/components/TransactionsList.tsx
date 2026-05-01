@@ -559,7 +559,7 @@ export default function TransactionsList({
                 </div>
 
                 {/* ---------- MOBILE: Dense list con divider + totali ---------- */}
-                <div className="rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
+                <div className="w-full overflow-x-hidden rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
                     {mobileModel.blocks.map((b) => {
                         // --------------------------
                         // Divider ANNO
@@ -662,7 +662,7 @@ export default function TransactionsList({
                                     }
                                 }}
                                 className={`
-                                    w-full text-left
+                                    w-full max-w-full overflow-hidden text-left
                                     px-3 py-2
                                     transition-all duration-150
                                     ${isFuture ? "opacity-10 " : ""}
@@ -685,7 +685,7 @@ export default function TransactionsList({
                                     {/* Centro */}
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 min-w-0">
-                                            <div className="font-semibold text-sm truncate">{t.description}</div>
+                                            <div className="min-w-0 flex-1 font-semibold text-sm truncate">{t.description}</div>
 
                                             {/* Pill categoria mini (colorata) */}
                                             {t.category?.name ? (
