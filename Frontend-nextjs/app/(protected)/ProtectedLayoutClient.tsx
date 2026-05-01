@@ -33,7 +33,7 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
 
     // ───── Layout principale protetto ─────
     return (
-        <div className="flex h-screen" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <div className="flex h-screen">
             {/* ===== SIDEBAR ===== */}
             <Sidebar />
             {/* ===== AREA CONTENUTO ===== */}

@@ -145,7 +145,7 @@ function TotalsInline({ entrate, spese, saldo }: Totals) {
     const saldoPositivo = saldo >= 0;
 
     return (
-        <div className="flex items-center gap-3 text-[11px] tabular-nums">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] tabular-nums">
             <span className="flex items-center gap-1">
                 <span className="opacity-80">Entrate:</span>
                 <span className="text-[hsl(var(--c-success))] font-semibold">+{formatAmount(entrate)}</span>
@@ -478,7 +478,7 @@ export default function TransactionsList({
                     {/* SINISTRA — anni + mesi (scrollabili) */}
                     <div className="flex-1 min-w-0">
                         {/* ANNI */}
-                        <div className="flex gap-1 overflow-x-auto py-0.5 px-1 scrollbar-hide">
+                        <div className="w-full max-w-full flex gap-1 overflow-x-auto py-0.5 px-1 scrollbar-hide">
                             <button
                                 onClick={() => {
                                     setSelectedYear("all");
@@ -518,7 +518,7 @@ export default function TransactionsList({
                         </div>
 
                         {/* MESI */}
-                        <div className="flex gap-1 overflow-x-auto py-0.5 px-1 scrollbar-hide">
+                        <div className="w-full max-w-full flex gap-1 overflow-x-auto py-0.5 px-1 scrollbar-hide">
                             <button
                                 onClick={() => setSelectedMonth("all")}
                                 className={`
