@@ -11,6 +11,19 @@ export function usePullToRefresh() {
         let currentDelta = 0;
         let active = false;
 
+        const styleTag = document.createElement("style");
+        styleTag.textContent = "@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }";
+        document.head.appendChild(styleTag);
+
+        const spinner = document.createElement("span");
+        Object.assign(spinner.style, {
+            display: "inline-block",
+            animation: "spin 0.8s linear infinite",
+        });
+        spinner.textContent = "↻";
+
+        const label = document.createTextNode(" Aggiornamento...");
+
         const indicator = document.createElement("div");
         Object.assign(indicator.style, {
             position: "fixed",
@@ -22,7 +35,7 @@ export function usePullToRefresh() {
             background: "#1c1c28",
             color: "#e2e8f0",
             padding: "0 20px",
-            borderRadius: "0 0 16px 16px",
+            borderRadius: "999px",
             fontSize: "13px",
             fontWeight: "600",
             display: "flex",
@@ -31,11 +44,12 @@ export function usePullToRefresh() {
             gap: "8px",
             pointerEvents: "none",
             whiteSpace: "nowrap",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.45)",
+            boxShadow: "0 0 20px rgba(0,255,180,0.3), 0 4px 16px rgba(0,0,0,0.5)",
             willChange: "transform, opacity",
             opacity: "0",
         });
-        indicator.textContent = "↻  Aggiornamento...";
+        indicator.appendChild(spinner);
+        indicator.appendChild(label);
         document.body.appendChild(indicator);
 
         // Returns true if any scrollable ancestor (between target and root) is scrolled down
@@ -115,6 +129,7 @@ export function usePullToRefresh() {
             document.removeEventListener("touchend", onTouchEnd);
             document.removeEventListener("touchcancel", onTouchEnd);
             indicator.remove();
+            styleTag.remove();
         };
     }, []);
 }
