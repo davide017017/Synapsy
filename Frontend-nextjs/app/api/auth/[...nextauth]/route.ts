@@ -10,16 +10,25 @@ import { authOptions } from "@/lib/auth/authOptions";
 export const runtime = "nodejs";
 
 // ─────────────────────────────────────────────────────────
-// Tipi estesi: accessToken in Session/JWT
+// Tipi estesi: Session, User, JWT
 // ─────────────────────────────────────────────────────────
 declare module "next-auth" {
     interface Session {
         accessToken?: string;
+        error?: string;
+    }
+    interface User {
+        is_admin?: boolean;
+        is_demo?: boolean;
     }
 }
 declare module "next-auth/jwt" {
     interface JWT {
         accessToken?: string;
+        tokenExpiresAt?: number;
+        refreshError?: string;
+        isAdmin?: boolean;
+        isDemo?: boolean;
     }
 }
 
@@ -28,9 +37,3 @@ declare module "next-auth/jwt" {
 // ─────────────────────────────────────────────────────────
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-
-// ─────────────────────────────────────────────────────────
-// Descrizione file:
-// Route NextAuth su App Router; forza runtime Node, espone
-// handler GET/POST e aggiunge tipi per accessToken.
-// ─────────────────────────────────────────────────────────

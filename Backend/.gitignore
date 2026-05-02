@@ -6,3 +6,4 @@
 /.idea
 /public/storage
 /storage/*.key
+/storage/app/backups/

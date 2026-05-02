@@ -8,6 +8,8 @@ export type UserType = {
     theme: Theme;
     avatar: string;
     pending_email?: string | null;
+    is_admin?: boolean;
+    is_demo?: boolean;
 };
 
 export const DEFAULT_USER: UserType = {

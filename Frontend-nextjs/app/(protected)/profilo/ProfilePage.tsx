@@ -17,6 +17,7 @@ import PendingEmailNotice from "@/app/components/PendingEmailNotice";
 import { UserRound } from "lucide-react";
 import LegalLinks from "@/app/components/legal/LegalLinks";
 import DeleteAccountSection from "./components/DeleteAccountSection";
+import BackupSection from "./components/BackupSection";
 import getAvatarUrl from "@/utils/avatar";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -223,6 +224,7 @@ export default function ProfilePage() {
                 />
             )}
 
+            <BackupSection />
             <DeleteAccountSection />
             <LegalLinks className="p-4 border-t border-white/10 text-center" />
         </div>

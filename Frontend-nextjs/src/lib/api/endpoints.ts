@@ -13,6 +13,8 @@ export const API = {
     categories: "/api/v1/categories",
     recurring: "/api/v1/recurring-operations",
     refreshToken: "/api/v1/refresh-token",
+    adminBackup: "/api/v1/admin/backup",
+    adminBackups: "/api/v1/admin/backups",
 } as const;
 export type EndpointKey = keyof typeof API;
 export const url = (k: EndpointKey, id?: string | number) =>

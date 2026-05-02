@@ -136,6 +136,8 @@ export const authOptions: NextAuthOptions = {
                     name: user.name ?? undefined,
                     email: user.email ?? undefined,
                     access_token: token,
+                    is_admin: user.is_admin ?? false,
+                    is_demo: user.is_demo ?? false,
                 } as any;
             },
         }),
@@ -157,6 +159,8 @@ export const authOptions: NextAuthOptions = {
                     name: user.name ?? undefined,
                     email: user.email ?? undefined,
                     access_token: credentials.token,
+                    is_admin: user.is_admin ?? false,
+                    is_demo: user.is_demo ?? false,
                 } as any;
             },
         }),
@@ -176,6 +180,8 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.accessToken = (user as any).access_token;
                 token.tokenExpiresAt = Math.floor(Date.now() / 1000) + 15 * 60;
+                token.isAdmin = (user as any).is_admin ?? false;
+                token.isDemo = (user as any).is_demo ?? false;
                 return token;
             }
 
@@ -192,6 +198,8 @@ export const authOptions: NextAuthOptions = {
 
         async session({ session, token }) {
             (session as any).accessToken = token.accessToken;
+            (session.user as any).is_admin = token.isAdmin ?? false;
+            (session.user as any).is_demo = token.isDemo ?? false;
             // Espone l'errore di refresh al client (per mostrare un avviso UX)
             if (token.refreshError) {
                 (session as any).error = token.refreshError;

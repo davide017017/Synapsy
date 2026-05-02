@@ -53,6 +53,8 @@ class ProfileController extends Controller
             'theme' => $user->theme,
             'avatar' => $avatarPath,
             'avatar_url' => $avatarUrl,
+            'is_admin' => (bool) $user->is_admin,
+            'is_demo' => (bool) $user->is_demo,
         ]);
     }
 

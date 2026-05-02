@@ -7,7 +7,17 @@
       "Bash(find 'f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend' -name *vatar* -o -name *Avatar*)",
       "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\" -Recurse -Include \"*.tsx\", \"*.ts\", \"*.css\", \"*.js\" -ErrorAction SilentlyContinue)",
       "Bash(Select-Object -First 30)",
-      "Bash(Format-Table FullName)"
+      "Bash(Format-Table FullName)",
+      "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\" -Depth 1)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "PowerShell(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\Modules\" -Depth 2 | Where-Object { $_.PSIsContainer } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\Modules\" -Directory | % { Get-ChildItem -Path $_.FullName -Directory } | Select-Object BaseName, @{Name=\"Parent\"; Expression={ Split-Path $_.Parent -Leaf }} | Sort-Object Parent)",
+      "PowerShell(ls -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\Modules\" | % { $parent = $_.Name; ls -Path $_.FullName | % { [PSCustomObject]@{Module=$parent; SubFolder=$_.Name; Path=$_.FullName} } })",
+      "PowerShell(Get-ChildItem \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\Modules\" -Recurse -Directory | Where-Object { $_.Parent.Parent.Name -eq 'Modules' } | Select-Object @{Name=\"Module\"; Expression={$_.Parent.Name}}, Name | Sort-Object Module)",
+      "PowerShell($modules = @\\(\\); Get-ChildItem \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\Modules\" -Directory | ForEach-Object { $moduleName = $_.Name; Get-ChildItem $_.FullName -Directory | ForEach-Object { $modules += [PSCustomObject]@{Module=$moduleName; SubFolder=$_.Name}}}; $modules | Sort-Object Module, SubFolder)",
+      "Bash(xargs -I {} basename {})",
+      "PowerShell(ls -d \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" 2>$null)",
+      "Bash(xargs basename *)"
     ]
   }
 }
