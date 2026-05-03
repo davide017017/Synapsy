@@ -11,7 +11,7 @@ export default function Providers({ children }: { children: ReactNode }) {
     return (
         <>
             <Toaster
-                position="top-center"
+                position="bottom-center"
                 theme="light"
                 richColors
                 closeButton

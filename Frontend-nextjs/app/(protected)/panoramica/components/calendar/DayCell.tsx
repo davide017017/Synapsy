@@ -42,10 +42,15 @@ export default function DayCell({
     const isSunday = date.getDay() === 0;
 
     const opacity = monthDelta === 0 ? "" : "opacity-40";
-    const border = isSunday ? "border-2 border-warning rounded-xl" : "border border-primary/40 rounded-xl";
+    const border =
+        isToday && monthDelta === 0
+            ? "border-2 border-primary rounded-xl"
+            : isSunday
+              ? "border-2 border-warning rounded-xl"
+              : "border border-primary/40 rounded-xl";
     const todayClass =
         isToday && monthDelta === 0
-            ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-bg animate-[pulse_2.5s_ease-in-out_infinite]"
+            ? "ring-2 ring-primary/40 ring-offset-2 ring-offset-bg animate-[pulse_2.5s_ease-in-out_infinite]"
             : "";
 
     // ---------------------------
@@ -97,7 +102,7 @@ export default function DayCell({
     return (
         <div
             className={`
-                bg-bg-elevate w-full
+                ${isToday && monthDelta === 0 ? "bg-primary/15" : "bg-bg-elevate"} w-full
                 ${opacity} ${border} ${todayClass}
                 transition-all duration-150
                 ${onClickDay ? "cursor-pointer" : "cursor-default"}
@@ -171,7 +176,7 @@ export default function DayCell({
                         <span className="text-3xl font-black leading-none">{day}</span>
 
                         {isToday && monthDelta === 0 && (
-                            <span className="ml-1 px-1 rounded bg-primary text-bg text-[9px] font-bold tracking-wider animate-pulse">
+                            <span className="ml-1.5 px-2 py-0.5 rounded-md bg-primary text-bg text-[11px] font-extrabold tracking-widest animate-pulse shadow-lg shadow-primary/50">
                                 OGGI
                             </span>
                         )}

@@ -21,6 +21,7 @@ class DBCoreServiceProvider extends ServiceProvider
         \Modules\DBCore\Console\Commands\DropDatabaseCommand::class,
         \Modules\DBCore\Console\Commands\ResetDatabaseCommand::class,
         \Modules\DBCore\Console\Commands\BackupDatabaseCommand::class,
+        \Modules\DBCore\Console\Commands\DemoReseedCommand::class,
     ];
 
     /**

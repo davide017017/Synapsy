@@ -36,7 +36,8 @@ export default function BackupSection() {
         typeof window !== "undefined" &&
         (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 
-    // ─── mostra solo agli admin ────────────────────────────────────────────
+    // ─── mostra solo in development e solo agli admin ─────────────────────
+    if (process.env.NODE_ENV !== "development") return null;
     if (!user?.is_admin) return null;
 
     // ─── carica lista backup ───────────────────────────────────────────────

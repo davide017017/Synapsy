@@ -17,7 +17,9 @@
       "PowerShell($modules = @\\(\\); Get-ChildItem \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\Modules\" -Directory | ForEach-Object { $moduleName = $_.Name; Get-ChildItem $_.FullName -Directory | ForEach-Object { $modules += [PSCustomObject]@{Module=$moduleName; SubFolder=$_.Name}}}; $modules | Sort-Object Module, SubFolder)",
       "Bash(xargs -I {} basename {})",
       "PowerShell(ls -d \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" 2>$null)",
-      "Bash(xargs basename *)"
+      "Bash(xargs basename *)",
+      "Bash(dir \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\" -Recurse -Directory)",
+      "Read(//f/MIEI LAVORI/SYNAPSY/Synapsy/Backend/**)"
     ]
   }
 }

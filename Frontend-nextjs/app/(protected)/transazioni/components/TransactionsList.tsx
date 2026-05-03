@@ -235,6 +235,14 @@ export default function TransactionsList({
     const [selectedYear, setSelectedYear] = useState<"all" | string>("all");
     const [selectedMonth, setSelectedMonth] = useState<"all" | string>("all");
 
+    const todayKey = useMemo(() => {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, "0");
+        const d = String(now.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    }, []);
+
     // --------------------------------------------------
     // UI: toggle filtri su mobile
     // --------------------------------------------------
@@ -604,22 +612,38 @@ export default function TransactionsList({
                         // Divider GIORNO (one-line) + SALDO (con gradient leggero)
                         // --------------------------
                         if (b.kind === "day") {
+                            const isToday = b.dayKey === todayKey;
                             return (
                                 <div
                                     key={b.key}
-                                    className="px-3 py-0.5 border-b border-bg-elevate flex items-center justify-between gap-3"
-                                    style={{
-                                        background: `
-                    linear-gradient(
-                        to bottom,
-                        hsl(var(--c-bg-elevate) / 0.55),
-                        hsl(var(--c-bg-elevate) / 0.15)
-                    )
-                `,
-                                    }}
+                                    className={`px-3 border-b flex items-center justify-between gap-3 ${
+                                        isToday
+                                            ? "py-1.5 border-primary/30"
+                                            : "py-0.5 border-bg-elevate"
+                                    }`}
+                                    style={
+                                        isToday
+                                            ? { background: "hsl(var(--c-primary) / 0.10)" }
+                                            : {
+                                                  background: `linear-gradient(to bottom, hsl(var(--c-bg-elevate) / 0.55), hsl(var(--c-bg-elevate) / 0.15))`,
+                                              }
+                                    }
                                 >
-                                    <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground leading-none">
-                                        {dayLabel(b.dayKey)}
+                                    <div className={`leading-none flex items-center gap-2 ${isToday ? "" : ""}`}>
+                                        {isToday ? (
+                                            <>
+                                                <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary leading-none">
+                                                    Oggi
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground">
+                                                    {dayLabel(b.dayKey)}
+                                                </span>
+                                            </>
+                                        ) : (
+                                            <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground leading-none">
+                                                {dayLabel(b.dayKey)}
+                                            </span>
+                                        )}
                                     </div>
 
                                     <div className="leading-none">
