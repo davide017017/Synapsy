@@ -142,12 +142,7 @@ export default function NewTransactionModal({
               "
             >
                 {/* ───────── Overlay loading ───────── */}
-                <LoadingOverlay
-                    show={isLoading}
-                    icon="💸"
-                    message={overlayMessage}
-                    subMessage={overlaySubMessage}
-                />
+                <LoadingOverlay show={isLoading} icon="💸" message={overlayMessage} subMessage={overlaySubMessage} />
 
                 {/* ───────── Form ───────── */}
                 <div className={isLoading ? "pointer-events-none opacity-50" : ""}>

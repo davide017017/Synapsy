@@ -71,7 +71,7 @@ export default function Header() {
 
             <header
                 className="relative z-30 flex items-center px-4 py-2 border-b border-white/10 bg-black/50 backdrop-blur-sm"
-                style={{ paddingTop: "env(safe-area-inset-top)" }}
+                style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
             >
                 {/* LOGO CENTRALE */}
                 <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex items-center" aria-label="Homepage">

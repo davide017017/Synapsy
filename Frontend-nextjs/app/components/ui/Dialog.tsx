@@ -46,9 +46,8 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                 {/* ===== Box modale centrato ===== */}
                 <div
                     className="fixed inset-0 overflow-y-auto
-                                flex items-center justify-center p-4
-                                
-                                "
+                flex items-center justify-center 
+                p-4 pt-12 sm:pt-4"
                 >
                     <Transition.Child
                         as={Fragment}
