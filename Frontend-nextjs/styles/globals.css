@@ -82,5 +82,46 @@ Stili base (body, html, transizioni globali)
 }
 
 /* ===================================================
+Splash screen — cervello pixel-grid
+=================================================== */
+@keyframes pop {
+    0%,
+    100% {
+        transform: scale(0.4);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.node {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: pop 1.6s ease-in-out infinite;
+}
+@keyframes splash-progress {
+    0%   { transform: translateX(-200%); }
+    100% { transform: translateX(300%); }
+}
+
+.animate-splash-progress {
+    animation: splash-progress 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .node {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+    .animate-splash-progress {
+        animation: none;
+        width: 100%;
+    }
+}
+
+/* ===================================================
 Fine personalizzazioni globali
 =================================================== */

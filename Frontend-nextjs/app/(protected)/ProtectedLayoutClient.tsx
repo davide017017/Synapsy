@@ -11,6 +11,8 @@ import Header from "./layout-components/Header";
 import BottomNav from "./layout-components/BottomNav";
 import { useSidebar } from "@/context/SidebarContext";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
+import { useUser } from "@/context/UserContext";
+import SplashScreen from "@/app/components/SplashScreen";
 
 // ==============================
 // LAYOUT PROTETTO CON SIDEBAR E HEADER
@@ -18,6 +20,7 @@ import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 export default function ProtectedLayoutClient({ children }: { children: React.ReactNode }) {
     // ───── Gestione sessione auth ─────
     const { status } = useSession();
+    const { loading: userLoading } = useUser();
     const { isCollapsed } = useSidebar();
     const router = useRouter();
 
@@ -28,8 +31,12 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
         if (status === "unauthenticated") router.replace("/login");
     }, [status, router]);
 
-    // ───── Mostra nulla durante il loading (skeleton gestito altrove) ─────
-    if (status === "loading" || status === "unauthenticated") return null;
+    if (status === "unauthenticated") return null;
+
+    // ───── Splash durante check sessione o wake-up del DB ─────
+    if (status === "loading" || (status === "authenticated" && userLoading)) {
+        return <SplashScreen />;
+    }
 
     // ───── Layout principale protetto ─────
     return (
