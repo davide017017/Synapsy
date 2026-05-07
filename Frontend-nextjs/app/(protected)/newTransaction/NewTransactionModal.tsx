@@ -139,6 +139,7 @@ export default function NewTransactionModal({
                 shadow-2xl shadow-black/30
                 bg-bg
                 p-4 sm:p-5
+                mt-2
               "
             >
                 {/* ───────── Overlay loading ───────── */}

@@ -47,7 +47,8 @@ export default function Dialog({ open, onClose, title, children }: Props) {
                 <div
                     className="fixed inset-0 overflow-y-auto
                 flex items-center justify-center 
-                p-4 pt-12 sm:pt-4"
+                p-4 pt-12 sm:pt-4
+                mt-8"
                 >
                     <Transition.Child
                         as={Fragment}
