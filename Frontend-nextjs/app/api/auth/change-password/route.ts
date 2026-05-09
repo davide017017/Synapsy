@@ -35,7 +35,7 @@ export async function PUT(req: Request) {
 
     // ── Proxy to backend API ──
     const res = await fetch(url("changePassword"), {
-        method: "POST",
+        method: "PUT",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
