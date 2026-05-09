@@ -105,7 +105,7 @@ const nextConfig = {
     // Router micro-ottimizzazioni
     // ──────────────────────
     skipTrailingSlashRedirect: true,
-    skipMiddlewareUrlNormalize: true,
+    skipProxyUrlNormalize: true,
 
     // ──────────────────────
     // Turbopack (dichiara qui alias/rules se servono)
