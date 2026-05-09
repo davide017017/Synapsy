@@ -19,6 +19,7 @@ import LegalLinks from "@/app/components/legal/LegalLinks";
 import DeleteAccountSection from "./components/DeleteAccountSection";
 import BackupSection from "./components/BackupSection";
 import getAvatarUrl from "@/utils/avatar";
+import ChangePasswordModal from "./security/ChangePasswordModal";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sezione: Componente principale
@@ -31,6 +32,7 @@ export default function ProfilePage() {
     const [editing, setEditing] = useState<{ [K in keyof UserType]?: boolean }>({});
     const [backup, setBackup] = useState<Partial<UserType>>({});
     const [showPicker, setShowPicker] = useState(false);
+    const [showChangePwd, setShowChangePwd] = useState(false);
 
     const isDemo = user?.email === "demo@synapsy.app";
 
@@ -209,6 +211,48 @@ export default function ProfilePage() {
                             onCancel={() => setEditing((e) => ({ ...e, theme: false }))}
                             disabled={isDemo}
                         />
+
+                        {/* ── Password row ── */}
+                        <div
+                            className="flex items-center px-3 py-3 gap-4 group transition-all"
+                            style={{
+                                background: "transparent",
+                                borderBottom: "1px solid hsl(var(--c-primary-border, 205 66% 49% / 0.08))",
+                            }}
+                        >
+                            <div
+                                className="w-28 font-medium text-sm"
+                                style={{ color: "hsl(var(--c-text-secondary, 197 13% 45%))" }}
+                            >
+                                Password
+                            </div>
+                            <div className="flex-1">
+                                <span
+                                    style={{
+                                        fontFamily: "var(--font-jetbrains-mono, 'JetBrains Mono', monospace)",
+                                        color: "hsl(var(--c-text-secondary, 197 13% 45%) / 0.5)",
+                                        letterSpacing: "0.1em",
+                                    }}
+                                >
+                                    ••••••••
+                                </span>
+                            </div>
+                            <div className="flex gap-1">
+                                <button
+                                    className="opacity-70 group-hover:opacity-100 px-2 py-1 rounded-xl font-semibold text-xs transition"
+                                    style={{
+                                        background: "hsl(var(--c-secondary, 220 15% 48%))",
+                                        color: "hsl(var(--c-bg, 44 81% 94%))",
+                                        opacity: isDemo ? 0.4 : undefined,
+                                        pointerEvents: isDemo ? "none" : undefined,
+                                    }}
+                                    onClick={() => setShowChangePwd(true)}
+                                    disabled={isDemo}
+                                >
+                                    Cambia password
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -223,6 +267,11 @@ export default function ProfilePage() {
                     onClose={() => setShowPicker(false)}
                 />
             )}
+
+            <ChangePasswordModal
+                isOpen={showChangePwd}
+                onClose={() => setShowChangePwd(false)}
+            />
 
             <BackupSection />
             <DeleteAccountSection />

@@ -141,7 +141,7 @@ export default function SynapsiNetwork() {
     const runProj = cur3 ? project(rot(cur3)) : { x: 0, y: 0, s: 1 };
 
     return (
-        <div className="mx-auto mb-8" style={{ width: WRAP_W, height: WRAP_H }}>
+        <div className="mx-auto" style={{ width: WRAP_W, height: WRAP_H }}>
             <MotionConfig reducedMotion="never">
                 <svg
                     viewBox={`-${VIEWBOX / 2} -${VIEWBOX / 2} ${VIEWBOX} ${VIEWBOX}`}

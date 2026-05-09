@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { handleResetPassword } from "@/lib/auth/handleResetPassword";
-import { isPasswordValid } from "@/lib/auth/passwordRules";
+import { validatePassword, passwordStrength } from "@/lib/auth/passwordRules";
 import s from "@/app/(auth)/login/login.module.css";
 
 export default function ResetPasswordPage() {
@@ -27,14 +27,9 @@ export default function ResetPasswordPage() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    // Password rule checks
-    const has8 = password.length >= 8;
-    const hasUpper = /[A-Z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecial = /[^A-Za-z0-9]/.test(password);
-    const strength = [has8, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
-
-    const valid = isPasswordValid(password);
+    const { ok: valid, rules } = validatePassword(password);
+    const { len: has8, upper: hasUpper, num: hasNumber, special: hasSpecial } = rules;
+    const strength = passwordStrength(password);
     const matchOk = confirm.length > 0 && password === confirm;
     const matchErr = confirm.length > 0 && password !== confirm;
     const canSubmit = valid && matchOk && !loading;

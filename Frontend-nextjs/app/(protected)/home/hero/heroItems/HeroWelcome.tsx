@@ -13,9 +13,6 @@ export default function HeroWelcome() {
                     text-center
                 "
             >
-                {/* Animazione sinaptica */}
-                <SynapsiNetwork />
-
                 {/* Titolo */}
                 <motion.h1
                     initial={{ y: 18 }}
@@ -43,6 +40,8 @@ export default function HeroWelcome() {
                 >
                     Sapere - Controllo - Potere
                 </motion.p>
+                {/* Animazione sinaptica */}
+                <SynapsiNetwork />
             </section>
         </div>
     );

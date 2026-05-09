@@ -72,7 +72,7 @@ export default function HeroCarousel() {
                 aria-label="Precedente"
                 className="
                   absolute
-                  left-4 top-[25%] -translate-y-1/2
+                  left-4 top-[36%] -translate-y-1/2
                   p-2 rounded-full
                   bg-white/20 hover:bg-white/30
                   transition-colors
@@ -86,7 +86,7 @@ export default function HeroCarousel() {
                 aria-label="Successivo"
                 className="
                 absolute
-                right-4 top-[25%] -translate-y-1/2
+                right-4 top-[36%] -translate-y-1/2
                 p-2 rounded-full
                 bg-white/20 hover:bg-white/30
                 transition-colors

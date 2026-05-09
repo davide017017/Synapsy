@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\User\Http\Controllers\ApiChangePasswordController;
 use Modules\User\Http\Controllers\ApiForgotPasswordController;
 use Modules\User\Http\Controllers\ApiLoginController;
 use Modules\User\Http\Controllers\ApiRegisterController;
@@ -71,6 +72,8 @@ Route::prefix('v1')->group(function () {
                 ->names('users');
             Route::put('profile', [ProfileController::class, 'update'])
                 ->name('profile.update');
+            Route::put('profile/change-password', [ApiChangePasswordController::class, 'update'])
+                ->name('profile.change-password');
             Route::delete('profile/pending-email', [ProfileController::class, 'cancelPendingEmail'])
                 ->name('profile.pending-email.cancel');
             Route::post('profile/pending-email/resend', [ProfileController::class, 'resendPendingEmail'])
