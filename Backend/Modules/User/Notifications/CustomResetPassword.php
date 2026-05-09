@@ -3,14 +3,10 @@
 namespace Modules\User\Notifications;
 
 use Illuminate\Auth\Notifications\ResetPassword as BaseResetPassword;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class CustomResetPassword extends BaseResetPassword implements ShouldQueue
+class CustomResetPassword extends BaseResetPassword
 {
-    use Queueable;
-
     protected function resetUrl($notifiable)
     {
         $frontend = config('app.frontend_url', 'http://localhost:3000');

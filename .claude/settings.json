@@ -29,7 +29,9 @@
       "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse -Filter \"*.ts\" -o \"*.tsx\")",
       "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend-laravel\" -Force)",
       "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\app\" -Recurse -Filter \"*password*\" -ErrorAction SilentlyContinue)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\app\" -Directory)",
+      "Bash(Select-String -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\.env\" -Pattern \"MAIL_|QUEUE_\")"
     ]
   }
 }

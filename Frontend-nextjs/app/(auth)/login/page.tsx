@@ -50,7 +50,10 @@ export default function LoginPage() {
     // ── Restore remembered email ──
     useEffect(() => {
         const saved = localStorage.getItem("rememberedEmail");
-        if (saved) { setEmail(saved); setRemember(true); }
+        if (saved) {
+            setEmail(saved);
+            setRemember(true);
+        }
     }, []);
 
     // ── Core login handler ──
@@ -64,9 +67,7 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         setError("");
-        remember
-            ? localStorage.setItem("rememberedEmail", email)
-            : localStorage.removeItem("rememberedEmail");
+        remember ? localStorage.setItem("rememberedEmail", email) : localStorage.removeItem("rememberedEmail");
         try {
             await onLogin(email, password);
         } catch {
@@ -91,7 +92,15 @@ export default function LoginPage() {
     // ── Loading guard (avoid flicker) ──
     if (status === "loading") {
         return (
-            <div style={{ minHeight: "100svh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0a0c0f" }}>
+            <div
+                style={{
+                    minHeight: "100svh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "#0a0c0f",
+                }}
+            >
                 <span className="sr-only">Caricamento…</span>
             </div>
         );
@@ -101,25 +110,27 @@ export default function LoginPage() {
         <div className={s.terminal}>
             {/* ── Background grid + scan line ── */}
             <div className={s.gridBg} aria-hidden="true" />
-            <div className={s.scan}   aria-hidden="true" />
+            <div className={s.scan} aria-hidden="true" />
 
             {/* ── Top bar ── */}
             <div className={s.topBar}>
                 <div className={s.barLeft}>
                     <span className={s.statusDot} />
-                    SYNAPSY · NEURAL CORE v0.9.4-beta
+                    SYNAPSY · NEURAL CORE v1.1.17
                 </div>
-                <span>SESSION · NULL · 256-BIT TLS</span>
+                <span>SESSION · NULL · TRUST ME BRO</span>
             </div>
 
             {/* ── Bottom bar ── */}
             <div className={s.bottomBar}>
-                <span>VIA·MAGIC-LINK · TOKEN · OAUTH</span>
-                <span>© 2026 SYNAPSY S.R.L.</span>
+                <span>LOGIN.EXE · TOKEN · OAUTH · NO PANIC</span>
+                <span>© 2026 SYNAPSY · COMPILED WITH CAFFEINE</span>
             </div>
 
             {/* ── Beta badge ── */}
-            <div className={s.betaBadge} aria-label="Versione beta">BETA</div>
+            <div className={s.betaBadge} aria-label="Versione beta">
+                BETA
+            </div>
 
             {/* ── Corner registration marks ── */}
             <div className={`${s.corner} ${s.cornerTL}`} aria-hidden="true" />
@@ -148,9 +159,14 @@ export default function LoginPage() {
                     <h1 className={s.title}>
                         Accedi <span className={s.titleCursor}>_</span>
                     </h1>
-                    <p className={s.subtitle}>// authenticate to continue</p>
 
-                    {error && <p className={s.errorMsg} role="alert">{error}</p>}
+                    <p className={s.subtitle}>{"// authenticate to continue"}</p>
+
+                    {error && (
+                        <p className={s.errorMsg} role="alert">
+                            {error}
+                        </p>
+                    )}
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} noValidate>
@@ -161,7 +177,9 @@ export default function LoginPage() {
                                 <span className={s.fieldBadge}>required</span>
                             </div>
                             <div className={s.fieldRow}>
-                                <span className={s.fieldPrompt} aria-hidden="true">$</span>
+                                <span className={s.fieldPrompt} aria-hidden="true">
+                                    $
+                                </span>
                                 <input
                                     className={s.fieldInput}
                                     type="email"
@@ -182,7 +200,9 @@ export default function LoginPage() {
                                 <span className={s.fieldBadge}>min 8</span>
                             </div>
                             <div className={s.fieldRow}>
-                                <span className={s.fieldPrompt} aria-hidden="true">$</span>
+                                <span className={s.fieldPrompt} aria-hidden="true">
+                                    $
+                                </span>
                                 <input
                                     className={s.fieldInput}
                                     type={showPassword ? "text" : "password"}
@@ -202,14 +222,34 @@ export default function LoginPage() {
                                 >
                                     {showPassword ? (
                                         /* Occhio barrato */
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <svg
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="1.5"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            aria-hidden="true"
+                                        >
                                             <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
                                             <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
                                             <line x1="1" y1="1" x2="23" y2="23" />
                                         </svg>
                                     ) : (
                                         /* Occhio aperto */
-                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                        <svg
+                                            width="15"
+                                            height="15"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="1.5"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            aria-hidden="true"
+                                        >
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                             <circle cx="12" cy="12" r="3" />
                                         </svg>
@@ -233,22 +273,13 @@ export default function LoginPage() {
                                 </div>
                                 Remember
                             </label>
-                            <button
-                                type="button"
-                                className={s.forgotBtn}
-                                onClick={() => setShowForgot(true)}
-                            >
+                            <button type="button" className={s.forgotBtn} onClick={() => setShowForgot(true)}>
                                 Recupera →
                             </button>
                         </div>
 
                         {/* Submit */}
-                        <button
-                            type="submit"
-                            className={s.btnLogin}
-                            disabled={loading}
-                            aria-busy={loading}
-                        >
+                        <button type="submit" className={s.btnLogin} disabled={loading} aria-busy={loading}>
                             <div className={s.sweep} aria-hidden="true" />
                             {loading && <span className={s.spinner} aria-hidden="true" />}
                             {loading ? "Autenticazione…" : "ESEGUI · LOGIN"}
@@ -256,14 +287,19 @@ export default function LoginPage() {
                     </form>
 
                     {/* Demo login */}
-                    <button
-                        type="button"
-                        className={s.btnDemo}
-                        onClick={handleDemoLogin}
-                        disabled={loading}
-                    >
+                    <button type="button" className={s.btnDemo} onClick={handleDemoLogin} disabled={loading}>
                         {/* Flask icon */}
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                        >
                             <path d="M9 3h6" />
                             <path d="M9 3v6L4.5 17.5A2 2 0 0 0 6.32 21h11.36a2 2 0 0 0 1.82-3.5L15 9V3" />
                         </svg>
@@ -272,9 +308,13 @@ export default function LoginPage() {
 
                     {/* Footer links */}
                     <div className={s.cardFooter}>
-                        <button type="button" className={s.footerBtn}>Privacy</button>
+                        <button type="button" className={s.footerBtn}>
+                            Privacy
+                        </button>
                         <span className={s.footerSep}>·</span>
-                        <button type="button" className={s.footerBtn}>Termini</button>
+                        <button type="button" className={s.footerBtn}>
+                            Termini
+                        </button>
                         <span className={s.footerSep}>·</span>
                         <button type="button" className={s.footerBtn} onClick={() => setShowReg(true)}>
                             Registrati
