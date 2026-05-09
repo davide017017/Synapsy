@@ -48,10 +48,26 @@ const NODES = [
 
 export default function SplashScreen() {
     return (
+        <>
+        <style>{`
+            html, body { background: #020f0a !important; }
+            body { background-color: #020f0a !important; }
+            @keyframes splash-progress {
+                0%   { transform: translateX(-2rem); opacity: 0; }
+                20%  { opacity: 1; }
+                80%  { opacity: 1; }
+                100% { transform: translateX(5rem); opacity: 0; }
+            }
+            @keyframes node-pulse {
+                0%, 100% { opacity: 0.3; transform: scale(0.85); }
+                50%       { opacity: 1;   transform: scale(1.1); }
+            }
+        `}</style>
         <div
             role="status"
             aria-label="Caricamento Synapsy"
             className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#020f0a]"
+            style={{ backgroundColor: '#020f0a' }}
         >
             {/* ── Glow radiale centrale ── */}
             <div
@@ -91,6 +107,10 @@ export default function SplashScreen() {
                         rx="1"
                         className={node.accent ? "fill-primary node" : "fill-current node"}
                         style={{
+                            animationName: 'node-pulse',
+                            animationDuration: `${0.8 + (i % 4) * 0.2}s`,
+                            animationTimingFunction: 'ease-in-out',
+                            animationIterationCount: 'infinite',
                             animationDelay: `${i * 0.05}s`,
                             ...(node.accent ? { filter: "url(#node-glow)" } : {}),
                         }}
@@ -114,5 +134,6 @@ export default function SplashScreen() {
                 />
             </div>
         </div>
+        </>
     );
 }
