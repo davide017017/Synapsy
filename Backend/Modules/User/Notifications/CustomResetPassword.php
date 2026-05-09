@@ -19,12 +19,12 @@ class CustomResetPassword extends BaseResetPassword
         $url = $this->resetUrl($notifiable);
 
         return (new MailMessage)
-            ->subject(__('Reimposta la tua password'))
+            ->subject(__('Reset password Synapsy'))
             ->view('user::emails.verify', [
-                'url' => $url,
-                'title' => __('Reimposta la tua password'),
-                'buttonText' => __('Imposta Nuova Password'),
-                'intro' => __('Clicca sul pulsante per scegliere una nuova password.'),
+                'url'        => $url,
+                'title'      => __('Reset credenziali richiesto'),
+                'buttonText' => __('Reimposta password'),
+                'intro'      => __('Abbiamo ricevuto una richiesta per reimpostare la password. Se sei stato tu, procedi da qui.'),
             ]);
     }
 }

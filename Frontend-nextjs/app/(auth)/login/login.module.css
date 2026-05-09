@@ -544,3 +544,161 @@
 
     transition: background-color 9999s ease-in-out 0s;
 }
+
+/* ─────────────────────────────────────────
+   Shared — ForgotPasswordModal + ResetPassword
+   ───────────────────────────────────────── */
+
+/* ── Field hint (below input) ── */
+.fieldHint {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    color: rgba(232, 236, 239, 0.4);
+    margin-top: 6px;
+}
+
+/* ── Modal scrim ── */
+.modalScrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+/* ── Modal panel ── */
+.modalPanel {
+    position: relative;
+    background: rgba(14, 17, 20, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 2px;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    padding: 26px;
+}
+
+/* ── Modal header (brand + close) ── */
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+/* ── Close button ✕ ── */
+.modalCloseBtn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(232, 236, 239, 0.18);
+    border-radius: 0;
+    background: transparent;
+    color: rgba(232, 236, 239, 0.4);
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+    transition:
+        color 0.15s,
+        border-color 0.15s;
+}
+.modalCloseBtn:hover {
+    color: #14b88a;
+    border-color: #14b88a;
+}
+
+/* ── Success block ── */
+.successBlock {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    color: rgba(232, 236, 239, 0.4);
+    line-height: 1.7;
+    padding: 20px 0 8px;
+}
+
+/* ─────────────────────────────────────────
+   ResetPassword — strength meter + rules
+   ───────────────────────────────────────── */
+
+/* ── Strength meter (4 segments) ── */
+.pwMeter {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+}
+
+.pwMeterSeg {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    transition: background 0.2s;
+}
+
+.pwMeterSegActive {
+    background: #14b88a;
+}
+
+/* ── Rules list ── */
+.rulesList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rulesItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    color: rgba(232, 236, 239, 0.4);
+    transition: color 0.15s;
+}
+
+.rulesItemActive {
+    color: #14b88a;
+}
+
+.rulesDot {
+    width: 8px;
+    height: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    flex-shrink: 0;
+    transition:
+        background 0.15s,
+        border-color 0.15s;
+}
+
+.rulesDotActive {
+    background: #14b88a;
+    border-color: #14b88a;
+}
+
+/* ── Match hint ── */
+.matchHint {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    margin-top: 6px;
+}
+
+.matchOk {
+    color: #14b88a;
+}
+
+.matchErr {
+    color: #ff5d6c;
+}

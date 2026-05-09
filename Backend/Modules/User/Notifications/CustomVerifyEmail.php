@@ -25,20 +25,18 @@ class CustomVerifyEmail extends BaseVerifyEmail implements ShouldQueue
         );
     }
 
-    /**
-     * Personalizza il contenuto dell'email di verifica.
-     */
+    // Email di verifica account
     public function toMail($notifiable): MailMessage
     {
         $verificationUrl = $this->verificationUrl($notifiable);
 
         return (new MailMessage)
-            ->subject(__('Attiva Subito il Tuo Account Synapsi!'))
+            ->subject(__('Verifica il tuo account Synapsy'))
             ->view('user::emails.verify', [
-                'url' => $verificationUrl,
-                'title' => __('Attiva Subito il Tuo Account Synapsi!'),
-                'buttonText' => __('Verifica il Mio Indirizzo Email'),
-                'intro' => __('Gentile :name, per completare la registrazione clicca sul pulsante seguente.', ['name' => $notifiable->name]),
+                'url'        => $verificationUrl,
+                'title'      => __('Conferma accesso al Neural Core'),
+                'buttonText' => __('Verifica email'),
+                'intro'      => __('Ciao :name, manca solo un piccolo commit: verifica la tua email per attivare l\'account.', ['name' => $notifiable->name]),
             ]);
     }
 }
