@@ -19,7 +19,14 @@
       "PowerShell(ls -d \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" 2>$null)",
       "Bash(xargs basename *)",
       "Bash(dir \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\" -Recurse -Directory)",
-      "Read(//f/MIEI LAVORI/SYNAPSY/Synapsy/Backend/**)"
+      "Read(//f/MIEI LAVORI/SYNAPSY/Synapsy/Backend/**)",
+      "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\database\\\\migrations\" -Filter \"*spese*\" -Recurse)",
+      "PowerShell(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\database\\\\migrations\" | Where-Object { $_.Name -match \"\\(spese|entrate|create\\)\" })",
+      "PowerShell(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse -Name | Where-Object { $_ -match \"api\\\\.\\(ts|tsx\\)$|apiClient\\\\.\\(ts|tsx\\)$\" })",
+      "PowerShell(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse | Where-Object { $_.Name -match \"api\" } | Select-Object FullName)",
+      "PowerShell(Find-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse -Type File | Where-Object { $_.FullName -match \"api\" } | Select-Object FullName)",
+      "PowerShell(ls -Recurse \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" | Where-Object { $_.Name -match \"api\" } | Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse -Filter \"*.ts\" -o \"*.tsx\")"
     ]
   }
 }

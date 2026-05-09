@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\RecurringOperations\Http\Controllers\RecurringCatchUpController;
 use Modules\RecurringOperations\Http\Controllers\RecurringOperationController as C;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -13,6 +14,11 @@ Route::middleware(['auth:sanctum'])
     ->prefix('v1/recurring-operations')
     ->name('recurring-operations.')
     ->group(function () {
+
+        // ============================
+        // Catch-up (trigger da frontend al login)
+        // ============================
+        Route::post('/catch-up', [RecurringCatchUpController::class, 'catchUp'])->name('catch-up');
 
         // ============================
         // Listing & create

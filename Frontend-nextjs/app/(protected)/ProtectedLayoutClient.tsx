@@ -13,13 +13,14 @@ import { useSidebar } from "@/context/SidebarContext";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useUser } from "@/context/UserContext";
 import SplashScreen from "@/app/components/SplashScreen";
+import { API } from "@/lib/api/endpoints";
 
 // ==============================
 // LAYOUT PROTETTO CON SIDEBAR E HEADER
 // ==============================
 export default function ProtectedLayoutClient({ children }: { children: React.ReactNode }) {
     // ───── Gestione sessione auth ─────
-    const { status } = useSession();
+    const { data: session, status } = useSession();
     const { loading: userLoading } = useUser();
     const { isCollapsed } = useSidebar();
     const router = useRouter();
@@ -30,6 +31,27 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
     useEffect(() => {
         if (status === "unauthenticated") router.replace("/login");
     }, [status, router]);
+
+    // ───── Catch-up ricorrenti (silenzioso, una volta per sessione) ─────
+    useEffect(() => {
+        if (status !== "authenticated" || userLoading) return;
+        if (sessionStorage.getItem("synapsy_catchup_done")) return;
+
+        const token = session?.accessToken as string | undefined;
+        if (!token) return;
+
+        fetch(`${API.base}${API.recurringCatchUp}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((res) => {
+                if (res.ok) sessionStorage.setItem("synapsy_catchup_done", "1");
+            })
+            .catch((err) => console.warn("Catch-up ricorrenti fallito:", err));
+    }, [status, userLoading, session]);
 
     if (status === "unauthenticated") return null;
 

@@ -12,6 +12,7 @@ export const API = {
     spese: "/api/v1/spese",
     categories: "/api/v1/categories",
     recurring: "/api/v1/recurring-operations",
+    recurringCatchUp: "/api/v1/recurring-operations/catch-up",
     refreshToken: "/api/v1/refresh-token",
     adminBackup: "/api/v1/admin/backup",
     adminBackups: "/api/v1/admin/backups",
