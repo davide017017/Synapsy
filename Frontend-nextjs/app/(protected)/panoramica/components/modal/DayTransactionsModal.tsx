@@ -93,7 +93,7 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                             return (
                                 <li
                                     key={`${t.id}-${t.date ?? "nodate"}-${index}`}
-                                    className="w-[95%] flex items-center justify-between gap-2 p-2 my-1 bg-bg-elevate\/20  rounded-xl border border-bg-soft"
+                                    className="w-[95%] flex items-center justify-between gap-2 p-2 my-1 bg-bg-elevate rounded-xl border border-bg-soft"
                                 >
                                     {/* Icona categoria */}
                                     <div className="flex-shrink-0 mr-2 flex items-center">

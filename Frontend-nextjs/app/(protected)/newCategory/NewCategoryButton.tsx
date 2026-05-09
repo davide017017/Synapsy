@@ -15,7 +15,7 @@ export default function NewCategoryButton({ label = "Categoria", onSuccess }: Ne
     return (
         <button
             type="button"
-            className="inline-flex items-center gap-2 px-2 py-1.5 rounded-xl bg-primary-dark text-bg hover:opacity-90 text-sm font-medium transition shadow-lg active:scale-95"
+            className="inline-flex items-center gap-2 px-2 py-1.5 rounded-md bg-gradient-to-b from-primary to-primary-dark text-bg hover:opacity-90 tracking-wider uppercase text-xs font-mono border border-primary/40 transition shadow-lg active:scale-95"
             onClick={() => openModal()}
         >
             <PlusCircle size={16} />

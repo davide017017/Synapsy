@@ -237,7 +237,7 @@ export default function SplashScreen() {
                 /* ── Sub label ── */
                 .spl-sub {
                     position: absolute;
-                    bottom: -36px;
+                    bottom: -34px;
                     left: 50%;
                     white-space: nowrap;
                     font-family: var(--font-jetbrains-mono, "JetBrains Mono", ui-monospace, Menlo, monospace);
@@ -252,13 +252,21 @@ export default function SplashScreen() {
                 }
 
                 /* ── Sub label secondary ── */
-                  .spl-sub-secondary {
-                      bottom: -56px;
-                      font-size: 9px;
-                      letter-spacing: 0.22em;
-                      color: rgba(232,236,239,0.32);
-                      animation-delay: 1.9s;
-                  }
+                 .spl-sub-second {
+                    bottom: -52px;
+                    font-size: 10px;
+                    letter-spacing: 0.24em;
+                    color: rgba(232,236,239,0.38);
+                    animation-delay: 1.9s;
+                }
+
+                .spl-sub-third {
+                    bottom: -70px;
+                    font-size: 9px;
+                    letter-spacing: 0.22em;
+                    color: rgba(232,236,239,0.28);
+                    animation-delay: 2.1s;
+                }
 
                 /* ── Tick progress ── */
                 .spl-ticks {
@@ -383,14 +391,17 @@ export default function SplashScreen() {
                         <span className="spl-caret" />
                     </span>
 
-                    {/* Sub label */}
-                    <span aria-hidden="true" className="spl-sub">
-                        {"// PLEASE WAIT FOR DB RESPONSE · MAYBE TODAY"}
+                    {/* Sub labels */}
+                    <span aria-hidden="true" className="spl-sub spl-sub-main">
+                        {"// PLEASE WAIT FOR DB RESPONSE ..."}
                     </span>
 
-                    {/* Sub label secondary */}
-                    <span aria-hidden="true" className="spl-sub spl-sub-secondary">
-                        {"TRUST THE PROCESS"}
+                    <span aria-hidden="true" className="spl-sub spl-sub-second">
+                        {"// MAYBE TODAY"}
+                    </span>
+
+                    <span aria-hidden="true" className="spl-sub spl-sub-third">
+                        {"-- TRUST THE PROCESS --"}
                     </span>
                 </div>
 

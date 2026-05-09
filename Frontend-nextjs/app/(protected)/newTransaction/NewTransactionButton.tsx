@@ -19,10 +19,11 @@ export default function NewTransactionButton({ label = "Transazione" }: NewTrans
             type="button"
             className="
                 inline-flex items-center gap-2
-                px-2 py-1.5 rounded-xl
-                bg-primary-dark text-bg
+                px-2 py-1.5 rounded-md
+                bg-gradient-to-b from-primary to-primary-dark text-bg
                 hover:opacity-90
-                text-sm font-medium
+                tracking-wider uppercase text-xs font-mono
+                border border-primary/40
                 transition shadow-lg
                 active:scale-95
             "

@@ -71,7 +71,7 @@ export default function BottomNavModern() {
                             <div
                                 className={[
                                     "flex flex-col items-center justify-center gap-1",
-                                    active ? "text-primary scale-105" : "text-white/50 hover:text-white/80",
+                                    active ? "text-primary scale-105" : "text-foreground/50 hover:text-foreground/80",
                                 ].join(" ")}
                             >
                                 <tab.Icon
