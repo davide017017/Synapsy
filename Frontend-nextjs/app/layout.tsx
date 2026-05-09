@@ -13,6 +13,21 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers"; // async in Next 15
 import Script from "next/script";
 import Providers from "./providers";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+
+const spaceGrotesk = Space_Grotesk({
+    weight: ["400", "500"],
+    subsets: ["latin"],
+    variable: "--font-space-grotesk",
+    display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+    weight: ["400", "500"],
+    subsets: ["latin"],
+    variable: "--font-jetbrains-mono",
+    display: "swap",
+});
 
 // ----------------------
 // SEO base
@@ -105,7 +120,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 </Script>
             </head>
 
-            <body>
+            <body className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
                 {/* Providers NON deve cambiare <html>; SSR + script hanno già allineato */}
                 <Providers>{children}</Providers>
             </body>

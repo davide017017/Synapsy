@@ -1,0 +1,530 @@
+/* ============================================================
+   Synapsy Neural Core · Terminal Grid — Login page
+   ============================================================ */
+
+.terminal {
+    position: relative;
+    min-height: 100svh;
+    background: #0a0c0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* ── Background grid ── */
+.gridBg {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    pointer-events: none;
+}
+
+/* ── Scan line ── */
+.scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #14b88a;
+    opacity: 0.5;
+    pointer-events: none;
+    animation: scanMove 7s linear infinite;
+    z-index: 1;
+}
+
+@keyframes scanMove {
+    from {
+        top: 0;
+    }
+    to {
+        top: 100%;
+    }
+}
+
+/* ── Top / bottom bars ── */
+.topBar,
+.bottomBar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 20px;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(232, 236, 239, 0.4);
+}
+
+.topBar {
+    top: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.bottomBar {
+    bottom: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.barLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statusDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #14b88a;
+    box-shadow: 0 0 6px rgba(20, 184, 138, 0.7);
+    flex-shrink: 0;
+}
+
+/* ── Beta badge ── */
+.betaBadge {
+    position: fixed;
+    top: 38px;
+    right: 20px;
+    z-index: 60;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #14b88a;
+    border: 1px solid #14b88a;
+    padding: 2px 8px;
+    background: transparent;
+    pointer-events: none;
+}
+
+/* ── Corner registration marks ── */
+.corner {
+    position: fixed;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    z-index: 40;
+}
+
+.cornerTL {
+    top: 36px;
+    left: 16px;
+    border-top: 1px solid rgba(232, 236, 239, 0.18);
+    border-left: 1px solid rgba(232, 236, 239, 0.18);
+}
+.cornerTR {
+    top: 36px;
+    right: 16px;
+    border-top: 1px solid rgba(232, 236, 239, 0.18);
+    border-right: 1px solid rgba(232, 236, 239, 0.18);
+}
+.cornerBL {
+    bottom: 36px;
+    left: 16px;
+    border-bottom: 1px solid rgba(232, 236, 239, 0.18);
+    border-left: 1px solid rgba(232, 236, 239, 0.18);
+}
+.cornerBR {
+    bottom: 36px;
+    right: 16px;
+    border-bottom: 1px solid rgba(232, 236, 239, 0.18);
+    border-right: 1px solid rgba(232, 236, 239, 0.18);
+}
+
+/* ── Center wrapper ── */
+.center {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+    padding: 24px 16px;
+}
+
+/* ── Card ── */
+.card {
+    position: relative;
+    background: rgba(14, 17, 20, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 2px;
+    padding: 32px;
+}
+
+/* Card crop marks — teal L-shapes */
+.cropTL,
+.cropBR {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+}
+
+.cropTL {
+    top: -1px;
+    left: -1px;
+    border-top: 1px solid #14b88a;
+    border-left: 1px solid #14b88a;
+}
+
+.cropBR {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1px solid #14b88a;
+    border-right: 1px solid #14b88a;
+}
+
+/* ── Card header ── */
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.mark {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #14b88a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.markCore {
+    width: 6px;
+    height: 6px;
+    background: #14b88a;
+}
+
+.cardLabel {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(232, 236, 239, 0.4);
+}
+
+/* ── Title ── */
+.title {
+    font-family: var(--font-space-grotesk, "Space Grotesk", sans-serif);
+    font-size: 28px;
+    font-weight: 400;
+    color: #e8ecef;
+    margin: 0 0 6px 0;
+    line-height: 1.2;
+}
+
+.titleCursor {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 24px;
+    color: #14b88a;
+}
+
+.subtitle {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    color: rgba(232, 236, 239, 0.4);
+    margin: 0 0 28px 0;
+}
+
+/* ── Info / error messages ── */
+.infoMsg {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    color: #14b88a;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.errorMsg {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    color: #f87171;
+    margin-bottom: 12px;
+}
+
+/* ── Fields ── */
+.fieldGroup {
+    margin-bottom: 20px;
+}
+
+.fieldLabel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(232, 236, 239, 0.4);
+    margin-bottom: 8px;
+}
+
+.fieldBadge {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: rgba(232, 236, 239, 0.25);
+    border: 1px solid rgba(232, 236, 239, 0.1);
+    padding: 1px 5px;
+}
+
+.fieldRow {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    transition: border-color 0.15s;
+}
+
+.fieldRow:focus-within {
+    border-bottom-color: #14b88a;
+}
+
+.fieldPrompt {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 15px;
+    color: #14b88a;
+    margin-right: 8px;
+    user-select: none;
+    flex-shrink: 0;
+    line-height: 1;
+    padding-bottom: 8px;
+}
+
+.fieldInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 15px;
+    color: #e8ecef;
+    padding: 8px 0;
+    caret-color: #14b88a;
+    width: 100%;
+}
+
+.fieldInput::placeholder {
+    color: rgba(232, 236, 239, 0.2);
+}
+
+/* ── Password visibility toggle ── */
+.passwordToggle {
+    background: none;
+    border: none;
+    padding: 0 0 6px 8px; /* allineato al padding-bottom dell'input */
+    cursor: pointer;
+    color: rgba(20, 184, 138, 0.45);
+    display: flex;
+    align-items: flex-end;
+    flex-shrink: 0;
+    transition: color 0.15s;
+    line-height: 1;
+}
+
+.passwordToggle:hover,
+.passwordToggle:focus-visible {
+    color: #14b88a;
+    outline: none;
+}
+
+/* ── Remember + forgot row ── */
+.rememberRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    margin-top: 4px;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(232, 236, 239, 0.4);
+    user-select: none;
+}
+
+.checkbox {
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgba(232, 236, 239, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition:
+        border-color 0.15s,
+        background 0.15s;
+}
+
+.checkboxChecked {
+    border-color: #14b88a;
+    background: #14b88a;
+}
+
+.checkboxInner {
+    width: 2px;
+    height: 2px;
+    background: #0a0c0f;
+}
+
+.forgotBtn {
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(232, 236, 239, 0.4);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.forgotBtn:hover {
+    color: #14b88a;
+}
+
+/* ── Login button ── */
+.btnLogin {
+    position: relative;
+    width: 100%;
+    background: transparent;
+    border: 1px solid #14b88a;
+    border-radius: 0;
+    color: #14b88a;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    padding: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.15s;
+}
+
+.btnLogin:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.sweep {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(20, 184, 138, 0.12) 50%, transparent 100%);
+    transform: translateX(-100%);
+    animation: sweepMove 2.4s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes sweepMove {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* ── Demo button ── */
+.btnDemo {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed rgba(232, 236, 239, 0.2);
+    border-radius: 0;
+    color: rgba(232, 236, 239, 0.35);
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition:
+        color 0.15s,
+        border-color 0.15s;
+    margin-bottom: 24px;
+}
+
+.btnDemo:hover {
+    color: #14b88a;
+    border-color: rgba(20, 184, 138, 0.5);
+}
+.btnDemo:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Card footer ── */
+.cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+}
+
+.footerSep {
+    color: rgba(232, 236, 239, 0.2);
+    margin: 0 8px;
+}
+
+.footerBtn {
+    color: rgba(232, 236, 239, 0.3);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--font-jetbrains-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    transition: color 0.15s;
+}
+
+.footerBtn:hover {
+    color: #14b88a;
+}
+
+/* ── Loading spinner ── */
+.spinner {
+    width: 12px;
+    height: 12px;
+    border: 1px solid #14b88a;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

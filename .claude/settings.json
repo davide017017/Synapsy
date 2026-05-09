@@ -26,7 +26,10 @@
       "PowerShell(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse | Where-Object { $_.Name -match \"api\" } | Select-Object FullName)",
       "PowerShell(Find-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse -Type File | Where-Object { $_.FullName -match \"api\" } | Select-Object FullName)",
       "PowerShell(ls -Recurse \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" | Where-Object { $_.Name -match \"api\" } | Select-Object FullName)",
-      "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse -Filter \"*.ts\" -o \"*.tsx\")"
+      "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\src\" -Recurse -Filter \"*.ts\" -o \"*.tsx\")",
+      "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend-laravel\" -Force)",
+      "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\app\" -Recurse -Filter \"*password*\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object FullName)"
     ]
   }
 }
