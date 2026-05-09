@@ -528,3 +528,19 @@
         transform: rotate(360deg);
     }
 }
+
+/* ─────────────────────────────────────────
+   Fix autofill Chrome / input salvati
+   ───────────────────────────────────────── */
+.fieldInput:-webkit-autofill,
+.fieldInput:-webkit-autofill:hover,
+.fieldInput:-webkit-autofill:focus,
+.fieldInput:-webkit-autofill:active {
+    -webkit-text-fill-color: #e8ecef;
+    caret-color: #14b88a;
+
+    box-shadow: 0 0 0 1000px #0e1114 inset;
+    -webkit-box-shadow: 0 0 0 1000px #0e1114 inset;
+
+    transition: background-color 9999s ease-in-out 0s;
+}
