@@ -385,7 +385,7 @@ export default function SplashScreen() {
 
                     {/* Sub label */}
                     <span aria-hidden="true" className="spl-sub">
-                        {"// DB RESPONSE · MAYBE TODAY"}
+                        {"// PLEASE WAIT FOR DB RESPONSE · MAYBE TODAY"}
                     </span>
 
                     {/* Sub label secondary */}

@@ -47,7 +47,7 @@ export default function DayCell({
             ? "border-2 border-primary rounded-xl"
             : isSunday
               ? "border-2 border-warning rounded-xl"
-              : "border border-primary/40 rounded-xl";
+              : "border border-primary/40 rounded-sm";
     const todayClass =
         isToday && monthDelta === 0
             ? "ring-2 ring-primary/40 ring-offset-2 ring-offset-bg animate-[pulse_2.5s_ease-in-out_infinite]"
@@ -68,6 +68,7 @@ export default function DayCell({
     const totaleEntrate = somma(entrate);
     const totaleSpese = somma(spese);
     const txCount = transactions.length;
+    const hasLeadingZero = day < 10;
 
     // ---------------------------
     // Bars (mobile smaller)
@@ -102,7 +103,7 @@ export default function DayCell({
     return (
         <div
             className={`
-                ${isToday && monthDelta === 0 ? "bg-primary/15" : "bg-bg-elevate"} w-full
+                ${isToday && monthDelta === 0 ? "bg-primary/15" : "bg-gradient-to-b from-white/5 to-black/20"} w-full
                 ${opacity} ${border} ${todayClass}
                 transition-all duration-150
                 ${onClickDay ? "cursor-pointer" : "cursor-default"}
@@ -126,7 +127,10 @@ export default function DayCell({
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
                         {showWeekDay && <span className="text-[9px] opacity-60">{weekDayLabel}</span>}
-                        <span className="text-lg font-black leading-none">{day}</span>
+                        <span className="text-base font-bold leading-none tracking-wide font-mono">
+                            {hasLeadingZero && <span className="text-ink-mute opacity-40">0</span>}
+                            <span>{day}</span>
+                        </span>
                     </div>
                     {/* Mini TX */}
                     <div className="flex items-center gap-1 text-[9px] font-semibold opacity-70">
@@ -173,7 +177,10 @@ export default function DayCell({
                 <div className="flex flex-col justify-between h-full">
                     <div className="flex items-center gap-1">
                         {showWeekDay && <span className="text-[9px] text-gray-400">{weekDayLabel}</span>}
-                        <span className="text-3xl font-black leading-none">{day}</span>
+                        <span className="text-2xl font-bold leading-none tracking-wide font-mono">
+                            {hasLeadingZero && <span className="text-ink-mute opacity-40">0</span>}
+                            <span>{day}</span>
+                        </span>
 
                         {isToday && monthDelta === 0 && (
                             <span className="ml-1.5 px-2 py-0.5 rounded-md bg-primary text-bg text-[11px] font-extrabold tracking-widest animate-pulse shadow-lg shadow-primary/50">
