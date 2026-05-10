@@ -25,28 +25,29 @@ export default function BottomNavModern() {
             {/* CONTAINER GLASS */}
             <div
                 className="
-        relative
-        w-[92%] max-w-md
-        h-16
-        rounded-2xl
-        backdrop-blur-xl
-        bg-white/5
-        border border-white/10
-        shadow-[0_10px_30px_rgba(0,0,0,0.35)]
-        flex items-center
-        px-2
-      "
+                    relative
+                    w-[92%] max-w-md
+                    h-16
+                    rounded-2xl
+                    backdrop-blur-xl
+                    bg-black/65
+                    border border-primary/20
+                    shadow-[0_14px_45px_rgba(0,0,0,0.45)]
+                    flex items-center
+                    px-2
+                "
             >
                 {/* ACTIVE PILL — solo se il path corrente è uno dei tab */}
                 {activeIndex >= 0 && (
                     <div
                         className="
-                      absolute top-1 bottom-1
-                      rounded-xl
-                      bg-primary/20
-                      shadow-[0_0_20px_hsl(var(--c-primary)/0.35)]
-                      transition-all duration-300 ease-in-out
-                    "
+                            absolute top-1 bottom-1
+                            rounded-xl
+                            bg-primary/12
+                            border border-primary/30
+                            shadow-[0_0_22px_hsl(var(--c-primary)/0.28)]
+                            transition-all duration-300 ease-in-out
+                        "
                         style={{
                             width: `${100 / TABS.length}%`,
                             left: `${(100 / TABS.length) * activeIndex}%`,
@@ -71,16 +72,17 @@ export default function BottomNavModern() {
                             <div
                                 className={[
                                     "flex flex-col items-center justify-center gap-1",
-                                    active ? "text-primary scale-105" : "text-foreground/50 hover:text-foreground/80",
+                                    active ? "text-primary scale-105" : "text-foreground/45 hover:text-primary/80",
                                 ].join(" ")}
                             >
                                 <tab.Icon
                                     size={22}
                                     strokeWidth={active ? 2.6 : 1.8}
-                                    className={active ? "drop-shadow-[0_0_6px_rgba(56,189,248,0.6)]" : ""}
+                                    className={active ? "drop-shadow-[0_0_8px_hsl(var(--c-primary)/0.55)]" : ""}
                                 />
-
-                                <span className="text-[10px] font-medium">{tab.label}</span>
+                                <span className="font-mono text-[9px] tracking-[0.08em] uppercase">
+                                    {tab.label}
+                                </span>{" "}
                             </div>
                         </Link>
                     );

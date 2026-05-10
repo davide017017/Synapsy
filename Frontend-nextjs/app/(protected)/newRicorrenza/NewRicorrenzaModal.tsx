@@ -37,11 +37,11 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
             ricorrenzaToEdit?.category_id
                 ? categories.find((cat) => cat.id === ricorrenzaToEdit.category_id)?.name || ricorrenzaToEdit.categoria
                 : undefined,
-        [ricorrenzaToEdit, categories]
+        [ricorrenzaToEdit, categories],
     );
     const formCategoryName = useMemo(
         () => (formValues.category_id ? categories.find((cat) => cat.id === formValues.category_id)?.name : undefined),
-        [formValues.category_id, categories]
+        [formValues.category_id, categories],
     );
 
     // ────────────────────────────────────────────────
@@ -66,6 +66,13 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
         }
     };
 
+    // ────────────────────────────────────────────────
+    // Accent UI entrata/spesa
+    // ────────────────────────────────────────────────
+    const currentType = formValues.type ?? ricorrenzaToEdit?.type ?? "entrata";
+
+    const typeAccent = currentType === "entrata" ? "hsl(var(--c-success))" : "hsl(var(--c-danger))";
+
     // ============================
     // Render
     // ============================
@@ -73,10 +80,17 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
         <Dialog open={open} onClose={handleClose}>
             <div
                 className="
-                    relative w-full max-w-lg min-w-[320px]
-                    max-h-[90vh] overflow-y-auto overscroll-contain
-                    bg-bg text-text rounded-2xl shadow-2xl shadow-black/30
+                    relative
+                    w-full max-w-lg min-w-[320px]
+                    max-h-[90vh]
+                    overflow-y-auto overscroll-contain
+                    rounded-2xl
+                                    border border-white/10
+                    bg-black/70
+                    text-foreground
+                    backdrop-blur-xl
                     p-6
+                    shadow-[0_24px_80px_rgba(0,0,0,0.55)]
                 "
             >
                 {/* Overlay loading */}
@@ -112,7 +126,21 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
                 />
 
                 {/* Titolo */}
-                <h2 className="text-xl font-bold mb-4 text-primary">
+                <h2
+                    className="
+                        mb-5
+                        font-mono
+                        text-sm
+                        font-bold
+                        uppercase
+                        tracking-[0.14em]
+                        text-center
+                    "
+                    style={{
+                        color: typeAccent,
+                        textShadow: `0 0 12px ${typeAccent}`,
+                    }}
+                >
                     {ricorrenzaToEdit ? "Modifica ricorrenza" : "Nuova ricorrenza"}
                 </h2>
                 {/* Form */}
@@ -128,4 +156,3 @@ export default function NewRicorrenzaModal({ open, onClose, ricorrenzaToEdit, on
         </Dialog>
     );
 }
-

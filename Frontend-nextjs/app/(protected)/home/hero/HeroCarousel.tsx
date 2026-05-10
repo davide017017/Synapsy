@@ -71,28 +71,44 @@ export default function HeroCarousel() {
                 onClick={() => go(index - 1)}
                 aria-label="Precedente"
                 className="
-                  absolute
-                  left-4 top-[36%] -translate-y-1/2
-                  p-2 rounded-full
-                  bg-white/20 hover:bg-white/30
-                  transition-colors
-                "
+        absolute
+        left-4 top-[20%] -translate-y-1/2
+        px-1.5 py-4
+        rounded-xl
+        border border-primary/35
+        bg-background/35 hover:bg-primary/10
+        text-primary
+        shadow-[0_0_18px_rgba(20,184,138,0.18)]
+        backdrop-blur-md
+        transition-all duration-200
+        hover:border-primary/70
+        hover:shadow-[0_0_24px_rgba(20,184,138,0.32)]
+        active:scale-95
+    "
             >
-                <ArrowLeft size={22} />
+                <ArrowLeft size={21} strokeWidth={1.8} />
             </button>
 
             <button
                 onClick={() => go(index + 1)}
                 aria-label="Successivo"
                 className="
-                absolute
-                right-4 top-[36%] -translate-y-1/2
-                p-2 rounded-full
-                bg-white/20 hover:bg-white/30
-                transition-colors
-              "
+        absolute
+        right-4 top-[20%] -translate-y-1/2
+        px-1.5 py-4
+        rounded-xl
+        border border-primary/35
+        bg-background/35 hover:bg-primary/10
+        text-primary
+        shadow-[0_0_18px_rgba(20,184,138,0.18)]
+        backdrop-blur-md
+        transition-all duration-200
+        hover:border-primary/70
+        hover:shadow-[0_0_24px_rgba(20,184,138,0.32)]
+        active:scale-95
+    "
             >
-                <ArrowRight size={22} />
+                <ArrowRight size={21} strokeWidth={1.8} />
             </button>
 
             {/* ───────────────────────────── */}

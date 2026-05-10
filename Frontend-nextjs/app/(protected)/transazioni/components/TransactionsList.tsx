@@ -617,9 +617,7 @@ export default function TransactionsList({
                                 <div
                                     key={b.key}
                                     className={`px-3 border-b flex items-center justify-between gap-3 ${
-                                        isToday
-                                            ? "py-1.5 border-primary/30"
-                                            : "py-0.5 border-bg-elevate"
+                                        isToday ? "py-1.5 border-primary/30" : "py-0.5 border-bg-elevate"
                                     }`}
                                     style={
                                         isToday

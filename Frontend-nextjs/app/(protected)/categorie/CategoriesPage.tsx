@@ -13,20 +13,48 @@ export default function CategoriesPage() {
         <div className="space-y-2">
             {/* ----------- Blocco superiore con sfondo ----------- */}
 
-            <div className="relative rounded-2xl border border-bg-elevate bg-bg-elevate/60 backdrop-blur-sm p-2 md:p-4 shadow-md overflow-hidden animate-fade-in">
+            <div
+                className="
+        relative
+        rounded-2xl
+        border border-primary/20
+        bg-black/55
+        backdrop-blur-xl
+        p-3 md:p-5
+        shadow-[0_18px_55px_rgba(0,0,0,0.28)]
+        overflow-hidden
+        animate-fade-in
+    "
+            >
                 {/* -------- Icona sfumata di sfondo -------- */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <LayoutGrid
-                        className="w-[140px] h-[140px] md:w-[180px] md:h-[180px] text-[hsl(var(--c-secondary))] opacity-5"
+                        className="
+                w-[140px] h-[140px]
+                md:w-[180px] md:h-[180px]
+                text-[hsl(var(--c-secondary))]
+                opacity-5
+            "
                         style={{ filter: "blur(2px)" }}
                     />
                 </div>
 
                 <div className="relative z-10 space-y-2">
-                    {/* ───────── Header row (mobile compatto) ───────── */}
+                    {/* ───────── Header row ───────── */}
                     <div className="flex items-center justify-between md:justify-center md:flex-col md:gap-2">
-                        <h1 className="text-lg md:text-3xl font-serif font-bold flex items-center gap-2 text-[hsl(var(--c-primary-dark))]">
-                            <LayoutGrid className="w-5 h-5 md:w-7 md:h-7 text-[hsl(var(--c-primary))]" />
+                        <h1
+                            className="
+                    flex items-center gap-2
+                    font-mono
+                    text-lg md:text-2xl
+                    font-extrabold
+                    uppercase
+                    tracking-[0.14em]
+                    text-primary
+                    drop-shadow-[0_0_14px_hsl(var(--c-primary)/0.35)]
+                "
+                        >
+                            <LayoutGrid className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                             <span>Categorie</span>
                         </h1>
 

@@ -185,7 +185,17 @@ function ActionEditButton({ onClick }: { onClick: (e: React.MouseEvent<HTMLButto
         <button
             type="button"
             onClick={onClick}
-            className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition"
+            className="
+                p-1.5
+                rounded-xl
+                border border-primary/25
+                bg-primary/10
+                text-primary
+                transition-all duration-200
+                hover:bg-primary/15
+                hover:shadow-[0_0_12px_hsl(var(--c-primary)/0.20)]
+                active:scale-95
+            "
             aria-label="Modifica ricorrenza"
             title="Modifica"
         >
@@ -199,7 +209,18 @@ function ActionDeleteButton({ onClick }: { onClick: (e: React.MouseEvent<HTMLBut
         <button
             type="button"
             onClick={onClick}
-            className="p-1.5 rounded-md bg-red-500/10 hover:bg-red-500/15 text-red-400 transition"
+            className="
+                p-1.5
+                rounded-xl
+                border border-red-400/25
+                bg-red-500/10
+                text-red-400/85
+                transition-all duration-200
+                hover:bg-red-500/15
+                hover:text-red-300
+                hover:shadow-[0_0_12px_rgba(248,113,113,0.22)]
+                active:scale-95
+            "
             aria-label="Elimina ricorrenza"
             title="Elimina"
         >
@@ -280,20 +301,64 @@ export default function ListaRicorrenzePerFrequenza({
     }
 
     return (
-        <div className="rounded-2xl border border-bg-elevate bg-[hsl(var(--c-bg-elevate),_#fafbfc)] p-0 pt-1 shadow-xl min-h-[180px]">
-            <h2 className="font-semibold text-lg mb-2 text-primary flex items-center justify-center gap-2">
-                <Repeat className="w-5 h-5" />
+        <div
+            className="
+                rounded-2xl
+                border border-primary/20
+                bg-black/45
+                backdrop-blur-xl
+                p-3
+                shadow-[0_18px_55px_rgba(0,0,0,0.24)]
+                min-h-[180px]
+            "
+        >
+            {" "}
+            <h2
+                className="
+                    mb-3
+                    flex items-center justify-center gap-2
+                    font-mono
+                    text-sm
+                    font-bold
+                    uppercase
+                    tracking-[0.14em]
+                    text-primary
+                    drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.25)]
+                "
+            >
+                <Repeat className="w-5 h-5 drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.35)]" />
                 Ricorrenti per frequenza
             </h2>
-
             {gruppiPresenti.length === 0 ? (
-                <div className="text-zinc-400 italic px-3 py-8 text-center">Nessuna ricorrenza presente.</div>
+                <div
+                    className="
+                    px-3 py-8
+                    text-center
+                    font-mono
+                    text-[11px]
+                    uppercase
+                    tracking-[0.12em]
+                    text-foreground/40
+                "
+                >
+                    Nessuna ricorrenza presente.
+                </div>
             ) : (
                 <>
                     {/* ===================================================
-                       MOBILE SUPER-COMPACT (solo <md)
+                      MOBILE SUPER-COMPACT (solo <md)
                        =================================================== */}
-                    <div className="md:hidden rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
+                    <div
+                        className="
+                        md:hidden
+                        rounded-2xl
+                        border border-primary/15
+                        bg-black/20
+                        overflow-hidden
+                        backdrop-blur-sm
+                    "
+                    >
+                        {" "}
                         {gruppiPresenti.flatMap((freq) => {
                             const items = gruppi[freq] ?? [];
                             const meta = freqPillMeta(freq);
@@ -306,30 +371,43 @@ export default function ListaRicorrenzePerFrequenza({
                             out.push(
                                 <div
                                     key={`div-${freq}`}
-                                    className="px-2 py-1.5 bg-bg-elevate/55 border-b border-bg-elevate"
+                                    className="
+                                        px-2 py-2
+                                        bg-white/5
+                                        border-b border-primary/10
+                                    "
                                     style={{ borderLeft: `10px solid ${borderLeft}` }}
                                 >
                                     {/* Unica riga: label + totali + contatore voci */}
-                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] tabular-nums">
-                                        <span className="flex items-center gap-1 text-xl  shrink-0">
+                                    <div
+                                        className="
+                                        flex flex-wrap items-center
+                                        gap-x-2 gap-y-1
+                                        font-mono
+                                        text-[10px]
+                                        uppercase
+                                        tracking-[0.04em]
+                                        tabular-nums
+                                    "
+                                    >
+                                        {" "}
+                                        <span className="flex items-center gap-1 text-xs font-bold text-primary shrink-0">
+                                            {" "}
                                             <FreqIcon freq={freq} size={19} />
                                             {meta.label}
                                         </span>
-
                                         <span className="flex items-center gap-1">
                                             <span className="opacity-80">Entrate:</span>
                                             <span className="text-[hsl(var(--c-success))] ">
                                                 +{eur(totals.entrate)}
                                             </span>
                                         </span>
-
                                         <span className="flex items-center gap-1">
                                             <span className="opacity-80">Spese:</span>
                                             <span className="text-[hsl(var(--c-danger))] font-semibold">
                                                 -{eur(totals.spese)}
                                             </span>
                                         </span>
-
                                         <span className="flex items-center gap-1">
                                             <span className="opacity-80">Saldo:</span>
                                             <span
@@ -342,8 +420,8 @@ export default function ListaRicorrenzePerFrequenza({
                                                 {eur(totals.saldo)}
                                             </span>
                                         </span>
-
-                                        <span className="flex items-center gap-1 opacity-60 ml-auto shrink-0 text-xl ">
+                                        <span className="flex items-center gap-1 opacity-60 ml-auto shrink-0 text-xs">
+                                            {" "}
                                             <ChartNoAxesCombined size={18} />
                                             {items.length}
                                         </span>
@@ -369,7 +447,12 @@ export default function ListaRicorrenzePerFrequenza({
                                 out.push(
                                     <div
                                         key={`r-${(r as any)?.id}`}
-                                        className="px-2 py-1.5 border-b border-bg-elevate hover:bg-bg-elevate/35 transition"
+                                        className="
+                                            px-2 py-2
+                                            border-b border-primary/10
+                                            hover:bg-primary/5
+                                            transition-colors
+                                        "
                                         style={{ borderLeft: `4px solid ${borderLeft}` }}
                                     >
                                         {/* Wrapper NON-button cliccabile */}
@@ -386,12 +469,15 @@ export default function ListaRicorrenzePerFrequenza({
                                             <div className="flex items-center gap-2">
                                                 {/* Nome */}
                                                 <div className="min-w-0 flex-1">
-                                                    <div className=" text-[13px] truncate">{(r as any)?.nome}</div>
+                                                    <div className="font-mono text-[12px] text-foreground/80 truncate">
+                                                        {(r as any)?.nome}
+                                                    </div>{" "}
                                                 </div>
 
                                                 {/* Data */}
                                                 {dateLabel ? (
-                                                    <div className="shrink-0 text-[10px] text-muted-foreground tabular-nums whitespace-nowrap">
+                                                    <div className="shrink-0 font-mono text-[9px] text-foreground/35 tabular-nums whitespace-nowrap">
+                                                        {" "}
                                                         {dateLabel}
                                                     </div>
                                                 ) : null}
@@ -399,7 +485,18 @@ export default function ListaRicorrenzePerFrequenza({
                                                 {/* Categoria pill */}
                                                 {catLabel ? (
                                                     <span
-                                                        className="shrink-0 text-[9px] leading-none px-1.5 py-0.5 rounded-full border whitespace-nowrap"
+                                                        className="
+                                                            shrink-0
+                                                            font-mono
+                                                            text-[9px]
+                                                            leading-none
+                                                            px-1.5 py-0.5
+                                                            rounded-lg
+                                                            border
+                                                            uppercase
+                                                            tracking-[0.04em]
+                                                            whitespace-nowrap
+                                                        "
                                                         style={{
                                                             borderColor: `${categoryColor}55`,
                                                             backgroundColor: `${categoryColor}22`,
@@ -417,7 +514,7 @@ export default function ListaRicorrenzePerFrequenza({
 
                                                 {/* Importo */}
                                                 <div
-                                                    className="shrink-0 font-bold text-[13px] tabular-nums whitespace-nowrap"
+                                                    className="shrink-0 font-mono font-bold text-[12px] tabular-nums whitespace-nowrap"
                                                     style={{ color: amountColor }}
                                                     title={tipo}
                                                 >
@@ -467,7 +564,6 @@ export default function ListaRicorrenzePerFrequenza({
                     </ul>
                 </>
             )}
-
             <ConfirmDialog
                 open={!!toDelete}
                 type="delete"

@@ -131,15 +131,19 @@ export default function NewTransactionModal({
         <Dialog open={isOpen} onClose={handleDialogClose}>
             <div
                 className="
-                relative w-full max-w-lg min-w-[320px]
-                max-h-[100vh]              /* 👈 limite viewport */
-                overflow-y-auto           /* 👈 scroll interno */
-                overscroll-contain
-                text-text rounded-2xl
-                shadow-2xl shadow-black/30
-                bg-bg
-                p-4 sm:p-5
-                mt-2
+                  relative
+                  w-full max-w-lg min-w-[320px]
+                  max-h-[100vh]
+                  overflow-y-auto
+                  overscroll-contain
+                  rounded-2xl
+                  border border-white/10
+                  bg-black/70
+                  text-foreground
+                  backdrop-blur-xl
+                  p-4 sm:p-5
+                  mt-2
+                  shadow-[0_24px_80px_rgba(0,0,0,0.55)]
               "
             >
                 {/* ───────── Overlay loading ───────── */}

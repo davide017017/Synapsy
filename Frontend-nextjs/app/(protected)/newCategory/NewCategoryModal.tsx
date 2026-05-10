@@ -50,6 +50,13 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
         }
     };
 
+    // Colore UI in base al tipo selezionato
+    const typeAccent = type === "entrata" ? "hsl(var(--c-success))" : "hsl(var(--c-danger))";
+
+    const typeAccentSoft = type === "entrata" ? "hsl(var(--c-success) / 0.12)" : "hsl(var(--c-danger) / 0.12)";
+
+    const typeAccentBorder = type === "entrata" ? "hsl(var(--c-success) / 0.35)" : "hsl(var(--c-danger) / 0.35)";
+
     // =========================
     // Render
     // =========================
@@ -57,7 +64,19 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
         <Dialog open={open} onClose={onClose}>
             <ModalLayout
                 title={
-                    <span className="text-primary text-xl font-bold">
+                    <span
+                        className="
+                            font-mono
+                            text-sm
+                            font-bold
+                            uppercase
+                            tracking-[0.14em]
+                        "
+                        style={{
+                            color: typeAccent,
+                            textShadow: `0 0 12px ${typeAccent}`,
+                        }}
+                    >
                         {categoryToEdit ? "Modifica categoria" : "Nuova categoria"}
                     </span>
                 }
@@ -69,11 +88,20 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             type="button"
                             className="
                                 w-1/2
-                                bg-bg-elevate
-                                text-text
-                                border border-bg-soft
-                                rounded-xl py-2 font-semibold
-                                shadow focus:ring-2 focus:ring-primary/40 transition
+                                rounded-xl
+                                border border-white/10
+                                bg-white/5
+                                py-2
+                                font-mono
+                                text-[11px]
+                                uppercase
+                                tracking-[0.08em]
+                                text-foreground/60
+                                transition-all duration-200
+                                hover:bg-white/10
+                                hover:text-foreground
+                                active:scale-95
+                                focus:ring-2 focus:ring-primary/40
                             "
                             onClick={onClose}
                             disabled={loading}
@@ -86,10 +114,23 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             form="category-form"
                             className="
                                 w-1/2
-                                bg-primary text-white
-                                rounded-xl py-2 font-semibold
-                                shadow focus:ring-2 focus:ring-primary/40 transition
+                                rounded-xl
+                                border
+                                py-2
+                                font-mono
+                                text-[11px]
+                                uppercase
+                                tracking-[0.08em]
+                                transition-all duration-200
+                                active:scale-95
+                                focus:ring-2
                             "
+                            style={{
+                                background: typeAccentSoft,
+                                borderColor: typeAccentBorder,
+                                color: typeAccent,
+                                boxShadow: `0 0 16px ${type === "entrata" ? "hsl(var(--c-success) / 0.20)" : "hsl(var(--c-danger) / 0.20)"}`,
+                            }}
                             disabled={loading}
                         >
                             {categoryToEdit ? "Salva modifiche" : "Crea categoria"}
@@ -97,7 +138,8 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                     </div>
                 }
             >
-                <form id="category-form" className="space-y-4" onSubmit={handleSubmit} autoComplete="off">
+                <form id="category-form" className="space-y-4 font-mono" onSubmit={handleSubmit} autoComplete="off">
+                    {" "}
                     {/* ===== Overlay loading ===== */}
                     <LoadingOverlay
                         show={loading}
@@ -115,12 +157,39 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                             </>
                         }
                     />
-
                     {/* ===== Nome ===== */}
                     <div>
-                        <label className="block text-sm font-medium mb-1">Nome</label>
+                        <label
+                            className="
+                                block mb-1
+                                text-[11px]
+                                font-bold
+                                uppercase
+                                tracking-[0.12em]
+                                text-foreground/45
+                            "
+                        >
+                            Nome
+                        </label>{" "}
                         <input
-                            className="mt-1 block w-full rounded-xl border border-bg-elevate bg-bg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary/40 transition placeholder:text-zinc-400"
+                            className="
+                              mt-1 block w-full
+                              rounded-xl
+                              border
+                              bg-black/20
+                              px-3 py-2
+                              font-mono
+                              text-sm
+                              text-foreground
+                              placeholder:text-foreground/30
+                              transition-all duration-200
+                              focus:ring-2
+                              outline-none
+                          "
+                            style={{
+                                borderColor: typeAccentBorder,
+                                boxShadow: `0 0 0 1px ${typeAccentBorder}`,
+                            }}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
@@ -131,9 +200,36 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                     </div>
                     {/* ===== Tipo ===== */}
                     <div>
-                        <label className="block text-sm font-medium mb-1">Tipo</label>
+                        <label
+                            className="
+                            block mb-1
+                            text-[11px]
+                            font-bold
+                            uppercase
+                            tracking-[0.12em]
+                            text-foreground/45
+                        "
+                        >
+                            Tipo
+                        </label>{" "}
                         <select
-                            className="mt-1 block w-full rounded-xl border border-bg-elevate bg-bg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary/40 transition"
+                            className="
+                                mt-1 block w-full
+                                rounded-xl
+                                border
+                                bg-black/20
+                                px-3 py-2
+                                font-mono
+                                text-sm
+                                text-foreground
+                                transition-all duration-200
+                                focus:ring-2
+                                outline-none
+                            "
+                            style={{
+                                borderColor: typeAccentBorder,
+                                boxShadow: `0 0 0 1px ${typeAccentBorder}`,
+                            }}
                             value={type}
                             onChange={(e) => setType(e.target.value as "entrata" | "spesa")}
                         >
@@ -153,14 +249,17 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                                     type="button"
                                     key={`${col.value}-${i}`}
                                     title={col.name}
-                                    className={`w-8 h-8 rounded-full border-2 transition-all shrink-0
-                                        ${
-                                            color === col.value
-                                                ? "ring-2 ring-offset-2 ring-primary border-primary"
-                                                : "border-zinc-300 dark:border-zinc-700"
-                                        }
+                                    className={`w-8 h-8 rounded-xl border-2 transition-all duration-200 shrink-0 active:scale-95                                        ${
+                                        color === col.value
+                                            ? "ring-2 border-transparent shadow-[0_0_14px_currentColor]"
+                                            : "border-white/15"
+                                    }
                                     `}
-                                    style={{ background: col.value }}
+                                    style={{
+                                        background: col.value,
+                                        color: typeAccent,
+                                        boxShadow: color === col.value ? `0 0 14px ${typeAccent}` : undefined,
+                                    }}
                                     onClick={() => setColor(col.value)}
                                     aria-label={`Scegli il colore ${col.name}`}
                                     tabIndex={0}
@@ -183,13 +282,14 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                                         type="button"
                                         key={`${iconObj.value}-${i}`}
                                         title={iconObj.name}
-                                        className={`w-9 h-9 rounded-xl flex items-center justify-center border transition
-                                          ${
-                                              selected
-                                                  ? "ring-2 ring-primary border-primary bg-primary/10"
-                                                  : "border-zinc-300 dark:border-zinc-700 bg-bg-elevate"
-                                          }
-                                      `}
+                                        className={`w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-200 active:scale-95 ${
+                                            selected ? "ring-2 border-transparent" : "border-white/10 bg-black/20"
+                                        }`}
+                                        style={{
+                                            borderColor: selected ? typeAccent : undefined,
+                                            background: selected ? typeAccentSoft : undefined,
+                                            boxShadow: selected ? `0 0 14px ${typeAccent}` : undefined,
+                                        }}
                                         onClick={() => setIcon(iconObj.value)}
                                         aria-label={`Scegli l'icona ${iconObj.name}`}
                                     >
@@ -200,7 +300,20 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                         </div>
                     </div>
                     {/* ===== Preview ===== */}
-                    <div className="flex items-center gap-3 mt-2">
+                    <div
+                        className="
+                            flex items-center gap-3 mt-2
+                            rounded-2xl
+                            border
+                            bg-black/20
+                            px-3 py-2
+                            backdrop-blur-sm
+                        "
+                        style={{
+                            borderColor: typeAccentBorder,
+                            boxShadow: `0 0 16px ${type === "entrata" ? "hsl(var(--c-success) / 0.12)" : "hsl(var(--c-danger) / 0.12)"}`,
+                        }}
+                    >
                         <span
                             className="rounded-full p-2 border"
                             style={{
@@ -215,10 +328,11 @@ export default function NewCategoryModal({ open, onClose, categoryToEdit, onSave
                                 return <PreviewIcon size={28} />;
                             })()}
                         </span>
-                        <span className="font-semibold truncate max-w-[140px]">{name || "Nome Categoria"}</span>
+                        <span className="font-mono text-sm font-bold truncate max-w-[140px] text-foreground/80">
+                            {name || "Nome Categoria"}
+                        </span>{" "}
                         <span
-                            className={`text-xs px-2 py-1 rounded-full
-                            ${
+                            className={`font-mono text-[10px] uppercase tracking-[0.08em] px-2 py-1 rounded-lg border                            ${
                                 type === "entrata"
                                     ? "bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100"
                                     : "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-100"

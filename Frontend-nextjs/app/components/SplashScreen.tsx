@@ -18,15 +18,20 @@ export default function SplashScreen() {
                 body { background-color: #020f0a !important; }
 
                 .spl-root {
-                    position: fixed;
-                    inset: 0;
-                    z-index: 9999;
-                    background: var(--bg);
-                    overflow: hidden;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
+                  position: fixed;
+                  inset: 0;
+                  z-index: 9999;
+                  background: var(--bg);
+                  overflow: hidden;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+
+                  /* Safe area mobile */
+                  box-sizing: border-box;
+                  padding-top: env(safe-area-inset-top);
+                  padding-bottom: env(safe-area-inset-bottom);
+              }
 
                 /* ── Glow radiale centrale ── */
                 .spl-glow {
@@ -72,16 +77,42 @@ export default function SplashScreen() {
                     height: 14px;
                     pointer-events: none;
                 }
-                .spl-corner-tl { top: 18px;    left: 18px;  border-top:    1px solid #14b88a; border-left:  1px solid #14b88a; }
-                .spl-corner-tr { top: 18px;    right: 18px; border-top:    1px solid #14b88a; border-right: 1px solid #14b88a; }
-                .spl-corner-bl { bottom: 18px; left: 18px;  border-bottom: 1px solid #14b88a; border-left:  1px solid #14b88a; }
-                .spl-corner-br { bottom: 18px; right: 18px; border-bottom: 1px solid #14b88a; border-right: 1px solid #14b88a; }
+                
+                
+                .spl-corner-tl {
+                    top: calc(18px + env(safe-area-inset-top));
+                    left: 18px;
+                    border-top: 1px solid #14b88a;
+                    border-left: 1px solid #14b88a;
+                }
+
+                .spl-corner-tr {
+                    top: calc(18px + env(safe-area-inset-top));
+                    right: 18px;
+                    border-top: 1px solid #14b88a;
+                    border-right: 1px solid #14b88a;
+                }
+
+                .spl-corner-bl {
+                    bottom: calc(18px + env(safe-area-inset-bottom));
+                    left: 18px;
+                    border-bottom: 1px solid #14b88a;
+                    border-left: 1px solid #14b88a;
+                }
+
+                .spl-corner-br {
+                    bottom: calc(18px + env(safe-area-inset-bottom));
+                    right: 18px;
+                    border-bottom: 1px solid #14b88a;
+                    border-right: 1px solid #14b88a;
+                }
+
 
                 /* ── Top / Bottom bars ── */
                 .spl-bar {
                     position: absolute;
-                    left: 18px;
-                    right: 18px;
+                    left: 28px;
+                    right: 28px;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
@@ -92,9 +123,14 @@ export default function SplashScreen() {
                     color: var(--ink-mute);
                     pointer-events: none;
                 }
-                .spl-bar-top    { top: 22px; }
-                .spl-bar-bottom { bottom: 22px; }
+                
+                .spl-bar-top {
+                    top: calc(22px + env(safe-area-inset-top));
+                }
 
+                .spl-bar-bottom {
+                    bottom: calc(22px + env(safe-area-inset-bottom));
+                }
                 .spl-bar-left {
                     display: flex;
                     align-items: center;

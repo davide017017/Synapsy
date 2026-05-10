@@ -41,7 +41,7 @@ function expandOccurrences(r: Ricorrenza, from: Date, to: Date) {
 function calcolaBilancio(arr: { ricorrenza: Ricorrenza; data: string }[]) {
     return arr.reduce(
         (sum, occ) => sum + (occ.ricorrenza.type === "entrata" ? 1 : -1) * (occ.ricorrenza.importo ?? 0),
-        0
+        0,
     );
 }
 
@@ -127,7 +127,7 @@ export default function ListaProssimiPagamenti({
     for (const ric of pagamenti) {
         occorrenze7 = occorrenze7.concat(expandOccurrences(ric, today, weekTo));
         occorrenze30 = occorrenze30.concat(
-            expandOccurrences(ric, new Date(weekTo.getTime() + 24 * 60 * 60 * 1000), monthTo)
+            expandOccurrences(ric, new Date(weekTo.getTime() + 24 * 60 * 60 * 1000), monthTo),
         );
     }
     occorrenze7.sort((a, b) => a.data.localeCompare(b.data));
@@ -137,19 +137,29 @@ export default function ListaProssimiPagamenti({
     const bilancio30 = calcolaBilancio(occorrenze30);
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 font-mono">
+            {" "}
             {/* === Tabs filtro periodo === */}
             <div className="flex gap-2 mb-1 flex-wrap">
                 {(["tutti", "settimana", "mese"] as const).map((tab) => (
                     <button
                         key={tab}
-                        className={`px-3 py-1.5 text-xs rounded-xl font-semibold shadow-sm transition
-                            ${
-                                filtro === tab
-                                    ? "bg-[hsl(var(--c-primary))] text-[hsl(var(--c-bg))]"
-                                    : "bg-[hsl(var(--c-bg-elevate))] text-[hsl(var(--c-text-secondary))] border border-[hsl(var(--c-primary-border))]"
-                            }
-                        `}
+                        className={`
+                          px-3 py-1.5
+                          rounded-xl
+                          border
+                          font-mono
+                          text-[10px]
+                          uppercase
+                          tracking-[0.08em]
+                          transition-all duration-200
+                          active:scale-95
+                          ${
+                              filtro === tab
+                                  ? "bg-primary/15 text-primary border-primary/35 shadow-[0_0_14px_hsl(var(--c-primary)/0.18)]"
+                                  : "bg-white/5 text-foreground/45 border-white/10 hover:text-primary hover:bg-primary/10 hover:border-primary/25"
+                          }
+                      `}
                         onClick={() => setFiltro(tab)}
                     >
                         {tab === "tutti" ? "Tutti" : tab === "settimana" ? "7 giorni" : "dal 7 al 30 giorno"}
@@ -194,12 +204,22 @@ export default function ListaProssimiPagamenti({
                 />
             )}
             {/* === Totali riepilogo === */}
-            <div className="flex gap-4 mt-1 text-xs text-[hsl(var(--c-text-secondary))] flex-wrap">
+            <div
+                className="
+                  flex gap-3 mt-1 flex-wrap
+                  font-mono
+                  text-[10px]
+                  uppercase
+                  tracking-[0.08em]
+                  text-foreground/45
+              "
+            >
+                {" "}
                 <span>
-                    Settimana: <b>{eur(totaleSettimana)}</b>
+                    Settimana: <b className="text-primary font-bold">{eur(totaleSettimana)}</b>
                 </span>
                 <span>
-                    Mese: <b>{eur(totaleMese)}</b>
+                    Mese: <b className="text-primary font-bold">{eur(totaleMese)}</b>
                 </span>
             </div>
         </div>
@@ -209,30 +229,60 @@ export default function ListaProssimiPagamenti({
 // ===========================================================
 // SectionOccorrenze — bordo sinistro colore categoria
 // ===========================================================
-function SectionOccorrenze({
-    title,
-    occorrenze,
-    bilancio,
-    onEdit,
-    onDelete,
-}: SectionOccorrenzeProps) {
+function SectionOccorrenze({ title, occorrenze, bilancio, onEdit, onDelete }: SectionOccorrenzeProps) {
     const { categories } = useCategories();
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-1 px-1">
-                <h3 className="font-semibold text-[15px] text-[hsl(var(--c-primary))]">{title}</h3>
+            <div className="flex items-center justify-between mb-2 px-1 gap-2">
+                <h3
+                    className="
+                      font-mono
+                      text-[12px]
+                      font-bold
+                      uppercase
+                      tracking-[0.12em]
+                      text-primary
+                      truncate
+                  "
+                >
+                    {title}
+                </h3>{" "}
                 <span
-                    className={`ml-2 px-2 py-0.5 rounded-lg text-xs font-bold border ${getBilancioUtility(bilancio)}`}
+                    className={`
+                      ml-2
+                      px-2.5 py-1
+                      rounded-xl
+                      border
+                      font-mono
+                      text-[10px]
+                      font-bold
+                      uppercase
+                      tracking-[0.06em]
+                      shadow-[0_0_12px_rgba(0,0,0,0.16)]
+                      ${getBilancioUtility(bilancio)}
+                  `}
                     style={{ minWidth: 90, textAlign: "center" }}
                 >
                     Bilancio: {bilancio >= 0 ? "+" : "–"}
                     {eur(Math.abs(bilancio))}
                 </span>
             </div>
-            <ul className="divide-y divide-[hsl(var(--c-table-divider))]">
+            <ul className="space-y-1">
+                {" "}
                 {occorrenze.length === 0 ? (
-                    <li className="text-[hsl(var(--c-table-text-secondary))] italic py-2 text-xs text-center">
+                    <li
+                        className="
+                          py-3
+                          text-center
+                          font-mono
+                          text-[10px]
+                          uppercase
+                          tracking-[0.10em]
+                          text-foreground/35
+                      "
+                    >
+                        {" "}
                         Nessun pagamento.
                     </li>
                 ) : (
@@ -257,7 +307,14 @@ function SectionOccorrenze({
                             <li
                                 key={r.id + "-" + data + "-" + i}
                                 className={`
-                                    flex items-center gap-2 px-2 py-[5px] rounded-lg my-[2px] text-xs
+                                    flex items-center gap-2
+                                    px-2 py-2
+                                    rounded-xl
+                                    border border-white/10
+                                    text-xs
+                                    backdrop-blur-sm
+                                    transition-colors
+                                    hover:bg-primary/5
                                     ${bgRow} ${borderRow}
                                 `}
                                 style={{
@@ -267,19 +324,21 @@ function SectionOccorrenze({
                                 }}
                             >
                                 {/* Data */}
-                                <span className="font-mono w-12 text-right text-[hsl(var(--c-text-tertiary))] select-none">
+                                <span className="font-mono w-12 text-right text-foreground/35 select-none text-[10px]">
+                                    {" "}
                                     {new Date(data).toLocaleDateString("it-IT", {
                                         day: "2-digit",
                                         month: "2-digit",
                                     })}
                                 </span>
                                 {/* Nome */}
-                                <span className="truncate font-semibold max-w-[7.5rem] text-[hsl(var(--c-text))]">
+                                <span className="truncate font-mono font-semibold max-w-[7.5rem] text-foreground/80 text-[12px]">
+                                    {" "}
                                     {r.nome}
                                 </span>
                                 {/* Categoria */}
                                 <span
-                                    className="hidden sm:inline-block text-[11px] font-medium max-w-[5.5rem] truncate"
+                                    className="hidden sm:inline-block font-mono text-[10px] uppercase tracking-[0.04em] max-w-[5.5rem] truncate"
                                     style={category?.color ? { color: category.color } : {}}
                                 >
                                     {r.categoria}
@@ -288,7 +347,7 @@ function SectionOccorrenze({
                                 <div className="flex items-center gap-2 ml-auto min-w-[115px] justify-end">
                                     {/* Importo */}
                                     <span
-                                        className={`font-mono font-bold pr-1 ${textRow}`}
+                                        className={`font-mono font-bold pr-1 text-[12px] ${textRow}`}
                                         style={{ minWidth: 64, textAlign: "right" }}
                                     >
                                         {r.type === "entrata" ? "+" : "–"}
@@ -296,7 +355,16 @@ function SectionOccorrenze({
                                     </span>
                                     {/* Pill frequenza */}
                                     <span
-                                        className="px-2 py-0.5 rounded-full text-[10px] font-semibold border"
+                                        className="
+                                            px-2 py-0.5
+                                            rounded-lg
+                                            border
+                                            font-mono
+                                            text-[9px]
+                                            font-bold
+                                            uppercase
+                                            tracking-[0.06em]
+                                        "
                                         style={{
                                             ...style,
                                             minWidth: 42,
@@ -313,24 +381,42 @@ function SectionOccorrenze({
                                     <div className="flex gap-1 pl-1">
                                         {onEdit && (
                                             <button
-                                                className="p-0.5 rounded hover:bg-[hsl(var(--c-primary))]/20 transition"
+                                                className="
+                                                    p-1.5
+                                                    rounded-xl
+                                                    border border-primary/25
+                                                    bg-primary/10
+                                                    text-primary
+                                                    transition-all duration-200
+                                                    hover:bg-primary/15
+                                                    hover:shadow-[0_0_12px_hsl(var(--c-primary)/0.20)]
+                                                    active:scale-95
+                                                "
                                                 title="Modifica"
                                                 onClick={() => onEdit(r)}
                                             >
-                                                <svg className="inline-block" width={16} height={16}>
-                                                    <Pencil size={14} />
-                                                </svg>
+                                                <Pencil size={14} />
                                             </button>
                                         )}
+
                                         {onDelete && (
                                             <button
-                                                className="p-0.5 rounded hover:bg-[hsl(var(--c-danger))]/20 transition"
+                                                className="
+                                                    p-1.5
+                                                    rounded-xl
+                                                    border border-red-400/25
+                                                    bg-red-500/10
+                                                    text-red-400/85
+                                                    transition-all duration-200
+                                                    hover:bg-red-500/15
+                                                    hover:text-red-300
+                                                    hover:shadow-[0_0_12px_rgba(248,113,113,0.22)]
+                                                    active:scale-95
+                                                "
                                                 title="Elimina"
                                                 onClick={() => onDelete(r)}
                                             >
-                                                <svg className="inline-block" width={16} height={16}>
-                                                    <Trash2 size={14} />
-                                                </svg>
+                                                <Trash2 size={14} />
                                             </button>
                                         )}
                                     </div>
@@ -343,4 +429,3 @@ function SectionOccorrenze({
         </div>
     );
 }
-

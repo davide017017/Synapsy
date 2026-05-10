@@ -41,6 +41,7 @@ export default function BackupSection() {
     if (!user?.is_admin) return null;
 
     // ─── carica lista backup ───────────────────────────────────────────────
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const loadList = useCallback(async () => {
         if (!token) return;
         setLoadingList(true);
@@ -54,6 +55,7 @@ export default function BackupSection() {
         }
     }, [token]);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         loadList();
     }, [loadList]);
@@ -106,21 +108,53 @@ export default function BackupSection() {
     return (
         <>
             <div
-                className="mt-8 rounded-xl shadow-sm overflow-hidden"
+                className="
+                    mt-8
+                    rounded-2xl
+                    border
+                    overflow-hidden
+                    backdrop-blur-xl
+                    shadow-[0_18px_55px_rgba(0,0,0,0.22)]
+                "
                 style={{
-                    background: "hsl(var(--c-bg-elevate, 44 36% 88%) / 0.8)",
-                    border: "1px solid hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
-                    boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
+                    background: "hsl(var(--c-bg-elevate, 44 36% 88%) / 0.72)",
+                    borderColor: "hsl(var(--c-primary) / 0.18)",
                 }}
             >
                 {/* Header */}
                 <div
-                    className="flex items-center justify-between px-5 py-4 border-b"
-                    style={{ borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.12))" }}
+                    className="
+                        flex items-center justify-between
+                        px-5 py-4
+                        border-b
+                        bg-black/5
+                    "
+                    style={{ borderColor: "hsl(var(--c-primary) / 0.14)" }}
                 >
                     <div className="flex items-center gap-2">
-                        <DatabaseBackup size={20} className="text-primary" />
-                        <h2 className="font-semibold text-primary text-base">Backup Database</h2>
+                        <DatabaseBackup
+                            size={20}
+                            className="text-primary drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.35)]"
+                        />
+
+                        <div>
+                            <h2
+                                className="
+                                    font-mono
+                                    text-sm
+                                    font-bold
+                                    uppercase
+                                    tracking-[0.14em]
+                                    text-primary
+                                "
+                            >
+                                Backup Database
+                            </h2>
+
+                            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/35">
+                                {"// local admin tools"}
+                            </p>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -130,11 +164,18 @@ export default function BackupSection() {
                             onClick={loadList}
                             disabled={loadingList}
                             className="
-                                p-1.5 rounded-lg border transition
-                                bg-bg-soft border-secondary text-text-secondary
-                                hover:bg-bg-alt hover:text-text
-                                disabled:opacity-50 disabled:cursor-not-allowed
-                            "
+                              p-2
+                              rounded-xl
+                              border
+                              bg-primary/10
+                              border-primary/25
+                              text-primary
+                              transition-all duration-200
+                              hover:bg-primary/15
+                              hover:shadow-[0_0_14px_hsl(var(--c-primary)/0.20)]
+                              active:scale-95
+                              disabled:opacity-50 disabled:cursor-not-allowed
+                          "
                             title="Aggiorna lista"
                         >
                             <RefreshCw size={15} className={loadingList ? "animate-spin" : ""} />
@@ -147,10 +188,21 @@ export default function BackupSection() {
                                 onClick={handleCreate}
                                 disabled={creating}
                                 className="
-                                    flex items-center gap-1.5 px-3 py-1.5 rounded-lg border
-                                    font-medium text-sm transition
-                                    bg-primary text-text-invert border-primary
-                                    hover:opacity-90 hover:scale-105 active:scale-95
+                                    flex items-center gap-1.5
+                                    px-3 py-2
+                                    rounded-xl
+                                    border
+                                    font-mono
+                                    text-[11px]
+                                    uppercase
+                                    tracking-[0.08em]
+                                    bg-primary/15
+                                    border-primary/35
+                                    text-primary
+                                    transition-all duration-200
+                                    hover:bg-primary/20
+                                    hover:shadow-[0_0_16px_hsl(var(--c-primary)/0.25)]
+                                    active:scale-95
                                     disabled:opacity-60 disabled:cursor-not-allowed
                                 "
                             >
@@ -173,25 +225,35 @@ export default function BackupSection() {
                 {/* Lista backup */}
                 <div className="px-5 py-3">
                     {loadingList && backups.length === 0 ? (
-                        <p className="text-sm text-muted-foreground py-3 text-center">
+                        <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/40 py-3 text-center">
                             Caricamento backup...
                         </p>
                     ) : backups.length === 0 ? (
-                        <p className="text-sm text-muted-foreground py-3 text-center">
+                        <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/40 py-3 text-center">
                             Nessun backup disponibile. Crea il primo backup.
                         </p>
                     ) : (
-                        <ul className="divide-y" style={{ borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.1))" }}>
+                        <ul
+                            className="divide-y"
+                            style={{ borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.1))" }}
+                        >
                             {backups.map((backup) => (
                                 <li
                                     key={backup.filename}
-                                    className="flex items-center justify-between py-3 gap-3 flex-wrap"
+                                    className="
+                                        flex items-center justify-between
+                                        py-3 gap-3 flex-wrap
+                                        transition-colors
+                                        hover:bg-primary/5
+                                        rounded-xl
+                                        px-2
+                                    "
                                 >
                                     {/* Info file */}
                                     <div className="flex flex-col min-w-0">
-                                        <span className="text-sm font-mono text-text truncate">
+                                        <span className="text-xs font-mono text-primary truncate tracking-[0.04em]">
                                             {backup.filename}
-                                        </span>
+                                        </span>{" "}
                                         <span className="text-xs text-muted-foreground mt-0.5">
                                             {formatBytes(backup.size)} · {backup.created_at}
                                         </span>
@@ -205,11 +267,22 @@ export default function BackupSection() {
                                             onClick={() => handleDownload(backup.filename)}
                                             disabled={downloadingFile === backup.filename}
                                             className="
-                                                flex items-center gap-1 px-2.5 py-1 rounded-lg border
-                                                text-xs font-medium transition
-                                                bg-bg-soft border-secondary text-text-secondary
-                                                hover:bg-primary hover:text-text-invert hover:border-primary
-                                                active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                                                flex items-center gap-1.5
+                                                px-2.5 py-1.5
+                                                rounded-xl
+                                                border
+                                                font-mono
+                                                text-[10px]
+                                                uppercase
+                                                tracking-[0.06em]
+                                                bg-primary/10
+                                                border-primary/25
+                                                text-primary
+                                                transition-all duration-200
+                                                hover:bg-primary/15
+                                                hover:shadow-[0_0_12px_hsl(var(--c-primary)/0.20)]
+                                                active:scale-95
+                                                disabled:opacity-50 disabled:cursor-not-allowed
                                             "
                                         >
                                             {downloadingFile === backup.filename ? (
@@ -227,12 +300,24 @@ export default function BackupSection() {
                                                 onClick={() => setConfirmDelete(backup.filename)}
                                                 disabled={deletingFile === backup.filename}
                                                 className="
-                                                    flex items-center gap-1 px-2.5 py-1 rounded-lg border
-                                                    text-xs font-medium transition
-                                                    bg-bg-soft border-secondary text-text-secondary
-                                                    hover:bg-danger hover:text-text-invert hover:border-danger-dark
-                                                    active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
-                                                "
+                                                  flex items-center gap-1.5
+                                                  px-2.5 py-1.5
+                                                  rounded-xl
+                                                  border
+                                                  font-mono
+                                                  text-[10px]
+                                                  uppercase
+                                                  tracking-[0.06em]
+                                                  bg-red-500/10
+                                                  border-red-400/25
+                                                  text-red-400/85
+                                                  transition-all duration-200
+                                                  hover:bg-red-500/15
+                                                  hover:text-red-300
+                                                  hover:shadow-[0_0_12px_rgba(248,113,113,0.22)]
+                                                  active:scale-95
+                                                  disabled:opacity-50 disabled:cursor-not-allowed
+                                              "
                                             >
                                                 {deletingFile === backup.filename ? (
                                                     <RefreshCw size={12} className="animate-spin" />

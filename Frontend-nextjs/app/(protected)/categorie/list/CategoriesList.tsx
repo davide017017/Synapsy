@@ -67,15 +67,35 @@ export default function CategoriesList() {
     if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
 
     return (
-        <div className="w-full px-2 md:px-6">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-2 relative">
+        <div className="w-full px-0 md:px-2 font-mono">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 relative">
+                {" "}
                 {/* Linea divisoria verticale */}
-                <div className="hidden xl:block absolute left-1/2 top-0 bottom-0 w-px bg-zinc-300 dark:bg-zinc-700" />
-
+                <div
+                    className="
+                      hidden xl:block
+                      absolute left-1/2 top-2 bottom-2
+                      w-px
+                      bg-primary/15
+                      shadow-[0_0_18px_hsl(var(--c-primary)/0.18)]
+                  "
+                />{" "}
                 {/* ================== Entrate ================== */}
                 <section>
-                    <h2 className="flex items-center justify-center gap-2 text-base font-bold text-emerald-500 uppercase mb-3">
-                        <ArrowUp size={18} />
+                    <h2
+                        className="
+                          mb-3
+                          flex items-center justify-center gap-2
+                          font-mono
+                          text-sm
+                          font-bold
+                          uppercase
+                          tracking-[0.14em]
+                          text-[hsl(var(--c-success))]
+                          drop-shadow-[0_0_12px_hsl(var(--c-success)/0.25)]
+                      "
+                    >
+                        <ArrowUp size={18} className="drop-shadow-[0_0_10px_hsl(var(--c-success)/0.30)]" />
                         Entrate
                     </h2>
                     <CardCategories
@@ -86,11 +106,22 @@ export default function CategoriesList() {
                         onViewTransactions={setCategoryForModal}
                     />
                 </section>
-
                 {/* ================== Spese ================== */}
                 <section>
-                    <h2 className="flex items-center justify-center gap-2 text-base font-bold text-red-500 uppercase mb-3">
-                        <ArrowDown size={18} />
+                    <h2
+                        className="
+                          mb-3
+                          flex items-center justify-center gap-2
+                          font-mono
+                          text-sm
+                          font-bold
+                          uppercase
+                          tracking-[0.14em]
+                          text-[hsl(var(--c-danger))]
+                          drop-shadow-[0_0_12px_hsl(var(--c-danger)/0.25)]
+                      "
+                    >
+                        <ArrowDown size={18} className="drop-shadow-[0_0_10px_hsl(var(--c-danger)/0.30)]" />
                         Spese
                     </h2>
                     <CardCategories
@@ -104,10 +135,7 @@ export default function CategoriesList() {
             </div>
 
             {/* Modale consulto rapido transazioni */}
-            <CategoryTransactionsModal
-                cat={categoryForModal}
-                onClose={() => setCategoryForModal(null)}
-            />
+            <CategoryTransactionsModal cat={categoryForModal} onClose={() => setCategoryForModal(null)} />
 
             {/* Modale conferma eliminazione */}
             <DeleteCategoryModal

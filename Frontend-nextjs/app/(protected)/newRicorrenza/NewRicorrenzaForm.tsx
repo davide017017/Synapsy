@@ -83,7 +83,9 @@ function clampMin(n: number, min: number) {
 
 function parseAmount(raw: string | number) {
     if (typeof raw === "number") return raw;
-    const s = String(raw ?? "").trim().replace(",", ".");
+    const s = String(raw ?? "")
+        .trim()
+        .replace(",", ".");
     const n = Number(s);
     return Number.isFinite(n) ? n : 0;
 }
@@ -129,6 +131,16 @@ export default function NewRicorrenzaForm({
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
 
+    // ────────────────────────────────────────────────
+    // Accent UI entrata/spesa
+    // ────────────────────────────────────────────────
+    const typeAccent = formData.type === "entrata" ? "hsl(var(--c-success))" : "hsl(var(--c-danger))";
+
+    const typeAccentSoft = formData.type === "entrata" ? "hsl(var(--c-success) / 0.12)" : "hsl(var(--c-danger) / 0.12)";
+
+    const typeAccentBorder =
+        formData.type === "entrata" ? "hsl(var(--c-success) / 0.35)" : "hsl(var(--c-danger) / 0.35)";
+
     // ==================== PICKER STATE ====================
     const showCategoryPicker = categoryPickerOpen ?? false;
     const openCategoryPicker = () => onCategoryPickerOpenChange?.(true);
@@ -161,7 +173,7 @@ export default function NewRicorrenzaForm({
     // ==================== CATEGORY FILTER ====================
     const filteredCategories = useMemo(
         () => categories.filter((cat: Category) => cat.type === formData.type),
-        [categories, formData.type]
+        [categories, formData.type],
     );
 
     // ==================== DATE QUICK PICKS ====================
@@ -237,48 +249,102 @@ export default function NewRicorrenzaForm({
     // ║                      RENDER FORM                     ║
     // ╚═══════════════════════════════════════════════════════╝
     return (
-        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+        <form onSubmit={handleSubmit} className="space-y-4 font-mono" autoComplete="off">
+            {" "}
             {/* ── STEP 1: Bordo colorato entrata/spesa ── */}
             <div
-                className={cn(
-                    "rounded-2xl border transition-colors pb-safe",
-                    "px-3 py-3 sm:px-4 sm:py-4",
-                    formData.type === "entrata" ? "border-emerald-500/80" : "border-rose-500/80"
-                )}
+                className="
+                    rounded-2xl
+                    border
+                    bg-black/25
+                    backdrop-blur-sm
+                    px-3 py-3
+                    sm:px-4 sm:py-4
+                    pb-safe
+                "
+                style={{
+                    borderColor: typeAccentBorder,
+                    boxShadow: `0 0 18px ${
+                        formData.type === "entrata" ? "hsl(var(--c-success) / 0.10)" : "hsl(var(--c-danger) / 0.10)"
+                    }`,
+                }}
             >
                 {/* ===== Tipo ricorrenza ===== */}
                 <div className="flex gap-3">
                     <button
                         type="button"
                         onClick={() => setFormData({ ...formData, type: "entrata", category_id: 0 })}
-                        className={cn(
-                            "flex-1 flex flex-col items-center justify-center rounded-xl border px-4 py-3 transition",
-                            formData.type === "entrata"
-                                ? "border-emerald-500 text-emerald-400 shadow"
-                                : "border-border text-muted-foreground hover:border-emerald-500/60 hover:text-emerald-300/90"
-                        )}
+                        className="
+                              flex-1
+                              flex flex-col items-center justify-center
+                              rounded-xl
+                              border
+                              px-4 py-3
+                              font-mono
+                              uppercase
+                              transition-all duration-200
+                              active:scale-95
+                          "
+                        style={{
+                            borderColor:
+                                formData.type === "entrata"
+                                    ? "hsl(var(--c-success) / 0.55)"
+                                    : "hsl(var(--c-success) / 0.18)",
+                            background:
+                                formData.type === "entrata" ? "hsl(var(--c-success) / 0.12)" : "rgba(255,255,255,0.03)",
+                            color:
+                                formData.type === "entrata" ? "hsl(var(--c-success))" : "hsl(var(--c-success) / 0.55)",
+                            boxShadow:
+                                formData.type === "entrata" ? "0 0 16px hsl(var(--c-success) / 0.18)" : undefined,
+                        }}
                     >
-                        <span className="text-base font-bold tracking-wide">ENTRATA</span>
-                        <span className="text-[11px] opacity-70 mt-1">ricorrenza in entrata</span>
+                        <span className="text-sm font-bold tracking-[0.12em]">Entrata</span>
+                        <span className="text-[10px] opacity-60 mt-1 tracking-[0.08em]">ricorrenza in entrata</span>
                     </button>
+
                     <button
                         type="button"
                         onClick={() => setFormData({ ...formData, type: "spesa", category_id: 0 })}
-                        className={cn(
-                            "flex-1 flex flex-col items-center justify-center rounded-xl border px-4 py-3 transition",
-                            formData.type === "spesa"
-                                ? "border-rose-500 text-rose-400 shadow"
-                                : "border-border text-muted-foreground hover:border-rose-500/60 hover:text-rose-300/90"
-                        )}
+                        className="
+                              flex-1
+                              flex flex-col items-center justify-center
+                              rounded-xl
+                              border
+                              px-4 py-3
+                              font-mono
+                              uppercase
+                              transition-all duration-200
+                              active:scale-95
+                          "
+                        style={{
+                            borderColor:
+                                formData.type === "spesa"
+                                    ? "hsl(var(--c-danger) / 0.55)"
+                                    : "hsl(var(--c-danger) / 0.18)",
+                            background:
+                                formData.type === "spesa" ? "hsl(var(--c-danger) / 0.12)" : "rgba(255,255,255,0.03)",
+                            color: formData.type === "spesa" ? "hsl(var(--c-danger))" : "hsl(var(--c-danger) / 0.55)",
+                            boxShadow: formData.type === "spesa" ? "0 0 16px hsl(var(--c-danger) / 0.18)" : undefined,
+                        }}
                     >
-                        <span className="text-base font-bold tracking-wide">SPESA</span>
-                        <span className="text-[11px] opacity-70 mt-1">ricorrenza in uscita</span>
+                        <span className="text-sm font-bold tracking-[0.12em]">Spesa</span>
+                        <span className="text-[10px] opacity-60 mt-1 tracking-[0.08em]">ricorrenza in uscita</span>
                     </button>
                 </div>
 
                 {/* ── STEP 6: Categoria — Picker fullscreen ── */}
                 <div className="relative mt-2 md:mt-4">
-                    <label htmlFor="ricorrenza-category" className="block text-sm font-medium mb-1">
+                    <label
+                        htmlFor="ricorrenza-category"
+                        className="
+                          block mb-1
+                          text-[11px]
+                          font-bold
+                          uppercase
+                          tracking-[0.12em]
+                          text-foreground/45
+                      "
+                    >
                         Categoria
                     </label>
 
@@ -288,11 +354,22 @@ export default function NewRicorrenzaForm({
                         id="ricorrenza-category"
                         onClick={openCategoryPicker}
                         disabled={loadingCategories}
-                        className={cn(
-                            "w-full flex items-center justify-between px-3 py-2 rounded-xl border text-sm transition",
-                            "bg-bg text-text focus:ring-2 focus:ring-primary/40",
-                            errors.category_id ? "border-danger" : "border-border"
-                        )}
+                        className="
+                            w-full
+                            flex items-center justify-between
+                            px-3 py-2
+                            rounded-xl
+                            border
+                            bg-black/20
+                            text-sm
+                            text-foreground
+                            transition-all duration-200
+                            focus:ring-2
+                        "
+                        style={{
+                            borderColor: errors.category_id ? "hsl(var(--c-danger))" : typeAccentBorder,
+                            boxShadow: `0 0 0 1px ${errors.category_id ? "hsl(var(--c-danger) / 0.35)" : typeAccentBorder}`,
+                        }}
                     >
                         <span className={formData.category_id ? "" : "text-muted-foreground"}>
                             {loadingCategories
@@ -316,11 +393,32 @@ export default function NewRicorrenzaForm({
                             }}
                         >
                             <div
-                                className="bg-bg-elevate border border-border rounded-2xl p-4 max-w-md w-[90%] max-h-[75vh] overflow-auto shadow-2xl"
+                                className="
+                                    max-w-md w-[90%]
+                                    max-h-[75vh]
+                                    overflow-auto
+                                    rounded-2xl
+                                    border border-white/10
+                                    bg-black/80
+                                    backdrop-blur-xl
+                                    p-4
+                                    shadow-[0_24px_80px_rgba(0,0,0,0.55)]
+                                "
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                <h3 className="text-center mb-3 font-semibold text-text">Seleziona una categoria</h3>
-
+                                <h3
+                                    className="
+                                        text-center mb-3
+                                        font-mono
+                                        text-xs
+                                        font-bold
+                                        uppercase
+                                        tracking-[0.14em]
+                                    "
+                                    style={{ color: typeAccent }}
+                                >
+                                    Seleziona una categoria
+                                </h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     {filteredCategories.map((cat) => {
                                         const isActive = formData.category_id === cat.id;
@@ -334,7 +432,7 @@ export default function NewRicorrenzaForm({
                                                     "transition-all duration-200",
                                                     isActive
                                                         ? "scale-[1.03] text-white"
-                                                        : "hover:scale-[1.02] text-muted-foreground hover:text-text"
+                                                        : "hover:scale-[1.02] text-muted-foreground hover:text-text",
                                                 )}
                                                 onClick={() => {
                                                     setFormData({ ...formData, category_id: cat.id });
@@ -351,7 +449,22 @@ export default function NewRicorrenzaForm({
                                 </div>
 
                                 <button
-                                    className="mt-4 w-full py-2 text-sm rounded-xl border border-border text-text hover:bg-bg-soft transition"
+                                    className="
+                                        mt-4 w-full
+                                        py-2
+                                        rounded-xl
+                                        border border-white/10
+                                        bg-white/5
+                                        font-mono
+                                        text-[11px]
+                                        uppercase
+                                        tracking-[0.08em]
+                                        text-foreground/60
+                                        transition-all duration-200
+                                        hover:bg-white/10
+                                        hover:text-foreground
+                                        active:scale-95
+                                    "
                                     onClick={closeCategoryPicker}
                                 >
                                     Chiudi
@@ -363,7 +476,17 @@ export default function NewRicorrenzaForm({
 
                 {/* ===== Nome ===== */}
                 <div className="mt-2 md:mt-4">
-                    <label htmlFor="ricorrenza-nome" className="block text-sm font-medium mb-1">
+                    <label
+                        htmlFor="ricorrenza-nome"
+                        className="
+                          block mb-1
+                          text-[11px]
+                          font-bold
+                          uppercase
+                          tracking-[0.12em]
+                          text-foreground/45
+                      "
+                    >
                         Nome ricorrenza
                     </label>
                     <Input
@@ -373,7 +496,19 @@ export default function NewRicorrenzaForm({
                         placeholder="Nome ricorrenza"
                         value={formData.nome}
                         onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                        className={errors.nome ? "border-danger" : ""}
+                        className={cn(
+                            `
+                              font-mono
+                              bg-black/20
+                              border
+                              focus:ring-2
+                          `,
+                            errors.nome ? "border-danger" : "",
+                        )}
+                        style={{
+                            borderColor: errors.nome ? "hsl(var(--c-danger))" : typeAccentBorder,
+                            boxShadow: `0 0 0 1px ${errors.nome ? "hsl(var(--c-danger) / 0.35)" : typeAccentBorder}`,
+                        }}
                         autoComplete="off"
                     />
                     {errors.nome && <p className="text-danger text-xs mt-1">{errors.nome}</p>}
@@ -390,7 +525,7 @@ export default function NewRicorrenzaForm({
                                 "group flex items-center justify-center h-9 w-9 rounded-full border transition-all duration-300",
                                 isResetImportoAnimating
                                     ? "border-yellow-400 bg-yellow-400/20 shadow-[0_0_16px_rgba(250,204,21,0.55)]"
-                                    : "border-border hover:border-yellow-400/60 hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]"
+                                    : "border-border hover:border-yellow-400/60 hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]",
                             )}
                         >
                             <FiRotateCcw
@@ -398,7 +533,7 @@ export default function NewRicorrenzaForm({
                                 strokeWidth={2}
                                 className={cn(
                                     "transition-transform",
-                                    isResetImportoAnimating ? "animate-spin-slow" : "group-hover:rotate-[-20deg]"
+                                    isResetImportoAnimating ? "animate-spin-slow" : "group-hover:rotate-[-20deg]",
                                 )}
                             />
                         </button>
@@ -422,7 +557,10 @@ export default function NewRicorrenzaForm({
                             >
                                 <span className="text-2xl font-bold leading-none">+</span>
                             </button>
-                            <div className="flex items-center px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none" aria-hidden="true">
+                            <div
+                                className="flex items-center px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
+                                aria-hidden="true"
+                            >
                                 10&nbsp;€
                             </div>
                             <button
@@ -447,7 +585,10 @@ export default function NewRicorrenzaForm({
                             >
                                 <span className="text-base font-semibold leading-none">+</span>
                             </button>
-                            <div className="flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none" aria-hidden="true">
+                            <div
+                                className="flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
+                                aria-hidden="true"
+                            >
                                 1&nbsp;€
                             </div>
                             <button
@@ -476,13 +617,30 @@ export default function NewRicorrenzaForm({
                             }}
                             onBlur={() => {
                                 const n = parseAmount(formData.importo as any);
-                                setFormData((p) => ({ ...p, importo: clampMin(roundTo(n, AMOUNT_DECIMALS), AMOUNT_MIN) }));
+                                setFormData((p) => ({
+                                    ...p,
+                                    importo: clampMin(roundTo(n, AMOUNT_DECIMALS), AMOUNT_MIN),
+                                }));
                             }}
                             className={cn(
-                                "text-center font-bold tracking-wide",
-                                "!text-4xl sm:!text-2xl",
-                                errors.importo ? "border-danger" : ""
+                                `
+                                text-center
+                                font-mono
+                                font-bold
+                                tracking-wide
+                                bg-black/20
+                                border
+                                focus:ring-2
+                                !text-4xl sm:!text-2xl
+                            `,
+                                errors.importo ? "border-danger" : "",
                             )}
+                            style={{
+                                borderColor: errors.importo ? "hsl(var(--c-danger))" : typeAccentBorder,
+                                boxShadow: `0 0 0 1px ${
+                                    errors.importo ? "hsl(var(--c-danger) / 0.35)" : typeAccentBorder
+                                }`,
+                            }}
                         />
 
                         {/* ±0.1 — amber */}
@@ -496,7 +654,10 @@ export default function NewRicorrenzaForm({
                             >
                                 <span className="text-base font-semibold leading-none">+</span>
                             </button>
-                            <div className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none" aria-hidden="true">
+                            <div
+                                className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
+                                aria-hidden="true"
+                            >
                                 0.1&nbsp;€
                             </div>
                             <button
@@ -521,7 +682,10 @@ export default function NewRicorrenzaForm({
                             >
                                 <span className="text-sm font-medium leading-none">+</span>
                             </button>
-                            <div className="flex items-center px-2 py-0.5 text-[10px] font-semibold border border-yellow-500/40 text-yellow-500 bg-yellow-500/10 select-none" aria-hidden="true">
+                            <div
+                                className="flex items-center px-2 py-0.5 text-[10px] font-semibold border border-yellow-500/40 text-yellow-500 bg-yellow-500/10 select-none"
+                                aria-hidden="true"
+                            >
                                 0.01&nbsp;€
                             </div>
                             <button
@@ -546,12 +710,28 @@ export default function NewRicorrenzaForm({
                                 <button
                                     key={v}
                                     type="button"
-                                    className={cn(
-                                        "px-2.5 py-1 rounded-full border text-xs font-medium transition-all duration-150",
-                                        isActive
-                                            ? "border-primary bg-primary/30 text-primary shadow-[0_0_8px_rgba(56,189,248,0.45)]"
-                                            : "border-border/50 bg-transparent text-muted-foreground hover:bg-primary/15 hover:border-primary/60 hover:text-text"
-                                    )}
+                                    className="
+                                        px-2.5 py-1
+                                        rounded-full
+                                        border
+                                        font-mono
+                                        text-xs
+                                        font-medium
+                                        transition-all duration-200
+                                        active:scale-95
+                                    "
+                                    style={{
+                                        borderColor: isActive ? typeAccentBorder : "rgba(255,255,255,0.10)",
+                                        background: isActive ? typeAccentSoft : "rgba(255,255,255,0.04)",
+                                        color: isActive ? typeAccent : "hsl(var(--c-foreground) / 0.55)",
+                                        boxShadow: isActive
+                                            ? `0 0 10px ${
+                                                  formData.type === "entrata"
+                                                      ? "hsl(var(--c-success) / 0.18)"
+                                                      : "hsl(var(--c-danger) / 0.18)"
+                                              }`
+                                            : undefined,
+                                    }}
                                     onClick={() => setFormData({ ...formData, importo: v })}
                                     disabled={loading}
                                 >
@@ -564,7 +744,18 @@ export default function NewRicorrenzaForm({
 
                 {/* ── STEP 2: Frequenza — pill buttons ── */}
                 <div className="mt-2 md:mt-4">
-                    <label className="block text-sm font-medium mb-2">Frequenza</label>
+                    <label
+                        className="
+                          block mb-1
+                          text-[11px]
+                          font-bold
+                          uppercase
+                          tracking-[0.12em]
+                          text-foreground/45
+                      "
+                    >
+                        Frequenza
+                    </label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {(
                             [
@@ -586,7 +777,7 @@ export default function NewRicorrenzaForm({
                                             ? formData.type === "entrata"
                                                 ? "border-emerald-500 text-emerald-400 bg-emerald-500/10 shadow"
                                                 : "border-rose-500 text-rose-400 bg-rose-500/10 shadow"
-                                            : "border-border/50 text-muted-foreground bg-bg-elevate hover:border-primary/50 hover:text-text"
+                                            : "border-border/50 text-muted-foreground bg-bg-elevate hover:border-primary/50 hover:text-text",
                                     )}
                                 >
                                     {label}
@@ -607,7 +798,7 @@ export default function NewRicorrenzaForm({
                                 "group flex items-center justify-center h-9 w-9 rounded-full border transition-all duration-300",
                                 isResetDataAnimating
                                     ? "border-yellow-400 bg-yellow-400/20 shadow-[0_0_16px_rgba(250,204,21,0.55)]"
-                                    : "border-border hover:border-yellow-400/60 hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]"
+                                    : "border-border hover:border-yellow-400/60 hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]",
                             )}
                         >
                             <FiRotateCcw
@@ -615,13 +806,21 @@ export default function NewRicorrenzaForm({
                                 strokeWidth={2}
                                 className={cn(
                                     "transition-transform",
-                                    isResetDataAnimating ? "animate-spin-slow" : "group-hover:rotate-[-20deg]"
+                                    isResetDataAnimating ? "animate-spin-slow" : "group-hover:rotate-[-20deg]",
                                 )}
                             />
                         </button>
                         <label
                             htmlFor="ricorrenza-prossima"
-                            className="absolute left-1/2 -translate-x-1/2 text-sm font-medium pointer-events-none"
+                            className="
+                              absolute left-1/2 -translate-x-1/2
+                              text-[11px]
+                              font-bold
+                              uppercase
+                              tracking-[0.12em]
+                              text-foreground/45
+                              pointer-events-none
+                          "
                         >
                             Data prossima
                         </label>
@@ -633,7 +832,21 @@ export default function NewRicorrenzaForm({
                         type="date"
                         value={formData.prossima}
                         onChange={(e) => setFormData({ ...formData, prossima: e.target.value })}
-                        className={errors.prossima ? "border-danger" : ""}
+                        className={cn(
+                            `
+                              font-mono
+                              bg-black/20
+                              border
+                              focus:ring-2
+                          `,
+                            errors.prossima ? "border-danger" : "",
+                        )}
+                        style={{
+                            borderColor: errors.prossima ? "hsl(var(--c-danger))" : typeAccentBorder,
+                            boxShadow: `0 0 0 1px ${
+                                errors.prossima ? "hsl(var(--c-danger) / 0.35)" : typeAccentBorder
+                            }`,
+                        }}
                     />
                     {errors.prossima && <p className="text-danger text-xs mt-1">{errors.prossima}</p>}
 
@@ -650,17 +863,35 @@ export default function NewRicorrenzaForm({
                                 <button
                                     key={item.label}
                                     type="button"
-                                    className={cn(
-                                        "px-1 py-2 sm:py-3 rounded-2xl border text-xs sm:text-sm transition-all duration-150 flex flex-col items-center",
-                                        active
-                                            ? "border-primary bg-primary/20 text-primary shadow-[0_0_10px_rgba(56,189,248,0.35)]"
-                                            : "bg-bg-elevate text-muted-foreground border-border/50 hover:bg-primary/10 hover:border-primary/50 hover:text-text"
-                                    )}
+                                    className="
+                                        px-1 py-2 sm:py-3
+                                        rounded-2xl
+                                        border
+                                        font-mono
+                                        text-xs sm:text-sm
+                                        transition-all duration-200
+                                        flex flex-col items-center
+                                        active:scale-95
+                                    "
+                                    style={{
+                                        borderColor: active ? typeAccentBorder : "rgba(255,255,255,0.10)",
+                                        background: active ? typeAccentSoft : "rgba(255,255,255,0.04)",
+                                        color: active ? typeAccent : "hsl(var(--c-foreground) / 0.55)",
+                                        boxShadow: active
+                                            ? `0 0 12px ${
+                                                  formData.type === "entrata"
+                                                      ? "hsl(var(--c-success) / 0.18)"
+                                                      : "hsl(var(--c-danger) / 0.18)"
+                                              }`
+                                            : undefined,
+                                    }}
                                     onClick={() => setFormData((p) => ({ ...p, prossima: item.date }))}
                                     disabled={loading}
                                 >
                                     <span className="block leading-tight">{item.label}</span>
-                                    <span className="block text-[11px] opacity-70 leading-tight mt-0.5">{item.ddmm}</span>
+                                    <span className="block text-[11px] opacity-70 leading-tight mt-0.5">
+                                        {item.ddmm}
+                                    </span>
                                 </button>
                             );
                         })}
@@ -672,7 +903,17 @@ export default function NewRicorrenzaForm({
                     <div className="flex gap-3 lg:gap-6">
                         {/* Note (sinistra) */}
                         <div className="flex-1 min-w-0">
-                            <label htmlFor="ricorrenza-notes" className="block text-sm font-medium mb-1">
+                            <label
+                                htmlFor="ricorrenza-notes"
+                                className="
+                                  block mb-1
+                                  text-[11px]
+                                  font-bold
+                                  uppercase
+                                  tracking-[0.12em]
+                                  text-foreground/45
+                              "
+                            >
                                 Note (opzionale)
                             </label>
                             <Textarea
@@ -681,7 +922,21 @@ export default function NewRicorrenzaForm({
                                 placeholder="Note (opzionale)"
                                 value={formData.notes || ""}
                                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                className="min-h-[120px] lg:min-h-[140px] break-words whitespace-pre-wrap"
+                                className="
+                                    min-h-[120px]
+                                    lg:min-h-[140px]
+                                    break-words
+                                    whitespace-pre-wrap
+                                    font-mono
+                                    bg-black/20
+                                    border
+                                    focus:ring-2
+                                    placeholder:text-foreground/30
+                                "
+                                style={{
+                                    borderColor: typeAccentBorder,
+                                    boxShadow: `0 0 0 1px ${typeAccentBorder}`,
+                                }}
                             />
                         </div>
 
@@ -690,12 +945,31 @@ export default function NewRicorrenzaForm({
                             {/* Crea / Salva */}
                             <button
                                 type="submit"
-                                className={cn(
-                                    "w-full rounded-xl py-2 font-semibold shadow transition text-white focus:ring-2 flex items-center justify-center",
-                                    formData.type === "entrata"
-                                        ? "bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500/40"
-                                        : "bg-rose-600 hover:bg-rose-700 focus:ring-rose-500/40"
-                                )}
+                                className="
+                                    w-full
+                                    rounded-xl
+                                    border
+                                    py-2
+                                    font-mono
+                                    text-[11px]
+                                    font-bold
+                                    uppercase
+                                    tracking-[0.08em]
+                                    transition-all duration-200
+                                    active:scale-95
+                                    focus:ring-2
+                                    flex items-center justify-center
+                                "
+                                style={{
+                                    background: typeAccentSoft,
+                                    borderColor: typeAccentBorder,
+                                    color: typeAccent,
+                                    boxShadow: `0 0 16px ${
+                                        formData.type === "entrata"
+                                            ? "hsl(var(--c-success) / 0.20)"
+                                            : "hsl(var(--c-danger) / 0.20)"
+                                    }`,
+                                }}
                                 disabled={loading}
                             >
                                 {loading
@@ -708,7 +982,24 @@ export default function NewRicorrenzaForm({
                             {/* Annulla */}
                             <button
                                 type="button"
-                                className="w-full bg-bg-elevate text-text border border-bg-soft rounded-xl py-2 font-semibold shadow focus:ring-2 focus:ring-primary/40 transition flex items-center justify-center"
+                                className="
+                                    w-full
+                                    rounded-xl
+                                    border border-white/10
+                                    bg-white/5
+                                    py-2
+                                    font-mono
+                                    text-[11px]
+                                    font-bold
+                                    uppercase
+                                    tracking-[0.08em]
+                                    text-foreground/60
+                                    transition-all duration-200
+                                    hover:bg-white/10
+                                    hover:text-foreground
+                                    active:scale-95
+                                    flex items-center justify-center
+                                "
                                 onClick={onCancel}
                                 disabled={loading}
                             >
@@ -719,7 +1010,24 @@ export default function NewRicorrenzaForm({
                             {!!initialValues && (
                                 <button
                                     type="button"
-                                    className="w-full bg-bg-elevate text-warning border border-warning/40 rounded-xl py-2 font-semibold shadow hover:bg-warning/10 hover:border-warning/70 focus:ring-2 focus:ring-warning/40 transition flex items-center justify-center gap-1"
+                                    className="
+                                          w-full
+                                          rounded-xl
+                                          border border-yellow-400/35
+                                          bg-yellow-400/10
+                                          py-2
+                                          font-mono
+                                          text-[11px]
+                                          font-bold
+                                          uppercase
+                                          tracking-[0.08em]
+                                          text-yellow-400
+                                          transition-all duration-200
+                                          hover:bg-yellow-400/15
+                                          hover:shadow-[0_0_14px_rgba(250,204,21,0.20)]
+                                          active:scale-95
+                                          flex items-center justify-center gap-1
+                                      "
                                     onClick={handleReset}
                                     disabled={loading}
                                     title="Ripristina i valori originali"

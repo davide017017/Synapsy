@@ -56,12 +56,12 @@ export default function CategoryTransactionsModal({ cat, onClose }: Props) {
     const accent = cat?.color || "hsl(var(--c-primary))";
 
     const titleNode = cat ? (
-        <div className="flex items-center gap-2 min-w-0">
-            {Icon && <Icon style={{ color: accent }} className="shrink-0" />}
-            <span
-                className="font-bold text-base truncate"
-                style={{ color: accent }}
-            >
+        <div className="flex items-center gap-2 min-w-0 font-mono uppercase tracking-[0.10em]">
+            {Icon && (
+                <Icon style={{ color: accent }} className="shrink-0 drop-shadow-[0_0_10px_currentColor]" size={18} />
+            )}
+
+            <span className="font-bold text-sm truncate" style={{ color: accent }}>
                 {cat.name}
             </span>
         </div>
@@ -80,10 +80,22 @@ export default function CategoryTransactionsModal({ cat, onClose }: Props) {
         <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 rounded-xl text-sm font-medium border transition hover:brightness-110"
+            className="
+            px-4 py-1.5
+            rounded-xl
+            border
+            font-mono
+            text-[11px]
+            uppercase
+            tracking-[0.08em]
+            transition-all duration-200
+            hover:bg-primary/10
+            hover:text-primary
+            active:scale-95
+        "
             style={{
-                background: "hsl(var(--c-bg-elevate, 230 17% 21%))",
-                borderColor: "hsl(var(--c-primary-border, 159 68% 54% / 0.25))",
+                background: "hsl(var(--c-bg-elevate, 230 17% 21%) / 0.65)",
+                borderColor: "hsl(var(--c-primary) / 0.20)",
                 color: "hsl(var(--c-text-secondary, 220 12% 70%))",
             }}
         >
@@ -101,9 +113,21 @@ export default function CategoryTransactionsModal({ cat, onClose }: Props) {
                         type="button"
                         onClick={handleNavigate}
                         title="Vai alle transazioni filtrate per questa categoria"
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition hover:brightness-110"
+                        className="
+                            flex items-center gap-1.5
+                            px-3 py-1.5
+                            rounded-xl
+                            border
+                            font-mono
+                            text-[10px]
+                            uppercase
+                            tracking-[0.08em]
+                            transition-all duration-200
+                            hover:shadow-[0_0_14px_currentColor]
+                            active:scale-95
+                        "
                         style={{
-                            background: `${accent}22`,
+                            background: `${accent}1f`,
                             borderColor: `${accent}44`,
                             color: accent,
                         }}
@@ -115,34 +139,52 @@ export default function CategoryTransactionsModal({ cat, onClose }: Props) {
 
                 {/* Lista transazioni */}
                 {txList.length === 0 ? (
-                    <p className="text-sm text-center opacity-60 py-6">
+                    <p
+                        className="
+                          py-6
+                          text-center
+                          font-mono
+                          text-[11px]
+                          uppercase
+                          tracking-[0.10em]
+                          text-foreground/40
+                      "
+                    >
                         Nessuna transazione per questa categoria.
                     </p>
                 ) : (
-                    <ul className="divide-y divide-[hsl(var(--c-table-divider,220_12%_25%/0.3))]">
+                    <ul className="space-y-1">
+                        {" "}
                         {txList.map((tx) => {
                             const isIncome = tx.type === "entrata";
-                            const amountColor = isIncome
-                                ? "hsl(var(--c-success))"
-                                : "hsl(var(--c-danger))";
+                            const amountColor = isIncome ? "hsl(var(--c-success))" : "hsl(var(--c-danger))";
                             return (
                                 <li
                                     key={tx.id}
-                                    className="flex items-center gap-2 py-1.5"
+                                    className="
+                                        flex items-center gap-2
+                                        px-2 py-2
+                                        rounded-xl
+                                        border border-white/10
+                                        bg-black/10
+                                        backdrop-blur-sm
+                                        transition-colors
+                                        hover:bg-primary/5
+                                    "
                                 >
                                     {/* Data */}
-                                    <span className="text-xs opacity-60 w-[72px] shrink-0 tabular-nums">
+                                    <span className="font-mono text-[10px] text-foreground/40 w-[72px] shrink-0 tabular-nums">
                                         {formatDate(tx.date)}
                                     </span>
 
                                     {/* Descrizione */}
-                                    <span className="flex-1 text-sm truncate min-w-0">
+                                    <span className="flex-1 font-mono text-[12px] text-foreground/75 truncate min-w-0">
                                         {tx.description}
                                     </span>
 
                                     {/* Importo */}
                                     <span
-                                        className="shrink-0 font-mono text-sm font-semibold tabular-nums"
+                                        className="shrink-0 font-mono text-[12px] font-bold tabular-nums"
                                         style={{ color: amountColor }}
                                     >
                                         {isIncome ? "+" : "−"}

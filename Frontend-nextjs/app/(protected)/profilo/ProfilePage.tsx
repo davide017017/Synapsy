@@ -83,15 +83,18 @@ export default function ProfilePage() {
     // Sezione: Render
     // ─────────────────────────────────────────────────────────────────────────
     return (
-        <div className="max-w-3xl mx-auto">
+        <div
+            className="
+                max-w-3xl mx-auto
+                font-mono
+            "
+        >
             {isDemo && (
                 <div className="mb-4 p-3 text-sm text-center rounded-xl bg-yellow-100 text-yellow-800">
                     Questo è un account demo. I dati non possono essere modificati.
                 </div>
             )}
-
             <PendingEmailNotice />
-
             {/* ───────────────────────────── */}
             {/*   DUE COLONNE SU MD+         */}
             {/* ───────────────────────────── */}
@@ -105,10 +108,18 @@ export default function ProfilePage() {
                             alt="Avatar"
                             width={200} // ← dimensioni esplicite per Next Image
                             height={288} //    (mantiene l’aspect simile al vecchio w-50 h-72)
-                            className="rounded-full object-cover border-2 shadow transition group-hover:ring-2"
+                            className="
+                                rounded-full
+                                object-cover
+                                border-2
+                                transition-all duration-200
+                                group-hover:ring-2
+                                group-hover:ring-primary/40
+                                drop-shadow-[0_0_24px_hsl(var(--c-primary)/0.22)]
+                            "
                             style={{
                                 borderColor: "hsl(var(--c-primary, 205 66% 49%))",
-                                boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
+                                boxShadow: "0 0 32px hsl(var(--c-primary) / 0.18)",
                                 cursor: isDemo ? "not-allowed" : "pointer",
                             }}
                             onClick={isDemo ? undefined : () => setShowPicker(true)}
@@ -120,7 +131,17 @@ export default function ProfilePage() {
                         {!isDemo && (
                             <button
                                 type="button"
-                                className="absolute bottom-0 right-0 shadow px-1.5 py-0.5 rounded-full text-xs font-semibold opacity-85 hover:opacity-100 transition border"
+                                className="
+                                    absolute bottom-1 right-1
+                                    px-2 py-1
+                                    rounded-xl
+                                    border
+                                    font-mono text-xs font-semibold
+                                    opacity-85 hover:opacity-100
+                                    transition-all duration-200
+                                    shadow-[0_0_14px_hsl(var(--c-primary)/0.20)]
+                                    backdrop-blur-md
+                                "
                                 style={{
                                     background: "hsl(var(--c-bg, 44 81% 94%))",
                                     borderColor: "hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
@@ -139,20 +160,49 @@ export default function ProfilePage() {
                 {/* ── Colonna dati profilo ── */}
                 <div className="flex-1 flex flex-col gap-4">
                     {/* Intestazione */}
-                    <div className="flex flex-col items-center md:items-start gap-1 mb-2 mt-4 md:mt-0">
-                        <UserRound size={40} className="text-primary drop-shadow" />
-                        <h1 className="text-2xl font-bold text-primary">Profilo</h1>
-                        <p className="text-sm text-muted-foreground">Modifica le informazioni del tuo account.</p>
+                    <div className="flex flex-col items-center md:items-start gap-1 mb-3 mt-4 md:mt-0">
+                        <UserRound
+                            size={38}
+                            className="text-primary drop-shadow-[0_0_14px_hsl(var(--c-primary)/0.40)]"
+                        />
+
+                        <h1
+                            className="
+                              text-2xl
+                              font-extrabold
+                              uppercase
+                              tracking-[0.16em]
+                              text-primary
+                              drop-shadow-[0_0_14px_hsl(var(--c-primary)/0.35)]
+                          "
+                        >
+                            Profilo
+                        </h1>
+
+                        <p
+                            className="
+                                text-[11px]
+                                uppercase
+                                tracking-[0.18em]
+                                text-foreground/40
+                            "
+                        >
+                            {"// account settings · user config"}
+                        </p>
                     </div>
 
                     {/* Dati profilo */}
                     <div
-                        className="rounded-xl shadow-sm"
+                        className="
+                            rounded-2xl
+                            border
+                            backdrop-blur-xl
+                            overflow-visible
+                            shadow-[0_18px_55px_rgba(0,0,0,0.22)]
+                        "
                         style={{
-                            background: "hsl(var(--c-bg-elevate, 44 36% 88%) / 0.8)",
-                            border: "1px solid hsl(var(--c-primary-border, 205 66% 49% / 0.16))",
-                            boxShadow: "0 2px 12px 0 hsl(var(--c-primary-shadow, 205 66% 49% / 0.09))",
-                            overflow: "visible",
+                            background: "hsl(var(--c-bg-elevate, 44 36% 88%) / 0.72)",
+                            borderColor: "hsl(var(--c-primary) / 0.18)",
                         }}
                     >
                         <ProfileRow
@@ -239,10 +289,22 @@ export default function ProfilePage() {
                             </div>
                             <div className="flex gap-1">
                                 <button
-                                    className="opacity-70 group-hover:opacity-100 px-2 py-1 rounded-xl font-semibold text-xs transition"
+                                    className="
+                                        opacity-70 group-hover:opacity-100
+                                        px-3 py-1.5
+                                        rounded-xl
+                                        border
+                                        font-mono
+                                        text-[11px]
+                                        uppercase
+                                        tracking-[0.08em]
+                                        transition-all duration-200
+                                        hover:shadow-[0_0_16px_hsl(var(--c-primary)/0.20)]
+                                    "
                                     style={{
-                                        background: "hsl(var(--c-secondary, 220 15% 48%))",
-                                        color: "hsl(var(--c-bg, 44 81% 94%))",
+                                        background: "hsl(var(--c-primary) / 0.12)",
+                                        borderColor: "hsl(var(--c-primary) / 0.25)",
+                                        color: "hsl(var(--c-primary))",
                                         opacity: isDemo ? 0.4 : undefined,
                                         pointerEvents: isDemo ? "none" : undefined,
                                     }}
@@ -256,7 +318,6 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-
             {/* ───────────────────────────── */}
             {/* Modale scelta avatar         */}
             {/* ───────────────────────────── */}
@@ -267,15 +328,10 @@ export default function ProfilePage() {
                     onClose={() => setShowPicker(false)}
                 />
             )}
-
-            <ChangePasswordModal
-                isOpen={showChangePwd}
-                onClose={() => setShowChangePwd(false)}
-            />
-
+            <ChangePasswordModal isOpen={showChangePwd} onClose={() => setShowChangePwd(false)} />
             <BackupSection />
             <DeleteAccountSection />
-            <LegalLinks className="p-4 border-t border-white/10 text-center" />
+            <LegalLinks className="p-4 border-t border-primary/20 text-center" />{" "}
         </div>
     );
 }

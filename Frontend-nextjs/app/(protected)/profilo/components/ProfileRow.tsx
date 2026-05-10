@@ -1,3 +1,4 @@
+import { Pencil } from "lucide-react";
 import { RowProps } from "@/types/profilo/row";
 
 export default function ProfileRow({
@@ -91,17 +92,28 @@ export default function ProfileRow({
                     </>
                 ) : (
                     <button
-                        className="opacity-70 group-hover:opacity-100 px-2 py-1 rounded-xl font-semibold text-xs transition"
+                        className="
+        opacity-70 group-hover:opacity-100
+        flex items-center justify-center
+        w-8 h-8
+        rounded-xl
+        border
+        transition-all duration-200
+        hover:shadow-[0_0_14px_hsl(var(--c-primary)/0.20)]
+    "
                         style={{
-                            background: "hsl(var(--c-secondary, 220 15% 48%))",
-                            color: "hsl(var(--c-bg, 44 81% 94%))",
+                            background: "hsl(var(--c-primary) / 0.12)",
+                            borderColor: "hsl(var(--c-primary) / 0.25)",
+                            color: "hsl(var(--c-primary))",
                             opacity: disabled ? 0.4 : undefined,
                             pointerEvents: disabled ? "none" : undefined,
                         }}
                         onClick={onEdit}
                         disabled={disabled}
+                        aria-label={`Modifica ${label}`}
+                        title={`Modifica ${label}`}
                     >
-                        Modifica
+                        <Pencil size={15} />
                     </button>
                 )}
             </div>

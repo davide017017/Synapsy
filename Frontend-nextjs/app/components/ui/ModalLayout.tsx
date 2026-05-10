@@ -22,24 +22,34 @@ export default function ModalLayout({ title, onClose, children, footer, showClos
             className={`
                 w-full max-w-lg
                 rounded-2xl
-                border border-modal
-                shadow-2xl shadow-black/30
-                backdrop-blur-[4px]
-                text-modal-text
+                border border-white/10
+                bg-black/70
+                text-foreground
+                backdrop-blur-xl
                 p-4
                 flex flex-col
                 max-h-[80vh]
+                shadow-[0_24px_80px_rgba(0,0,0,0.55)]
                 ${className}
             `}
         >
             {/* Header: titolo e X */}
             {(title || showClose) && (
-                <div className="flex items-center justify-between mb-3 pb-2 border-b border-modal flex-shrink-0">
+                <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/10 flex-shrink-0 ">
+                    {" "}
                     <div className="font-bold text-lg">{title}</div>
                     {showClose && onClose && (
                         <button
                             onClick={onClose}
-                            className="hover:opacity-60 p-1 rounded-full transition"
+                            className="
+                                p-1.5
+                                rounded-xl
+                                text-foreground/50
+                                hover:text-primary
+                                hover:bg-primary/10
+                                transition-all duration-200
+                                active:scale-95
+                            "
                             title="Chiudi"
                         >
                             <X size={20} />
@@ -53,9 +63,8 @@ export default function ModalLayout({ title, onClose, children, footer, showClos
 
             {/* Footer */}
             {footer && (
-                <div className="pt-3 border-t border-modal mt-3 flex justify-end gap-2 flex-shrink-0">{footer}</div>
+                <div className="pt-3 border-t border-white/10 mt-3 flex justify-end gap-2 flex-shrink-0">{footer}</div>
             )}
         </div>
     );
 }
-

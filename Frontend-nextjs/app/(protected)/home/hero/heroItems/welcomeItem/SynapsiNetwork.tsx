@@ -16,8 +16,8 @@ const RUNNER_BASE_R = 3.4;
 const TAIL_THICKNESS = 2.2;
 const YAW_PERIOD_S = 24;
 const PITCH_PERIOD_S = 40;
-const C_PRIMARY = "#10B981";
-const C_RING = "rgba(16,185,129,0.16)";
+const C_PRIMARY = "currentColor";
+const C_RING = "currentColor";
 
 type P3 = { x: number; y: number; z: number };
 
@@ -44,6 +44,44 @@ function pickNext(cur: number, prev: number, n: number): number {
     const cs: number[] = [];
     for (let i = 0; i < n; i++) if (i !== cur && i !== prev) cs.push(i);
     return cs[Math.floor(Math.random() * cs.length)];
+}
+
+// ─────────────────────────────────────────
+// Divide la scia in segmenti davanti/dietro
+// ─────────────────────────────────────────
+function buildTrailSegments(points: P3[], rot: (p: P3) => P3, front: boolean): string[] {
+    const segments: string[] = [];
+    let current: string[] = [];
+    let previousPoint: string | null = null;
+
+    points.forEach((p) => {
+        const r = rot(p);
+        const pr = project(r);
+        const point = `${pr.x.toFixed(2)},${pr.y.toFixed(2)}`;
+        const isFront = r.z >= 0;
+
+        if (isFront === front) {
+            if (current.length === 0 && previousPoint) {
+                current.push(previousPoint);
+            }
+
+            current.push(point);
+        } else {
+            if (current.length > 1) {
+                segments.push(current.join(" "));
+            }
+
+            current = [];
+        }
+
+        previousPoint = point;
+    });
+
+    if (current.length > 1) {
+        segments.push(current.join(" "));
+    }
+
+    return segments;
 }
 
 export default function SynapsiNetwork() {
@@ -117,12 +155,11 @@ export default function SynapsiNetwork() {
         })
         .sort((a, b) => b.r.z - a.r.z);
 
-    const trailPoints = trailRef.current
-        .map((p) => {
-            const pr = project(rot(p));
-            return `${pr.x.toFixed(2)},${pr.y.toFixed(2)}`;
-        })
-        .join(" ");
+    // ─────────────────────────────────────────
+    // Scia divisa davanti/dietro al buco nero
+    // ─────────────────────────────────────────
+    const trailBackSegments = buildTrailSegments(trailRef.current, rot, false);
+    const trailFrontSegments = buildTrailSegments(trailRef.current, rot, true);
 
     const ringEqPts = ringEq
         .map((p) => {
@@ -140,8 +177,20 @@ export default function SynapsiNetwork() {
     const cur3 = trailRef.current[trailRef.current.length - 1];
     const runProj = cur3 ? project(rot(cur3)) : { x: 0, y: 0, s: 1 };
 
+    // ─────────────────────────────────────────
+    // Runner davanti/dietro
+    // ─────────────────────────────────────────
+    const runRot = cur3 ? rot(cur3) : null;
+    const runIsFront = runRot ? runRot.z >= 0 : false;
+
+    // ─────────────────────────────────────────
+    // Nodi divisi per profondità
+    // ─────────────────────────────────────────
+    const backNodes = sortedNodes.filter(({ r }) => r.z < 0);
+    const frontNodes = sortedNodes.filter(({ r }) => r.z >= 0);
+
     return (
-        <div className="mx-auto" style={{ width: WRAP_W, height: WRAP_H }}>
+        <div className="mx-auto text-primary" style={{ width: WRAP_W, height: WRAP_H }}>
             <MotionConfig reducedMotion="never">
                 <svg
                     viewBox={`-${VIEWBOX / 2} -${VIEWBOX / 2} ${VIEWBOX} ${VIEWBOX}`}
@@ -149,13 +198,32 @@ export default function SynapsiNetwork() {
                     height={WRAP_H}
                     className="block"
                 >
-                    <polyline points={ringEqPts} fill="none" stroke={C_RING} strokeWidth="0.7" />
-                    <polyline points={ringMerPts} fill="none" stroke={C_RING} strokeWidth="0.6" />
-                    {sortedNodes.map(({ i, r, proj }) => {
+                    {/* Anelli */}
+                    <polyline points={ringEqPts} fill="none" stroke={C_RING} strokeWidth="0.7" opacity={0.16} />
+
+                    <polyline points={ringMerPts} fill="none" stroke={C_RING} strokeWidth="0.6" opacity={0.16} />
+
+                    {/* Scia dietro al buco nero */}
+                    {trailBackSegments.map((points, i) => (
+                        <polyline
+                            key={`trail-back-${i}`}
+                            points={points}
+                            fill="none"
+                            stroke={C_PRIMARY}
+                            strokeWidth={TAIL_THICKNESS}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            opacity={0.55}
+                        />
+                    ))}
+
+                    {/* Nodi dietro al buco nero */}
+                    {backNodes.map(({ i, r, proj }) => {
                         const op = 0.3 + 0.7 * ((SPHERE_R + r.z) / (2 * SPHERE_R));
+
                         return (
                             <circle
-                                key={i}
+                                key={`back-${i}`}
                                 cx={proj.x}
                                 cy={proj.y}
                                 r={NODE_BASE_R * proj.s}
@@ -164,15 +232,58 @@ export default function SynapsiNetwork() {
                             />
                         );
                     })}
-                    <polyline
-                        points={trailPoints}
-                        fill="none"
-                        stroke={C_PRIMARY}
-                        strokeWidth={TAIL_THICKNESS}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                    {cur3 && <circle cx={runProj.x} cy={runProj.y} r={RUNNER_BASE_R * runProj.s} fill={C_PRIMARY} />}
+
+                    {/* Runner dietro al buco nero */}
+                    {cur3 && !runIsFront && (
+                        <circle
+                            cx={runProj.x}
+                            cy={runProj.y}
+                            r={RUNNER_BASE_R * runProj.s}
+                            fill={C_PRIMARY}
+                            opacity={0.55}
+                        />
+                    )}
+
+                    {/* Buco nero centrale */}
+                    <circle cx={0} cy={0} r={8} fill="rgba(2, 15, 10, 0.98)" />
+
+                    <circle cx={0} cy={0} r={14} fill="none" stroke="currentColor" strokeWidth={1} opacity={0.55} />
+
+                    <circle cx={0} cy={0} r={22} fill="none" stroke="currentColor" strokeWidth={0.5} opacity={0.22} />
+
+                    {/* Scia davanti al buco nero */}
+                    {trailFrontSegments.map((points, i) => (
+                        <polyline
+                            key={`trail-front-${i}`}
+                            points={points}
+                            fill="none"
+                            stroke={C_PRIMARY}
+                            strokeWidth={TAIL_THICKNESS}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    ))}
+
+                    {/* Nodi davanti al buco nero */}
+                    {frontNodes.map(({ i, r, proj }) => {
+                        const op = 0.3 + 0.7 * ((SPHERE_R + r.z) / (2 * SPHERE_R));
+
+                        return (
+                            <circle
+                                key={`front-${i}`}
+                                cx={proj.x}
+                                cy={proj.y}
+                                r={NODE_BASE_R * proj.s}
+                                fill={C_PRIMARY}
+                                opacity={op}
+                            />
+                        );
+                    })}
+
+                    {/* Runner davanti al buco nero */}
+                    {cur3 && runIsFront && (
+                        <circle cx={runProj.x} cy={runProj.y} r={RUNNER_BASE_R * runProj.s} fill={C_PRIMARY} />
+                    )}
                 </svg>
             </MotionConfig>
         </div>

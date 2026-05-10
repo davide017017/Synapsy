@@ -86,7 +86,18 @@ export default function Sidebar() {
         <>
             {/* ========== Burger mobile ========== */}
             <button
-                className="fixed left-4 z-50 md:hidden p-2 rounded-full bg-primary text-white shadow-lg"
+                className="
+                    fixed left-4 z-50 md:hidden
+                    p-2 rounded-xl
+                    bg-black/50
+                    border border-primary/40
+                    text-primary
+                    shadow-[0_0_18px_rgba(20,184,138,0.25)]
+                    backdrop-blur-md
+                    transition-all duration-200
+                    hover:bg-primary/10
+                    active:scale-95
+                "
                 style={{ top: "calc(env(safe-area-inset-top) + 12px)" }}
                 onClick={toggleMobile}
             >
@@ -103,9 +114,18 @@ export default function Sidebar() {
             {/* ========== Collapse desktop ========== */}
             <button
                 onClick={toggleSidebar}
-                className={`hidden md:flex fixed top-4 z-50 p-1.5 rounded-full bg-primary text-white shadow-md hover:bg-primary/80 transition ${
-                    isCollapsed ? "left-3" : "left-56"
-                }`}
+                className={`hidden md:flex fixed top-4 z-50
+                  p-1.5 rounded-xl
+                  bg-black/50
+                  border border-primary/40
+                  text-primary
+                  shadow-[0_0_18px_rgba(20,184,138,0.25)]
+                  backdrop-blur-md
+                  transition-all duration-200
+                  hover:bg-primary/10
+                  active:scale-95
+                  ${isCollapsed ? "left-3" : "left-56"}
+              `}
             >
                 {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
             </button>
@@ -114,22 +134,44 @@ export default function Sidebar() {
                 Pannello Sidebar principale
             ════════════════════════════════════ */}
             <aside
-                className={`fixed top-0 left-0 h-full z-40 w-56 bg-black/60 backdrop-blur-md border-r border-white/10 text-white
-                    transform transition-transform duration-300
+                className={`fixed top-0 left-0 h-full z-40 w-56
+                      bg-black/70
+                      backdrop-blur-xl
+                      border-r border-primary/20
+                      text-white
+                      shadow-[18px_0_60px_rgba(0,0,0,0.45)]                    transform transition-transform duration-300
                     ${isOpenMobile ? "block" : "hidden"} md:block
                     ${isCollapsed ? "-translate-x-full md:-translate-x-56" : "translate-x-0"}`}
             >
                 {/* ----------- Logo ----------- */}
                 <Link
                     href="/"
-                    className="flex items-center justify-center p-4 border-b border-white/10 hover:opacity-90"
+                    className="
+                        flex items-center justify-center
+                        p-4
+                        border-b border-primary/20
+                        hover:bg-primary/5
+                        transition-colors
+                    "
                     style={{ paddingTop: "env(safe-area-inset-top)" }}
                     onClick={() => setIsOpenMobile(false)}
                 >
-                    <span className="ml-2 text-xl font-bold text-primary">Synapsi</span>
+                    <span
+                        className="
+                            ml-2
+                            font-mono
+                            text-lg
+                            font-bold
+                            tracking-[0.18em]
+                            uppercase
+                            text-primary
+                            drop-shadow-[0_0_12px_rgba(20,184,138,0.45)]
+                        "
+                    >
+                        Synapsi
+                    </span>{" "}
                     <BetaBadge inline className="ml-1" />
                 </Link>
-
                 {/* ----------- Navigazione ----------- */}
                 <nav className="p-2 space-y-1">
                     {navItems.map(({ href, label, icon }) => {
@@ -139,11 +181,21 @@ export default function Sidebar() {
                                 key={href}
                                 href={href}
                                 onClick={() => setIsOpenMobile(false)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${
-                                    active
-                                        ? "bg-[hsl(var(--c-primary))] text-white"
-                                        : "text-gray-400 hover:text-white hover:bg-white/10"
-                                }`}
+                                className={`group flex items-center gap-3
+                                  px-4 py-2.5
+                                  rounded-xl
+                                  font-mono
+                                  text-[12px]
+                                  tracking-[0.08em]
+                                  uppercase
+                                  transition-all duration-200
+                                  border
+                                  ${
+                                      active
+                                          ? "bg-primary/15 text-primary border-primary/40 shadow-[0_0_18px_rgba(20,184,138,0.18)]"
+                                          : "text-white/45 border-transparent hover:text-primary hover:bg-primary/8 hover:border-primary/20"
+                                  }
+                              `}
                             >
                                 {icon}
                                 <span>{label}</span>
@@ -151,11 +203,11 @@ export default function Sidebar() {
                         );
                     })}
                 </nav>
-
                 {/* ════════════════════════════════════
                     Selettore temi (light/dark/custom)
                 ════════════════════════════════════ */}
-                <div className="p-4 border-t border-white/10 grid grid-cols-2 gap-2">
+                <div className="p-4 border-t border-primary/20 grid grid-cols-2 gap-2">
+                    {" "}
                     {["light", "dark", ...extraThemes].map((t) => {
                         const isActive = theme === t;
                         const label = themeMeta[t as keyof typeof themeMeta].label;
@@ -165,8 +217,21 @@ export default function Sidebar() {
                             <button
                                 key={t}
                                 onClick={() => setTheme(t as any)}
-                                className={`flex items-center justify-center gap-2 py-2 rounded-md font-medium transition
-                                    ${isActive ? "bg-primary text-white" : "bg-white/10 text-white hover:bg-white/20"}`}
+                                className={`flex items-center justify-center gap-2
+                                  py-2
+                                  rounded-xl
+                                  border
+                                  font-mono
+                                  text-[11px]
+                                  uppercase
+                                  tracking-[0.08em]
+                                  transition-all duration-200
+                                  ${
+                                      isActive
+                                          ? "bg-primary/15 text-primary border-primary/40 shadow-[0_0_16px_rgba(20,184,138,0.18)]"
+                                          : "bg-white/5 text-white/45 border-white/10 hover:text-primary hover:bg-primary/8 hover:border-primary/25"
+                                  }
+                              `}
                             >
                                 {icon}
                                 {label}
@@ -174,7 +239,7 @@ export default function Sidebar() {
                         );
                     })}
                 </div>
-                <LegalLinks className="p-4 border-t border-white/10 text-center" />
+                <LegalLinks className="p-4 border-t border-primary/20 text-center" />{" "}
             </aside>
         </>
     );
