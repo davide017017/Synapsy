@@ -13,6 +13,7 @@ import type { Category } from "@/types/models/category";
 import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import { FiRotateCcw } from "react-icons/fi";
+import { AmountStepButton } from "@/app/components/ui/AmountStepButton";
 import type { IconType } from "react-icons";
 import { getIconComponent } from "@/utils/categoryOptions";
 
@@ -548,58 +549,66 @@ export default function NewRicorrenzaForm({
                     <div className="flex items-stretch gap-1 sm:gap-2">
                         {/* ±10 — orange */}
                         <div className="flex flex-col items-center gap-1">
-                            <button
-                                type="button"
-                                className="h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate font-semibold flex items-center justify-center transition-all duration-150 hover:border-orange-500/70 hover:shadow-[0_0_10px_rgba(249,115,22,0.35)] active:bg-orange-500/25 active:shadow-[inset_0_0_10px_rgba(249,115,22,0.45)]"
+                            <AmountStepButton
+                                position="top"
+                                ariaLabel="Aumenta di 10"
                                 onClick={() => applyAmountDelta(10)}
                                 disabled={loading}
-                                aria-label="Aumenta di 10"
+                                accent={typeAccent}
+                                soft={typeAccentSoft}
+                                border={typeAccentBorder}
                             >
-                                <span className="text-2xl font-bold leading-none">+</span>
-                            </button>
+                                +
+                            </AmountStepButton>
                             <div
                                 className="flex items-center px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
                                 aria-hidden="true"
                             >
                                 10&nbsp;€
                             </div>
-                            <button
-                                type="button"
-                                className="h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate flex items-center justify-center transition-all duration-150 hover:border-orange-500/70 hover:shadow-[0_0_10px_rgba(249,115,22,0.35)] active:bg-orange-500/25 active:shadow-[inset_0_0_10px_rgba(249,115,22,0.45)]"
+                            <AmountStepButton
+                                position="bottom"
+                                ariaLabel="Diminuisci di 10"
                                 onClick={() => applyAmountDelta(-10)}
                                 disabled={loading}
-                                aria-label="Diminuisci di 10"
+                                accent={typeAccent}
+                                soft={typeAccentSoft}
+                                border={typeAccentBorder}
                             >
-                                <span className="text-2xl font-bold leading-none">−</span>
-                            </button>
+                                −
+                            </AmountStepButton>
                         </div>
 
                         {/* ±1 — sky */}
                         <div className="flex flex-col items-center gap-1">
-                            <button
-                                type="button"
-                                className="h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-sm flex items-center justify-center transition-all duration-150 hover:border-sky-400/60 hover:shadow-[0_0_10px_rgba(56,189,248,0.25)] active:bg-sky-400/20 active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]"
+                            <AmountStepButton
+                                position="top"
+                                ariaLabel="Aumenta di 1"
                                 onClick={() => applyAmountDelta(1)}
                                 disabled={loading}
-                                aria-label="Aumenta di 1"
+                                accent={typeAccent}
+                                soft={typeAccentSoft}
+                                border={typeAccentBorder}
                             >
-                                <span className="text-base font-semibold leading-none">+</span>
-                            </button>
+                                +
+                            </AmountStepButton>
                             <div
                                 className="flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
                                 aria-hidden="true"
                             >
                                 1&nbsp;€
                             </div>
-                            <button
-                                type="button"
-                                className="h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-sm flex items-center justify-center transition-all duration-150 hover:border-sky-400/60 hover:shadow-[0_0_10px_rgba(56,189,248,0.25)] active:bg-sky-400/20 active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]"
+                            <AmountStepButton
+                                position="bottom"
+                                ariaLabel="Diminuisci di 1"
                                 onClick={() => applyAmountDelta(-1)}
                                 disabled={loading}
-                                aria-label="Diminuisci di 1"
+                                accent={typeAccent}
+                                soft={typeAccentSoft}
+                                border={typeAccentBorder}
                             >
-                                <span className="text-base font-semibold leading-none">−</span>
-                            </button>
+                                −
+                            </AmountStepButton>
                         </div>
 
                         {/* Input importo centrale */}
@@ -645,58 +654,66 @@ export default function NewRicorrenzaForm({
 
                         {/* ±0.1 — amber */}
                         <div className="flex flex-col items-center gap-1">
-                            <button
-                                type="button"
-                                className="h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-base font-semibold flex items-center justify-center transition-all duration-150 hover:border-amber-400/60 hover:shadow-[0_0_10px_rgba(251,191,36,0.25)] active:bg-stone-400/20 active:shadow-[inset_0_0_10px_rgba(168,162,158,0.35)]"
+                            <AmountStepButton
+                                position="top"
+                                ariaLabel="Aumenta di 0.1"
                                 onClick={() => applyAmountDelta(0.1)}
                                 disabled={loading}
-                                aria-label="Aumenta di 0.1"
+                                accent={typeAccent}
+                                soft={typeAccentSoft}
+                                border={typeAccentBorder}
                             >
-                                <span className="text-base font-semibold leading-none">+</span>
-                            </button>
+                                +
+                            </AmountStepButton>
                             <div
                                 className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
                                 aria-hidden="true"
                             >
                                 0.1&nbsp;€
                             </div>
-                            <button
-                                type="button"
-                                className="h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-base font-semibold flex items-center justify-center transition-all duration-150 hover:border-amber-400/60 hover:shadow-[0_0_10px_rgba(251,191,36,0.25)] active:bg-stone-400/20 active:shadow-[inset_0_0_10px_rgba(168,162,158,0.35)]"
+                            <AmountStepButton
+                                position="bottom"
+                                ariaLabel="Diminuisci di 0.1"
                                 onClick={() => applyAmountDelta(-0.1)}
                                 disabled={loading}
-                                aria-label="Diminuisci di 0.1"
+                                accent={typeAccent}
+                                soft={typeAccentSoft}
+                                border={typeAccentBorder}
                             >
                                 −
-                            </button>
+                            </AmountStepButton>
                         </div>
 
                         {/* ±0.01 — amber dark */}
                         <div className="flex flex-col items-center gap-1">
-                            <button
-                                type="button"
-                                className="h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-xs font-semibold flex items-center justify-center transition-all duration-150 hover:border-amber-700/70 hover:shadow-[0_0_10px_rgba(180,83,9,0.35)] active:bg-amber-700/25 active:shadow-[inset_0_0_10px_rgba(180,83,9,0.45)]"
+                            <AmountStepButton
+                                position="top"
+                                ariaLabel="Aumenta di 0.01"
                                 onClick={() => applyAmountDelta(0.01)}
                                 disabled={loading}
-                                aria-label="Aumenta di 0.01"
+                                accent={typeAccent}
+                                soft={typeAccentSoft}
+                                border={typeAccentBorder}
                             >
-                                <span className="text-sm font-medium leading-none">+</span>
-                            </button>
+                                +
+                            </AmountStepButton>
                             <div
                                 className="flex items-center px-2 py-0.5 text-[10px] font-semibold border border-yellow-500/40 text-yellow-500 bg-yellow-500/10 select-none"
                                 aria-hidden="true"
                             >
                                 0.01&nbsp;€
                             </div>
-                            <button
-                                type="button"
-                                className="h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-xs font-semibold flex items-center justify-center transition-all duration-150 hover:border-amber-700/70 hover:shadow-[0_0_10px_rgba(180,83,9,0.35)] active:bg-amber-700/25 active:shadow-[inset_0_0_10px_rgba(180,83,9,0.45)]"
+                            <AmountStepButton
+                                position="bottom"
+                                ariaLabel="Diminuisci di 0.01"
                                 onClick={() => applyAmountDelta(-0.01)}
                                 disabled={loading}
-                                aria-label="Diminuisci di 0.01"
+                                accent={typeAccent}
+                                soft={typeAccentSoft}
+                                border={typeAccentBorder}
                             >
                                 −
-                            </button>
+                            </AmountStepButton>
                         </div>
                     </div>
 
@@ -743,19 +760,21 @@ export default function NewRicorrenzaForm({
                 </div>
 
                 {/* ── STEP 2: Frequenza — pill buttons ── */}
+                {/* ── STEP 2: Frequenza — pill buttons ── */}
                 <div className="mt-2 md:mt-4">
                     <label
                         className="
-                          block mb-1
-                          text-[11px]
-                          font-bold
-                          uppercase
-                          tracking-[0.12em]
-                          text-foreground/45
-                      "
+            block mb-1
+            text-[11px]
+            font-bold
+            uppercase
+            tracking-[0.12em]
+            text-foreground/45
+        "
                     >
                         Frequenza
                     </label>
+
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {(
                             [
@@ -766,19 +785,37 @@ export default function NewRicorrenzaForm({
                             ] as const
                         ).map(({ value, label }) => {
                             const isActive = formData.frequenza === value;
+
                             return (
                                 <button
                                     key={value}
                                     type="button"
                                     onClick={() => setFormData({ ...formData, frequenza: value })}
-                                    className={cn(
-                                        "flex flex-col items-center justify-center rounded-xl border px-3 py-2 text-sm font-semibold transition-all duration-150",
-                                        isActive
-                                            ? formData.type === "entrata"
-                                                ? "border-emerald-500 text-emerald-400 bg-emerald-500/10 shadow"
-                                                : "border-rose-500 text-rose-400 bg-rose-500/10 shadow"
-                                            : "border-border/50 text-muted-foreground bg-bg-elevate hover:border-primary/50 hover:text-text",
-                                    )}
+                                    className="
+                        flex items-center justify-center
+                        rounded-xl
+                        border
+                        px-3 py-2.5
+                        font-mono
+                        text-[11px]
+                        font-bold
+                        uppercase
+                        tracking-[0.08em]
+                        transition-all duration-200
+                        active:scale-95
+                    "
+                                    style={{
+                                        borderColor: isActive ? typeAccentBorder : "rgba(255,255,255,0.10)",
+                                        background: isActive ? typeAccentSoft : "rgba(255,255,255,0.04)",
+                                        color: isActive ? typeAccent : "hsl(var(--c-foreground) / 0.55)",
+                                        boxShadow: isActive
+                                            ? `0 0 12px ${
+                                                  formData.type === "entrata"
+                                                      ? "hsl(var(--c-success) / 0.18)"
+                                                      : "hsl(var(--c-danger) / 0.18)"
+                                              }`
+                                            : undefined,
+                                    }}
                                 >
                                     {label}
                                 </button>

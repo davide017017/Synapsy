@@ -15,6 +15,7 @@ import { Textarea } from "@/app/components/ui/Textarea";
 import type { IconType } from "react-icons";
 import { getIconComponent } from "@/utils/categoryOptions";
 import { FiRotateCcw } from "react-icons/fi";
+import { AmountStepButton } from "@/app/components/ui/AmountStepButton";
 
 // ────────────────────────────────────────────────
 // Helper per classi dinamiche (accetta falsy)
@@ -808,27 +809,17 @@ export default function NewTransactionForm({
                         <div className="flex items-stretch gap-1 sm:gap-2 md:gap-2">
                             <div className="flex flex-col items-center gap-1">
                                 {/* +10 */}
-                                <button
-                                    type="button"
-                                    className="
-                                      h-10 w-7 sm:h-11 sm:w-10
-                                      rounded-t-full rounded-b-none
-                                      border bg-bg-elevate  font-semibold
-                                      flex items-center justify-center 
-                                      transition-all duration-150
-
-                                      hover:border-orange-500/70
-                                      hover:shadow-[0_0_10px_rgba(249,115,22,0.35)]
-
-                                      active:bg-orange-500/25
-                                      active:shadow-[inset_0_0_10px_rgba(249,115,22,0.45)]
-                                    "
+                                <AmountStepButton
+                                    position="top"
+                                    ariaLabel="Aumenta di 10"
                                     onClick={() => applyAmountDelta(10)}
                                     disabled={loading || disabled}
-                                    aria-label="Aumenta di 10"
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
                                 >
-                                    <span className="text-2xl font-bold leading-none">+</span>
-                                </button>
+                                    +
+                                </AmountStepButton>
 
                                 {/* STEP INDICATOR */}
                                 <div
@@ -848,51 +839,32 @@ export default function NewTransactionForm({
                                 </div>
 
                                 {/* −10 */}
-                                <button
-                                    type="button"
-                                    className="
-                                      h-10 w-7 sm:h-11 sm:w-10
-                                      rounded-b-full rounded-t-none
-                                      border bg-bg-elevate  
-                                      flex items-center justify-center 
-                                      transition-all duration-150
-
-                                    hover:border-orange-500/70
-                                    hover:shadow-[0_0_10px_rgba(249,115,22,0.35)]
-
-                                    active:bg-orange-500/25
-                                    active:shadow-[inset_0_0_10px_rgba(249,115,22,0.45)]
-
-                                    "
+                                <AmountStepButton
+                                    position="bottom"
+                                    ariaLabel="Diminuisci di 10"
                                     onClick={() => applyAmountDelta(-10)}
                                     disabled={loading || disabled}
-                                    aria-label="Diminuisci di 10"
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
                                 >
-                                    <span className="text-2xl font-bold leading-none">−</span>
-                                </button>
+                                    −
+                                </AmountStepButton>
                             </div>
 
                             <div className="flex flex-col items-center gap-1">
                                 {/* + */}
-                                <button
-                                    type="button"
-                                    className="
-                                      h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-sm
-                                      transition-all duration-150
-                                      flex items-center justify-center 
-
-                                      hover:border-sky-400/60
-                                      hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
-
-                                      active:bg-sky-400/20
-                                      active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]
-                                    "
+                                <AmountStepButton
+                                    position="top"
+                                    ariaLabel="Aumenta di 1"
                                     onClick={() => applyAmountDelta(1)}
                                     disabled={loading || disabled}
-                                    aria-label="Aumenta di 1"
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
                                 >
-                                    <span className="text-base font-semibold leading-none">+</span>
-                                </button>
+                                    +
+                                </AmountStepButton>
 
                                 {/* STEP INDICATOR — VALORE (€) */}
                                 <div
@@ -915,25 +887,17 @@ export default function NewTransactionForm({
                                 </div>
 
                                 {/* − */}
-                                <button
-                                    type="button"
-                                    className="
-                                      h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-sm
-                                      transition-all duration-150
-                                      flex items-center justify-center 
-
-                                      hover:border-sky-400/60
-                                      hover:shadow-[0_0_10px_rgba(56,189,248,0.25)]
-
-                                      active:bg-sky-400/20
-                                      active:shadow-[inset_0_0_10px_rgba(56,189,248,0.35)]
-                                    "
+                                <AmountStepButton
+                                    position="bottom"
+                                    ariaLabel="Diminuisci di 1"
                                     onClick={() => applyAmountDelta(-1)}
                                     disabled={loading || disabled}
-                                    aria-label="Diminuisci di 1"
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
                                 >
-                                    <span className="text-base font-semibold leading-none">−</span>
-                                </button>
+                                    −
+                                </AmountStepButton>
                             </div>
 
                             <Input
@@ -978,26 +942,17 @@ export default function NewTransactionForm({
 
                             <div className="flex flex-col items-center gap-1">
                                 {/* + */}
-                                <button
-                                    type="button"
-                                    className="
-                                      h-10 w-7 sm:h-11 sm:w-10 rounded-t-full rounded-b-none border bg-bg-elevate text-base font-semibold
-                                      transition-all duration-150
-                                      flex items-center justify-center 
-
-                                      hover:border-amber-400/60
-                                      hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]
-
-                                      active:bg-stone-400/20
-                                      active:shadow-[inset_0_0_10px_rgba(168,162,158,0.35)]
-
-                                    "
+                                <AmountStepButton
+                                    position="top"
+                                    ariaLabel="Aumenta di 0.1"
                                     onClick={() => applyAmountDelta(0.1)}
                                     disabled={loading || disabled}
-                                    aria-label="Aumenta di 0.1"
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
                                 >
-                                    <span className="text-base font-semibold leading-none">+</span>
-                                </button>
+                                    +
+                                </AmountStepButton>
 
                                 {/* STEP INDICATOR — VALORE (€) */}
                                 <div
@@ -1018,51 +973,32 @@ export default function NewTransactionForm({
                                 </div>
 
                                 {/* − */}
-                                <button
-                                    type="button"
-                                    className="
-                                      h-10 w-7 sm:h-11 sm:w-10 rounded-b-full rounded-t-none border bg-bg-elevate text-base font-semibold
-                                      transition-all duration-150
-                                      flex items-center justify-center 
-
-                                      hover:border-amber-400/60
-                                      hover:shadow-[0_0_10px_rgba(251,191,36,0.25)]
-
-                                      active:bg-stone-400/20
-                                      active:shadow-[inset_0_0_10px_rgba(168,162,158,0.35)]
-                                    "
+                                <AmountStepButton
+                                    position="bottom"
+                                    ariaLabel="Diminuisci di 0.1"
                                     onClick={() => applyAmountDelta(-0.1)}
                                     disabled={loading || disabled}
-                                    aria-label="Diminuisci di 0.1"
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
                                 >
                                     −
-                                </button>
+                                </AmountStepButton>
                             </div>
 
                             <div className="flex flex-col items-center gap-1">
                                 {/* +0.01 */}
-                                <button
-                                    type="button"
-                                    className="
-                                      h-10 w-7 sm:h-11 sm:w-10
-                                      rounded-t-full rounded-b-none
-                                      border bg-bg-elevate text-xs font-semibold
-                                      transition-all duration-150
-                                      flex items-center justify-center 
-
-                                    hover:border-amber-700/70
-                                    hover:shadow-[0_0_10px_rgba(180,83,9,0.35)]
-
-                                    active:bg-amber-700/25
-                                    active:shadow-[inset_0_0_10px_rgba(180,83,9,0.45)]
-
-        "
+                                <AmountStepButton
+                                    position="top"
+                                    ariaLabel="Aumenta di 0.01"
                                     onClick={() => applyAmountDelta(0.01)}
                                     disabled={loading || disabled}
-                                    aria-label="Aumenta di 0.01"
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
                                 >
-                                    <span className="text-sm font-medium leading-none">+</span>
-                                </button>
+                                    +
+                                </AmountStepButton>
 
                                 {/* STEP INDICATOR */}
                                 <div
@@ -1081,27 +1017,17 @@ export default function NewTransactionForm({
                                 </div>
 
                                 {/* −0.01 */}
-                                <button
-                                    type="button"
-                                    className="
-                                      h-10 w-7 sm:h-11 sm:w-10
-                                      rounded-b-full rounded-t-none
-                                      border bg-bg-elevate text-xs font-semibold
-                                      transition-all duration-150
-                                      flex items-center justify-center 
-
-                                    hover:border-amber-700/70
-                                      hover:shadow-[0_0_10px_rgba(180,83,9,0.35)]
-
-                                    active:bg-amber-700/25
-                                      active:shadow-[inset_0_0_10px_rgba(180,83,9,0.45)]
-                                      "
+                                <AmountStepButton
+                                    position="bottom"
+                                    ariaLabel="Diminuisci di 0.01"
                                     onClick={() => applyAmountDelta(-0.01)}
                                     disabled={loading || disabled}
-                                    aria-label="Diminuisci di 0.01"
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
                                 >
                                     −
-                                </button>
+                                </AmountStepButton>
                             </div>
                         </div>
 
