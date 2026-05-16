@@ -517,101 +517,23 @@ export default function NewRicorrenzaForm({
 
                 {/* ── STEP 5: Importo — Stepper ±10/±1/±0.1/±0.01 ── */}
                 <div className="mt-2 md:mt-4">
-                    <div className="relative flex items-center mb-1">
-                        <button
-                            type="button"
-                            onClick={handleResetImporto}
-                            aria-label="Reset importo"
-                            className={cn(
-                                "group flex items-center justify-center h-9 w-9 rounded-full border transition-all duration-300",
-                                isResetImportoAnimating
-                                    ? "border-yellow-400 bg-yellow-400/20 shadow-[0_0_16px_rgba(250,204,21,0.55)]"
-                                    : "border-border hover:border-yellow-400/60 hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]",
-                            )}
-                        >
-                            <FiRotateCcw
-                                size={16}
-                                strokeWidth={2}
-                                className={cn(
-                                    "transition-transform",
-                                    isResetImportoAnimating ? "animate-spin-slow" : "group-hover:rotate-[-20deg]",
-                                )}
-                            />
-                        </button>
-                        <label
-                            htmlFor="ricorrenza-importo"
-                            className="absolute left-1/2 -translate-x-1/2 text-base sm:text-lg font-semibold tracking-wider uppercase opacity-80 pointer-events-none"
-                        >
-                            Importo
-                        </label>
-                    </div>
+                    {/* Label sopra — stile uguale a Categoria e Descrizione */}
+                    <label
+                        htmlFor="ricorrenza-importo"
+                        className="
+                            block mb-1
+                            text-[11px]
+                            font-bold
+                            uppercase
+                            tracking-[0.12em]
+                            text-foreground/45
+                        "
+                    >
+                        Importo
+                    </label>
 
-                    <div className="flex items-stretch gap-1 sm:gap-2">
-                        {/* ±10 — orange */}
-                        <div className="flex flex-col items-center gap-1">
-                            <AmountStepButton
-                                position="top"
-                                ariaLabel="Aumenta di 10"
-                                onClick={() => applyAmountDelta(10)}
-                                disabled={loading}
-                                accent={typeAccent}
-                                soft={typeAccentSoft}
-                                border={typeAccentBorder}
-                            >
-                                +
-                            </AmountStepButton>
-                            <div
-                                className="flex items-center px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
-                                aria-hidden="true"
-                            >
-                                10&nbsp;€
-                            </div>
-                            <AmountStepButton
-                                position="bottom"
-                                ariaLabel="Diminuisci di 10"
-                                onClick={() => applyAmountDelta(-10)}
-                                disabled={loading}
-                                accent={typeAccent}
-                                soft={typeAccentSoft}
-                                border={typeAccentBorder}
-                            >
-                                −
-                            </AmountStepButton>
-                        </div>
-
-                        {/* ±1 — sky */}
-                        <div className="flex flex-col items-center gap-1">
-                            <AmountStepButton
-                                position="top"
-                                ariaLabel="Aumenta di 1"
-                                onClick={() => applyAmountDelta(1)}
-                                disabled={loading}
-                                accent={typeAccent}
-                                soft={typeAccentSoft}
-                                border={typeAccentBorder}
-                            >
-                                +
-                            </AmountStepButton>
-                            <div
-                                className="flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
-                                aria-hidden="true"
-                            >
-                                1&nbsp;€
-                            </div>
-                            <AmountStepButton
-                                position="bottom"
-                                ariaLabel="Diminuisci di 1"
-                                onClick={() => applyAmountDelta(-1)}
-                                disabled={loading}
-                                accent={typeAccent}
-                                soft={typeAccentSoft}
-                                border={typeAccentBorder}
-                            >
-                                −
-                            </AmountStepButton>
-                        </div>
-
-                        {/* Input importo centrale */}
+                    {/* Input + reset sulla stessa riga */}
+                    <div className="flex items-center gap-2">
                         <Input
                             id="ricorrenza-importo"
                             name="importo"
@@ -633,6 +555,8 @@ export default function NewRicorrenzaForm({
                             }}
                             className={cn(
                                 `
+                                flex-1
+                                min-w-0
                                 text-center
                                 font-mono
                                 font-bold
@@ -640,81 +564,87 @@ export default function NewRicorrenzaForm({
                                 bg-black/20
                                 border
                                 focus:ring-2
-                                !text-4xl sm:!text-2xl
-                            `,
+                                !text-2xl sm:!text-3xl
+                                `,
                                 errors.importo ? "border-danger" : "",
                             )}
                             style={{
                                 borderColor: errors.importo ? "hsl(var(--c-danger))" : typeAccentBorder,
-                                boxShadow: `0 0 0 1px ${
-                                    errors.importo ? "hsl(var(--c-danger) / 0.35)" : typeAccentBorder
-                                }`,
+                                boxShadow: `0 0 0 1px ${errors.importo ? "hsl(var(--c-danger) / 0.35)" : typeAccentBorder}`,
                             }}
                         />
 
-                        {/* ±0.1 — amber */}
-                        <div className="flex flex-col items-center gap-1">
-                            <AmountStepButton
-                                position="top"
-                                ariaLabel="Aumenta di 0.1"
-                                onClick={() => applyAmountDelta(0.1)}
-                                disabled={loading}
-                                accent={typeAccent}
-                                soft={typeAccentSoft}
-                                border={typeAccentBorder}
-                            >
-                                +
-                            </AmountStepButton>
-                            <div
-                                className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold border border-yellow-400/40 text-yellow-400 bg-yellow-400/10 select-none"
-                                aria-hidden="true"
-                            >
-                                0.1&nbsp;€
-                            </div>
-                            <AmountStepButton
-                                position="bottom"
-                                ariaLabel="Diminuisci di 0.1"
-                                onClick={() => applyAmountDelta(-0.1)}
-                                disabled={loading}
-                                accent={typeAccent}
-                                soft={typeAccentSoft}
-                                border={typeAccentBorder}
-                            >
-                                −
-                            </AmountStepButton>
-                        </div>
+                        <button
+                            type="button"
+                            onClick={handleResetImporto}
+                            aria-label="Reset importo"
+                            className={cn(
+                                "group flex items-center justify-center h-9 w-9 rounded-full border transition-all duration-300 shrink-0",
+                                isResetImportoAnimating
+                                    ? "border-yellow-400 bg-yellow-400/20 shadow-[0_0_16px_rgba(250,204,21,0.55)]"
+                                    : "border-border hover:border-yellow-400/60 hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]",
+                            )}
+                        >
+                            <FiRotateCcw
+                                size={16}
+                                strokeWidth={2}
+                                className={cn(
+                                    "transition-transform",
+                                    isResetImportoAnimating ? "animate-spin-slow" : "group-hover:rotate-[-20deg]",
+                                )}
+                            />
+                        </button>
+                    </div>
 
-                        {/* ±0.01 — amber dark */}
-                        <div className="flex flex-col items-center gap-1">
-                            <AmountStepButton
-                                position="top"
-                                ariaLabel="Aumenta di 0.01"
-                                onClick={() => applyAmountDelta(0.01)}
-                                disabled={loading}
-                                accent={typeAccent}
-                                soft={typeAccentSoft}
-                                border={typeAccentBorder}
-                            >
-                                +
-                            </AmountStepButton>
-                            <div
-                                className="flex items-center px-2 py-0.5 text-[10px] font-semibold border border-yellow-500/40 text-yellow-500 bg-yellow-500/10 select-none"
-                                aria-hidden="true"
-                            >
-                                0.01&nbsp;€
+                    {/* Riga 2: steppers +/step/− affiancati */}
+                    <div className="mt-2 flex items-stretch justify-between gap-1 sm:gap-2">
+                        {[
+                            { delta: 10,   label: "10 €",   ariaP: "Aumenta di 10",   ariaM: "Diminuisci di 10"   },
+                            { delta: 1,    label: "1 €",    ariaP: "Aumenta di 1",    ariaM: "Diminuisci di 1"    },
+                            { delta: 0.1,  label: "0.1 €",  ariaP: "Aumenta di 0.1",  ariaM: "Diminuisci di 0.1"  },
+                            { delta: 0.01, label: "0.01 €", ariaP: "Aumenta di 0.01", ariaM: "Diminuisci di 0.01" },
+                        ].map(({ delta, label, ariaP, ariaM }) => (
+                            <div key={label} className="flex-1 flex flex-col items-center gap-1">
+                                <AmountStepButton
+                                    position="top"
+                                    ariaLabel={ariaP}
+                                    onClick={() => applyAmountDelta(delta)}
+                                    disabled={loading}
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
+                                >
+                                    +
+                                </AmountStepButton>
+
+                                <div
+                                    className="
+                                        w-full flex items-center justify-center
+                                        px-1 py-0.5
+                                        text-[10px] font-semibold
+                                        border border-yellow-400/40
+                                        text-yellow-400
+                                        bg-yellow-400/10
+                                        select-none
+                                    "
+                                    aria-hidden="true"
+                                >
+                                    {label}
+                                </div>
+
+                                <AmountStepButton
+                                    position="bottom"
+                                    ariaLabel={ariaM}
+                                    onClick={() => applyAmountDelta(-delta)}
+                                    disabled={loading}
+                                    accent={typeAccent}
+                                    soft={typeAccentSoft}
+                                    border={typeAccentBorder}
+                                >
+                                    −
+                                </AmountStepButton>
                             </div>
-                            <AmountStepButton
-                                position="bottom"
-                                ariaLabel="Diminuisci di 0.01"
-                                onClick={() => applyAmountDelta(-0.01)}
-                                disabled={loading}
-                                accent={typeAccent}
-                                soft={typeAccentSoft}
-                                border={typeAccentBorder}
-                            >
-                                −
-                            </AmountStepButton>
-                        </div>
+                        ))}
                     </div>
 
                     {errors.importo && <p className="text-danger text-xs mt-1">{errors.importo}</p>}
@@ -826,13 +756,55 @@ export default function NewRicorrenzaForm({
 
                 {/* ── STEP 3: Data prossima + quick picks + reset ── */}
                 <div className="mt-2 md:mt-4">
-                    <div className="relative flex items-center mb-1">
+                    {/* Label sopra */}
+                    <label
+                        htmlFor="ricorrenza-prossima"
+                        className="
+                            block mb-1
+                            text-[11px]
+                            font-bold
+                            uppercase
+                            tracking-[0.12em]
+                            text-foreground/45
+                        "
+                    >
+                        Data prossima
+                    </label>
+
+                    {/* Input + reset sulla stessa riga */}
+                    <div className="flex items-center gap-2">
+                        <Input
+                            id="ricorrenza-prossima"
+                            name="prossima"
+                            type="date"
+                            value={formData.prossima}
+                            onChange={(e) => setFormData({ ...formData, prossima: e.target.value })}
+                            className={cn(
+                                `
+                                flex-1
+                                min-w-0
+                                text-center
+                                font-mono
+                                bg-black/20
+                                border
+                                focus:ring-2
+                            `,
+                                errors.prossima ? "border-danger" : "",
+                            )}
+                            style={{
+                                borderColor: errors.prossima ? "hsl(var(--c-danger))" : typeAccentBorder,
+                                boxShadow: `0 0 0 1px ${
+                                    errors.prossima ? "hsl(var(--c-danger) / 0.35)" : typeAccentBorder
+                                }`,
+                            }}
+                        />
+
                         <button
                             type="button"
                             onClick={handleResetData}
-                            aria-label="Reset data prossima"
+                            aria-label="Reset data"
                             className={cn(
-                                "group flex items-center justify-center h-9 w-9 rounded-full border transition-all duration-300",
+                                "group flex items-center justify-center h-9 w-9 rounded-full border transition-all duration-300 shrink-0",
                                 isResetDataAnimating
                                     ? "border-yellow-400 bg-yellow-400/20 shadow-[0_0_16px_rgba(250,204,21,0.55)]"
                                     : "border-border hover:border-yellow-400/60 hover:shadow-[0_0_10px_rgba(250,204,21,0.25)]",
@@ -847,44 +819,7 @@ export default function NewRicorrenzaForm({
                                 )}
                             />
                         </button>
-                        <label
-                            htmlFor="ricorrenza-prossima"
-                            className="
-                              absolute left-1/2 -translate-x-1/2
-                              text-[11px]
-                              font-bold
-                              uppercase
-                              tracking-[0.12em]
-                              text-foreground/45
-                              pointer-events-none
-                          "
-                        >
-                            Data prossima
-                        </label>
                     </div>
-
-                    <Input
-                        id="ricorrenza-prossima"
-                        name="prossima"
-                        type="date"
-                        value={formData.prossima}
-                        onChange={(e) => setFormData({ ...formData, prossima: e.target.value })}
-                        className={cn(
-                            `
-                              font-mono
-                              bg-black/20
-                              border
-                              focus:ring-2
-                          `,
-                            errors.prossima ? "border-danger" : "",
-                        )}
-                        style={{
-                            borderColor: errors.prossima ? "hsl(var(--c-danger))" : typeAccentBorder,
-                            boxShadow: `0 0 0 1px ${
-                                errors.prossima ? "hsl(var(--c-danger) / 0.35)" : typeAccentBorder
-                            }`,
-                        }}
-                    />
                     {errors.prossima && <p className="text-danger text-xs mt-1">{errors.prossima}</p>}
 
                     {/* Quick date picks (future) */}
