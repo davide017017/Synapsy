@@ -26,7 +26,7 @@ function getWeekNumber(date: Date) {
 // Component
 // ---------------------------
 export default function HeroSaldo() {
-    const { monthBalance, yearBalance, weekBalance, totalBalance } = useTransactions();
+    const { monthBalance, yearBalance, weekBalance, totalBalance, loading } = useTransactions();
 
     const now = new Date();
     const currentMonthName = now.toLocaleString("it-IT", { month: "long" });
@@ -39,7 +39,7 @@ export default function HeroSaldo() {
             {/* Totale grande */}
             <div className="mb-5">
                 <div className="text-base opacity-60">Saldo attuale</div>
-                <div className={`text-4xl font-bold ${color(totalBalance)}`}>{eur(totalBalance)}</div>
+                <div className={`text-4xl font-bold ${color(totalBalance)}`}>{loading ? "—" : eur(totalBalance)}</div>
             </div>
 
             {/* Mini stats */}
@@ -48,21 +48,21 @@ export default function HeroSaldo() {
                 <div className="flex flex-col items-center gap-2">
                     <CalendarDays className="w-6 h-6 opacity-70" />
                     <div className="text-sm opacity-60">Week {currentWeek}</div>
-                    <div className={`text-base font-semibold ${color(weekBalance)}`}>{eur(weekBalance)}</div>
+                    <div className={`text-base font-semibold ${color(weekBalance)}`}>{loading ? "—" : eur(weekBalance)}</div>
                 </div>
 
                 {/* Month */}
                 <div className="flex flex-col items-center gap-2">
                     <Calendar className="w-6 h-6 opacity-70" />
                     <div className="text-sm opacity-60">{monthLabel}</div>
-                    <div className={`text-base font-semibold ${color(monthBalance)}`}>{eur(monthBalance)}</div>
+                    <div className={`text-base font-semibold ${color(monthBalance)}`}>{loading ? "—" : eur(monthBalance)}</div>
                 </div>
 
                 {/* Year */}
                 <div className="flex flex-col items-center gap-2">
                     <BarChart3 className="w-6 h-6 opacity-70" />
                     <div className="text-sm opacity-60">{currentYear}</div>
-                    <div className={`text-base font-semibold ${color(yearBalance)}`}>{eur(yearBalance)}</div>
+                    <div className={`text-base font-semibold ${color(yearBalance)}`}>{loading ? "—" : eur(yearBalance)}</div>
                 </div>
             </div>
         </div>

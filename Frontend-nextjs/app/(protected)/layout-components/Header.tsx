@@ -7,6 +7,7 @@
 import { useState, useEffect } from "react";
 
 import { signOut } from "next-auth/react";
+import { resetAllProviderCaches } from "@/context/resetCaches";
 import { LogOut, UserCircle, Menu } from "lucide-react";
 import BetaBadge from "@/app/components/BetaBadge";
 import { useRouter } from "next/navigation";
@@ -14,6 +15,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useUser } from "@/context/UserContext";
 import getAvatarUrl from "@/utils/avatar";
+import LogoElectricGlow from "@/app/components/ui/LogoElectricGlow";
 
 // ────────────────────────────────────────────────
 // Header principale
@@ -40,6 +42,7 @@ export default function Header() {
 
     // ─────────── LOGOUT HANDLER ───────────
     const handleLogout = async () => {
+        await resetAllProviderCaches();
         await signOut({ redirect: false });
         router.push("/login");
     };
@@ -82,32 +85,18 @@ export default function Header() {
                 style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
             >
                 {/* LOGO CENTRALE */}
-                <Link
-                    href="/"
-                    className="
-                        absolute left-1/2 -translate-x-1/2
-                        flex items-center gap-1
-                        rounded-xl
-                        px-2 py-1
-                        hover:bg-primary/5
-                        transition-colors
-                    "
-                    aria-label="Homepage"
-                >
-                    <Image
-                        src="/images/icon_1024x1024.webp"
-                        alt="Synapsi logo"
-                        width={32}
-                        height={32}
-                        priority
-                        className="
-                          h-8 w-auto
-                          drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.35)]
-                      "
+                {/* Logo centrato nella pagina */}
+                <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
+                    <LogoElectricGlow
+                        size={32}
+                        glowSize={30}
+                        spinSpeed="9s"
+                        shockMinDelay={1200}
+                        shockMaxDelay={3500}
+                        shockDuration={600}
+                        shockIntensity={1.1}
                     />
-                    <BetaBadge inline />
-                </Link>
-
+                </div>
                 {/* DESKTOP: UTENTE + LOGOUT (da sm in su) */}
                 <div className="hidden sm:flex items-center gap-4 ml-auto">
                     {username && (

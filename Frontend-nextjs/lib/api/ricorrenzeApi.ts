@@ -24,7 +24,9 @@ function frequencyToBackend(freq: string): string {
         case "yearly":
             return "annually";
         default:
-            console.warn("Valore frequenza sconosciuto! Uso 'monthly'. Ricevuto:", freq);
+            if (process.env.NODE_ENV === "development") {
+                console.warn("Valore frequenza sconosciuto! Uso 'monthly'. Ricevuto:", freq);
+            }
             return "monthly";
     }
 }
@@ -85,7 +87,6 @@ export async function createRicorrenza(token: string, data: RicorrenzaBase): Pro
 
     if (!res.ok) {
         const errJson = await res.json().catch(() => ({}));
-        console.error("💥 Payload non valido:", errJson);
         throw new Error(res.status === 422 ? "Validazione fallita" : "Errore creazione ricorrenza");
     }
 

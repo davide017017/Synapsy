@@ -31,7 +31,9 @@
       "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\app\" -Recurse -Filter \"*password*\" -ErrorAction SilentlyContinue)",
       "Bash(Select-Object FullName)",
       "Bash(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\app\" -Directory)",
-      "Bash(Select-String -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\.env\" -Pattern \"MAIL_|QUEUE_\")"
+      "Bash(Select-String -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Backend\\\\.env\" -Pattern \"MAIL_|QUEUE_\")",
+      "Bash(Remove-Item \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\hooks\\\\useCategories.ts\", \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\hooks\\\\useRicorrenze.ts\", \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\hooks\\\\useCategoriesApi.ts\", \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\hooks\\\\useRicorrenzeApi.ts\", \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\\\\Frontend-nextjs\\\\hooks\\\\useTransactionsApi.ts\" -ErrorAction Stop)",
+      "Bash(Write-Output \"Deleted all 5 files\")"
     ]
   }
 }

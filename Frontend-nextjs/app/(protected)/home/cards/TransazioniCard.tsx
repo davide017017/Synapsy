@@ -10,11 +10,9 @@ import { BarChart2, ArrowRight } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useTransactions } from "@/context/TransactionsContext";
-// import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
 import { isThisWeek, isThisMonth, isThisYear } from "@/utils/date";
 
 export default function TransazioniCard() {
-    // useRenderTimer("TransazioniCard");
     const { transactions, loading, error } = useTransactions();
 
     const { totale, settimana, mese, anno, prima } = useMemo(() => {

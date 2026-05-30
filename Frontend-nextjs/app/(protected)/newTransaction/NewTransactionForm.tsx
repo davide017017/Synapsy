@@ -975,7 +975,6 @@ export default function NewTransactionForm({
                                     "
                                     onClick={() => {
                                         const el = document.getElementById(dateInputId) as HTMLInputElement | null;
-                                        // @ts-ignore
                                         el?.showPicker ? el.showPicker() : el?.focus();
                                     }}
                                     aria-label="Apri calendario"

@@ -26,7 +26,7 @@ export function ThemeContextProvider({ children }: { children: ReactNode }) {
         if (typeof window === "undefined") return;
         const stored = (localStorage.getItem("theme") as Theme | null) ?? undefined;
         const initial = (user?.theme as Theme | undefined) ?? stored ?? "dark";
-        setThemeState(initial);
+        if (initial !== theme) setThemeState(initial);
     }, [user?.theme]);
 
     // Applica classe e data-theme su <html>

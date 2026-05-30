@@ -55,8 +55,8 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
 
     if (status === "unauthenticated") return null;
 
-    // ───── Splash durante check sessione o wake-up del DB ─────
-    if (status === "loading" || (status === "authenticated" && userLoading)) {
+    // ───── Splash durante check sessione iniziale ─────
+    if (status === "loading") {
         return <SplashScreen />;
     }
 

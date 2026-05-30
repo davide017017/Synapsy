@@ -28,20 +28,11 @@ export async function fetchUserProfile(token: string): Promise<UserType> {
         }
 
         if (!res.ok) {
-            console.error("[fetchUserProfile] fetch failed", {
-                url: endpoint,
-                status: res.status,
-                body: typeof body === "string" ? body.slice(0, 200) : body,
-            });
             throw new Error(body?.message || "Errore caricamento profilo");
         }
 
         return body.data || body;
     } catch (err) {
-        console.error("[fetchUserProfile] network error", {
-            url: endpoint,
-            error: err,
-        });
         throw err;
     }
 }

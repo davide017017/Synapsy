@@ -74,7 +74,7 @@ const TransactionsContext = createContext<TransactionsContextType | undefined>(u
 export function TransactionsProvider({ children }: { children: React.ReactNode }) {
     // ── Stato base ───────────────────────────────────────────────────────
     const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     // ── Stato modale ─────────────────────────────────────────────────────
@@ -182,7 +182,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 return d.getFullYear() === y && d.getMonth() === m;
             })
             .reduce((sum, t) => {
-                const amt = toNum((t as any).amount);
+                const amt = toNum(t.amount);
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
@@ -194,7 +194,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
         return transactions
             .filter((t) => parseYMD(t.date).getFullYear() === y)
             .reduce((sum, t) => {
-                const amt = toNum((t as any).amount);
+                const amt = toNum(t.amount);
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
@@ -217,7 +217,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 return d >= first && d <= last;
             })
             .reduce((sum, t) => {
-                const amt = toNum((t as any).amount);
+                const amt = toNum(t.amount);
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0);
@@ -226,7 +226,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
     const totalBalance = useMemo(
         () =>
             transactions.reduce((sum, t) => {
-                const amt = toNum((t as any).amount);
+                const amt = toNum(t.amount);
                 const tt = typeOf(t);
                 return sum + (tt === "entrata" ? amt : tt === "spesa" ? -amt : 0);
             }, 0),
@@ -246,7 +246,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             const tempId = Date.now() * -1;
 
             // Arricchisci subito l'ottimistico con l'oggetto categoria completo
-            const optimisticCat = categories.find((c) => c.id === (data as any).category_id);
+            const optimisticCat = categories.find((c) => c.id === data.category_id);
             const optimisticTx: Transaction = {
                 id: tempId,
                 ...data,
@@ -262,7 +262,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 // L'API restituisce solo category_id senza eager loading:
                 // inietta l'oggetto categoria e il type come fallback
                 const savedCat = categories.find(
-                    (c) => c.id === ((saved as any).category_id ?? (data as any).category_id),
+                    (c) => c.id === (saved.category_id ?? data.category_id),
                 );
                 const enrichedSaved = {
                     ...saved,
@@ -300,7 +300,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
             // Arricchisci l'ottimistico: usa la nuova categoria dal form se cambiata
             const updateOptCat =
-                categories.find((c) => c.id === (data as any).category_id) ?? target.category;
+                categories.find((c) => c.id === data.category_id) ?? target.category;
             const optimisticTx: Transaction = {
                 ...target,
                 ...data,
@@ -315,7 +315,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
 
                 // Stessa logica di create: API potrebbe non restituire category eager-loaded
                 const updateSavedCat = categories.find(
-                    (c) => c.id === ((saved as any).category_id ?? (data as any).category_id),
+                    (c) => c.id === (saved.category_id ?? data.category_id),
                 );
                 const enrichedSaved = {
                     ...saved,
@@ -371,7 +371,7 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                             if (!token) return;
                             setLoading(true);
                             try {
-                                const { id: _omit, ...txBase } = tx as any;
+                                const { id: _omit, ...txBase } = tx;
                                 const restored = await createTransaction(token, txBase, tx.type);
                                 setTransactions((curr) => sortByDateDesc([restored, ...curr]));
                                 toast.success("Eliminazione annullata!");

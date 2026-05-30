@@ -5,7 +5,6 @@
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Category, DeleteCategoryModalProps } from "@/types";
-import { useCategories } from "@/context/CategoriesContext";
 
 // ============================
 // Tipi props
@@ -20,8 +19,6 @@ export default function DeleteCategoryModal({ category, onClose, categories, onD
     const [mode, setMode] = useState<"deleteAll" | "move">("move");
     const [targetCategoryId, setTargetCategoryId] = useState<number | undefined>();
     const [loading, setLoading] = useState(false);
-
-    const { moveAndDelete, remove, refresh } = useCategories();
 
     // --- Filtra categorie disponibili per spostamento ---
     const availableCategories = categories.filter((c) => c.id !== category?.id && c.type === category?.type);

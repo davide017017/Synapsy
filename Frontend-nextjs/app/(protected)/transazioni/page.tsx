@@ -50,10 +50,12 @@ export default function TransazioniPage() {
     const handleDeleteSelectedTransactions = async (ids: string[]) => {
         setIsLoading(true);
 
-        for (const uid of ids) {
-            const [, rawId] = uid.split("-");
-            await remove(Number(rawId));
-        }
+        await Promise.all(
+            ids.map((uid) => {
+                const [, rawId] = uid.split("-");
+                return remove(Number(rawId));
+            })
+        );
 
         setIsLoading(false);
     };

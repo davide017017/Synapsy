@@ -135,9 +135,24 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
     }, [loadRicorrenze]);
 
     /* =============================================================
+     * Modale
+     * ============================================================= */
+    const closeModal = useCallback(() => {
+        setRicorrenzaToEdit(null);
+        setOnSuccessCallback(null);
+        setIsOpen(false);
+    }, []);
+
+    const openModal = useCallback((ricorrenza?: Ricorrenza | null, onSuccess?: (r: Ricorrenza) => void) => {
+        setRicorrenzaToEdit(ricorrenza ?? null);
+        setOnSuccessCallback(() => onSuccess || null);
+        setIsOpen(true);
+    }, []);
+
+    /* =============================================================
      * CREATE / UPDATE / DELETE
      * ============================================================= */
-    const create = async (data: RicorrenzaBase) => {
+    const create = useCallback(async (data: RicorrenzaBase) => {
         if (!token) return;
         setLoading(true);
         try {
@@ -151,9 +166,9 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [token, refresh, onSuccessCallback, closeModal]);
 
-    const update = async (id: number, data: RicorrenzaBase) => {
+    const update = useCallback(async (id: number, data: RicorrenzaBase) => {
         if (!token) return;
         setLoading(true);
         try {
@@ -167,9 +182,9 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [token, refresh, onSuccessCallback, closeModal]);
 
-    const remove = async (id: number) => {
+    const remove = useCallback(async (id: number) => {
         if (!token) return;
         setLoading(true);
         try {
@@ -211,22 +226,7 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
-    };
-
-    /* =============================================================
-     * Modale
-     * ============================================================= */
-    const openModal = (ricorrenza?: Ricorrenza | null, onSuccess?: (r: Ricorrenza) => void) => {
-        setRicorrenzaToEdit(ricorrenza ?? null);
-        setOnSuccessCallback(() => onSuccess || null);
-        setIsOpen(true);
-    };
-
-    const closeModal = () => {
-        setRicorrenzaToEdit(null);
-        setOnSuccessCallback(null);
-        setIsOpen(false);
-    };
+    }, [token, ricorrenze, refresh]);
 
     /* =============================================================
      * Render

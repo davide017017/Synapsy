@@ -4,18 +4,7 @@
 // ============================
 
 import { Ricorrenza } from "@/types/models/ricorrenza";
-
-// ─────────────────────────────────────────────────────────────
-// Sezione: util numeri / flag
-// ─────────────────────────────────────────────────────────────
-const toNum = (v: unknown) => {
-    if (typeof v === "number") return v;
-    if (typeof v === "string") {
-        const n = Number(v.replace(",", "."));
-        return Number.isFinite(n) ? n : 0;
-    }
-    return 0;
-};
+import { toNum } from "@/lib/finance";
 
 const toBool = (v: unknown): boolean => {
     if (typeof v === "boolean") return v;

@@ -53,20 +53,10 @@ export const authOptions: NextAuthOptions = {
                 password: { type: "password" },
             },
             async authorize(credentials) {
-                // ==================================================
-                // AUTH DEBUG — rimuovere quando backend è stabile
-                // ==================================================
-                const DEBUG_AUTH = process.env.NODE_ENV === "development";
-
                 const payload = {
                     email: credentials?.email,
                     password: credentials?.password,
                 };
-
-                if (DEBUG_AUTH) {
-                    console.log("LOGIN URL", url("login"));
-                    console.log("LOGIN PAYLOAD", payload);
-                }
 
                 let res: Response;
 
@@ -82,11 +72,6 @@ export const authOptions: NextAuthOptions = {
                 } catch (err) {
                     console.error("LOGIN NETWORK ERROR", err);
                     return null;
-                }
-
-                if (DEBUG_AUTH) {
-                    console.log("LOGIN STATUS", res.status);
-                    console.log("LOGIN HEADERS", Object.fromEntries(res.headers.entries()));
                 }
 
                 const contentType = res.headers.get("content-type") || "";
@@ -107,10 +92,6 @@ export const authOptions: NextAuthOptions = {
                 } catch (e) {
                     console.error("LOGIN JSON PARSE ERROR", e);
                     return null;
-                }
-
-                if (DEBUG_AUTH) {
-                    console.log("LOGIN DATA", data);
                 }
 
                 if (!res.ok) {

@@ -10,14 +10,12 @@ import { Repeat, ArrowRight } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
-// import { useRenderTimer } from "@/app/(protected)/home/utils/useRenderTimer";
 import { formatDataIt, isThisWeek, isThisMonth, isThisYear } from "@/utils/date";
 
 // ===============================
 // Componente principale
 // ===============================
 export default function RicorrentiCard() {
-    // useRenderTimer("RicorrentiCard");
     const { ricorrenze, loading } = useRicorrenze();
 
     // ── Solo ricorrenze attive ─────────────────────────

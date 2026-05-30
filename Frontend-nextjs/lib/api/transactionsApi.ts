@@ -4,24 +4,7 @@
 
 import type { Transaction } from "@/types/models/transaction";
 import { url } from "@/lib/api/endpoints";
-
-// ──────────────────────────────────────────────────────
-// Helper: parsing numerico robusto (es. "1.234,56" → 1234.56)
-// ──────────────────────────────────────────────────────
-const toNum = (v: any): number => {
-    if (typeof v === "number") return Number.isFinite(v) ? v : 0;
-    if (typeof v === "string") {
-        const s = v.trim();
-        if (!s) return 0;
-        const normalized = s.includes(",") && s.includes(".")
-            ? s.replace(/\./g, "").replace(",", ".")
-            : s.replace(",", ".");
-        const n = parseFloat(normalized);
-        return Number.isFinite(n) ? n : 0;
-    }
-    const n = Number(v);
-    return Number.isFinite(n) ? n : 0;
-};
+import { toNum } from "@/lib/finance";
 
 // ──────────────────────────────────────────────────────
 // Fetch: lista transazioni (normalizza amount, NON toISOString su date)
@@ -88,8 +71,6 @@ export async function createTransaction(
     });
 
     if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        console.error("💥 Errore creazione transazione:", errJson);
         throw new Error(res.status === 422 ? "Validazione fallita" : "Errore creazione transazione");
     }
 
@@ -166,8 +147,6 @@ export async function softMoveTransaction(
         headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
     });
     if (!resDelete.ok) {
-        const err = await resDelete.json().catch(() => ({}));
-        console.error("💥 Errore softMove DELETE:", err);
         throw new Error("Errore eliminazione vecchia transazione");
     }
 
@@ -193,8 +172,6 @@ export async function softMoveTransaction(
     });
 
     if (!resCreate.ok) {
-        const err = await resCreate.json().catch(() => ({}));
-        console.error("💥 Errore softMove CREATE:", err);
         throw new Error("Errore creazione nuova transazione");
     }
 

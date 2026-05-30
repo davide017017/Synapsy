@@ -6,7 +6,7 @@
 // (Mobile: dense + divider anno/mese/giorno con totali e label)
 // ====================================================
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo } from "react";
 import TransactionListFilter from "./list/TransactionListFilter";
 import { useSelection } from "@/context/SelectionContext";
 import { useCategories } from "@/context/CategoriesContext";
@@ -220,15 +220,6 @@ export default function TransactionsList({
         category: initialCategoryFilter ?? "tutte",
     });
 
-    // Applica initialCategoryFilter se arriva dopo il mount (dynamic import + useEffect timing)
-    const appliedInitialFilter = useRef(false);
-    useEffect(() => {
-        if (initialCategoryFilter && !appliedInitialFilter.current) {
-            appliedInitialFilter.current = true;
-            setFilter((f) => ({ ...f, category: initialCategoryFilter }));
-        }
-    }, [initialCategoryFilter]);
-
     const { categories } = useCategories();
     const { isSelectionMode, selectedIds, setSelectedIds } = useSelection();
 
@@ -439,17 +430,13 @@ export default function TransactionsList({
                     <button
                         type="button"
                         onClick={() => setIsMobileFiltersOpen((v) => !v)}
-                        className="
-                            flex-1 rounded-2xl border border-bg-elevate bg-bg-elevate/40
-                            px-4 py-1 flex items-center justify-between
-                            shadow-sm
-                        "
+                        className="flex-1 rounded-sm border border-white/15 bg-black/25 px-4 py-2 flex items-center justify-between font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/55 hover:border-white/30 hover:text-foreground/80 transition-all duration-200 active:scale-[0.98]"
                     >
                         <span className="flex items-center gap-2 font-semibold">
                             <SlidersHorizontal size={18} />
                             Filtri
                         </span>
-                        <span className="text-sm text-muted-foreground">{isMobileFiltersOpen ? "Chiudi" : "Apri"}</span>
+                        <span className="text-[10px] font-mono uppercase tracking-[0.08em] text-foreground/35">{isMobileFiltersOpen ? "Chiudi" : "Apri"}</span>
                     </button>
                 </div>
 
@@ -493,14 +480,17 @@ export default function TransactionsList({
                                     setSelectedYear("all");
                                     setSelectedMonth("all");
                                 }}
-                                className={`
-                                  px-3 py-1 rounded-full text-[12px] font-semibold border leading-tight
-                                  ${
-                                      selectedYear === "all"
-                                          ? "bg-primary text-white border-primary"
-                                          : "bg-bg-elevate text-muted-foreground hover:bg-bg-elevate/70"
-                                  }
-                              `}
+                                className={`px-3 py-1 rounded-sm font-mono text-[11px] font-bold uppercase tracking-[0.12em] border transition-all duration-200 active:scale-95 ${
+                                    selectedYear === "all"
+                                        ? ""
+                                        : "border-white/10 bg-black/20 text-foreground/45 hover:border-white/25 hover:text-foreground/70"
+                                }`}
+                                style={selectedYear === "all" ? {
+                                    background: "hsl(var(--c-primary) / 0.18)",
+                                    borderColor: "hsl(var(--c-primary) / 0.55)",
+                                    color: "hsl(var(--c-primary))",
+                                    boxShadow: "0 0 12px hsl(var(--c-primary) / 0.25)"
+                                } : {}}
                             >
                                 Tutti
                             </button>
@@ -512,14 +502,17 @@ export default function TransactionsList({
                                         setSelectedYear(year);
                                         setSelectedMonth("all");
                                     }}
-                                    className={`
-                                      px-3 py-1 rounded-full text-[12px] font-semibold leading-tight
-                                      ${
-                                          selectedYear === year
-                                              ? "bg-primary text-white"
-                                              : "bg-bg-elevate text-muted-foreground hover:bg-bg-elevate/70"
-                                      }
-                                  `}
+                                    className={`px-3 py-1 rounded-sm font-mono text-[11px] font-bold uppercase tracking-[0.12em] border transition-all duration-200 active:scale-95 ${
+                                        selectedYear === year
+                                            ? ""
+                                            : "border-white/10 bg-black/20 text-foreground/45 hover:border-white/25 hover:text-foreground/70"
+                                    }`}
+                                    style={selectedYear === year ? {
+                                        background: "hsl(var(--c-primary) / 0.18)",
+                                        borderColor: "hsl(var(--c-primary) / 0.55)",
+                                        color: "hsl(var(--c-primary))",
+                                        boxShadow: "0 0 12px hsl(var(--c-primary) / 0.25)"
+                                    } : {}}
                                 >
                                     {year}
                                 </button>
@@ -530,14 +523,16 @@ export default function TransactionsList({
                         <div className="w-full max-w-full flex gap-1 overflow-x-auto py-0.5 px-1 scrollbar-hide">
                             <button
                                 onClick={() => setSelectedMonth("all")}
-                                className={`
-                                  px-2.5 py-0.5 rounded-full text-[11px] border leading-tight
-                                  ${
-                                      selectedMonth === "all"
-                                          ? "bg-primary/20 border-primary text-primary"
-                                          : "bg-bg-elevate text-muted-foreground hover:bg-bg-elevate/70"
-                                  }
-                              `}
+                                className={`px-2.5 py-0.5 rounded-sm font-mono text-[10px] font-bold uppercase tracking-[0.10em] border transition-all duration-200 ${
+                                    selectedMonth === "all"
+                                        ? ""
+                                        : "border-white/[0.08] bg-black/15 text-foreground/40 hover:border-white/20 hover:text-foreground/60"
+                                }`}
+                                style={selectedMonth === "all" ? {
+                                    background: "hsl(var(--c-primary) / 0.12)",
+                                    borderColor: "hsl(var(--c-primary) / 0.45)",
+                                    color: "hsl(var(--c-primary))"
+                                } : {}}
                             >
                                 Tutti i mesi
                             </button>
@@ -546,14 +541,16 @@ export default function TransactionsList({
                                 <button
                                     key={month}
                                     onClick={() => setSelectedMonth(month)}
-                                    className={`
-                                      px-2.5 py-0.5 rounded-full text-[11px] border leading-tight
-                                      ${
-                                          selectedMonth === month
-                                              ? "bg-primary/20 border-primary text-primary"
-                                              : "bg-bg-elevate text-muted-foreground hover:bg-bg-elevate/70"
-                                      }
-                                  `}
+                                    className={`px-2.5 py-0.5 rounded-sm font-mono text-[10px] font-bold uppercase tracking-[0.10em] border transition-all duration-200 ${
+                                        selectedMonth === month
+                                            ? ""
+                                            : "border-white/[0.08] bg-black/15 text-foreground/40 hover:border-white/20 hover:text-foreground/60"
+                                    }`}
+                                    style={selectedMonth === month ? {
+                                        background: "hsl(var(--c-primary) / 0.12)",
+                                        borderColor: "hsl(var(--c-primary) / 0.45)",
+                                        color: "hsl(var(--c-primary))"
+                                    } : {}}
                                 >
                                     {monthLabel(month)}
                                 </button>
@@ -567,7 +564,7 @@ export default function TransactionsList({
                 </div>
 
                 {/* ---------- MOBILE: Dense list con divider + totali ---------- */}
-                <div className="w-full overflow-x-hidden rounded-2xl border border-bg-elevate bg-bg-elevate/20 overflow-hidden">
+                <div className="w-full overflow-x-hidden rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
                     {mobileModel.blocks.map((b) => {
                         // --------------------------
                         // Divider ANNO
@@ -576,9 +573,9 @@ export default function TransactionsList({
                             return (
                                 <div
                                     key={b.key}
-                                    className="px-3 py-2 bg-bg-elevate/55 border-b border-bg-elevate flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
+                                    className="px-3 py-2 bg-black/40 border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
                                 >
-                                    <div className="text-xs font-bold tracking-wider uppercase">Anno {b.year}</div>
+                                    <div className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-foreground/60">Anno {b.year}</div>
                                     <TotalsInline
                                         entrate={b.totals.entrate}
                                         spese={b.totals.spese}
@@ -595,9 +592,9 @@ export default function TransactionsList({
                             return (
                                 <div
                                     key={b.key}
-                                    className="px-3 py-1.5 bg-bg-elevate/35 border-b border-bg-elevate flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
+                                    className="px-3 py-1.5 bg-black/25 border-b border-white/[0.06] flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
                                 >
-                                    <div className="text-[11px] font-semibold capitalize text-muted-foreground">
+                                    <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.10em] text-foreground/45">
                                         Totale {monthLabel(b.monthKey)}
                                     </div>
                                     <TotalsInline
@@ -617,20 +614,20 @@ export default function TransactionsList({
                                 <div
                                     key={b.key}
                                     className={`px-3 border-b flex items-center justify-between gap-3 ${
-                                        isToday ? "py-1.5 border-primary/30" : "py-0.5 border-bg-elevate"
+                                        isToday ? "py-1.5 border-[hsl(var(--c-primary)/0.30)]" : "py-1 border-white/[0.05]"
                                     }`}
                                     style={
                                         isToday
-                                            ? { background: "hsl(var(--c-primary) / 0.10)" }
+                                            ? { background: "hsl(var(--c-primary) / 0.08)" }
                                             : {
-                                                  background: `linear-gradient(to bottom, hsl(var(--c-bg-elevate) / 0.55), hsl(var(--c-bg-elevate) / 0.15))`,
+                                                  background: `linear-gradient(to bottom, rgba(255,255,255,0.04), transparent)`,
                                               }
                                     }
                                 >
-                                    <div className={`leading-none flex items-center gap-2 ${isToday ? "" : ""}`}>
+                                    <div className="leading-none flex items-center gap-2">
                                         {isToday ? (
                                             <>
-                                                <span className="text-[11px] font-extrabold uppercase tracking-widest text-primary leading-none">
+                                                <span className="font-mono text-[11px] font-extrabold uppercase tracking-[0.14em] text-[hsl(var(--c-primary))] leading-none">
                                                     Oggi
                                                 </span>
                                                 <span className="text-[10px] text-muted-foreground">
@@ -638,7 +635,7 @@ export default function TransactionsList({
                                                 </span>
                                             </>
                                         ) : (
-                                            <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground leading-none">
+                                            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-foreground/40 leading-none">
                                                 {dayLabel(b.dayKey)}
                                             </span>
                                         )}
@@ -683,19 +680,11 @@ export default function TransactionsList({
                                         onSelect(t);
                                     }
                                 }}
-                                className={`
-                                    w-full max-w-full overflow-hidden text-left
-                                    px-3 py-2
-                                    transition-all duration-150
-                                    ${isFuture ? "opacity-10 " : ""}
-                                    ${
+                                className={`w-full max-w-full overflow-hidden text-left px-3 py-2 border-l-[3px] transition-all duration-150 ${isFuture ? "opacity-10 " : ""}${
                                         isSelected
-                                            ? "bg-primary/15 border-l-[4px] border-primary shadow-sm scale-[1.01] hover:bg-primary/20"
-                                            : isSelectionMode
-                                              ? "hover:bg-primary/5"
-                                              : "hover:bg-bg-elevate/40"
-                                    }
-                                `}
+                                            ? "bg-[hsl(var(--c-primary)/0.12)] border-l-[3px]"
+                                            : "hover:bg-white/[0.04]"
+                                    }`}
                                 style={{ borderLeft: `4px solid ${categoryColor}` }}
                             >
                                 <div className="flex items-center gap-2">
@@ -707,14 +696,14 @@ export default function TransactionsList({
                                     {/* Centro */}
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 min-w-0">
-                                            <div className="min-w-0 flex-1 font-semibold text-sm truncate">
+                                            <div className="min-w-0 flex-1 font-mono font-semibold text-sm truncate">
                                                 {t.description}
                                             </div>
 
                                             {/* Pill categoria mini (colorata) */}
                                             {t.category?.name ? (
                                                 <span
-                                                    className="shrink-0 text-[10px] leading-none px-2 py-1 rounded-full border border-bg-elevate"
+                                                    className="shrink-0 text-[10px] leading-none font-mono px-2 py-0.5 rounded-full border"
                                                     style={{
                                                         backgroundColor: `${categoryColor}22`,
                                                         color: categoryColor,
@@ -724,7 +713,7 @@ export default function TransactionsList({
                                                     {t.category.name}
                                                 </span>
                                             ) : (
-                                                <span className="shrink-0 text-[10px] leading-none px-2 py-1 rounded-full border border-bg-elevate text-muted-foreground">
+                                                <span className="shrink-0 text-[10px] leading-none font-mono px-2 py-0.5 rounded-full border text-muted-foreground">
                                                     Senza categoria
                                                 </span>
                                             )}
@@ -733,7 +722,7 @@ export default function TransactionsList({
 
                                     {/* Importo a destra (verde/rosso) */}
                                     <div
-                                        className="shrink-0 font-bold text-sm tabular-nums"
+                                        className="shrink-0 font-mono font-bold text-sm tabular-nums"
                                         style={{ color: amountColor }}
                                     >
                                         {formatAmount(Number(t.amount))}
@@ -745,7 +734,7 @@ export default function TransactionsList({
                 </div>
 
                 {/* ---------- Footer conteggio ---------- */}
-                <div className="mt-2 text-xs text-muted-foreground text-center">
+                <div className="mt-2 text-[10px] font-mono uppercase tracking-[0.08em] text-foreground/35 text-center">
                     {`${filtered.length} transazioni`}
                     {filter.search !== "" || filter.type !== "tutti" || filter.category !== "tutte"
                         ? "filtrate"
