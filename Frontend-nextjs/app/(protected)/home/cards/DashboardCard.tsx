@@ -50,7 +50,7 @@ export default function DashboardCard({ icon, title, value, children, href, foot
 
     // ── Wrapper link se href presente ──────────────────
     return href ? (
-        <Link href={href} tabIndex={-1} className="block" aria-label={typeof title === "string" ? title : "Card"}>
+        <Link href={href} tabIndex={-1} className="contents" aria-label={typeof title === "string" ? title : "Card"}>
             {cardContent}
         </Link>
     ) : (

@@ -5,6 +5,7 @@ import TransazioniCard from "./cards/TransazioniCard";
 import RicorrentiCard from "./cards/RicorrentiCard";
 import CategorieCard from "./cards/CategorieCard";
 import ProssimoPagamentoCard from "./cards/ProssimoPagamentoCard";
+import PanoramicaCard from "./cards/PanoramicaCard";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
 import NewRicorrenzaButton from "../newRicorrenza/NewRicorrenzaButton";
 import NewCategoryButton from "../newCategory/NewCategoryButton";
@@ -25,8 +26,24 @@ export default function HomePage() {
                 <NewCategoryButton />
             </div>
 
-            {/* Griglia card riassuntive */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+            {/* Mobile/tablet layout (below lg) */}
+            <div className="flex flex-col gap-4 w-full lg:hidden">
+                {/* Row 1 */}
+                <div className="grid grid-cols-2 gap-4 items-stretch">
+                    <PanoramicaCard />
+                    <TransazioniCard />
+                </div>
+                {/* Row 2 */}
+                <div className="grid grid-cols-2 gap-4 items-stretch">
+                    <RicorrentiCard />
+                    <ProssimoPagamentoCard />
+                </div>
+                {/* Row 3 */}
+                <CategorieCard />
+            </div>
+
+            {/* Desktop layout (lg+) */}
+            <div className="hidden lg:grid grid-cols-4 gap-4 w-full">
                 <TransazioniCard />
                 <RicorrentiCard />
                 <CategorieCard />

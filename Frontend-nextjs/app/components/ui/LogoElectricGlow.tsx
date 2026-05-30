@@ -6,6 +6,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 // ────────────────────────────────────────────────
 // Props
@@ -18,6 +19,9 @@ type LogoElectricGlowProps = {
     shockMaxDelay?: number;
     shockDuration?: number;
     shockIntensity?: number;
+    navigateTo?: string;
+    clickShockDuration?: number;
+    fullscreenBoltCount?: number;
 };
 
 // ────────────────────────────────────────────────
@@ -60,9 +64,14 @@ export default function LogoElectricGlow({
     shockMaxDelay = 7500,
     shockDuration = 420,
     shockIntensity = 1,
+    navigateTo = "/",
+    clickShockDuration = 850,
 }: LogoElectricGlowProps) {
+    const router = useRouter();
+
     const [shockKey, setShockKey] = useState(0);
     const [isShocking, setIsShocking] = useState(false);
+    const [isClickShock, setIsClickShock] = useState(false);
 
     // ────────────────────────────────────────────────
     // Dati random del fulmine
@@ -88,6 +97,8 @@ export default function LogoElectricGlow({
         let clearId: ReturnType<typeof setTimeout>;
 
         const triggerShock = () => {
+            if (isClickShock) return;
+
             setShockKey((prev) => prev + 1);
             setIsShocking(true);
 
@@ -95,8 +106,7 @@ export default function LogoElectricGlow({
                 setIsShocking(false);
             }, shockDuration);
 
-            const randomDelay = randomBetween(shockMinDelay, shockMaxDelay);
-            timeoutId = setTimeout(triggerShock, randomDelay);
+            timeoutId = setTimeout(triggerShock, randomBetween(shockMinDelay, shockMaxDelay));
         };
 
         timeoutId = setTimeout(triggerShock, randomBetween(shockMinDelay, shockMaxDelay));
@@ -105,7 +115,28 @@ export default function LogoElectricGlow({
             clearTimeout(timeoutId);
             clearTimeout(clearId);
         };
-    }, [shockMinDelay, shockMaxDelay, shockDuration]);
+    }, [shockMinDelay, shockMaxDelay, shockDuration, isClickShock]);
+
+    // ────────────────────────────────────────────────
+    // Click logo: scossa fullscreen + navigazione
+    // ────────────────────────────────────────────────
+    const handleLogoClick = () => {
+        if (isClickShock) return;
+
+        setIsClickShock(true);
+        setIsShocking(true);
+        setShockKey((prev) => prev + 1);
+
+        setTimeout(() => {
+            router.push(navigateTo);
+        }, clickShockDuration);
+
+        // Reset necessario se si clicca già dalla stessa pagina
+        setTimeout(() => {
+            setIsClickShock(false);
+            setIsShocking(false);
+        }, clickShockDuration + 150);
+    };
 
     // ────────────────────────────────────────────────
     // Valori CSS regolabili
@@ -115,6 +146,7 @@ export default function LogoElectricGlow({
         "--logo-glow-size": `${glowSize}px`,
         "--logo-glow-speed": spinSpeed,
         "--shock-duration": `${shockDuration}ms`,
+        "--click-shock-duration": `${clickShockDuration}ms`,
         "--shock-extra-size": `${18 * shockIntensity}px`,
         "--shock-blur": `${10 * shockIntensity}px`,
         "--shock-opacity": `${Math.min(0.45, 0.28 * shockIntensity)}`,
@@ -126,48 +158,59 @@ export default function LogoElectricGlow({
     // Render
     // ────────────────────────────────────────────────
     return (
-        <div className="logo-electric-wrap" style={cssVars}>
-            {/* Glow rotante */}
-            <span className="logo-glow-orbit" aria-hidden="true" />
+        <>
+            <button
+                type="button"
+                className="logo-electric-wrap"
+                style={cssVars}
+                onClick={handleLogoClick}
+                aria-label="Vai alla home"
+            >
+                {/* Glow rotante */}
+                <span className="logo-glow-orbit" aria-hidden="true" />
 
-            {/* Flash interno */}
-            {isShocking && <span key={`flash-${shockKey}`} className="logo-electric-flash" aria-hidden="true" />}
+                {/* Flash interno */}
+                {isShocking && <span key={`flash-${shockKey}`} className="logo-electric-flash" aria-hidden="true" style={isClickShock ? { background: "hsl(271 81% 56% / var(--shock-opacity))" } : undefined} />}
 
-            {/* Fulmine SVG random */}
-            {isShocking && (
-                <svg
-                    key={`bolt-${shockKey}`}
-                    className="logo-electric-bolt"
-                    viewBox={`0 0 ${shock.viewBoxSize} ${shock.viewBoxSize}`}
-                    aria-hidden="true"
-                    style={{
-                        transform: `
-                            translate(${shock.translateX}px, ${shock.translateY}px)
-                            rotate(${shock.rotation}deg)
-                            scale(${shock.scale})
-                        `,
-                    }}
-                >
-                    <path className="logo-electric-bolt-glow" d={shock.path} />
-                    <path className="logo-electric-bolt-main" d={shock.path} />
-                </svg>
-            )}
+                {/* Fulmine SVG random */}
+                {isShocking && (
+                    <svg
+                        key={`bolt-${shockKey}`}
+                        className="logo-electric-bolt"
+                        viewBox={`0 0 ${shock.viewBoxSize} ${shock.viewBoxSize}`}
+                        aria-hidden="true"
+                        style={{
+                            transform: `
+                                translate(${shock.translateX}px, ${shock.translateY}px)
+                                rotate(${shock.rotation}deg)
+                                scale(${shock.scale})
+                            `,
+                        }}
+                    >
+                        <path className="logo-electric-bolt-glow" d={shock.path} style={isClickShock ? { stroke: "#a855f7" } : undefined} />
+                        <path className="logo-electric-bolt-main" d={shock.path} style={isClickShock ? { stroke: "#e9d5ff", filter: "drop-shadow(0 0 4px #e9d5ff) drop-shadow(0 0 7px #a855f7)" } : undefined} />
+                    </svg>
+                )}
 
-            {/* Logo */}
-            <Image
-                src="/images/icon_1024x1024.webp"
-                alt="Synapsi logo"
-                width={size}
-                height={size}
-                priority
-                className={`
-                    relative z-10
-                    h-8 w-auto
-                    transition-transform duration-100
-                    drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.35)]
-                    ${isShocking ? "logo-electric-shake" : ""}
-                `}
-            />
+                {/* Logo */}
+                <Image
+                    src="/images/icon_1024x1024.webp"
+                    alt="Synapsi logo"
+                    width={size}
+                    height={size}
+                    priority
+                    className={`
+                        relative z-10
+                        h-8 w-auto
+                        transition-transform duration-100
+                        drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.35)]
+                        ${isShocking ? "logo-electric-shake" : ""}
+                    `}
+                />
+            </button>
+
+            {/* Scossa fullscreen al click */}
+            {isClickShock && <span className="logo-fullscreen-shock" style={{ ...cssVars, "--shock-color": "#a855f7" } as React.CSSProperties} aria-hidden="true" />}
 
             {/* CSS scoped */}
             <style jsx>{`
@@ -178,6 +221,10 @@ export default function LogoElectricGlow({
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    border: 0;
+                    padding: 0;
+                    background: transparent;
+                    cursor: pointer;
                     pointer-events: auto;
                 }
 
@@ -237,6 +284,29 @@ export default function LogoElectricGlow({
                     stroke-linejoin: round;
                     opacity: 0.58;
                     filter: blur(2px);
+                }
+
+                .logo-fullscreen-shock {
+                    --shock-color: hsl(var(--c-primary));
+                    position: fixed;
+                    inset: 0;
+                    z-index: 9999;
+                    pointer-events: none;
+                    background:
+                        radial-gradient(circle at 50% 14%, color-mix(in srgb, var(--shock-color) 75%, transparent), transparent 16%),
+                        radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--shock-color) 22%, transparent), transparent 44%),
+                        linear-gradient(
+                            115deg,
+                            transparent 0%,
+                            transparent 40%,
+                            white 43%,
+                            color-mix(in srgb, var(--shock-color) 90%, transparent) 45%,
+                            white 47%,
+                            transparent 51%
+                        );
+                    filter: drop-shadow(0 0 20px var(--shock-color))
+                        drop-shadow(0 0 46px color-mix(in srgb, var(--shock-color) 70%, transparent));
+                    animation: logoFullscreenShock var(--click-shock-duration) ease-out forwards;
                 }
 
                 :global(.logo-electric-shake) {
@@ -301,6 +371,39 @@ export default function LogoElectricGlow({
                     }
                 }
 
+                @keyframes logoFullscreenShock {
+                    0% {
+                        opacity: 0;
+                        transform: scale(0.85) rotate(0deg);
+                        clip-path: polygon(48% 0%, 56% 0%, 45% 34%, 67% 36%, 37% 100%, 44% 58%, 27% 57%);
+                    }
+
+                    10% {
+                        opacity: 1;
+                        transform: scale(1.02) rotate(8deg);
+                    }
+
+                    24% {
+                        opacity: 0.35;
+                        transform: scale(1.08) rotate(-6deg);
+                    }
+
+                    42% {
+                        opacity: 0.9;
+                        transform: scale(1.15) rotate(4deg);
+                    }
+
+                    70% {
+                        opacity: 0.28;
+                        transform: scale(1.22) rotate(-2deg);
+                    }
+
+                    100% {
+                        opacity: 0;
+                        transform: scale(1.35) rotate(0deg);
+                    }
+                }
+
                 @keyframes logoShake {
                     0% {
                         transform: translate(0, 0) rotate(0deg);
@@ -327,18 +430,18 @@ export default function LogoElectricGlow({
                     }
                 }
             `}</style>
-        </div>
+        </>
     );
 }
 
 /*
  * LogoElectricGlow.tsx
  *
- * Serve a: mostrare il logo Synapsi con glow rotante e scossa elettrica casuale.
+ * Serve a: mostrare il logo Synapsi con glow rotante, scossa casuale e scossa fullscreen al click.
  *
- * Cosa fa: aggiunge un alone rotante continuo, un flash rapido e un fulmine SVG
- * generato con traiettoria random a intervalli casuali.
+ * Cosa fa: aggiunge un alone rotante continuo, un fulmine SVG random, una vibrazione del logo
+ * e una scossa fullscreen prima della navigazione verso la home.
  *
  * Come lo fa: usa props regolabili per velocità, frequenza, durata e intensità;
- * genera un path SVG casuale per il fulmine e mantiene tutto isolato nel componente.
+ * usa router.push dopo un delay per lasciare visibile l’animazione fullscreen.
  */

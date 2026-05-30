@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "PowerShell(Get-ChildItem -Path \"f:\\\\MIEI LAVORI\\\\SYNAPSY\\\\Synapsi\" -Recurse -Directory | Where-Object { $_.Name -match '\\(backend|api|routes|src\\)' } | Select-Object -First 20 FullName)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")"
     ]
   }
 }

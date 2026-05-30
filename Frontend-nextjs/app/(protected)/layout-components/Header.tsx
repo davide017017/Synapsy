@@ -86,7 +86,7 @@ export default function Header() {
             >
                 {/* LOGO CENTRALE */}
                 {/* Logo centrato nella pagina */}
-                <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
+                <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-[35%]">
                     <LogoElectricGlow
                         size={32}
                         glowSize={30}
@@ -95,6 +95,9 @@ export default function Header() {
                         shockMaxDelay={3500}
                         shockDuration={600}
                         shockIntensity={1.1}
+                        navigateTo="/"
+                        clickShockDuration={900}
+                        fullscreenBoltCount={18}
                     />
                 </div>
                 {/* DESKTOP: UTENTE + LOGOUT (da sm in su) */}
