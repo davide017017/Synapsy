@@ -471,7 +471,15 @@ export default function ListaRicorrenzePerFrequenza({
                                                 <div className="min-w-0 flex-1">
                                                     <div className="font-mono text-[12px] text-foreground/80 truncate">
                                                         {(r as any)?.nome}
-                                                    </div>{" "}
+                                                    </div>
+                                                    {(r as any)?.notes && String((r as any).notes).trim() !== '' && (
+                                                        <div
+                                                            className="text-[10px] text-muted-foreground/60 truncate mt-0.5 font-mono tracking-wide"
+                                                            title={(r as any).notes}
+                                                        >
+                                                            {(r as any).notes}
+                                                        </div>
+                                                    )}
                                                 </div>
 
                                                 {/* Data */}
