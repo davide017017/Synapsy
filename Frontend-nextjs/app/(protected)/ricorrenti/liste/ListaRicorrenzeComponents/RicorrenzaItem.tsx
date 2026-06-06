@@ -181,6 +181,15 @@ export default function RicorrenzaItem({ r, onEdit, onDelete }: RicorrenzaItemPr
                         {name}
                     </div>
 
+                    {(r as any)?.notes && String((r as any).notes).trim() !== '' && (
+                        <div
+                            className="text-[10px] text-muted-foreground/60 truncate mt-0.5 font-mono tracking-wide"
+                            title={(r as any).notes}
+                        >
+                            {(r as any).notes}
+                        </div>
+                    )}
+
                     {/* md: colonna (data sopra, categoria sotto) */}
                     <div className="mt-1 flex flex-col gap-1 lg:hidden">
                         {dateLabel && <div className="text-[11px] text-muted-foreground">{dateLabel}</div>}
