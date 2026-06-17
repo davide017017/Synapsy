@@ -173,7 +173,7 @@ export default function CalendarGrid({
             {/* ── Header calendario ─────────────────────────────────── */}
 
             {/* ── Griglia calendario ────────────────────────────────── */}
-            <div className="relative h-[370px] overflow-hidden">
+            <div className="relative h-[540px] overflow-hidden">
                 {showSkeleton ? (
                     <div className="h-[370px] animate-pulse rounded-lg bg-white/5" />
                 ) : (
