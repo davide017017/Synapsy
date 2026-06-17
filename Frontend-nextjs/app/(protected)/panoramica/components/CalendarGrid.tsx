@@ -171,6 +171,68 @@ export default function CalendarGrid({
     return (
         <div className="space-y-2">
             {/* ── Header calendario ─────────────────────────────────── */}
+
+            {/* ── Griglia calendario ────────────────────────────────── */}
+            <div className="relative h-[540px] overflow-hidden">
+                {showSkeleton ? (
+                    <div className="h-[370px] animate-pulse rounded-lg bg-white/5" />
+                ) : (
+                    <AnimatePresence custom={direction} initial={false} mode="popLayout">
+                        <motion.div
+                            key={`${viewYear}-${viewMonth}`}
+                            custom={direction}
+                            variants={variants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{ duration: 0.18 }}
+                            className={`grid gap-1 ${isLg ? "grid-cols-[auto_repeat(7,_1fr)]" : "grid-cols-1"}`}
+                        >
+                            {isLg
+                                ? weeks!.map((week) => {
+                                      const weekTx = week.days.flatMap((d) => getTxForDate(d.date));
+                                      return (
+                                          <WeekRow
+                                              key={week.weekNumber}
+                                              week={week}
+                                              transactions={weekTx}
+                                              maxImporto={maxImportoGriglia}
+                                              onClickDay={onDayClick}
+                                          />
+                                      );
+                                  })
+                                : weeks!.map((week) => (
+                                      <div key={week.weekNumber} className="relative">
+                                          {/* Week number overlay (non altera la griglia) */}
+                                          <div className="absolute -left-6 top-1/2 -translate-y-1/2 text-[10px] font-semibold opacity-60 select-none">
+                                              {week.weekNumber}
+                                          </div>
+
+                                          {/* 7 giorni uguali */}
+                                          <div className="grid grid-cols-7 gap-1">
+                                              {week.days.map((cell) => {
+                                                  const dayTx = getTxForDate(cell.date);
+                                                  return (
+                                                      <DayCell
+                                                          key={`day-${localDateKey(cell.date)}`}
+                                                          day={cell.day}
+                                                          date={cell.date}
+                                                          monthDelta={cell.monthDelta}
+                                                          transactions={dayTx}
+                                                          showWeekDay={false}
+                                                          maxImporto={maxImportoGriglia}
+                                                          onClickDay={onDayClick}
+                                                      />
+                                                  );
+                                              })}
+                                          </div>
+                                      </div>
+                                  ))}
+                        </motion.div>
+                    </AnimatePresence>
+                )}
+            </div>
+
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                     <button
@@ -229,67 +291,6 @@ export default function CalendarGrid({
                     ))}
                 </div>
             )}
-
-            {/* ── Griglia calendario ────────────────────────────────── */}
-            <div className="relative min-h-[370px] overflow-hidden">
-                {showSkeleton ? (
-                    <div className="h-[370px] animate-pulse rounded-lg bg-white/5" />
-                ) : (
-                    <AnimatePresence custom={direction} initial={false}>
-                        <motion.div
-                            key={`${viewYear}-${viewMonth}`}
-                            custom={direction}
-                            variants={variants}
-                            initial="enter"
-                            animate="center"
-                            exit="exit"
-                            transition={{ duration: 0.18 }}
-                            className={`grid gap-1 ${isLg ? "grid-cols-[auto_repeat(7,_1fr)]" : "grid-cols-1"}`}
-                        >
-                            {isLg
-                                ? weeks!.map((week) => {
-                                      const weekTx = week.days.flatMap((d) => getTxForDate(d.date));
-                                      return (
-                                          <WeekRow
-                                              key={week.weekNumber}
-                                              week={week}
-                                              transactions={weekTx}
-                                              maxImporto={maxImportoGriglia}
-                                              onClickDay={onDayClick}
-                                          />
-                                      );
-                                  })
-                                : weeks!.map((week) => (
-                                      <div key={week.weekNumber} className="relative">
-                                          {/* Week number overlay (non altera la griglia) */}
-                                          <div className="absolute -left-6 top-1/2 -translate-y-1/2 text-[10px] font-semibold opacity-60 select-none">
-                                              {week.weekNumber}
-                                          </div>
-
-                                          {/* 7 giorni uguali */}
-                                          <div className="grid grid-cols-7 gap-1">
-                                              {week.days.map((cell) => {
-                                                  const dayTx = getTxForDate(cell.date);
-                                                  return (
-                                                      <DayCell
-                                                          key={`day-${localDateKey(cell.date)}`}
-                                                          day={cell.day}
-                                                          date={cell.date}
-                                                          monthDelta={cell.monthDelta}
-                                                          transactions={dayTx}
-                                                          showWeekDay={false}
-                                                          maxImporto={maxImportoGriglia}
-                                                          onClickDay={onDayClick}
-                                                      />
-                                                  );
-                                              })}
-                                          </div>
-                                      </div>
-                                  ))}
-                        </motion.div>
-                    </AnimatePresence>
-                )}
-            </div>
         </div>
     );
 }

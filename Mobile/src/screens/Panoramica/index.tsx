@@ -52,17 +52,18 @@ export default function Panoramica() {
 
     return (
         <View style={styles.root}>
-            <Header
-                label={label}
-                onPrev={() => changeMonth(-1)}
-                onNext={() => changeMonth(1)}
-                onToday={() => setCurrent(new Date())}
-            />
+            
             <CalendarGrid
                 weeks={weeks}
                 data={data}
                 max={max}
                 onPressDay={(d) => Alert.alert('Giorno', d.toISOString().slice(0, 10))}
+            />
+            <Header
+                label={label}
+                onPrev={() => changeMonth(-1)}
+                onNext={() => changeMonth(1)}
+                onToday={() => setCurrent(new Date())}
             />
         </View>
     );
