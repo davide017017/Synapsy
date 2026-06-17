@@ -51,7 +51,13 @@ const weekDayShort = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 // ╔═══════════════════════════════════════════════════════════════╗
 // ║ Component                                                     ║
 /* ╚═══════════════════════════════════════════════════════════════╝ */
-export default function CalendarGrid({ transactions, onDayClick }: CalendarGridProps) {
+export default function CalendarGrid({
+    transactions,
+    onDayClick,
+    viewMonth,
+    viewYear,
+    onMonthChange,
+}: CalendarGridProps) {
     // ── mount flag (no early return: usiamo skeleton in-place)
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
@@ -63,8 +69,6 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
     const today = new Date();
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
-    const [viewMonth, setViewMonth] = useState(currentMonth);
-    const [viewYear, setViewYear] = useState(currentYear);
     const [direction, setDirection] = useState<1 | -1>(1);
 
     // ──────────────────────────────────────────────────────────────
@@ -76,25 +80,22 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
         setDirection(-1);
 
         if (viewMonth === 0) {
-            setViewMonth(11);
-            setViewYear((y) => y - 1);
+            onMonthChange(11, viewYear - 1);
         } else {
-            setViewMonth((m) => m - 1);
+            onMonthChange(viewMonth - 1, viewYear);
         }
     };
     const nextMonth = () => {
         setDirection(1);
         if (viewMonth === 11) {
-            setViewMonth(0);
-            setViewYear((y) => y + 1);
+            onMonthChange(0, viewYear + 1);
         } else {
-            setViewMonth((m) => m + 1);
+            onMonthChange(viewMonth + 1, viewYear);
         }
     };
     const goToToday = () => {
-        setViewYear(currentYear);
-        setViewMonth(currentMonth);
         setDirection(1);
+        onMonthChange(currentMonth, currentYear);
     };
     const isCurrentMonth = viewYear === currentYear && viewMonth === currentMonth;
 
@@ -211,7 +212,7 @@ export default function CalendarGrid({ transactions, onDayClick }: CalendarGridP
                         options={yearOptions} // 🔥 QUI
                         onChange={(y) => {
                             if (minYear && y < minYear) return;
-                            setViewYear(y);
+                            onMonthChange(viewMonth, y);
                         }}
                     />
                 </div>
