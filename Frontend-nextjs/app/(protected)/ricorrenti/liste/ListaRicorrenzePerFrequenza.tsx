@@ -455,96 +455,101 @@ export default function ListaRicorrenzePerFrequenza({
                                         "
                                         style={{ borderLeft: `4px solid ${borderLeft}` }}
                                     >
-                                        {/* Wrapper NON-button cliccabile */}
-                                        <div
-                                            role="button"
-                                            tabIndex={0}
-                                            onClick={() => onEdit?.(r)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === "Enter" || e.key === " ") onEdit?.(r);
-                                            }}
-                                            className="w-full text-left cursor-pointer"
-                                            title="Modifica"
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                {/* Nome */}
-                                                <div className="min-w-0 flex-1">
-                                                    <div className="font-mono text-[12px] text-foreground/80 truncate">
+                                        <div className="flex items-center gap-2">
+                                            {/* Wrapper NON-button cliccabile — 2 righe compatte */}
+                                            <div
+                                                role="button"
+                                                tabIndex={0}
+                                                onClick={() => onEdit?.(r)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter" || e.key === " ") onEdit?.(r);
+                                                }}
+                                                className="min-w-0 flex-1 flex flex-col gap-0.5 text-left cursor-pointer"
+                                                title="Modifica"
+                                            >
+                                                {/* Riga 1: Nome + Importo */}
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <div className="font-mono text-[12px] text-foreground/80 truncate flex-1">
                                                         {(r as any)?.nome}
                                                     </div>
-                                                    {(r as any)?.notes && String((r as any).notes).trim() !== '' && (
-                                                        <div
-                                                            className="text-[10px] text-muted-foreground/60 truncate mt-0.5 font-mono tracking-wide"
-                                                            title={(r as any).notes}
-                                                        >
-                                                            {(r as any).notes}
+                                                    <div
+                                                        className="shrink-0 font-mono font-bold text-[12px] tabular-nums whitespace-nowrap"
+                                                        style={{ color: amountColor }}
+                                                        title={tipo}
+                                                    >
+                                                        {amountPrefix}
+                                                        {eur(amountNum)}
+                                                    </div>
+                                                </div>
+
+                                                {/* Riga 2: Data + Categoria */}
+                                                <div className="flex items-center gap-1.5 mt-0.5">
+                                                    {dateLabel ? (
+                                                        <div className="shrink-0 font-mono text-[9px] text-foreground/35 tabular-nums whitespace-nowrap">
+                                                            {dateLabel}
                                                         </div>
+                                                    ) : null}
+
+                                                    {catLabel ? (
+                                                        <span
+                                                            className="
+                                                                shrink-0
+                                                                font-mono
+                                                                text-[9px]
+                                                                leading-none
+                                                                px-1.5 py-0.5
+                                                                rounded-lg
+                                                                border
+                                                                uppercase
+                                                                tracking-[0.04em]
+                                                                whitespace-nowrap
+                                                            "
+                                                            style={{
+                                                                borderColor: `${categoryColor}55`,
+                                                                backgroundColor: `${categoryColor}22`,
+                                                                color: categoryColor,
+                                                            }}
+                                                            title={catLabel}
+                                                        >
+                                                            {catLabel}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="shrink-0 text-[9px] leading-none px-1.5 py-0.5 rounded-full border border-white/15 text-white/55 whitespace-nowrap">
+                                                            Senza
+                                                        </span>
                                                     )}
                                                 </div>
 
-                                                {/* Data */}
-                                                {dateLabel ? (
-                                                    <div className="shrink-0 font-mono text-[9px] text-foreground/35 tabular-nums whitespace-nowrap">
-                                                        {" "}
-                                                        {dateLabel}
-                                                    </div>
-                                                ) : null}
-
-                                                {/* Categoria pill */}
-                                                {catLabel ? (
-                                                    <span
-                                                        className="
-                                                            shrink-0
-                                                            font-mono
-                                                            text-[9px]
-                                                            leading-none
-                                                            px-1.5 py-0.5
-                                                            rounded-lg
-                                                            border
-                                                            uppercase
-                                                            tracking-[0.04em]
-                                                            whitespace-nowrap
-                                                        "
+                                                {/* Riga 3: Note (solo se presenti) */}
+                                                {(r as any)?.notes && String((r as any).notes).trim() !== '' && (
+                                                    <div
+                                                        className="font-mono text-[9px] text-muted-foreground/55 italic mt-0.5 overflow-hidden"
                                                         style={{
-                                                            borderColor: `${categoryColor}55`,
-                                                            backgroundColor: `${categoryColor}22`,
-                                                            color: categoryColor,
+                                                            display: "-webkit-box",
+                                                            WebkitLineClamp: 2,
+                                                            WebkitBoxOrient: "vertical",
                                                         }}
-                                                        title={catLabel}
+                                                        title={(r as any).notes}
                                                     >
-                                                        {catLabel}
-                                                    </span>
-                                                ) : (
-                                                    <span className="shrink-0 text-[9px] leading-none px-1.5 py-0.5 rounded-full border border-white/15 text-white/55 whitespace-nowrap">
-                                                        Senza
-                                                    </span>
+                                                        {(r as any).notes}
+                                                    </div>
                                                 )}
+                                            </div>
 
-                                                {/* Importo */}
-                                                <div
-                                                    className="shrink-0 font-mono font-bold text-[12px] tabular-nums whitespace-nowrap"
-                                                    style={{ color: amountColor }}
-                                                    title={tipo}
-                                                >
-                                                    {amountPrefix}
-                                                    {eur(amountNum)}
-                                                </div>
-
-                                                {/* Azioni (stopPropagation per non triggerare click riga) */}
-                                                <div className="shrink-0 flex items-center gap-1">
-                                                    <ActionEditButton
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            onEdit?.(r);
-                                                        }}
-                                                    />
-                                                    <ActionDeleteButton
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setToDelete(r);
-                                                        }}
-                                                    />
-                                                </div>
+                                            {/* Azioni (stopPropagation per non triggerare click riga) */}
+                                            <div className="shrink-0 flex items-center gap-1 self-stretch">
+                                                <ActionEditButton
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        onEdit?.(r);
+                                                    }}
+                                                />
+                                                <ActionDeleteButton
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setToDelete(r);
+                                                    }}
+                                                />
                                             </div>
                                         </div>
                                     </div>,

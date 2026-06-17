@@ -336,6 +336,17 @@ function SectionOccorrenze({ title, occorrenze, bilancio, onEdit, onDelete }: Se
                                     {" "}
                                     {r.nome}
                                 </span>
+                                {(r as any)?.notes && String((r as any).notes).trim() !== '' && (
+                                    <>
+                                        <span className="text-muted-foreground/30 text-[9px]"> · </span>
+                                        <span
+                                            className="font-mono text-[9px] text-muted-foreground/50 italic truncate max-w-[7.5rem]"
+                                            title={(r as any).notes}
+                                        >
+                                            {(r as any).notes}
+                                        </span>
+                                    </>
+                                )}
                                 {/* Categoria */}
                                 <span
                                     className="hidden sm:inline-block font-mono text-[10px] uppercase tracking-[0.04em] max-w-[5.5rem] truncate"
