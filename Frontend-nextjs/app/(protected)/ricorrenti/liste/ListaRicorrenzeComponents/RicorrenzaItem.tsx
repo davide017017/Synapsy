@@ -145,6 +145,14 @@ export default function RicorrenzaItem({ r, onEdit, onDelete }: RicorrenzaItemPr
                             {name}
                         </div>
                         {dateLabel && <div className="text-[11px] text-muted-foreground mt-0.5">{dateLabel}</div>}
+                        {(r as any)?.notes && String((r as any).notes).trim() !== '' && (
+                            <div
+                                className="text-[9px] text-muted-foreground/55 italic font-mono mt-0.5 line-clamp-2"
+                                title={(r as any).notes}
+                            >
+                                {(r as any).notes}
+                            </div>
+                        )}
                     </div>
 
                     {CategoryPill}
