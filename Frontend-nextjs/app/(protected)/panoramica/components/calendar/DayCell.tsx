@@ -120,7 +120,7 @@ export default function DayCell({
             }}
         >
             {/* ======================================================
-               MOBILE (default): layout compatto per 7 colonne
+                MOBILE (default): layout compatto per 7 colonne
                ====================================================== */}
             <div className="sm:hidden">
                 {/* Header riga */}
@@ -133,20 +133,20 @@ export default function DayCell({
                         </span>
                     </div>
                     {/* Mini TX */}
-                    <div className="flex items-center gap-1 text-[9px] font-semibold opacity-70">
-                        <ChartNoAxesCombined className="w-2.5 h-2.5 opacity-70" />
+                    <div className="flex flex-col items-center text-[9px] font-semibold opacity-70">
                         <span className="text-[8px] font-semibold">{txCount}</span>
+                        <ChartNoAxesCombined className="w-2.5 h-2.5 opacity-70" />
                     </div>{" "}
                 </div>
 
                 {/* Mini stats */}
                 <div className="mt-1 flex items-center justify-between text-[9px] font-semibold">
-                    <span className="flex items-center gap-1 text-primary">
+                    <span className="flex items-center text-primary">
                         <ArrowUp className="w-2.5 h-2.5" />
                         {entrate.length}
                     </span>
 
-                    <span className="flex items-center gap-1 text-orange-400">
+                    <span className="flex items-center text-orange-400">
                         <ArrowDown className="w-2.5 h-2.5" />
                         {spese.length}
                     </span>

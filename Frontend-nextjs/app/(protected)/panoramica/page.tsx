@@ -10,16 +10,25 @@ import CalendarGrid from "./components/CalendarGrid";
 import CalendarGridSkeleton from "./components/skeleton/CalendarGridSkeleton";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
 import DayTransactionsModal from "./components/modal/DayTransactionsModal";
+import MonthCategoriesCard from "./components/MonthCategoriesCard";
+import MonthTransactionsCard from "./components/MonthTransactionsCard";
 import { Transaction } from "@/types";
 
 export default function PanoramicaPage() {
     const { transactions, loading } = useTransactions();
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedTx, setSelectedTx] = useState<Transaction[]>([]);
+    const [viewMonth, setViewMonth] = useState(new Date().getMonth());
+    const [viewYear, setViewYear] = useState(new Date().getFullYear());
 
     const handleDayClick = (date: Date, tx: Transaction[]) => {
         setSelectedDate(date);
         setSelectedTx(tx);
+    };
+
+    const handleMonthChange = (month: number, year: number) => {
+        setViewMonth(month);
+        setViewYear(year);
     };
 
     return (
@@ -94,7 +103,28 @@ export default function PanoramicaPage() {
             {loading ? (
                 <CalendarGridSkeleton />
             ) : (
-                <CalendarGrid transactions={transactions} onDayClick={handleDayClick} />
+                <CalendarGrid
+                    transactions={transactions}
+                    onDayClick={handleDayClick}
+                    viewMonth={viewMonth}
+                    viewYear={viewYear}
+                    onMonthChange={handleMonthChange}
+                />
+            )}
+
+            {!loading && (
+                <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <MonthCategoriesCard
+                        transactions={transactions}
+                        viewMonth={viewMonth}
+                        viewYear={viewYear}
+                    />
+                    <MonthTransactionsCard
+                        transactions={transactions}
+                        viewMonth={viewMonth}
+                        viewYear={viewYear}
+                    />
+                </div>
             )}
 
             <DayTransactionsModal
