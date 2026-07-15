@@ -7,6 +7,7 @@
 // ╚═══════════════════════════════════════════════════════╝
 
 import { Transaction } from "@/types/models/transaction";
+import type { Ricorrenza } from "@/types/models/ricorrenza";
 import type { DayCellProps } from "@/types";
 import { eur } from "@/utils/formatCurrency";
 import { toNum } from "@/lib/finance";
@@ -29,6 +30,7 @@ export default function DayCell({
     showWeekDay,
     onClickDay,
     maxImporto,
+    ricorrenzeDelGiorno,
 }: DayCellProps) {
     // ---------------------------
     // Today / styles
@@ -115,9 +117,7 @@ export default function DayCell({
                 sm:p-2 sm:min-h-[90px]
             `}
             title={tooltip}
-            onClick={() => {
-                if (onClickDay) onClickDay(date, transactions);
-            }}
+            onClick={() => onClickDay?.(date, transactions, ricorrenzeDelGiorno ?? [])}
         >
             {/* ======================================================
                 MOBILE (default): layout compatto per 7 colonne
@@ -167,6 +167,25 @@ export default function DayCell({
                         />{" "}
                     </div>
                 </div>
+
+                {/* Mini indicatori ricorrenze */}
+                {ricorrenzeDelGiorno && ricorrenzeDelGiorno.length > 0 && (
+                    <div className="flex items-center gap-0.5 mt-0.5 flex-wrap">
+                        {ricorrenzeDelGiorno.slice(0, 3).map((r) => (
+                            <span
+                                key={r.id}
+                                className="w-1.5 h-1.5 rounded-full shrink-0"
+                                style={{ backgroundColor: r.category_color || "#888" }}
+                                title={r.nome}
+                            />
+                        ))}
+                        {ricorrenzeDelGiorno.length > 3 && (
+                            <span className="text-[7px] text-foreground/40 font-mono">
+                                +{ricorrenzeDelGiorno.length - 3}
+                            </span>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* ======================================================
@@ -209,6 +228,27 @@ export default function DayCell({
                             </span>
                         </div>
                     </div>
+
+                    {ricorrenzeDelGiorno && ricorrenzeDelGiorno.length > 0 && (
+                        <div className="flex flex-col gap-0.5 mt-1">
+                            {ricorrenzeDelGiorno.slice(0, 2).map((r) => (
+                                <div key={r.id} className="flex items-center gap-1 min-w-0">
+                                    <span
+                                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                                        style={{ backgroundColor: r.category_color || "#888" }}
+                                    />
+                                    <span className="font-mono text-[8px] text-foreground/50 truncate">
+                                        {r.importo.toFixed(0)}€
+                                    </span>
+                                </div>
+                            ))}
+                            {ricorrenzeDelGiorno.length > 2 && (
+                                <span className="text-[7px] text-foreground/35 font-mono">
+                                    +{ricorrenzeDelGiorno.length - 2}
+                                </span>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* ==== DESTRA: Colonne verticali ==== */}

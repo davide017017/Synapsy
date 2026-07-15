@@ -1,8 +1,9 @@
 "use client";
 
 import Dialog from "@/app/components/ui/Dialog";
-import { Pencil, Trash2, ArrowUpCircle, ArrowDownCircle, Calendar, Calculator } from "lucide-react";
+import { Pencil, Trash2, ArrowUpCircle, ArrowDownCircle, Calendar, Calculator, RefreshCw } from "lucide-react";
 import { Transaction } from "@/types/models/transaction";
+import type { Ricorrenza } from "@/types/models/ricorrenza";
 import { useTransactions } from "@/context/TransactionsContext";
 import { CATEGORY_ICONS_MAP } from "@/utils/categoryOptions";
 import { toDateInputValue } from "@/utils/date";
@@ -16,9 +17,16 @@ export type DayTransactionsModalProps = {
     onClose: () => void;
     date: Date;
     transactions: Transaction[];
+    ricorrenze?: Ricorrenza[];
 };
 
-export default function DayTransactionsModal({ open, onClose, date, transactions }: DayTransactionsModalProps) {
+export default function DayTransactionsModal({
+    open,
+    onClose,
+    date,
+    transactions,
+    ricorrenze,
+}: DayTransactionsModalProps) {
     const { openModal, remove } = useTransactions();
 
     // Suddividi per tipo e calcola totali
@@ -149,6 +157,34 @@ export default function DayTransactionsModal({ open, onClose, date, transactions
                         <li className="w-full text-center text-sm text-text-secondary py-7">Nessuna transazione</li>
                     )}
                 </ul>
+
+                {/* ===== Ricorrenze previste ===== */}
+                {ricorrenze && ricorrenze.length > 0 && (
+                    <div className="w-[95%] mt-3 border-t border-white/10 pt-3">
+                        <div
+                            className="text-[10px] font-mono uppercase tracking-wide
+                    text-foreground/40 mb-2 flex items-center gap-1"
+                        >
+                            <RefreshCw size={10} />
+                            RICORRENTI PREVISTE
+                        </div>
+                        <ul className="space-y-1">
+                            {ricorrenze.map((r) => (
+                                <li key={r.id} className="flex items-center gap-2 text-xs">
+                                    <span
+                                        className="w-2 h-2 rounded-full shrink-0"
+                                        style={{ backgroundColor: r.category_color ?? "#888" }}
+                                    />
+                                    <span className="flex-1 font-mono text-foreground/70 truncate">{r.nome}</span>
+                                    <span className="font-mono font-bold text-foreground/60 text-[11px]">
+                                        {r.type === "entrata" ? "+" : "–"}
+                                        {r.importo.toFixed(2)} €
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
                 {/* ===== Azione: nuova transazione ===== */}
                 <div className="w-full flex justify-center gap-3 border-t border-bg-elevate py-4">

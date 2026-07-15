@@ -1,4 +1,5 @@
 import type { Transaction } from "@/types/models/transaction";
+import type { Ricorrenza } from "@/types/models/ricorrenza";
 import type { CalendarWeek } from "./utils";
 
 export type DayCellProps = {
@@ -7,8 +8,9 @@ export type DayCellProps = {
     monthDelta: -1 | 0 | 1;
     transactions: Transaction[];
     showWeekDay?: boolean;
-    onClickDay?: (date: Date, transactions: Transaction[]) => void;
+    onClickDay?: (date: Date, transactions: Transaction[], ricorrenze: Ricorrenza[]) => void;
     maxImporto: number;
+    ricorrenzeDelGiorno?: Ricorrenza[];
 };
 
 export type WeekRowProps = {
@@ -16,6 +18,7 @@ export type WeekRowProps = {
     transactions: Transaction[];
     maxImporto: number;
     onClickDay?: (date: Date, transactions: Transaction[]) => void;
+    ricorrenzePerGiorno?: Map<string, Ricorrenza[]>;
 };
 
 export type YearDropdownProps = {

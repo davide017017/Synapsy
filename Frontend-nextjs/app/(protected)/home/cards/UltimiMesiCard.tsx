@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useMemo, useState } from "react";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { TrendingUp } from "lucide-react";
 import { useTransactions } from "@/context/TransactionsContext";
 import { toNum } from "@/lib/finance";
@@ -16,6 +16,7 @@ type MonthData = {
 
 export default function UltimiMesiCard() {
     const { transactions } = useTransactions();
+    const [chartType, setChartType] = useState<"bar" | "line">("bar");
 
     const monthData = useMemo<MonthData[]>(() => {
         const today = new Date();
@@ -48,49 +49,191 @@ export default function UltimiMesiCard() {
             font-mono
         ">
             {/* ── Header ── */}
-            <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="h-4 w-4 text-primary opacity-80" />
-                <span className="text-xs font-bold uppercase tracking-widest text-primary/80">
-                    Ultimi 6 mesi
-                </span>
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-primary opacity-80" />
+                    <span className="text-xs font-bold uppercase tracking-widest text-primary/80">
+                        Ultimi 6 mesi
+                    </span>
+                </div>
+                <div className="flex items-center gap-1 rounded-md border border-white/10 p-0.5">
+                    <button
+                        onClick={() => setChartType("bar")}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all ${
+                            chartType === "bar"
+                                ? "bg-white/10 text-white"
+                                : "text-white/30 hover:text-white/60"
+                        }`}
+                        aria-label="Istogramma"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                            <rect x="1" y="6" width="3" height="7" rx="0.5" />
+                            <rect x="5.5" y="3" width="3" height="10" rx="0.5" />
+                            <rect x="10" y="1" width="3" height="12" rx="0.5" />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={() => setChartType("line")}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all ${
+                            chartType === "line"
+                                ? "bg-white/10 text-white"
+                                : "text-white/30 hover:text-white/60"
+                        }`}
+                        aria-label="Linee"
+                    >
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="1,11 4,7 7,9 10,4 13,2" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             {/* ── Chart ── */}
             <ResponsiveContainer width="100%" height={160}>
-                <BarChart
-                    data={monthData}
-                    barSize={12}
-                    barGap={3}
-                    margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
-                >
-                    <XAxis
-                        dataKey="label"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 11, fontFamily: "monospace" }}
-                    />
-                    <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 10, fontFamily: "monospace" }}
-                        width={36}
-                    />
-                    <Tooltip
-                        cursor={{ fill: "rgba(255,255,255,0.04)" }}
-                        contentStyle={{
-                            background: "rgba(0,0,0,0.85)",
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            borderRadius: "8px",
-                            fontFamily: "monospace",
-                            fontSize: "12px",
-                            color: "#fff",
-                        }}
-                        formatter={(value) => [`€ ${Number(value).toFixed(2)}`, undefined]}
-                        labelStyle={{ color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}
-                    />
-                    <Bar dataKey="entrate" name="Entrate" fill="hsl(var(--c-primary))" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="spese"   name="Spese"   fill="rgb(251 146 60)"        radius={[4, 4, 0, 0]} />
-                </BarChart>
+                {chartType === "bar" ? (
+                    <BarChart
+                        data={monthData}
+                        barSize={12}
+                        margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+                    >
+                        <XAxis
+                            dataKey="label"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 11, fontFamily: "monospace" }}
+                        />
+                        <YAxis
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 10, fontFamily: "monospace" }}
+                            width={36}
+                        />
+                        <Tooltip
+                            cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                            contentStyle={{
+                                background: "rgba(0,0,0,0.85)",
+                                border: "1px solid rgba(255,255,255,0.1)",
+                                borderRadius: "8px",
+                                fontFamily: "monospace",
+                                fontSize: "12px",
+                                color: "#fff",
+                                padding: "8px 12px",
+                            }}
+                            labelStyle={{ color: "rgba(255,255,255,0.4)", marginBottom: "6px", fontSize: "11px" }}
+                            content={({ active, payload, label }) => {
+                                if (!active || !payload?.length) return null;
+                                const entrate = Number(payload.find(p => p.dataKey === "entrate")?.value ?? 0);
+                                const spese = Number(payload.find(p => p.dataKey === "spese")?.value ?? 0);
+                                const netto = entrate - spese;
+                                const isPositive = netto >= 0;
+                                return (
+                                    <div style={{
+                                        background: "rgba(0,0,0,0.85)",
+                                        border: "1px solid rgba(255,255,255,0.1)",
+                                        borderRadius: "8px",
+                                        fontFamily: "monospace",
+                                        fontSize: "12px",
+                                        color: "#fff",
+                                        padding: "8px 12px",
+                                    }}>
+                                        <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", marginBottom: "6px" }}>{label}</div>
+                                        <div style={{ color: "hsl(var(--c-primary))", marginBottom: "2px" }}>↑ € {entrate.toFixed(2)}</div>
+                                        <div style={{ color: "rgb(251 146 60)", marginBottom: "6px" }}>↓ € {spese.toFixed(2)}</div>
+                                        <div style={{
+                                            borderTop: "1px solid rgba(255,255,255,0.08)",
+                                            paddingTop: "6px",
+                                            color: isPositive ? "rgb(52 211 153)" : "rgb(248 113 113)",
+                                            fontWeight: "bold",
+                                        }}>
+                                            {isPositive ? "+" : ""}€ {netto.toFixed(2)}
+                                        </div>
+                                    </div>
+                                );
+                            }}
+                        />
+                        <Bar dataKey="entrate" name="Entrate" fill="hsl(var(--c-primary))" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="spese"   name="Spese"   fill="rgb(251 146 60)"        radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                ) : (
+                    <LineChart
+                        data={monthData}
+                        margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
+                    >
+                        <XAxis
+                            dataKey="label"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 11, fontFamily: "monospace" }}
+                        />
+                        <YAxis
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 10, fontFamily: "monospace" }}
+                            width={48}
+                        />
+                        <Tooltip
+                            cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                            contentStyle={{
+                                background: "rgba(0,0,0,0.85)",
+                                border: "1px solid rgba(255,255,255,0.1)",
+                                borderRadius: "8px",
+                                fontFamily: "monospace",
+                                fontSize: "12px",
+                                color: "#fff",
+                                padding: "8px 12px",
+                            }}
+                            labelStyle={{ color: "rgba(255,255,255,0.4)", marginBottom: "6px", fontSize: "11px" }}
+                            content={({ active, payload, label }) => {
+                                if (!active || !payload?.length) return null;
+                                const entrate = Number(payload.find(p => p.dataKey === "entrate")?.value ?? 0);
+                                const spese = Number(payload.find(p => p.dataKey === "spese")?.value ?? 0);
+                                const netto = entrate - spese;
+                                const isPositive = netto >= 0;
+                                return (
+                                    <div style={{
+                                        background: "rgba(0,0,0,0.85)",
+                                        border: "1px solid rgba(255,255,255,0.1)",
+                                        borderRadius: "8px",
+                                        fontFamily: "monospace",
+                                        fontSize: "12px",
+                                        color: "#fff",
+                                        padding: "8px 12px",
+                                    }}>
+                                        <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "11px", marginBottom: "6px" }}>{label}</div>
+                                        <div style={{ color: "hsl(var(--c-primary))", marginBottom: "2px" }}>↑ € {entrate.toFixed(2)}</div>
+                                        <div style={{ color: "rgb(251 146 60)", marginBottom: "6px" }}>↓ € {spese.toFixed(2)}</div>
+                                        <div style={{
+                                            borderTop: "1px solid rgba(255,255,255,0.08)",
+                                            paddingTop: "6px",
+                                            color: isPositive ? "rgb(52 211 153)" : "rgb(248 113 113)",
+                                            fontWeight: "bold",
+                                        }}>
+                                            {isPositive ? "+" : ""}€ {netto.toFixed(2)}
+                                        </div>
+                                    </div>
+                                );
+                            }}
+                        />
+                        <Line
+                            dataKey="entrate"
+                            name="Entrate"
+                            type="monotone"
+                            stroke="hsl(var(--c-primary))"
+                            strokeWidth={2}
+                            dot={{ r: 3, fill: "hsl(var(--c-primary))", strokeWidth: 0 }}
+                            activeDot={{ r: 5 }}
+                        />
+                        <Line
+                            dataKey="spese"
+                            name="Spese"
+                            type="monotone"
+                            stroke="rgb(251 146 60)"
+                            strokeWidth={2}
+                            dot={{ r: 3, fill: "rgb(251 146 60)", strokeWidth: 0 }}
+                            activeDot={{ r: 5 }}
+                        />
+                    </LineChart>
+                )}
             </ResponsiveContainer>
 
             {/* ── Legend ── */}
