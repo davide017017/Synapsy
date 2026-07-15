@@ -7,7 +7,19 @@ import DayCell from "./DayCell";
 import { Transaction } from "@/types/models/transaction";
 import type { WeekRowProps } from "@/types";
 
-export default function WeekRow({ week, transactions, maxImporto, onClickDay }: WeekRowProps) {
+// ────────────────────────────────────────────────────────────────
+// Helpers date (LOCAL DAY KEY)
+// ────────────────────────────────────────────────────────────────
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const localDateKey = (d: Date) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+
+export default function WeekRow({
+    week,
+    transactions,
+    maxImporto,
+    onClickDay,
+    ricorrenzePerGiorno,
+}: WeekRowProps) {
     return (
         <>
             {/* Numero settimana */}
@@ -36,6 +48,7 @@ export default function WeekRow({ week, transactions, maxImporto, onClickDay }: 
                         showWeekDay={false}
                         maxImporto={maxImporto}
                         onClickDay={onClickDay}
+                        ricorrenzeDelGiorno={ricorrenzePerGiorno?.get(localDateKey(cell.date)) ?? []}
                     />
                 );
             })}

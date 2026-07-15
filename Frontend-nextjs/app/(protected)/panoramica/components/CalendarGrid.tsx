@@ -7,10 +7,12 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import type { Transaction } from "@/types/models/transaction";
+import type { Ricorrenza } from "@/types/models/ricorrenza";
 import type { CalendarGridProps } from "@/types";
 import DayCell from "./calendar/DayCell";
 import { useMediaQuery } from "usehooks-ts";
 import { getCalendarGrid } from "./calendar/utils/calendarUtils";
+import { buildRicorrenzeMap } from "./calendar/utils/ricorrenzeCalendarUtils";
 import { motion, AnimatePresence } from "framer-motion";
 import WeekRow from "./calendar/WeekRow";
 import YearDropdown from "./calendar/YearDropdown";
@@ -57,6 +59,7 @@ export default function CalendarGrid({
     viewMonth,
     viewYear,
     onMonthChange,
+    ricorrenze = [],
 }: CalendarGridProps) {
     // ── mount flag (no early return: usiamo skeleton in-place)
     const [mounted, setMounted] = useState(false);
@@ -119,6 +122,16 @@ export default function CalendarGrid({
     }, [transactions]);
 
     const getTxForDate = useCallback((d: Date) => txByDate.get(localDateKey(d)) ?? [], [txByDate]);
+
+    // ──────────────────────────────────────────────────────────────
+    // Mappa data -> ricorrenze (chiave locale)
+    // ──────────────────────────────────────────────────────────────
+    const ricorrenzeMap = useMemo(() => {
+        if (!ricorrenze?.length) return new Map<string, Ricorrenza[]>();
+        const from = new Date(viewYear, viewMonth - 1, 1); // 2 mesi prima
+        const to = new Date(viewYear, viewMonth + 13, 0); // 13 mesi dopo
+        return buildRicorrenzeMap(ricorrenze, from, to);
+    }, [ricorrenze, viewMonth, viewYear]);
 
     // ──────────────────────────────────────────────────────────────
     // Max importo per normalizzare barre/progress
@@ -198,6 +211,7 @@ export default function CalendarGrid({
                                               transactions={weekTx}
                                               maxImporto={maxImportoGriglia}
                                               onClickDay={onDayClick}
+                                              ricorrenzePerGiorno={ricorrenzeMap}
                                           />
                                       );
                                   })
@@ -222,6 +236,7 @@ export default function CalendarGrid({
                                                           showWeekDay={false}
                                                           maxImporto={maxImportoGriglia}
                                                           onClickDay={onDayClick}
+                                                          ricorrenzeDelGiorno={ricorrenzeMap.get(localDateKey(cell.date)) ?? []}
                                                       />
                                                   );
                                               })}
