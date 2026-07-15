@@ -7,7 +7,7 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 
 import NewCategoryModal from "@/app/(protected)/newCategory/NewCategoryModal";
@@ -118,6 +118,10 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
             } catch (e: any) {
                 const msg = e?.message ?? "Errore caricamento categorie";
                 setError(msg);
+                if (e?.message === "Unauthorized") {
+                    signOut({ callbackUrl: "/login" });
+                    return;
+                }
                 toast.error(msg);
             } finally {
                 setLoading(false);
@@ -151,6 +155,10 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
             onSuccess?.();
             closeModal();
         } catch (e: any) {
+            if (e?.message === "Unauthorized") {
+                signOut({ callbackUrl: "/login" });
+                return;
+            }
             toast.error(e?.message ?? "Errore creazione categoria");
         }
     };
@@ -164,6 +172,10 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
             onSuccess?.();
             closeModal();
         } catch (e: any) {
+            if (e?.message === "Unauthorized") {
+                signOut({ callbackUrl: "/login" });
+                return;
+            }
             toast.error(e?.message ?? "Errore aggiornamento categoria");
         }
     };
@@ -205,6 +217,10 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
                 },
             });
         } catch (e: any) {
+            if (e?.message === "Unauthorized") {
+                signOut({ callbackUrl: "/login" });
+                return;
+            }
             toast.error(e?.message ?? "Errore eliminazione categoria");
         }
     };
@@ -218,6 +234,10 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
             refresh();
             onSuccess?.();
         } catch (e: any) {
+            if (e?.message === "Unauthorized") {
+                signOut({ callbackUrl: "/login" });
+                return;
+            }
             toast.error(e?.message ?? "Errore nello spostamento o nella cancellazione.");
         }
     };

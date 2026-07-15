@@ -14,7 +14,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 
 import NewTransactionModal from "@/app/(protected)/newTransaction/NewTransactionModal";
@@ -143,6 +143,10 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
                 if (e?.name !== "AbortError") {
                     const msg = e?.message || "Errore caricamento transazioni";
                     setError(msg);
+                    if (e?.message === "Unauthorized") {
+                        signOut({ callbackUrl: "/login" });
+                        return;
+                    }
                     toast.error(msg);
                 }
             } finally {
@@ -276,6 +280,10 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             } catch (e: any) {
                 setTransactions(prev);
                 await fetchAll();
+                if (e?.message === "Unauthorized") {
+                    signOut({ callbackUrl: "/login" });
+                    return;
+                }
                 toast.error(e?.message || "Errore creazione transazione");
             } finally {
                 setLoading(false);
@@ -329,6 +337,10 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             } catch (e: any) {
                 setTransactions(prev);
                 await fetchAll();
+                if (e?.message === "Unauthorized") {
+                    signOut({ callbackUrl: "/login" });
+                    return;
+                }
                 toast.error(e?.message || "Errore aggiornamento transazione");
             } finally {
                 setLoading(false);
@@ -387,6 +399,10 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             } catch (e: any) {
                 setTransactions(prev);
                 await fetchAll();
+                if (e?.message === "Unauthorized") {
+                    signOut({ callbackUrl: "/login" });
+                    return;
+                }
                 toast.error(e?.message || "Errore eliminazione transazione");
             } finally {
                 setLoading(false);
@@ -413,6 +429,10 @@ export function TransactionsProvider({ children }: { children: React.ReactNode }
             } catch (e: any) {
                 setTransactions(prev);
                 await fetchAll();
+                if (e?.message === "Unauthorized") {
+                    signOut({ callbackUrl: "/login" });
+                    return;
+                }
                 toast.error(e?.message || "Errore spostamento transazione");
             } finally {
                 setLoading(false);

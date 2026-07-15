@@ -6,7 +6,7 @@ import RicorrentiCard from "./cards/RicorrentiCard";
 import CategorieCard from "./cards/CategorieCard";
 import ProssimoPagamentoCard from "./cards/ProssimoPagamentoCard";
 import PanoramicaCard from "./cards/PanoramicaCard";
-import UltimiMesiCard from "./cards/UltimiMesiCard";
+import ChartsCarousel from "./cards/ChartsCarousel";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
 import NewRicorrenzaButton from "../newRicorrenza/NewRicorrenzaButton";
 import NewCategoryButton from "../newCategory/NewCategoryButton";
@@ -42,7 +42,7 @@ export default function HomePage() {
                 {/* Row 3 */}
                 <CategorieCard />
                 {/* Row 4 */}
-                <UltimiMesiCard />
+                <ChartsCarousel />
             </div>
 
             {/* Desktop layout (lg+) */}
@@ -53,7 +53,7 @@ export default function HomePage() {
                 <ProssimoPagamentoCard />
             </div>
             <div className="hidden lg:block w-full">
-                <UltimiMesiCard />
+                <ChartsCarousel />
             </div>
         </div>
     );

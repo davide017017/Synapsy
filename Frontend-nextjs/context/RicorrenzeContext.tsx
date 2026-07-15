@@ -7,7 +7,7 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 
 import { Ricorrenza, RicorrenzaBase } from "@/types/models/ricorrenza";
@@ -114,6 +114,10 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
                 setRicorrenze(data);
             } catch (_e: any) {
                 setError("Errore caricamento ricorrenze");
+                if (_e?.message === "Unauthorized") {
+                    signOut({ callbackUrl: "/login" });
+                    return;
+                }
                 toast.error("Errore caricamento ricorrenze");
             } finally {
                 setLoading(false);
@@ -222,6 +226,10 @@ export function RicorrenzeProvider({ children }: { children: ReactNode }) {
                 },
             });
         } catch (e: any) {
+            if (e?.message === "Unauthorized") {
+                signOut({ callbackUrl: "/login" });
+                return;
+            }
             toast.error(e?.message || "Errore eliminazione ricorrenza");
         } finally {
             setLoading(false);
