@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { TrendingUp } from "lucide-react";
-import DashboardCard from "./DashboardCard";
 import { useTransactions } from "@/context/TransactionsContext";
 import { toNum } from "@/lib/finance";
 
@@ -41,32 +40,70 @@ export default function UltimiMesiCard() {
     }, [transactions]);
 
     return (
-        <DashboardCard icon={<TrendingUp size={20} />} title="Ultimi 6 mesi">
-            <ResponsiveContainer width="100%" height={120}>
-                <BarChart data={monthData} barSize={8} barGap={2} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
-                    <XAxis dataKey="label" tick={{ fontSize: 9, fill: "hsl(var(--foreground) / 0.5)" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 8 }} axisLine={false} tickLine={false} />
-                    <Tooltip
-                        contentStyle={{
-                            background: "hsl(var(--background))",
-                            border: "1px solid hsl(var(--foreground)/0.1)",
-                            borderRadius: 8,
-                            fontSize: 11,
-                        }}
-                        formatter={(value) => [`${Number(value).toFixed(0)} €`]}
-                    />
-                    <Bar dataKey="entrate" fill="hsl(var(--c-primary))" radius={[3, 3, 0, 0]} />
-                    <Bar dataKey="spese" fill="rgb(251 146 60)" radius={[3, 3, 0, 0]} />
-                </BarChart>
-            </ResponsiveContainer>
-            <div className="flex items-center gap-3 mt-1 justify-center">
-                <span className="flex items-center gap-1 text-[10px] font-mono text-primary">
-                    <span className="w-2 h-2 rounded-sm bg-primary inline-block" /> Entrate
-                </span>
-                <span className="flex items-center gap-1 text-[10px] font-mono text-orange-400">
-                    <span className="w-2 h-2 rounded-sm bg-orange-400 inline-block" /> Spese
+        <div className="
+            w-full rounded-xl
+            border border-white/8
+            bg-black/40 backdrop-blur-sm
+            p-4
+            font-mono
+        ">
+            {/* ── Header ── */}
+            <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="h-4 w-4 text-primary opacity-80" />
+                <span className="text-xs font-bold uppercase tracking-widest text-primary/80">
+                    Ultimi 6 mesi
                 </span>
             </div>
-        </DashboardCard>
+
+            {/* ── Chart ── */}
+            <ResponsiveContainer width="100%" height={160}>
+                <BarChart
+                    data={monthData}
+                    barSize={12}
+                    barGap={3}
+                    margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
+                >
+                    <XAxis
+                        dataKey="label"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 11, fontFamily: "monospace" }}
+                    />
+                    <YAxis
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 10, fontFamily: "monospace" }}
+                        width={36}
+                    />
+                    <Tooltip
+                        cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                        contentStyle={{
+                            background: "rgba(0,0,0,0.85)",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                            borderRadius: "8px",
+                            fontFamily: "monospace",
+                            fontSize: "12px",
+                            color: "#fff",
+                        }}
+                        formatter={(value) => [`€ ${Number(value).toFixed(2)}`, undefined]}
+                        labelStyle={{ color: "rgba(255,255,255,0.5)", marginBottom: "4px" }}
+                    />
+                    <Bar dataKey="entrate" name="Entrate" fill="hsl(var(--c-primary))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="spese"   name="Spese"   fill="rgb(251 146 60)"        radius={[4, 4, 0, 0]} />
+                </BarChart>
+            </ResponsiveContainer>
+
+            {/* ── Legend ── */}
+            <div className="flex items-center justify-center gap-4 mt-3">
+                <div className="flex items-center gap-1.5">
+                    <span className="inline-block w-2.5 h-2.5 rounded-sm bg-primary" />
+                    <span className="text-[11px] text-white/50 font-mono">Entrate</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <span className="inline-block w-2.5 h-2.5 rounded-sm bg-orange-400" />
+                    <span className="text-[11px] text-white/50 font-mono">Spese</span>
+                </div>
+            </div>
+        </div>
     );
 }

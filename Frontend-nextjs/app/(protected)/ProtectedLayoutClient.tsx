@@ -3,7 +3,7 @@
 // ==============================
 // IMPORT PRINCIPALI
 // ==============================
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Sidebar from "./layout-components/Sidebar";
@@ -29,8 +29,10 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
 
     // ───── Redirect se non autenticato ─────
     useEffect(() => {
-        if (status === "unauthenticated") router.replace("/login");
-    }, [status, router]);
+        if (status === "unauthenticated" || session?.error === "RefreshAccessTokenError") {
+            signOut({ callbackUrl: "/login" });
+        }
+    }, [status, session?.error]);
 
     // ───── Catch-up ricorrenti (silenzioso, una volta per sessione) ─────
     useEffect(() => {

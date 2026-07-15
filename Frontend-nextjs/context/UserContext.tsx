@@ -7,7 +7,7 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { toast } from "sonner";
 
 import type { UserType } from "@/types/models/user";
@@ -88,6 +88,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
             } catch (e: any) {
                 const msg = e?.message ?? "Errore caricamento profilo";
                 setError(msg);
+                if (e?.message === "Unauthorized") {
+                    signOut({ callbackUrl: "/login" });
+                    return;
+                }
                 toast.error(msg);
             } finally {
                 setLoading(false);
@@ -124,6 +128,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
         } catch (e: any) {
             const msg = e?.message ?? "Errore aggiornamento profilo";
             setError(msg);
+            if (e?.message === "Unauthorized") {
+                signOut({ callbackUrl: "/login" });
+                return;
+            }
             toast.error(msg);
         } finally {
             setLoading(false);
@@ -142,6 +150,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
         } catch (e: any) {
             const msg = e?.message ?? "Errore annullamento richiesta";
             setError(msg);
+            if (e?.message === "Unauthorized") {
+                signOut({ callbackUrl: "/login" });
+                return;
+            }
             toast.error(msg);
         } finally {
             setLoading(false);
@@ -158,6 +170,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
         } catch (e: any) {
             const msg = e?.message ?? "Errore invio email";
             setError(msg);
+            if (e?.message === "Unauthorized") {
+                signOut({ callbackUrl: "/login" });
+                return;
+            }
             toast.error(msg);
         } finally {
             setLoading(false);
