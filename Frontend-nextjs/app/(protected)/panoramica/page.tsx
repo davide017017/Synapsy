@@ -6,6 +6,7 @@
 
 import { useState } from "react";
 import { useTransactions } from "@/context/TransactionsContext";
+import { useRicorrenze } from "@/context/RicorrenzeContext";
 import CalendarGrid from "./components/CalendarGrid";
 import CalendarGridSkeleton from "./components/skeleton/CalendarGridSkeleton";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
@@ -13,17 +14,21 @@ import DayTransactionsModal from "./components/modal/DayTransactionsModal";
 import MonthCategoriesCard from "./components/MonthCategoriesCard";
 import MonthTransactionsCard from "./components/MonthTransactionsCard";
 import { Transaction } from "@/types";
+import type { Ricorrenza } from "@/types/models/ricorrenza";
 
 export default function PanoramicaPage() {
     const { transactions, loading } = useTransactions();
+    const { ricorrenze } = useRicorrenze();
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedTx, setSelectedTx] = useState<Transaction[]>([]);
+    const [selectedRicorrenze, setSelectedRicorrenze] = useState<Ricorrenza[]>([]);
     const [viewMonth, setViewMonth] = useState(new Date().getMonth());
     const [viewYear, setViewYear] = useState(new Date().getFullYear());
 
-    const handleDayClick = (date: Date, tx: Transaction[]) => {
+    const handleDayClick = (date: Date, tx: Transaction[], ric: Ricorrenza[] = []) => {
         setSelectedDate(date);
         setSelectedTx(tx);
+        setSelectedRicorrenze(ric);
     };
 
     const handleMonthChange = (month: number, year: number) => {
@@ -109,6 +114,7 @@ export default function PanoramicaPage() {
                     viewMonth={viewMonth}
                     viewYear={viewYear}
                     onMonthChange={handleMonthChange}
+                    ricorrenze={ricorrenze}
                 />
             )}
 
@@ -132,6 +138,7 @@ export default function PanoramicaPage() {
                 onClose={() => setSelectedDate(null)}
                 date={selectedDate || new Date()}
                 transactions={selectedTx}
+                ricorrenze={selectedRicorrenze}
             />
         </div>
     );
