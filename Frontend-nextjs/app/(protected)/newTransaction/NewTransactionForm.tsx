@@ -14,6 +14,7 @@ import { Input } from "@/app/components/ui/Input";
 import { Textarea } from "@/app/components/ui/Textarea";
 import type { IconType } from "react-icons";
 import { getIconComponent } from "@/utils/categoryOptions";
+import { toDateInputValue } from "@/utils/date";
 import { FiRotateCcw } from "react-icons/fi";
 import { AmountStepButton } from "@/app/components/ui/AmountStepButton";
 
@@ -132,7 +133,7 @@ export default function NewTransactionForm({
     const [formData, setFormData] = useState<TransactionBase>({
         description: "",
         amount: "" as any,
-        date: initialDate || new Date().toISOString().split("T")[0],
+        date: initialDate || toDateInputValue(new Date()),
         category_id: 0,
         notes: "",
         type: initialType || "spesa",
@@ -204,7 +205,7 @@ export default function NewTransactionForm({
     // ────────────────────────────────────────────────
     // Reset helpers (amount/date)
     // ────────────────────────────────────────────────
-    const getTodayISO = () => new Date().toISOString().split("T")[0];
+    const getTodayISO = () => toDateInputValue(new Date());
 
     const resetAmount = () => setFormData((p) => ({ ...p, amount: 0 as any }));
 
@@ -223,7 +224,7 @@ export default function NewTransactionForm({
     const fmtDDMM = new Intl.DateTimeFormat("it-IT", { day: "2-digit", month: "2-digit" });
 
     function toISODate(d: Date) {
-        return d.toISOString().split("T")[0];
+        return toDateInputValue(d);
     }
 
     function formatDDMM(d: Date) {

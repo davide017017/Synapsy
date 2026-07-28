@@ -12,6 +12,14 @@ import { url } from "@/lib/api/endpoints";
 // ──────────────────────────────────────────────────────────
 const TOKEN_REFRESH_THRESHOLD_SECONDS = 5 * 60;
 
+// Single-flight: più richieste (tab/finestre) che vedono lo stesso
+// accessToken in scadenza condividono la stessa Promise di refresh, invece
+// di chiamare refresh-token in parallelo. Senza questo, due refresh
+// concorrenti sullo stesso token causano una catena di invalidazione lato
+// Sanctum (il secondo arriva quando il primo ha già revocato il token) e
+// quindi un logout forzato via RefreshAccessTokenError.
+const refreshPromises = new Map<string, Promise<JWT>>();
+
 async function refreshAccessToken(token: JWT): Promise<JWT> {
     try {
         const res = await fetch(url("refreshToken"), {
@@ -171,7 +179,17 @@ export const authOptions: NextAuthOptions = {
             const now = Math.floor(Date.now() / 1000);
 
             if (expiresAt && now >= expiresAt - TOKEN_REFRESH_THRESHOLD_SECONDS) {
-                return refreshAccessToken(token);
+                const currentAccessToken = token.accessToken as string;
+
+                let refreshPromise = refreshPromises.get(currentAccessToken);
+                if (!refreshPromise) {
+                    refreshPromise = refreshAccessToken(token).finally(() => {
+                        refreshPromises.delete(currentAccessToken);
+                    });
+                    refreshPromises.set(currentAccessToken, refreshPromise);
+                }
+
+                return refreshPromise;
             }
 
             return token;

@@ -59,8 +59,7 @@ function getCategoryStyle(cat: { color?: string; type: "entrata" | "spesa" }, is
 
 // ===== Helper: formatta data per input type="date" =====
 function toDateInputValue(dateString?: string) {
-    if (!dateString) return new Date().toISOString().split("T")[0];
-    const d = new Date(dateString);
+    const d = dateString ? new Date(dateString) : new Date();
     const month = (d.getMonth() + 1).toString().padStart(2, "0");
     const day = d.getDate().toString().padStart(2, "0");
     return `${d.getFullYear()}-${month}-${day}`;
@@ -97,7 +96,9 @@ function parseAmount(raw: string | number) {
 const fmtDDMM = new Intl.DateTimeFormat("it-IT", { day: "2-digit", month: "2-digit" });
 
 function toISODate(d: Date) {
-    return d.toISOString().split("T")[0];
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
+    const day = d.getDate().toString().padStart(2, "0");
+    return `${d.getFullYear()}-${month}-${day}`;
 }
 
 function formatDDMM(d: Date) {
