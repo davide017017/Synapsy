@@ -16,7 +16,7 @@ type MonthData = {
 
 export default function UltimiMesiCard() {
     const { transactions } = useTransactions();
-    const [chartType, setChartType] = useState<"bar" | "line">("bar");
+    const [chartType, setChartType] = useState<"bar" | "line">("line");
 
     const monthData = useMemo<MonthData[]>(() => {
         const today = new Date();

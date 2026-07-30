@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Modules\User\Http\Requests\ProfileUpdateRequest;
+use Modules\User\Services\ReseedDemoDataService;
 
 class ProfileController extends Controller
 {
@@ -201,5 +202,29 @@ class ProfileController extends Controller
         }
 
         return Redirect::to('/');
+    }
+
+    // ============================
+    // Reseed - Rigenera dati demo on-demand
+    // ============================
+    public function reseedDemoData(Request $request): JsonResponse
+    {
+        $request->validate([
+            'secret' => ['required', 'string'],
+        ]);
+
+        $user = $request->user();
+        $expectedSecret = (string) config('app.demo_reseed_secret');
+        $providedSecret = (string) $request->input('secret');
+
+        // Messaggio volutamente generico: non rivela se a fallire è stato il
+        // check "utente demo" o il secret, per non dare indizi a un attaccante.
+        if ($expectedSecret === '' || ! $user?->isDemo() || ! hash_equals($expectedSecret, $providedSecret)) {
+            return ApiResponse::error('Operazione non consentita.', null, 403);
+        }
+
+        $risultato = ReseedDemoDataService::run($user);
+
+        return ApiResponse::success('Dati demo rigenerati con successo.', $risultato);
     }
 }

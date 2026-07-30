@@ -28,7 +28,7 @@ class ReseedDemoDataService
     {
         $this->userId        = $user->id;
         $this->oggi          = Carbon::today();
-        $this->inizioStorico = Carbon::create(2025, 1, 1);
+        $this->inizioStorico = $this->oggi->copy()->subMonths(12);
     }
 
     // ─────────────────────────────────────────────────────────────────────────

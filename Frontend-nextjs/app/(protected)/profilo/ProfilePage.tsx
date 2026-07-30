@@ -18,6 +18,7 @@ import { UserRound } from "lucide-react";
 import LegalLinks from "@/app/components/legal/LegalLinks";
 import DeleteAccountSection from "./components/DeleteAccountSection";
 import BackupSection from "./components/BackupSection";
+import ReseedDemoDataSection from "./components/ReseedDemoDataSection";
 import getAvatarUrl from "@/utils/avatar";
 import ChangePasswordModal from "./security/ChangePasswordModal";
 
@@ -331,6 +332,7 @@ export default function ProfilePage() {
             <ChangePasswordModal isOpen={showChangePwd} onClose={() => setShowChangePwd(false)} />
             <BackupSection />
             <DeleteAccountSection />
+            <ReseedDemoDataSection />
             <LegalLinks className="p-4 border-t border-primary/20 text-center" />{" "}
         </div>
     );

@@ -18,6 +18,7 @@ type Props = {
     confirmLabel?: string;
     cancelLabel?: string;
     icon?: ReactNode;
+    children?: ReactNode;
 };
 
 const typeDefaults = {
@@ -103,6 +104,7 @@ export default function ConfirmDialog({
     confirmLabel,
     cancelLabel = "Annulla",
     icon,
+    children,
 }: Props) {
     if (!open) return null;
 
@@ -151,6 +153,9 @@ export default function ConfirmDialog({
                 {highlight && (
                     <div className="z-10 w-full flex flex-col items-center mb-2">{renderHighlight(highlight)}</div>
                 )}
+
+                {/* Contenuto extra (es. campo input) */}
+                {children && <div className="z-10 w-full mb-2">{children}</div>}
 
                 {/* Pulsanti */}
                 <div className="z-10 flex gap-4 mt-3 w-full justify-center">

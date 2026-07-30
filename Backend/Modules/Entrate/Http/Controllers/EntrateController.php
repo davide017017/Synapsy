@@ -12,199 +12,200 @@ use Modules\Entrate\Http\Requests\StoreEntrataRequest;
 use Modules\Entrate\Http\Requests\UpdateEntrataRequest;
 use Modules\Entrate\Models\Entrata;
 use Modules\Entrate\Services\EntrateService;
+use Illuminate\Support\Facades\Auth;
 
-class EntrateController extends Controller
-{
-    protected EntrateService $service;
+class EntrateController extends Controller {
+  protected EntrateService $service;
 
-    // =========================
-    // COSTRUTTORE
-    // =========================
-    public function __construct(EntrateService $service)
-    {
-        $this->service = $service;
+  // =========================
+  // COSTRUTTORE
+  // =========================
+  public function __construct(EntrateService $service) {
+    $this->service = $service;
+  }
+
+  // =========================
+  // ─── ROTTE WEB (BLADE) ───
+  // =========================
+
+  // Lista (Blade)
+  public function indexWeb(Request $request): View {
+    $user = $request->user();
+    $filters = $request->only(['start_date', 'end_date', 'description', 'category_id']);
+    $sortBy = $request->query('sort_by', 'date');
+    $sortDirection = $request->query('sort_direction', 'desc');
+
+    $entrate = $this->service->getFilteredAndSortedForUser($user, $filters, $sortBy, $sortDirection);
+    $categories = $this->service->getCategoriesForUser($user);
+
+    return view('entrate::entrate.index', [
+      'entrate' => $entrate,
+      'categories' => $categories,
+      'sortBy' => $sortBy,
+      'sortDirection' => $sortDirection,
+      'filterStartDate' => $filters['start_date'] ?? null,
+      'filterEndDate' => $filters['end_date'] ?? null,
+      'filterDescription' => $filters['description'] ?? null,
+      'filterCategoryId' => $filters['category_id'] ?? null,
+    ]);
+  }
+
+  // Form creazione (Blade)
+  public function createWeb(Request $request): View {
+    $categories = $this->service->getCategoriesForUser($request->user());
+
+    return view('entrate::entrate.create', compact('categories'));
+  }
+
+  // Form modifica (Blade)
+  public function editWeb(Request $request, Entrata $entrata): View {
+    $this->authorize('update', $entrata);
+
+    $categories = $this->service->getCategoriesForUser($request->user());
+
+    return view('entrate::entrate.edit', compact('entrata', 'categories'));
+  }
+
+  // Dettaglio (Blade)
+  public function showWeb(Request $request, Entrata $entrata): View {
+    $this->authorize('view', $entrata);
+
+    return view('entrate::entrate.show', compact('entrata'));
+  }
+
+  // =========================
+  // ─── ROTTE API (JSON) ───
+  // =========================
+
+  // Lista (API JSON)
+  public function indexApi(Request $request): JsonResponse {
+    // ── valida query ─────────────────────────────────────────────────────
+    $validated = $request->validate([
+      'start_date' => 'date|nullable',
+      'end_date' => 'date|nullable',
+      'description' => 'string|nullable',
+      'category_id' => 'integer|nullable',
+      'sort' => 'string|nullable',   // es: "-date,amount"
+      'page' => 'integer|min:1|nullable',
+      'per_page' => 'integer|min:1|max:100|nullable',
+    ]);
+    // ── compat sort legacy → sort string ────────────────────────────────
+    $sort = $validated['sort'] ?? null;
+    if ($sort === null) {
+      $legacyCol = $request->query('sort_by');
+      $legacyDir = $request->query('sort_direction', 'desc');
+      if ($legacyCol) {
+        $sort = ($legacyDir === 'desc' ? '-' : '') . $legacyCol;
+      }
+    }
+    $sort = $sort ?: '-date';
+    $page = (int) ($validated['page'] ?? 1);
+    $perPage = (int) ($validated['per_page'] ?? 50);
+
+    // ── filtri ──────────────────────────────────────────────────────────
+    $filters = [
+      'start_date' => $validated['start_date'] ?? null,
+      'end_date' => $validated['end_date'] ?? null,
+      'description' => $validated['description'] ?? null,
+      'category_id' => $validated['category_id'] ?? null,
+    ];
+
+    $entrate = $this->service->listForUserPaginated($request->user(), $filters, $sort, $page, $perPage);
+    // ── compat legacy: se non passi page/per_page → lista flat ──────────
+    $legacy = ! $request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
+
+    return response()->json($legacy ? $entrate->items() : $entrate);
+  }
+
+  // Dettaglio (API JSON)
+  public function showApi(Request $request, Entrata $entrata): JsonResponse {
+    $this->authorize('view', $entrata);
+
+    return response()->json($entrata);
+  }
+
+  // Store (API JSON)
+  public function storeApi(StoreEntrataRequest $request): JsonResponse {
+    try {
+      $entrata = $this->service->createForUser($request->validated(), $request->user());
+    } catch (UniqueConstraintViolationException) {
+      return response()->json([
+        'message' => "Esiste già un'entrata con questa descrizione e data.",
+        'errors'  => ['description' => ['Descrizione già presente per questa data.']],
+      ], 422);
     }
 
-    // =========================
-    // ─── ROTTE WEB (BLADE) ───
-    // =========================
+    return response()->json($entrata, 201);
+  }
 
-    // Lista (Blade)
-    public function indexWeb(Request $request): View
-    {
-        $user = $request->user();
-        $filters = $request->only(['start_date', 'end_date', 'description', 'category_id']);
-        $sortBy = $request->query('sort_by', 'date');
-        $sortDirection = $request->query('sort_direction', 'desc');
+  // Update (API JSON)
+  public function updateApi(UpdateEntrataRequest $request, Entrata $entrata): JsonResponse {
+    $this->authorize('update', $entrata);
 
-        $entrate = $this->service->getFilteredAndSortedForUser($user, $filters, $sortBy, $sortDirection);
-        $categories = $this->service->getCategoriesForUser($user);
-
-        return view('entrate::entrate.index', [
-            'entrate' => $entrate,
-            'categories' => $categories,
-            'sortBy' => $sortBy,
-            'sortDirection' => $sortDirection,
-            'filterStartDate' => $filters['start_date'] ?? null,
-            'filterEndDate' => $filters['end_date'] ?? null,
-            'filterDescription' => $filters['description'] ?? null,
-            'filterCategoryId' => $filters['category_id'] ?? null,
-        ]);
+    try {
+      $this->service->update($entrata, $request->validated());
+    } catch (UniqueConstraintViolationException) {
+      return response()->json([
+        'message' => "Esiste già un'entrata con questa descrizione e data.",
+        'errors'  => ['description' => ['Descrizione già presente per questa data.']],
+      ], 422);
     }
 
-    // Form creazione (Blade)
-    public function createWeb(Request $request): View
-    {
-        $categories = $this->service->getCategoriesForUser($request->user());
+    return response()->json($entrata->fresh());
+  }
 
-        return view('entrate::entrate.create', compact('categories'));
-    }
+  // Destroy (API JSON)
+  public function destroyApi(Request $request, Entrata $entrata): JsonResponse {
+    $this->authorize('delete', $entrata);
 
-    // Form modifica (Blade)
-    public function editWeb(Request $request, Entrata $entrata): View
-    {
-        $categories = $this->service->getCategoriesForUser($request->user());
+    $this->service->delete($entrata);
 
-        return view('entrate::entrate.edit', compact('entrata', 'categories'));
-    }
-
-    // Dettaglio (Blade)
-    public function showWeb(Request $request, Entrata $entrata): View
-    {
-        return view('entrate::entrate.show', compact('entrata'));
-    }
-
-    // =========================
-    // ─── ROTTE API (JSON) ───
-    // =========================
-
-    // Lista (API JSON)
-    public function indexApi(Request $request): JsonResponse
-    {
-        // ── valida query ─────────────────────────────────────────────────────
-        $validated = $request->validate([
-            'start_date' => 'date|nullable',
-            'end_date' => 'date|nullable',
-            'description' => 'string|nullable',
-            'category_id' => 'integer|nullable',
-            'sort' => 'string|nullable',   // es: "-date,amount"
-            'page' => 'integer|min:1|nullable',
-            'per_page' => 'integer|min:1|max:100|nullable',
-        ]);
-        // ── compat sort legacy → sort string ────────────────────────────────
-        $sort = $validated['sort'] ?? null;
-        if ($sort === null) {
-            $legacyCol = $request->query('sort_by');
-            $legacyDir = $request->query('sort_direction', 'desc');
-            if ($legacyCol) {
-                $sort = ($legacyDir === 'desc' ? '-' : '').$legacyCol;
-            }
-        }
-        $sort = $sort ?: '-date';
-        $page = (int) ($validated['page'] ?? 1);
-        $perPage = (int) ($validated['per_page'] ?? 50);
-
-        // ── filtri ──────────────────────────────────────────────────────────
-        $filters = [
-            'start_date' => $validated['start_date'] ?? null,
-            'end_date' => $validated['end_date'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'category_id' => $validated['category_id'] ?? null,
-        ];
-
-        $entrate = $this->service->listForUserPaginated($request->user(), $filters, $sort, $page, $perPage);
-        // ── compat legacy: se non passi page/per_page → lista flat ──────────
-        $legacy = ! $request->hasAny(['page', 'per_page']) || $request->boolean('legacy', false);
-
-        return response()->json($legacy ? $entrate->items() : $entrate);
-    }
-
-    // Dettaglio (API JSON)
-    public function showApi(Request $request, Entrata $entrata): JsonResponse
-    {
-        return response()->json($entrata);
-    }
-
-    // Store (API JSON)
-    public function storeApi(StoreEntrataRequest $request): JsonResponse
-    {
-        try {
-            $entrata = $this->service->createForUser($request->validated(), $request->user());
-        } catch (UniqueConstraintViolationException) {
-            return response()->json([
-                'message' => "Esiste già un'entrata con questa descrizione e data.",
-                'errors'  => ['description' => ['Descrizione già presente per questa data.']],
-            ], 422);
-        }
-
-        return response()->json($entrata, 201);
-    }
-
-    // Update (API JSON)
-    public function updateApi(UpdateEntrataRequest $request, Entrata $entrata): JsonResponse
-    {
-        try {
-            $this->service->update($entrata, $request->validated());
-        } catch (UniqueConstraintViolationException) {
-            return response()->json([
-                'message' => "Esiste già un'entrata con questa descrizione e data.",
-                'errors'  => ['description' => ['Descrizione già presente per questa data.']],
-            ], 422);
-        }
-
-        return response()->json($entrata->fresh());
-    }
-
-    // Destroy (API JSON)
-    public function destroyApi(Request $request, Entrata $entrata): JsonResponse
-    {
-        $this->service->delete($entrata);
-
-        return response()->json(['success' => true], 204);
-    }
+    return response()->json(['success' => true], 204);
+  }
 
     // PATCH /api/v1/entrate/move-category
-    /**
-     * Move entries from one category to another.
-     */
-    public function moveCategory(Request $request): JsonResponse
-    {
-        $request->validate([
-            'oldCategoryId' => 'required|integer',
-            'newCategoryId' => 'required|integer',
-        ]);
+  /**
+   * Move entries from one category to another.
+   */
+  public function moveCategory(Request $request): JsonResponse {
+    $request->validate([
+      'oldCategoryId' => 'required|integer',
+      'newCategoryId' => 'required|integer',
+    ]);
 
-        \Modules\Entrate\Models\Entrata::where('category_id', $request->oldCategoryId)
-            ->update(['category_id' => $request->newCategoryId]);
+    \Modules\Entrate\Models\Entrata::where('category_id', $request->oldCategoryId)
+      ->where('user_id', Auth::id())
+      ->update(['category_id' => $request->newCategoryId]);
 
-        return response()->json(['status' => 'ok']);
-    }
+    return response()->json(['status' => 'ok']);
+  }
 
-    // =========================
-    // ───── WEB: SALVATAGGI (Redirect) ─────
-    // =========================
+  // =========================
+  // ───── WEB: SALVATAGGI (Redirect) ─────
+  // =========================
 
-    // Store (Web)
-    public function storeWeb(StoreEntrataRequest $request): RedirectResponse
-    {
-        $entrata = $this->service->createForUser($request->validated(), $request->user());
+  // Store (Web)
+  public function storeWeb(StoreEntrataRequest $request): RedirectResponse {
+    $entrata = $this->service->createForUser($request->validated(), $request->user());
 
-        return redirect()->route('entrate.web.index')->with('status', 'Entrata aggiunta con successo!');
-    }
+    return redirect()->route('entrate.web.index')->with('status', 'Entrata aggiunta con successo!');
+  }
 
-    // Update (Web)
-    public function updateWeb(UpdateEntrataRequest $request, Entrata $entrata): RedirectResponse
-    {
-        $this->service->update($entrata, $request->validated());
+  // Update (Web)
+  public function updateWeb(UpdateEntrataRequest $request, Entrata $entrata): RedirectResponse {
+    $this->authorize('update', $entrata);
 
-        return redirect()->route('entrate.web.index')->with('status', 'Entrata aggiornata con successo!');
-    }
+    $this->service->update($entrata, $request->validated());
 
-    // Destroy (Web)
-    public function destroyWeb(Request $request, Entrata $entrata): RedirectResponse
-    {
-        $this->service->delete($entrata);
+    return redirect()->route('entrate.web.index')->with('status', 'Entrata aggiornata con successo!');
+  }
 
-        return redirect()->route('entrate.web.index')->with('status', 'Entrata eliminata con successo!');
-    }
+  // Destroy (Web)
+  public function destroyWeb(Request $request, Entrata $entrata): RedirectResponse {
+    $this->authorize('delete', $entrata);
+
+    $this->service->delete($entrata);
+
+    return redirect()->route('entrate.web.index')->with('status', 'Entrata eliminata con successo!');
+  }
 }

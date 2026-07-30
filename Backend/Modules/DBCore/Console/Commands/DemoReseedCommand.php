@@ -10,7 +10,7 @@ class DemoReseedCommand extends Command
 {
     protected $signature = 'demo:reseed';
 
-    protected $description = 'Cancella e ripopola i dati di demo@synapsy.app con transazioni realistiche dal 01/01/2025 ad oggi.';
+    protected $description = 'Cancella e ripopola i dati di demo@synapsy.app con transazioni realistiche dagli ultimi 12 mesi ad oggi.';
 
     public function handle(): int
     {
@@ -47,7 +47,7 @@ class DemoReseedCommand extends Command
 
         // ── Riepilogo mensile ─────────────────────────────────────────────────
 
-        $this->line('📅 <fg=yellow>Generazione dati 01/01/2025 → oggi:</>');
+        $this->line('📅 <fg=yellow>Generazione dati ultimi 12 mesi → oggi:</>');
         $this->newLine();
 
         $totSpeseTot   = 0.0;

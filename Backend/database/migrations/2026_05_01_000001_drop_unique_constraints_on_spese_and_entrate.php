@@ -17,12 +17,20 @@ return new class extends Migration
 
     public function up(): void
     {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
         DB::statement('ALTER TABLE spese   DROP CONSTRAINT IF EXISTS spese_user_id_date_description_unique');
         DB::statement('ALTER TABLE entrate DROP CONSTRAINT IF EXISTS entrate_user_id_date_description_unique');
     }
 
     public function down(): void
     {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
         // Re-add only when absent (idempotent rollback).
         DB::statement("
             DO \$\$ BEGIN

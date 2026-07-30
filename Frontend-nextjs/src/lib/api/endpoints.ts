@@ -17,6 +17,7 @@ export const API = {
     adminBackup: "/api/v1/admin/backup",
     adminBackups: "/api/v1/admin/backups",
     changePassword: "/api/v1/profile/change-password",
+    reseedDemoData: "/api/v1/profile/reseed-demo-data",
 } as const;
 export type EndpointKey = keyof typeof API;
 export const url = (k: EndpointKey, id?: string | number) =>

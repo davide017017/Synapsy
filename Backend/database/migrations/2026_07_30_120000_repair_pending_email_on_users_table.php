@@ -4,22 +4,24 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-  /**
-   * Run the migrations.
-   */
+return new class extends Migration {
+  public $withinTransaction = false;
+
   public function up(): void
   {
     Schema::table('users', function (Blueprint $table) {
-      $table->boolean('has_accepted_terms')->default(false);
+      if (!Schema::hasColumn('users', 'pending_email')) {
+        $table->string('pending_email', 191)->nullable()->after('email');
+      }
     });
   }
 
   public function down(): void
   {
     Schema::table('users', function (Blueprint $table) {
-      $table->dropColumn('has_accepted_terms');
+      if (Schema::hasColumn('users', 'pending_email')) {
+        $table->dropColumn('pending_email');
+      }
     });
   }
 };

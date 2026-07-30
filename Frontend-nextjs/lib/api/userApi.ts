@@ -105,6 +105,39 @@ export async function deleteUserProfile(token: string, password: string): Promis
     if (!res.ok) throw new Error(data?.message || "Errore eliminazione profilo");
 }
 
+// ==============================
+// POST rigenera dati demo (solo utente demo)
+// ==============================
+export type ReseedDemoDataResult = {
+    cleanup: Record<string, number>;
+    mesi: Array<{
+        label: string;
+        n_spese: number;
+        n_entrate: number;
+        tot_spese: number;
+        tot_entrate: number;
+        periodo_inizio: string;
+        periodo_fine: string;
+    }>;
+    n_ricorrenze: number;
+    n_snapshots: number;
+};
+
+export async function reseedDemoData(token: string, secret: string): Promise<ReseedDemoDataResult> {
+    const res = await fetch(url("reseedDemoData"), {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+        },
+        body: JSON.stringify({ secret }),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.message || "Errore rigenerazione dati demo");
+    return data.data || data;
+}
+
 // ─────────────────────────────────────────────────────────
 // Descrizione file:
 // Wrapper API per profilo utente. Include diagnostica avanzata

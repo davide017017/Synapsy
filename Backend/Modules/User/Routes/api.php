@@ -83,6 +83,9 @@ Route::prefix('v1')->group(function () {
         });
         Route::get('profile', [ProfileController::class, 'show'])
             ->name('profile.show');
+        Route::post('profile/reseed-demo-data', [ProfileController::class, 'reseedDemoData'])
+            ->middleware('throttle:reseed-demo')
+            ->name('profile.reseed-demo-data');
         Route::get('dashboard', [DashboardController::class, 'index'])
             ->name('dashboard.index');
     });

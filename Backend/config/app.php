@@ -24,6 +24,11 @@ return [
   // --------------------------------------------------
   'cron_secret' => env('CRON_SECRET'),
 
+  // --------------------------------------------------
+  // Secret per il reseed on-demand dei dati demo
+  // --------------------------------------------------
+  'demo_reseed_secret' => env('DEMO_RESEED_SECRET'),
+
   // Fuso orario di default
   'timezone' => 'UTC',
 
