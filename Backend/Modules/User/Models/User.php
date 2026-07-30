@@ -90,6 +90,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
       'password' => 'hashed',
       'is_admin' => 'boolean',
       'is_demo'  => 'boolean',
+      'last_demo_reseed_at' => 'datetime',
       'avatar' => 'string',
       'theme' => 'string',
       'pending_email' => 'string',

@@ -223,7 +223,16 @@ class ProfileController extends Controller
             return ApiResponse::error('Operazione non consentita.', null, 403);
         }
 
+        // Rate limit basato sull'ultimo reseed RIUSCITO, non sui tentativi falliti:
+        // un secret sbagliato non deve consumare il tentativo giornaliero.
+        if ($user->last_demo_reseed_at && $user->last_demo_reseed_at->copy()->addDay()->isFuture()) {
+            return ApiResponse::error('Puoi rigenerare i dati demo una sola volta al giorno. Riprova domani.', null, 429);
+        }
+
         $risultato = ReseedDemoDataService::run($user);
+
+        $user->last_demo_reseed_at = now();
+        $user->save();
 
         return ApiResponse::success('Dati demo rigenerati con successo.', $risultato);
     }
