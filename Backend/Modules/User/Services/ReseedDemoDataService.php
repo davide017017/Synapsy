@@ -15,540 +15,646 @@ use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\Spese\Models\Spesa;
 use Modules\User\Models\User;
 
-class ReseedDemoDataService
-{
-    private int $userId;
-    private Carbon $oggi;
-    private Carbon $inizioStorico;
+class ReseedDemoDataService {
+  private int $userId;
+  private Carbon $oggi;
+  private Carbon $inizioStorico;
 
-    /** @var array<string, int> nome_categoria => id */
-    private array $cat = [];
+  /** @var array<string, int> nome_categoria => id */
+  private array $cat = [];
 
-    private function __construct(private readonly User $user)
-    {
-        $this->userId        = $user->id;
-        $this->oggi          = Carbon::today();
-        $this->inizioStorico = $this->oggi->copy()->subMonths(12);
-    }
+  /** Timestamp unico condiviso da tutte le righe bulk-insert di questo reseed. */
+  private string $nowSql;
+
+  /** @var list<array<string, mixed>> buffer spese del mese corrente, svuotato ad ogni generaMese() */
+  private array $speseBuffer = [];
+
+  /** @var list<array<string, mixed>> buffer entrate del mese corrente, svuotato ad ogni generaMese() */
+  private array $entrateBuffer = [];
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // PARAMETRI CONFIGURABILI (quantità, importi, probabilità)
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── STORICO ──
+  private const MESI_STORICO = 12;
+
+  // ── SPESE FISSE ── (importi min/max e probabilità dove presente)
+  private const AFFITTO_MIN = 750;
+  private const AFFITTO_MAX = 950;
+  private const STREAMING_MIN = 13;
+  private const STREAMING_MAX = 18;
+  private const PALESTRA_PROBABILITA = 85; // %
+  private const PALESTRA_MIN = 30;
+  private const PALESTRA_MAX = 50;
+  private const TELEFONO_MIN = 15;
+  private const TELEFONO_MAX = 25;
+  private const LUCE_GAS_MIN = 55;
+  private const LUCE_GAS_MAX = 130;
+
+  // ── SPESE VARIABILI ── (occorrenze min/max per mese + importi)
+  private const SUPERMERCATO_OCCORRENZE_MIN = 9;
+  private const SUPERMERCATO_OCCORRENZE_MAX = 12;
+  private const SUPERMERCATO_MIN = 55;
+  private const SUPERMERCATO_MAX = 120;
+  private const CARBURANTE_MIN = 45;
+  private const CARBURANTE_MAX = 75;
+  private const RISTORANTE_OCCORRENZE_MIN = 3;
+  private const RISTORANTE_OCCORRENZE_MAX = 6;
+  private const RISTORANTE_MIN = 28;
+  private const RISTORANTE_MAX = 65;
+  private const BAR_OCCORRENZE_MIN = 6;
+  private const BAR_OCCORRENZE_MAX = 12;
+  private const BAR_MIN = 5;
+  private const BAR_MAX = 15;
+  private const FARMACIA_PROBABILITA = 40; // %
+  private const FARMACIA_OCCORRENZE_MIN = 3;
+  private const FARMACIA_OCCORRENZE_MAX = 6;
+  private const FARMACIA_MIN = 12;
+  private const FARMACIA_MAX = 55;
+  private const ONLINE_OCCORRENZE_MIN = 4;
+  private const ONLINE_OCCORRENZE_MAX = 10;
+  private const ONLINE_MIN = 20;
+  private const ONLINE_MAX = 90;
+  private const CINEMA_PROBABILITA = 50; // %
+  private const CINEMA_MIN = 15;
+  private const CINEMA_MAX = 40;
+
+  // ── ENTRATE ──
+  private const STIPENDIO_MIN = 1850;
+  private const STIPENDIO_MAX = 2150;
+  private const RIMBORSO_PROBABILITA = 15; // %
+  private const RIMBORSO_MIN = 80;
+  private const RIMBORSO_MAX = 250;
+
+  // ── RICORRENZE ──
+  // I 5 importi fissi di creaRicorrenze() riusano le costanti sopra (stessi
+  // range delle spese fisse/entrate corrispondenti: affitto, streaming,
+  // stipendio, palestra, bolletta luce/gas).
+
+  private function __construct(private readonly User $user) {
+    $this->userId        = $user->id;
+    $this->oggi          = Carbon::today();
+    $this->inizioStorico = $this->oggi->copy()->subMonths(self::MESI_STORICO);
+    $this->nowSql        = Carbon::now()->format('Y-m-d H:i:s');
+  }
 
     // ─────────────────────────────────────────────────────────────────────────
     // ENTRY POINT
     // ─────────────────────────────────────────────────────────────────────────
 
-    /**
-     * @return array{
-     *   cleanup: array<string, int>,
-     *   mesi: list<array{label: string, n_spese: int, n_entrate: int, tot_spese: float, tot_entrate: float, periodo_inizio: string, periodo_fine: string}>,
-     *   n_ricorrenze: int,
-     *   n_snapshots: int
-     * }
-     */
-    public static function run(User $user): array
-    {
-        return (new self($user))->execute();
+  /**
+   * @return array{
+   *   cleanup: array<string, int>,
+   *   mesi: list<array{label: string, n_spese: int, n_entrate: int, tot_spese: float, tot_entrate: float, periodo_inizio: string, periodo_fine: string}>,
+   *   n_ricorrenze: int,
+   *   n_snapshots: int
+   * }
+   */
+  public static function run(User $user): array {
+    return (new self($user))->execute();
+  }
+
+  private function execute(): array {
+    // ── Reset connessione preventivo ──────────────────────────────────────
+    // Se la connessione era già in stato "aborted" da una transazione precedente
+    // (connessione riutilizzata dopo un errore non ripulito), questo ROLLBACK
+    // la riporta in stato pulito PRIMA di aprire la transazione qui sotto.
+    // Deve restare fuori da DB::transaction(): un BEGIN su una connessione già
+    // "aborted" non la ripulisce, quindi va fatto un ROLLBACK esplicito prima.
+    // L'errore viene ignorato: se non c'era nessuna transazione aperta,
+    // PostgreSQL risponde con un warning che possiamo scartare.
+    try {
+      DB::statement('ROLLBACK');
+    } catch (\Throwable) {
+      // Intenzionalmente vuoto — solo reset preventivo.
     }
 
-    private function execute(): array
-    {
-        // ── Reset connessione preventivo ──────────────────────────────────────
-        // Se la connessione era già in stato "aborted" da una transazione precedente,
-        // questo ROLLBACK la riporta in stato pulito prima di iniziare.
-        // L'errore viene ignorato: se non c'era nessuna transazione aperta,
-        // PostgreSQL risponde con un warning che possiamo scartare.
-        try {
-            DB::statement('ROLLBACK');
-        } catch (\Throwable) {
-            // Intenzionalmente vuoto — solo reset preventivo.
-        }
+    // ── Intero reseed in un'unica transazione ──────────────────────────────
+    // Un solo commit finale invece di uno per operazione; in caso di errore
+    // in qualunque blocco, rollback automatico e nessun dato parziale resta
+    // scritto. I try/catch per blocco restano solo per etichettare l'errore
+    // (wrapConDettagli) prima che DB::transaction() esegua il rollback.
+    return DB::transaction(function (): array {
+      $cleanup = $this->pulisciDati();
 
-        // ── DB::listen() — cattura ogni SQL prima che esploda ─────────────────
-        // TEMPORANEO: logga su storage/logs/laravel.log ogni query eseguita
-        // con bindings, ms e blocco di appartenenza. Rimuovere dopo il debug.
-        DB::listen(function (\Illuminate\Database\Events\QueryExecuted $query): void {
-            Log::debug('[DemoReseed] SQL', [
-                'sql'      => $query->sql,
-                'bindings' => $query->bindings,
-                'time_ms'  => $query->time,
-            ]);
-        });
-
-        // ── Fase 1: pulizia FUORI transazione ────────────────────────────────
-        $cleanup = $this->pulisciDati();
-
-        $categorieRimaste = DB::table('categories')->where('user_id', $this->userId)->count();
-        if ($categorieRimaste > 0) {
-            throw new \RuntimeException(
-                "Pulizia categorie fallita: rimasti {$categorieRimaste} record per user_id {$this->userId}."
-            );
-        }
-
-        // ── Fase 2: insert SENZA transazione — un try/catch per blocco ────────
-        // TEMPORANEO: ogni blocco è isolato così il primo errore reale emerge
-        // senza essere mascherato dal cascade 25P02.
-        // Ripristinare DB::beginTransaction() dopo aver identificato la causa.
-
-        $mesi        = [];
-        $nRicorrenze = 0;
-        $nSnapshots  = 0;
-
-        try {
-            $this->ricreaCategorie();
-            $this->caricaCategorie();
-        } catch (\Throwable $e) {
-            throw $this->wrapConDettagli('Blocco A — categorie', $e);
-        }
-
-        try {
-            $mesi = $this->generaTransazioni();
-        } catch (\Throwable $e) {
-            throw $this->wrapConDettagli('Blocco B — spese/entrate', $e);
-        }
-
-        try {
-            $nRicorrenze = $this->creaRicorrenze();
-        } catch (\Throwable $e) {
-            throw $this->wrapConDettagli('Blocco C — ricorrenze', $e);
-        }
-
-        try {
-            $nSnapshots = $this->creaSnapshot($mesi);
-        } catch (\Throwable $e) {
-            throw $this->wrapConDettagli('Blocco D — snapshot', $e);
-        }
-
-        return [
-            'cleanup'      => $cleanup,
-            'mesi'         => $mesi,
-            'n_ricorrenze' => $nRicorrenze,
-            'n_snapshots'  => $nSnapshots,
-        ];
-    }
-
-    /**
-     * Risale la catena getPrevious() fino alla causa radice,
-     * logga su file il dettaglio completo e rilancia con contesto leggibile.
-     */
-    private function wrapConDettagli(string $blocco, \Throwable $e): \RuntimeException
-    {
-        $radice = $e;
-        while ($radice->getPrevious() !== null) {
-            $radice = $radice->getPrevious();
-        }
-
-        $dettaglio = sprintf(
-            "Demo reseed fallito in [%s].\n" .
-            "  Classe eccezione : %s\n" .
-            "  SQLSTATE / Codice: %s\n" .
-            "  Messaggio        : %s\n" .
-            "  File             : %s:%d",
-            $blocco,
-            get_class($radice),
-            $radice->getCode(),
-            $radice->getMessage(),
-            $radice->getFile(),
-            $radice->getLine()
+      $categorieRimaste = DB::table('categories')->where('user_id', $this->userId)->count();
+      if ($categorieRimaste > 0) {
+        throw new \RuntimeException(
+          "Pulizia categorie fallita: rimasti {$categorieRimaste} record per user_id {$this->userId}."
         );
+      }
 
-        Log::error('[DemoReseed] ' . $dettaglio);
+      $mesi        = [];
+      $nRicorrenze = 0;
+      $nSnapshots  = 0;
 
-        return new \RuntimeException($dettaglio, 0, $e);
+      try {
+        $this->ricreaCategorie();
+        $this->caricaCategorie();
+      } catch (\Throwable $e) {
+        throw $this->wrapConDettagli('Blocco A — categorie', $e);
+      }
+
+      try {
+        $mesi = $this->generaTransazioni();
+      } catch (\Throwable $e) {
+        throw $this->wrapConDettagli('Blocco B — spese/entrate', $e);
+      }
+
+      try {
+        $nRicorrenze = $this->creaRicorrenze();
+      } catch (\Throwable $e) {
+        throw $this->wrapConDettagli('Blocco C — ricorrenze', $e);
+      }
+
+      try {
+        $nSnapshots = $this->creaSnapshot($mesi);
+      } catch (\Throwable $e) {
+        throw $this->wrapConDettagli('Blocco D — snapshot', $e);
+      }
+
+      return [
+        'cleanup'      => $cleanup,
+        'mesi'         => $mesi,
+        'n_ricorrenze' => $nRicorrenze,
+        'n_snapshots'  => $nSnapshots,
+      ];
+    });
+  }
+
+  /**
+   * Risale la catena getPrevious() fino alla causa radice,
+   * logga su file il dettaglio completo e rilancia con contesto leggibile.
+   */
+  private function wrapConDettagli(string $blocco, \Throwable $e): \RuntimeException {
+    $radice = $e;
+    while ($radice->getPrevious() !== null) {
+      $radice = $radice->getPrevious();
     }
+
+    $dettaglio = sprintf(
+      "Demo reseed fallito in [%s].\n" .
+        "  Classe eccezione : %s\n" .
+        "  SQLSTATE / Codice: %s\n" .
+        "  Messaggio        : %s\n" .
+        "  File             : %s:%d",
+      $blocco,
+      get_class($radice),
+      $radice->getCode(),
+      $radice->getMessage(),
+      $radice->getFile(),
+      $radice->getLine()
+    );
+
+    Log::error('[DemoReseed] ' . $dettaglio);
+
+    return new \RuntimeException($dettaglio, 0, $e);
+  }
 
     // ─────────────────────────────────────────────────────────────────────────
     // PULIZIA
     // ─────────────────────────────────────────────────────────────────────────
 
-    /** @return array<string, int> */
-    private function pulisciDati(): array
-    {
-        // Ordine obbligatorio: prima le tabelle figlie, poi categories
-        $tabelle = [
-            'financial_snapshots',
-            'spese',
-            'entrate',
-            'recurring_operations',
-            'categories',
-        ];
+  /** @return array<string, int> */
+  private function pulisciDati(): array {
+    // Ordine obbligatorio: prima le tabelle figlie, poi categories
+    $tabelle = [
+      'financial_snapshots',
+      'spese',
+      'entrate',
+      'recurring_operations',
+      'categories',
+    ];
 
-        $counts = [];
-        foreach ($tabelle as $tabella) {
-            $counts[$tabella] = DB::table($tabella)->where('user_id', $this->userId)->count();
-            DB::table($tabella)->where('user_id', $this->userId)->delete();
-        }
-
-        return $counts;
+    $counts = [];
+    foreach ($tabelle as $tabella) {
+      $counts[$tabella] = DB::table($tabella)->where('user_id', $this->userId)->count();
+      DB::table($tabella)->where('user_id', $this->userId)->delete();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // CATEGORIE
-    // ─────────────────────────────────────────────────────────────────────────
+    return $counts;
+  }
 
-    private function ricreaCategorie(): void
-    {
-        CreateDefaultCategoriesForUser::run($this->user);
-    }
+  // ─────────────────────────────────────────────────────────────────────────
+  // CATEGORIE
+  // ─────────────────────────────────────────────────────────────────────────
 
-    private function caricaCategorie(): void
-    {
-        $this->cat = Category::where('user_id', $this->userId)
-            ->pluck('id', 'name')
-            ->toArray();
-    }
+  private function ricreaCategorie(): void {
+    CreateDefaultCategoriesForUser::run($this->user);
+  }
 
-    private function catId(string $nome): ?int
-    {
-        return $this->cat[$nome] ?? null;
-    }
+  private function caricaCategorie(): void {
+    $this->cat = Category::where('user_id', $this->userId)
+      ->pluck('id', 'name')
+      ->toArray();
+  }
+
+  private function catId(string $nome): ?int {
+    return $this->cat[$nome] ?? null;
+  }
 
     // ─────────────────────────────────────────────────────────────────────────
     // GENERAZIONE TRANSAZIONI (ciclo mensile)
     // ─────────────────────────────────────────────────────────────────────────
 
-    /** @return list<array{label: string, n_spese: int, n_entrate: int, tot_spese: float, tot_entrate: float, periodo_inizio: string, periodo_fine: string}> */
-    private function generaTransazioni(): array
-    {
-        $mesi   = [];
-        $cursor = $this->inizioStorico->copy()->startOfMonth();
+  /** @return list<array{label: string, n_spese: int, n_entrate: int, tot_spese: float, tot_entrate: float, periodo_inizio: string, periodo_fine: string}> */
+  private function generaTransazioni(): array {
+    $mesi   = [];
+    $cursor = $this->inizioStorico->copy()->startOfMonth();
 
-        while ($cursor->lte($this->oggi)) {
-            $inizio = $cursor->copy()->startOfMonth();
-            $fine   = $cursor->copy()->endOfMonth();
+    while ($cursor->lte($this->oggi)) {
+      $inizio = $cursor->copy()->startOfMonth();
+      $fine   = $cursor->copy()->endOfMonth();
 
-            if ($fine->gt($this->oggi)) {
-                $fine = $this->oggi->copy();
-            }
+      if ($fine->gt($this->oggi)) {
+        $fine = $this->oggi->copy();
+      }
 
-            $mesi[] = $this->generaMese($inizio, $fine);
+      $mesi[] = $this->generaMese($inizio, $fine);
 
-            $cursor->addMonth()->startOfMonth();
-        }
-
-        return $mesi;
+      $cursor->addMonth()->startOfMonth();
     }
 
-    /**
-     * Genera tutte le spese e le entrate per un singolo mese.
-     *
-     * @return array{label: string, n_spese: int, n_entrate: int, tot_spese: float, tot_entrate: float, periodo_inizio: string, periodo_fine: string}
-     */
-    private function generaMese(Carbon $inizio, Carbon $fine): array
-    {
-        $maxGiorno = $fine->day;
-        $meseNum   = $inizio->month;
+    return $mesi;
+  }
 
-        // Ritorna un Carbon casuale in [min, maxGiorno] o null se il mese non copre $min
-        $giorno = function (int $min, int $max) use ($inizio, $maxGiorno): ?Carbon {
-            if ($min > $maxGiorno) {
-                return null;
-            }
+  /**
+   * Genera tutte le spese e le entrate per un singolo mese.
+   *
+   * @return array{label: string, n_spese: int, n_entrate: int, tot_spese: float, tot_entrate: float, periodo_inizio: string, periodo_fine: string}
+   */
+  private function generaMese(Carbon $inizio, Carbon $fine): array {
+    // Buffer del mese: azzerati qui, riempiti da inserisciSpesa/inserisciEntrata,
+    // scritti in un'unica query bulk a fine metodo invece che riga per riga.
+    $this->speseBuffer   = [];
+    $this->entrateBuffer = [];
 
-            return $inizio->copy()->setDay(rand($min, min($max, $maxGiorno)));
-        };
+    $maxGiorno = $fine->day;
+    $meseNum   = $inizio->month;
 
-        $speseRaw   = [];
-        $entrateRaw = [];
+    // Ritorna un Carbon casuale in [min, maxGiorno] o null se il mese non copre $min
+    $giorno = function (int $min, int $max) use ($inizio, $maxGiorno): ?Carbon {
+      if ($min > $maxGiorno) {
+        return null;
+      }
 
-        // ── SPESE FISSE ───────────────────────────────────────────────────────
+      return $inizio->copy()->setDay(rand($min, min($max, $maxGiorno)));
+    };
 
-        if ($d = $giorno(1, 3)) {
-            $speseRaw[] = $this->inserisciSpesa('Affitto appartamento', rand(750, 950), $d, 'Casa');
-        }
+    $speseRaw   = [];
+    $entrateRaw = [];
 
-        if ($d = $giorno(1, 5)) {
-            $speseRaw[] = $this->inserisciSpesa('Abbonamento streaming', rand(13, 18), $d, 'Svago');
-        }
+    // ── SPESE FISSE ───────────────────────────────────────────────────────
 
-        if (rand(1, 100) <= 85 && ($d = $giorno(1, 7))) {
-            $speseRaw[] = $this->inserisciSpesa('Abbonamento palestra', rand(30, 50), $d, 'Svago');
-        }
-
-        if ($d = $giorno(5, 20)) {
-            $speseRaw[] = $this->inserisciSpesa('Bolletta telefono', rand(15, 25), $d, 'Utenze');
-        }
-
-        // Bolletta luce/gas: solo mesi pari (Feb, Apr, Giu, Ago, Ott, Dic)
-        if ($meseNum % 2 === 0 && ($d = $giorno(8, 20))) {
-            $speseRaw[] = $this->inserisciSpesa('Bolletta luce e gas', rand(55, 130), $d, 'Utenze');
-        }
-
-        // ── SPESE VARIABILI ───────────────────────────────────────────────────
-
-        // Supermercato: 3-4 volte (duplicati di giorno consentiti, unique constraint droppato)
-        $nSuper = rand(3, 4);
-        for ($i = 0; $i < $nSuper; $i++) {
-            if ($d = $giorno(1, $maxGiorno)) {
-                $speseRaw[] = $this->inserisciSpesa('Spesa supermercato', rand(55, 120), $d, 'Alimentazione');
-            }
-        }
-
-        // Carburante: 2 volte
-        for ($i = 1; $i <= 2; $i++) {
-            $desc = $i === 2 ? 'Carburante auto (bis)' : 'Carburante auto';
-            if ($d = $giorno(3, $maxGiorno)) {
-                $speseRaw[] = $this->inserisciSpesa($desc, rand(45, 75), $d, 'Trasporti');
-            }
-        }
-
-        // Ristorante: 1-2 volte, preferibilmente venerdì o sabato
-        $venSab = $this->giorniVenSab($inizio, $fine);
-        shuffle($venSab);
-        $nRisto = rand(1, 2);
-        for ($i = 0; $i < min($nRisto, count($venSab)); $i++) {
-            $speseRaw[] = $this->inserisciSpesa('Cena al ristorante', rand(28, 65), $venSab[$i], 'Alimentazione');
-        }
-        // Fallback se nessun ven/sab disponibile nel mese parziale
-        if (empty($venSab) && ($d = $giorno(1, $maxGiorno))) {
-            $speseRaw[] = $this->inserisciSpesa('Cena al ristorante', rand(28, 65), $d, 'Alimentazione');
-        }
-
-        // Bar e caffè: 2-4 volte
-        $nBar = rand(2, 4);
-        for ($i = 0; $i < $nBar; $i++) {
-            if ($d = $giorno(1, $maxGiorno)) {
-                $speseRaw[] = $this->inserisciSpesa('Bar e caffè', rand(5, 15), $d, 'Alimentazione');
-            }
-        }
-
-        // Farmacia: 1-2 volte nel 40% dei mesi
-        if (rand(1, 100) <= 40) {
-            $nFarmacia = rand(1, 2);
-            for ($i = 0; $i < $nFarmacia; $i++) {
-                if ($d = $giorno(1, $maxGiorno)) {
-                    $speseRaw[] = $this->inserisciSpesa('Farmacia', rand(12, 55), $d, 'Salute');
-                }
-            }
-        }
-
-        // Acquisti online: 1-2 volte
-        $nOnline = rand(1, 2);
-        for ($i = 0; $i < $nOnline; $i++) {
-            if ($d = $giorno(1, $maxGiorno)) {
-                $speseRaw[] = $this->inserisciSpesa('Acquisti online', rand(20, 90), $d, 'Altro (Spesa)');
-            }
-        }
-
-        // Cinema/svago: opzionale (50%)
-        if (rand(1, 100) <= 50 && ($d = $giorno(1, $maxGiorno))) {
-            $speseRaw[] = $this->inserisciSpesa('Cinema e svago', rand(15, 40), $d, 'Svago');
-        }
-
-        // ── ENTRATE ───────────────────────────────────────────────────────────
-
-        // Stipendio: giorno 25-28
-        if ($d = $giorno(25, 28)) {
-            $entrateRaw[] = $this->inserisciEntrata('Stipendio', rand(1850, 2150), $d, 'Stipendio');
-        }
-
-        // Rimborso spese lavoro: ~15% dei mesi
-        if (rand(1, 100) <= 15 && ($d = $giorno(5, 25))) {
-            $entrateRaw[] = $this->inserisciEntrata('Rimborso spese lavoro', rand(80, 250), $d, 'Altro (Entrata)');
-        }
-
-        // ── AGGREGAZIONE ──────────────────────────────────────────────────────
-
-        $speseRaw   = array_values(array_filter($speseRaw));
-        $entrateRaw = array_values(array_filter($entrateRaw));
-
-        return [
-            'label'          => $this->labelMese($inizio),
-            'n_spese'        => count($speseRaw),
-            'n_entrate'      => count($entrateRaw),
-            'tot_spese'      => (float) array_sum(array_column($speseRaw, 'amount')),
-            'tot_entrate'    => (float) array_sum(array_column($entrateRaw, 'amount')),
-            'periodo_inizio' => $inizio->format('Y-m-d'),
-            'periodo_fine'   => $fine->format('Y-m-d'),
-        ];
+    if ($d = $giorno(1, 3)) {
+      $speseRaw[] = $this->inserisciSpesa('Affitto appartamento', rand(self::AFFITTO_MIN, self::AFFITTO_MAX), $d, 'Casa');
     }
+
+    if ($d = $giorno(1, 5)) {
+      $speseRaw[] = $this->inserisciSpesa('Abbonamento streaming', rand(self::STREAMING_MIN, self::STREAMING_MAX), $d, 'Svago');
+    }
+
+    if (rand(1, 100) <= self::PALESTRA_PROBABILITA && ($d = $giorno(1, 7))) {
+      $speseRaw[] = $this->inserisciSpesa('Abbonamento palestra', rand(self::PALESTRA_MIN, self::PALESTRA_MAX), $d, 'Svago');
+    }
+
+    if ($d = $giorno(5, 20)) {
+      $speseRaw[] = $this->inserisciSpesa('Bolletta telefono', rand(self::TELEFONO_MIN, self::TELEFONO_MAX), $d, 'Utenze');
+    }
+
+    // Bolletta luce/gas: solo mesi pari (Feb, Apr, Giu, Ago, Ott, Dic)
+    if ($meseNum % 2 === 0 && ($d = $giorno(8, 20))) {
+      $speseRaw[] = $this->inserisciSpesa('Bolletta luce e gas', rand(self::LUCE_GAS_MIN, self::LUCE_GAS_MAX), $d, 'Utenze');
+    }
+
+    // ── SPESE VARIABILI ───────────────────────────────────────────────────
+
+    // Supermercato: 3-4 volte (duplicati di giorno consentiti, unique constraint droppato)
+    $nSuper = rand(self::SUPERMERCATO_OCCORRENZE_MIN, self::SUPERMERCATO_OCCORRENZE_MAX);
+    for ($i = 0; $i < $nSuper; $i++) {
+      if ($d = $giorno(1, $maxGiorno)) {
+        $speseRaw[] = $this->inserisciSpesa('Spesa supermercato', rand(self::SUPERMERCATO_MIN, self::SUPERMERCATO_MAX), $d, 'Alimentazione');
+      }
+    }
+
+    // Carburante: 2 volte
+    for ($i = 1; $i <= 2; $i++) {
+      $desc = $i === 2 ? 'Carburante auto (bis)' : 'Carburante auto';
+      if ($d = $giorno(3, $maxGiorno)) {
+        $speseRaw[] = $this->inserisciSpesa($desc, rand(self::CARBURANTE_MIN, self::CARBURANTE_MAX), $d, 'Trasporti');
+      }
+    }
+
+    // Ristorante: 1-2 volte, preferibilmente venerdì o sabato
+    $venSab = $this->giorniVenSab($inizio, $fine);
+    shuffle($venSab);
+    $nRisto = rand(self::RISTORANTE_OCCORRENZE_MIN, self::RISTORANTE_OCCORRENZE_MAX);
+    for ($i = 0; $i < min($nRisto, count($venSab)); $i++) {
+      $speseRaw[] = $this->inserisciSpesa('Cena al ristorante', rand(self::RISTORANTE_MIN, self::RISTORANTE_MAX), $venSab[$i], 'Alimentazione');
+    }
+    // Fallback se nessun ven/sab disponibile nel mese parziale
+    if (empty($venSab) && ($d = $giorno(1, $maxGiorno))) {
+      $speseRaw[] = $this->inserisciSpesa('Cena al ristorante', rand(self::RISTORANTE_MIN, self::RISTORANTE_MAX), $d, 'Alimentazione');
+    }
+
+    // Bar e caffè: 2-4 volte
+    $nBar = rand(self::BAR_OCCORRENZE_MIN, self::BAR_OCCORRENZE_MAX);
+    for ($i = 0; $i < $nBar; $i++) {
+      if ($d = $giorno(1, $maxGiorno)) {
+        $speseRaw[] = $this->inserisciSpesa('Bar e caffè', rand(self::BAR_MIN, self::BAR_MAX), $d, 'Alimentazione');
+      }
+    }
+
+    // Farmacia: 1-2 volte nel 40% dei mesi
+    if (rand(1, 100) <= self::FARMACIA_PROBABILITA) {
+      $nFarmacia = rand(self::FARMACIA_OCCORRENZE_MIN, self::FARMACIA_OCCORRENZE_MAX);
+      for ($i = 0; $i < $nFarmacia; $i++) {
+        if ($d = $giorno(1, $maxGiorno)) {
+          $speseRaw[] = $this->inserisciSpesa('Farmacia', rand(self::FARMACIA_MIN, self::FARMACIA_MAX), $d, 'Salute');
+        }
+      }
+    }
+
+    // Acquisti online: 1-2 volte
+    $nOnline = rand(self::ONLINE_OCCORRENZE_MIN, self::ONLINE_OCCORRENZE_MAX);
+    for ($i = 0; $i < $nOnline; $i++) {
+      if ($d = $giorno(1, $maxGiorno)) {
+        $speseRaw[] = $this->inserisciSpesa('Acquisti online', rand(self::ONLINE_MIN, self::ONLINE_MAX), $d, 'Altro (Spesa)');
+      }
+    }
+
+    // Cinema/svago: opzionale (50%)
+    if (rand(1, 100) <= self::CINEMA_PROBABILITA && ($d = $giorno(1, $maxGiorno))) {
+      $speseRaw[] = $this->inserisciSpesa('Cinema e svago', rand(self::CINEMA_MIN, self::CINEMA_MAX), $d, 'Svago');
+    }
+
+    // ── ENTRATE ───────────────────────────────────────────────────────────
+
+    // Stipendio: giorno 25-28
+    if ($d = $giorno(25, 28)) {
+      $entrateRaw[] = $this->inserisciEntrata('Stipendio', rand(self::STIPENDIO_MIN, self::STIPENDIO_MAX), $d, 'Stipendio');
+    }
+
+    // Rimborso spese lavoro: ~15% dei mesi
+    if (rand(1, 100) <= self::RIMBORSO_PROBABILITA && ($d = $giorno(5, 25))) {
+      $entrateRaw[] = $this->inserisciEntrata('Rimborso spese lavoro', rand(self::RIMBORSO_MIN, self::RIMBORSO_MAX), $d, 'Altro (Entrata)');
+    }
+
+    // ── AGGREGAZIONE ──────────────────────────────────────────────────────
+
+    $speseRaw   = array_values(array_filter($speseRaw));
+    $entrateRaw = array_values(array_filter($entrateRaw));
+
+    // ── Scrittura bulk del mese ──────────────────────────────────────────
+    // Un INSERT multi-riga per tabella invece di N create() singoli.
+    if ($this->speseBuffer !== []) {
+      Spesa::insert($this->speseBuffer);
+    }
+    if ($this->entrateBuffer !== []) {
+      Entrata::insert($this->entrateBuffer);
+    }
+
+    return [
+      'label'          => $this->labelMese($inizio),
+      'n_spese'        => count($speseRaw),
+      'n_entrate'      => count($entrateRaw),
+      'tot_spese'      => (float) array_sum(array_column($speseRaw, 'amount')),
+      'tot_entrate'    => (float) array_sum(array_column($entrateRaw, 'amount')),
+      'periodo_inizio' => $inizio->format('Y-m-d'),
+      'periodo_fine'   => $fine->format('Y-m-d'),
+    ];
+  }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // INSERIMENTO SINGOLE TRANSAZIONI
+    // ACCODAMENTO SINGOLE TRANSAZIONI (bulk insert a fine mese, vedi generaMese)
     // ─────────────────────────────────────────────────────────────────────────
 
-    /** @return array{amount: float}|null */
-    private function inserisciSpesa(string $desc, float $importo, Carbon $data, string $categoria): ?array
-    {
-        if ($data->gt($this->oggi)) {
-            return null;
-        }
-
-        Spesa::create([
-            'user_id'     => $this->userId,
-            'category_id' => $this->catId($categoria),
-            'description' => $desc,
-            'amount'      => $importo,
-            'date'        => $data->format('Y-m-d'),
-        ]);
-
-        return ['amount' => $importo];
+  /**
+   * Accoda una spesa al buffer del mese corrente (nessuna query qui).
+   *
+   * NB: bypassando Eloquent::create(), l'evento "created" di SpesaObserver
+   * non scatta e non viene generata una riga di audit trail per questa spesa
+   * (dato demo, non tracciato — vedi nota di consegna).
+   *
+   * @return array{amount: float}|null
+   */
+  private function inserisciSpesa(string $desc, float $importo, Carbon $data, string $categoria): ?array {
+    if ($data->gt($this->oggi)) {
+      return null;
     }
 
-    /** @return array{amount: float}|null */
-    private function inserisciEntrata(string $desc, float $importo, Carbon $data, string $categoria): ?array
-    {
-        if ($data->gt($this->oggi)) {
-            return null;
-        }
+    $this->speseBuffer[] = [
+      'user_id'     => $this->userId,
+      'category_id' => $this->catId($categoria),
+      'description' => $desc,
+      'amount'      => $importo,
+      'date'        => $data->format('Y-m-d'),
+      'created_at'  => $this->nowSql,
+      'updated_at'  => $this->nowSql,
+    ];
 
-        Entrata::create([
-            'user_id'     => $this->userId,
-            'category_id' => $this->catId($categoria),
-            'description' => $desc,
-            'amount'      => $importo,
-            'date'        => $data->format('Y-m-d'),
-        ]);
+    return ['amount' => $importo];
+  }
 
-        return ['amount' => $importo];
+  /**
+   * Accoda un'entrata al buffer del mese corrente (nessuna query qui).
+   *
+   * NB: bypassando Eloquent::create(), l'evento "created" di EntrataObserver
+   * non scatta e non viene generata una riga di audit trail per questa entrata
+   * (dato demo, non tracciato — vedi nota di consegna).
+   *
+   * @return array{amount: float}|null
+   */
+  private function inserisciEntrata(string $desc, float $importo, Carbon $data, string $categoria): ?array {
+    if ($data->gt($this->oggi)) {
+      return null;
     }
+
+    $this->entrateBuffer[] = [
+      'user_id'     => $this->userId,
+      'category_id' => $this->catId($categoria),
+      'description' => $desc,
+      'amount'      => $importo,
+      'date'        => $data->format('Y-m-d'),
+      'created_at'  => $this->nowSql,
+      'updated_at'  => $this->nowSql,
+    ];
+
+    return ['amount' => $importo];
+  }
 
     // ─────────────────────────────────────────────────────────────────────────
     // HELPERS
     // ─────────────────────────────────────────────────────────────────────────
 
-    /** @return Carbon[] */
-    private function giorniVenSab(Carbon $inizio, Carbon $fine): array
-    {
-        $giorni = [];
-        $cursor = $inizio->copy();
+  /** @return Carbon[] */
+  private function giorniVenSab(Carbon $inizio, Carbon $fine): array {
+    $giorni = [];
+    $cursor = $inizio->copy();
 
-        while ($cursor->lte($fine)) {
-            if (in_array($cursor->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY])) {
-                $giorni[] = $cursor->copy();
-            }
-            $cursor->addDay();
-        }
-
-        return $giorni;
+    while ($cursor->lte($fine)) {
+      if (in_array($cursor->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY])) {
+        $giorni[] = $cursor->copy();
+      }
+      $cursor->addDay();
     }
 
-    private function labelMese(Carbon $inizio): string
-    {
-        $nomi = [
-            1 => 'Gennaio',   2 => 'Febbraio', 3 => 'Marzo',    4 => 'Aprile',
-            5 => 'Maggio',    6 => 'Giugno',   7 => 'Luglio',   8 => 'Agosto',
-            9 => 'Settembre', 10 => 'Ottobre', 11 => 'Novembre', 12 => 'Dicembre',
-        ];
+    return $giorni;
+  }
 
-        return $nomi[$inizio->month] . ' ' . $inizio->year;
+  private function labelMese(Carbon $inizio): string {
+    $nomi = [
+      1 => 'Gennaio',
+      2 => 'Febbraio',
+      3 => 'Marzo',
+      4 => 'Aprile',
+      5 => 'Maggio',
+      6 => 'Giugno',
+      7 => 'Luglio',
+      8 => 'Agosto',
+      9 => 'Settembre',
+      10 => 'Ottobre',
+      11 => 'Novembre',
+      12 => 'Dicembre',
+    ];
+
+    return $nomi[$inizio->month] . ' ' . $inizio->year;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // RICORRENZE
+  // ─────────────────────────────────────────────────────────────────────────
+
+  private function creaRicorrenze(): int {
+    // next_occurrence_date sempre futura → il job non le elabora immediatamente
+    $prossimoMese = $this->oggi->copy()->addMonth()->startOfMonth();
+
+    $ricorrenze = [
+      [
+        'description'          => 'Affitto appartamento',
+        'amount'               => rand(self::AFFITTO_MIN, self::AFFITTO_MAX),
+        'type'                 => 'spesa',
+        'category'             => 'Casa',
+        'frequency'            => 'monthly',
+        'interval'             => 1,
+        'start_date'           => '2025-01-01',
+        'next_occurrence_date' => $prossimoMese->copy()->setDay(2)->format('Y-m-d'),
+      ],
+      [
+        'description'          => 'Abbonamento streaming',
+        'amount'               => rand(self::STREAMING_MIN, self::STREAMING_MAX),
+        'type'                 => 'spesa',
+        'category'             => 'Svago',
+        'frequency'            => 'monthly',
+        'interval'             => 1,
+        'start_date'           => '2025-01-01',
+        'next_occurrence_date' => $prossimoMese->copy()->setDay(3)->format('Y-m-d'),
+      ],
+      [
+        'description'          => 'Stipendio mensile',
+        'amount'               => rand(self::STIPENDIO_MIN, self::STIPENDIO_MAX),
+        'type'                 => 'entrata',
+        'category'             => 'Stipendio',
+        'frequency'            => 'monthly',
+        'interval'             => 1,
+        'start_date'           => '2025-01-01',
+        'next_occurrence_date' => $prossimoMese->copy()->setDay(26)->format('Y-m-d'),
+      ],
+      [
+        'description'          => 'Abbonamento palestra',
+        'amount'               => rand(self::PALESTRA_MIN, self::PALESTRA_MAX),
+        'type'                 => 'spesa',
+        'category'             => 'Svago',
+        'frequency'            => 'monthly',
+        'interval'             => 1,
+        'start_date'           => '2025-01-01',
+        'next_occurrence_date' => $prossimoMese->copy()->setDay(5)->format('Y-m-d'),
+      ],
+      [
+        'description'          => 'Bolletta luce e gas',
+        'amount'               => rand(self::LUCE_GAS_MIN, self::LUCE_GAS_MAX),
+        'type'                 => 'spesa',
+        'category'             => 'Utenze',
+        'frequency'            => 'monthly',
+        'interval'             => 2,     // ogni 2 mesi
+        'start_date'           => '2025-02-01',
+        'next_occurrence_date' => $this->prossimaScadenzaBollette()->format('Y-m-d'),
+      ],
+    ];
+
+    // Bulk insert: un'unica query invece di 5 create() singoli. Come per
+    // spese/entrate, questo salta RecurringOperationObserver — nessuna riga
+    // di audit trail per queste ricorrenze demo (vedi nota di consegna).
+    $rows = [];
+    foreach ($ricorrenze as $r) {
+      $rows[] = [
+        'user_id'              => $this->userId,
+        'category_id'          => $this->catId($r['category']),
+        'description'          => $r['description'],
+        'amount'               => $r['amount'],
+        'type'                 => $r['type'],
+        'frequency'            => $r['frequency'],
+        'interval'             => $r['interval'],
+        'start_date'           => $r['start_date'],
+        'next_occurrence_date' => $r['next_occurrence_date'],
+        // DB::raw(): Connection::prepareBindings() converte SEMPRE i bool PHP in
+        // interi (1/0) prima del bind PDO — anche passando qui il letterale `true`,
+        // arriverebbe a Postgres come intero e "is_active" (colonna boolean) lo
+        // rifiuterebbe con 42804. L'espressione raw bypassa il binding e inietta
+        // il literal SQL "true" direttamente, senza passare da PDO::PARAM_INT.
+        'is_active'            => DB::raw('true'),
+        'created_at'           => $this->nowSql,
+        'updated_at'           => $this->nowSql,
+      ];
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // RICORRENZE
-    // ─────────────────────────────────────────────────────────────────────────
+    RecurringOperation::insert($rows);
 
-    private function creaRicorrenze(): int
-    {
-        // next_occurrence_date sempre futura → il job non le elabora immediatamente
-        $prossimoMese = $this->oggi->copy()->addMonth()->startOfMonth();
+    return count($rows);
+  }
 
-        $ricorrenze = [
-            [
-                'description'          => 'Affitto appartamento',
-                'amount'               => rand(750, 950),
-                'type'                 => 'spesa',
-                'category'             => 'Casa',
-                'frequency'            => 'monthly',
-                'interval'             => 1,
-                'start_date'           => '2025-01-01',
-                'next_occurrence_date' => $prossimoMese->copy()->setDay(2)->format('Y-m-d'),
-            ],
-            [
-                'description'          => 'Abbonamento streaming',
-                'amount'               => rand(13, 18),
-                'type'                 => 'spesa',
-                'category'             => 'Svago',
-                'frequency'            => 'monthly',
-                'interval'             => 1,
-                'start_date'           => '2025-01-01',
-                'next_occurrence_date' => $prossimoMese->copy()->setDay(3)->format('Y-m-d'),
-            ],
-            [
-                'description'          => 'Stipendio mensile',
-                'amount'               => rand(1850, 2150),
-                'type'                 => 'entrata',
-                'category'             => 'Stipendio',
-                'frequency'            => 'monthly',
-                'interval'             => 1,
-                'start_date'           => '2025-01-01',
-                'next_occurrence_date' => $prossimoMese->copy()->setDay(26)->format('Y-m-d'),
-            ],
-            [
-                'description'          => 'Abbonamento palestra',
-                'amount'               => rand(30, 50),
-                'type'                 => 'spesa',
-                'category'             => 'Svago',
-                'frequency'            => 'monthly',
-                'interval'             => 1,
-                'start_date'           => '2025-01-01',
-                'next_occurrence_date' => $prossimoMese->copy()->setDay(5)->format('Y-m-d'),
-            ],
-            [
-                'description'          => 'Bolletta luce e gas',
-                'amount'               => rand(55, 130),
-                'type'                 => 'spesa',
-                'category'             => 'Utenze',
-                'frequency'            => 'monthly',
-                'interval'             => 2,     // ogni 2 mesi
-                'start_date'           => '2025-02-01',
-                'next_occurrence_date' => $this->prossimaScadenzaBollette()->format('Y-m-d'),
-            ],
-        ];
+  private function prossimaScadenzaBollette(): Carbon {
+    // Bollette ogni 2 mesi su mesi pari → prossimo mese pari futuro, giorno 15
+    $prossimo = $this->oggi->copy()->addMonth()->startOfMonth();
 
-        foreach ($ricorrenze as $r) {
-            RecurringOperation::create([
-                'user_id'              => $this->userId,
-                'category_id'          => $this->catId($r['category']),
-                'description'          => $r['description'],
-                'amount'               => $r['amount'],
-                'type'                 => $r['type'],
-                'frequency'            => $r['frequency'],
-                'interval'             => $r['interval'],
-                'start_date'           => $r['start_date'],
-                'next_occurrence_date' => $r['next_occurrence_date'],
-                'is_active'            => true,
-            ]);
-        }
-
-        return count($ricorrenze);
+    while ($prossimo->month % 2 !== 0) {
+      $prossimo->addMonth();
     }
 
-    private function prossimaScadenzaBollette(): Carbon
-    {
-        // Bollette ogni 2 mesi su mesi pari → prossimo mese pari futuro, giorno 15
-        $prossimo = $this->oggi->copy()->addMonth()->startOfMonth();
+    return $prossimo->setDay(15);
+  }
 
-        while ($prossimo->month % 2 !== 0) {
-            $prossimo->addMonth();
-        }
+  // ─────────────────────────────────────────────────────────────────────────
+  // FINANCIAL SNAPSHOTS
+  // ─────────────────────────────────────────────────────────────────────────
 
-        return $prossimo->setDay(15);
+  private function creaSnapshot(array $mesi): int {
+    if ($mesi === []) {
+      return 0;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // FINANCIAL SNAPSHOTS
-    // ─────────────────────────────────────────────────────────────────────────
-
-    private function creaSnapshot(array $mesi): int
-    {
-        $count = 0;
-
-        foreach ($mesi as $mese) {
-            FinancialSnapshot::updateOrCreate(
-                [
-                    'user_id'           => $this->userId,
-                    'period_type'       => 'monthly',
-                    'period_start_date' => $mese['periodo_inizio'],
-                ],
-                [
-                    'period_end_date' => $mese['periodo_fine'],
-                    'total_income'    => round($mese['tot_entrate'], 2),
-                    'total_expense'   => round($mese['tot_spese'], 2),
-                    'balance'         => round($mese['tot_entrate'] - $mese['tot_spese'], 2),
-                ]
-            );
-
-            $count++;
-        }
-
-        return $count;
+    // Bulk insert invece di updateOrCreate per riga: pulisciDati() ha già
+    // cancellato tutti gli snapshot di questo utente in questa stessa
+    // transazione, quindi il controllo "esiste già?" di updateOrCreate
+    // (SELECT + INSERT per riga) è ridondante — non può esistere collisione.
+    $rows = [];
+    foreach ($mesi as $mese) {
+      $rows[] = [
+        'user_id'           => $this->userId,
+        'period_type'       => 'monthly',
+        'period_start_date' => $mese['periodo_inizio'],
+        'period_end_date'   => $mese['periodo_fine'],
+        'total_income'      => round($mese['tot_entrate'], 2),
+        'total_expense'     => round($mese['tot_spese'], 2),
+        'balance'           => round($mese['tot_entrate'] - $mese['tot_spese'], 2),
+        'created_at'        => $this->nowSql,
+        'updated_at'        => $this->nowSql,
+      ];
     }
+
+    FinancialSnapshot::insert($rows);
+
+    return count($rows);
+  }
 }
