@@ -92,4 +92,24 @@ class FinancialOverviewController extends Controller {
 
     return response()->json($data);
   }
+
+  /**
+   * ──────────────────────────────────────────────────────
+   * Prossimi pagamenti/incassi (ricorrenze + spese/entrate future)
+   * Route: GET /api/v1/financialoverview/upcoming
+   * ──────────────────────────────────────────────────────
+   */
+  public function upcomingApi(Request $request) {
+    $validated = $request->validate([
+      'days' => 'integer|min:1|max:90|nullable',
+      'limit' => 'integer|min:1|max:20|nullable',
+    ]);
+
+    $days = (int) ($validated['days'] ?? 30);
+    $limit = (int) ($validated['limit'] ?? 8);
+
+    $result = $this->service->getUpcomingEntries($request->user(), $days, $limit);
+
+    return response()->json(['data' => $result]);
+  }
 };

@@ -93,6 +93,81 @@ class FinancialOverviewService {
     return $q->get();
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Prossimi pagamenti/incassi: UNION ALL spese + entrate (future, manuali)
+  // + recurring_operations (prossima occorrenza), ordinati per data, limitati.
+  // ─────────────────────────────────────────────────────────────────────────
+  public function getUpcomingEntries(User $user, int $days = 30, int $limit = 8) {
+    $uid = $user->id;
+
+    $today = Carbon::now('Europe/Rome')->startOfDay();
+    $to = $today->copy()->addDays($days)->endOfDay();
+
+    $spese = DB::table('spese')->select([
+      'id',
+      'user_id',
+      'date',
+      'amount',
+      'category_id',
+      'description',
+      DB::raw("'spesa' as type"),
+      DB::raw("'manuale' as source"),
+    ])->where('user_id', $uid)
+      ->whereDate('date', '>=', $today)
+      ->whereDate('date', '<=', $to);
+
+    $entrate = DB::table('entrate')->select([
+      'id',
+      'user_id',
+      'date',
+      'amount',
+      'category_id',
+      'description',
+      DB::raw("'entrata' as type"),
+      DB::raw("'manuale' as source"),
+    ])->where('user_id', $uid)
+      ->whereDate('date', '>=', $today)
+      ->whereDate('date', '<=', $to);
+
+    $ricorrenze = DB::table('recurring_operations')->select([
+      'id',
+      'user_id',
+      DB::raw('next_occurrence_date as date'),
+      'amount',
+      'category_id',
+      'description',
+      'type',
+      DB::raw("'ricorrenza' as source"),
+    ])->where('user_id', $uid)
+      ->whereRaw('is_active = true')
+      ->whereNotNull('next_occurrence_date')
+      ->whereBetween('next_occurrence_date', [$today, $to]);
+
+    $union = $spese->unionAll($entrate)->unionAll($ricorrenze);
+
+    $q = DB::query()
+      ->fromSub($union, 't')
+      ->leftJoin('categories as c', 'c.id', '=', 't.category_id')
+      ->select(
+        't.id',
+        't.user_id',
+        't.date',
+        't.amount',
+        't.category_id',
+        't.description',
+        't.type',
+        't.source',
+        'c.name  as category_name',
+        'c.type  as category_type',
+        'c.color as category_color',
+        'c.icon  as category_icon'
+      )
+      ->orderBy('t.date', 'asc')
+      ->limit($limit);
+
+    return $q->get();
+  }
+
     // ============================
     // Query methods
     // ============================

@@ -52,31 +52,21 @@ class ReseedDemoDataService {
   private const LUCE_GAS_MIN = 55;
   private const LUCE_GAS_MAX = 130;
 
-  // ── SPESE VARIABILI ── (occorrenze min/max per mese + importi)
-  private const SUPERMERCATO_OCCORRENZE_MIN = 9;
-  private const SUPERMERCATO_OCCORRENZE_MAX = 12;
+  // ── SPESE VARIABILI ── (pool a riempimento — vedi generaMese() — + importi)
+  private const SPESE_PER_MESE = 50;
+  private const ENTRATE_PER_MESE = 10;
   private const SUPERMERCATO_MIN = 55;
   private const SUPERMERCATO_MAX = 120;
   private const CARBURANTE_MIN = 45;
   private const CARBURANTE_MAX = 75;
-  private const RISTORANTE_OCCORRENZE_MIN = 3;
-  private const RISTORANTE_OCCORRENZE_MAX = 6;
   private const RISTORANTE_MIN = 28;
   private const RISTORANTE_MAX = 65;
-  private const BAR_OCCORRENZE_MIN = 6;
-  private const BAR_OCCORRENZE_MAX = 12;
   private const BAR_MIN = 5;
   private const BAR_MAX = 15;
-  private const FARMACIA_PROBABILITA = 40; // %
-  private const FARMACIA_OCCORRENZE_MIN = 3;
-  private const FARMACIA_OCCORRENZE_MAX = 6;
   private const FARMACIA_MIN = 12;
   private const FARMACIA_MAX = 55;
-  private const ONLINE_OCCORRENZE_MIN = 4;
-  private const ONLINE_OCCORRENZE_MAX = 10;
   private const ONLINE_MIN = 20;
   private const ONLINE_MAX = 90;
-  private const CINEMA_PROBABILITA = 50; // %
   private const CINEMA_MIN = 15;
   private const CINEMA_MAX = 40;
 
@@ -86,6 +76,10 @@ class ReseedDemoDataService {
   private const RIMBORSO_PROBABILITA = 15; // %
   private const RIMBORSO_MIN = 80;
   private const RIMBORSO_MAX = 250;
+  private const INVESTIMENTI_MIN = 50;
+  private const INVESTIMENTI_MAX = 300;
+  private const REGALO_MIN = 20;
+  private const REGALO_MAX = 150;
 
   // ── RICORRENZE ──
   // I 5 importi fissi di creaRicorrenze() riusano le costanti sopra (stessi
@@ -328,65 +322,51 @@ class ReseedDemoDataService {
       $speseRaw[] = $this->inserisciSpesa('Bolletta luce e gas', rand(self::LUCE_GAS_MIN, self::LUCE_GAS_MAX), $d, 'Utenze');
     }
 
-    // ── SPESE VARIABILI ───────────────────────────────────────────────────
+    // ── SPESE VARIABILI (riempimento a target) ──────────────────────────────
+    // Pool unico da cui si pesca uniformemente (nessun peso) finché il totale
+    // spese del mese non raggiunge SPESE_PER_MESE. Le fisse sopra sono già
+    // dentro $speseRaw: max(0, ...) evita un target negativo se lo superassero.
+    $poolSpese = [
+      ['Spesa supermercato', 'Alimentazione', self::SUPERMERCATO_MIN, self::SUPERMERCATO_MAX],
+      ['Carburante auto', 'Trasporti', self::CARBURANTE_MIN, self::CARBURANTE_MAX],
+      ['Cena al ristorante', 'Alimentazione', self::RISTORANTE_MIN, self::RISTORANTE_MAX],
+      ['Bar e caffè', 'Alimentazione', self::BAR_MIN, self::BAR_MAX],
+      ['Farmacia', 'Salute', self::FARMACIA_MIN, self::FARMACIA_MAX],
+      ['Acquisti online', 'Altro (Spesa)', self::ONLINE_MIN, self::ONLINE_MAX],
+      ['Cinema e svago', 'Svago', self::CINEMA_MIN, self::CINEMA_MAX],
+    ];
 
-    // Supermercato: 3-4 volte (duplicati di giorno consentiti, unique constraint droppato)
-    $nSuper = rand(self::SUPERMERCATO_OCCORRENZE_MIN, self::SUPERMERCATO_OCCORRENZE_MAX);
-    for ($i = 0; $i < $nSuper; $i++) {
-      if ($d = $giorno(1, $maxGiorno)) {
-        $speseRaw[] = $this->inserisciSpesa('Spesa supermercato', rand(self::SUPERMERCATO_MIN, self::SUPERMERCATO_MAX), $d, 'Alimentazione');
-      }
-    }
-
-    // Carburante: 2 volte
-    for ($i = 1; $i <= 2; $i++) {
-      $desc = $i === 2 ? 'Carburante auto (bis)' : 'Carburante auto';
-      if ($d = $giorno(3, $maxGiorno)) {
-        $speseRaw[] = $this->inserisciSpesa($desc, rand(self::CARBURANTE_MIN, self::CARBURANTE_MAX), $d, 'Trasporti');
-      }
-    }
-
-    // Ristorante: 1-2 volte, preferibilmente venerdì o sabato
+    // Giorni di venerdì/sabato del mese, mescolati: quando il pool pesca "Cena
+    // al ristorante" si usa il prossimo di questi finché non si esauriscono,
+    // poi si ricade su un giorno qualunque — stessa preferenza di prima.
     $venSab = $this->giorniVenSab($inizio, $fine);
     shuffle($venSab);
-    $nRisto = rand(self::RISTORANTE_OCCORRENZE_MIN, self::RISTORANTE_OCCORRENZE_MAX);
-    for ($i = 0; $i < min($nRisto, count($venSab)); $i++) {
-      $speseRaw[] = $this->inserisciSpesa('Cena al ristorante', rand(self::RISTORANTE_MIN, self::RISTORANTE_MAX), $venSab[$i], 'Alimentazione');
-    }
-    // Fallback se nessun ven/sab disponibile nel mese parziale
-    if (empty($venSab) && ($d = $giorno(1, $maxGiorno))) {
-      $speseRaw[] = $this->inserisciSpesa('Cena al ristorante', rand(self::RISTORANTE_MIN, self::RISTORANTE_MAX), $d, 'Alimentazione');
-    }
+    $venSabIndex = 0;
 
-    // Bar e caffè: 2-4 volte
-    $nBar = rand(self::BAR_OCCORRENZE_MIN, self::BAR_OCCORRENZE_MAX);
-    for ($i = 0; $i < $nBar; $i++) {
-      if ($d = $giorno(1, $maxGiorno)) {
-        $speseRaw[] = $this->inserisciSpesa('Bar e caffè', rand(self::BAR_MIN, self::BAR_MAX), $d, 'Alimentazione');
+    // Conta le estrazioni per descrizione-base, azzerato ad ogni generaMese()
+    // (variabile locale, quindi già "fresca" ad ogni chiamata). Dalla 2ª
+    // estrazione della stessa voce in poi, la descrizione viene numerata.
+    $contatoriSpesePool = [];
+
+    $restantiSpese = max(0, self::SPESE_PER_MESE - count($speseRaw));
+    for ($i = 0; $i < $restantiSpese; $i++) {
+      [$desc, $categoria, $min, $max] = $poolSpese[array_rand($poolSpese)];
+
+      if ($desc === 'Cena al ristorante' && $venSabIndex < count($venSab)) {
+        $d = $venSab[$venSabIndex];
+        $venSabIndex++;
+      } else {
+        $d = $giorno(1, $maxGiorno);
       }
-    }
 
-    // Farmacia: 1-2 volte nel 40% dei mesi
-    if (rand(1, 100) <= self::FARMACIA_PROBABILITA) {
-      $nFarmacia = rand(self::FARMACIA_OCCORRENZE_MIN, self::FARMACIA_OCCORRENZE_MAX);
-      for ($i = 0; $i < $nFarmacia; $i++) {
-        if ($d = $giorno(1, $maxGiorno)) {
-          $speseRaw[] = $this->inserisciSpesa('Farmacia', rand(self::FARMACIA_MIN, self::FARMACIA_MAX), $d, 'Salute');
-        }
+      if ($d) {
+        $contatoriSpesePool[$desc] = ($contatoriSpesePool[$desc] ?? 0) + 1;
+        $descEtichettata = $contatoriSpesePool[$desc] > 1
+          ? "{$desc} ({$contatoriSpesePool[$desc]})"
+          : $desc;
+
+        $speseRaw[] = $this->inserisciSpesa($descEtichettata, rand($min, $max), $d, $categoria);
       }
-    }
-
-    // Acquisti online: 1-2 volte
-    $nOnline = rand(self::ONLINE_OCCORRENZE_MIN, self::ONLINE_OCCORRENZE_MAX);
-    for ($i = 0; $i < $nOnline; $i++) {
-      if ($d = $giorno(1, $maxGiorno)) {
-        $speseRaw[] = $this->inserisciSpesa('Acquisti online', rand(self::ONLINE_MIN, self::ONLINE_MAX), $d, 'Altro (Spesa)');
-      }
-    }
-
-    // Cinema/svago: opzionale (50%)
-    if (rand(1, 100) <= self::CINEMA_PROBABILITA && ($d = $giorno(1, $maxGiorno))) {
-      $speseRaw[] = $this->inserisciSpesa('Cinema e svago', rand(self::CINEMA_MIN, self::CINEMA_MAX), $d, 'Svago');
     }
 
     // ── ENTRATE ───────────────────────────────────────────────────────────
@@ -399,6 +379,31 @@ class ReseedDemoDataService {
     // Rimborso spese lavoro: ~15% dei mesi
     if (rand(1, 100) <= self::RIMBORSO_PROBABILITA && ($d = $giorno(5, 25))) {
       $entrateRaw[] = $this->inserisciEntrata('Rimborso spese lavoro', rand(self::RIMBORSO_MIN, self::RIMBORSO_MAX), $d, 'Altro (Entrata)');
+    }
+
+    // ── ENTRATE (riempimento a target) ──────────────────────────────────────
+    // Pool da cui si pesca uniformemente (stesso schema del pool spese) finché
+    // il totale entrate del mese non raggiunge ENTRATE_PER_MESE.
+    $poolEntrate = [
+      ['Rimborso spese lavoro', 'Altro (Entrata)', self::RIMBORSO_MIN, self::RIMBORSO_MAX],
+      ['Dividendi investimento', 'Investimenti', self::INVESTIMENTI_MIN, self::INVESTIMENTI_MAX],
+      ['Regalo ricevuto', 'Regalo', self::REGALO_MIN, self::REGALO_MAX],
+    ];
+
+    // Stesso schema di numerazione del pool spese, contatore indipendente.
+    $contatoriEntratePool = [];
+
+    $restantiEntrate = max(0, self::ENTRATE_PER_MESE - count($entrateRaw));
+    for ($i = 0; $i < $restantiEntrate; $i++) {
+      [$desc, $categoria, $min, $max] = $poolEntrate[array_rand($poolEntrate)];
+      if ($d = $giorno(1, $maxGiorno)) {
+        $contatoriEntratePool[$desc] = ($contatoriEntratePool[$desc] ?? 0) + 1;
+        $descEtichettata = $contatoriEntratePool[$desc] > 1
+          ? "{$desc} ({$contatoriEntratePool[$desc]})"
+          : $desc;
+
+        $entrateRaw[] = $this->inserisciEntrata($descEtichettata, rand($min, $max), $d, $categoria);
+      }
     }
 
     // ── AGGREGAZIONE ──────────────────────────────────────────────────────

@@ -4,7 +4,7 @@ import HeroCarousel from "./hero/HeroCarousel";
 import TransazioniCard from "./cards/TransazioniCard";
 import RicorrentiCard from "./cards/RicorrentiCard";
 import CategorieCard from "./cards/CategorieCard";
-import ProssimoPagamentoCard from "./cards/ProssimoPagamentoCard";
+import ProssimiPagamentiCard from "./cards/ProssimiPagamentiCard";
 import PanoramicaCard from "./cards/PanoramicaCard";
 import ChartsCarousel from "./cards/ChartsCarousel";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
@@ -37,7 +37,7 @@ export default function HomePage() {
                 {/* Row 2 */}
                 <div className="grid grid-cols-2 gap-4 items-stretch">
                     <RicorrentiCard />
-                    <ProssimoPagamentoCard />
+                    <ProssimiPagamentiCard />
                 </div>
                 {/* Row 3 */}
                 <CategorieCard />
@@ -50,7 +50,7 @@ export default function HomePage() {
                 <TransazioniCard />
                 <RicorrentiCard />
                 <CategorieCard />
-                <ProssimoPagamentoCard />
+                <ProssimiPagamentiCard />
             </div>
             <div className="hidden lg:block w-full">
                 <ChartsCarousel />
