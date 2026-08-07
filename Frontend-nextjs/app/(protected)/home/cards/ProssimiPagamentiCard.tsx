@@ -20,9 +20,6 @@ import { eur } from "@/utils/formatCurrency";
 const LIMIT = 8;
 
 // ── Formattazione date (parseYMD, no shift di fuso) ────────
-function formatFull(dateStr: string): string {
-    return parseYMD(dateStr).toLocaleDateString("it-IT", { day: "2-digit", month: "long", year: "numeric" });
-}
 function formatShort(dateStr: string): string {
     return parseYMD(dateStr).toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
 }
@@ -110,15 +107,21 @@ export default function ProssimiPagamentiCard() {
         );
     }
 
-    // ── Dati formattati (primo elemento + resto compatto) ──
+    // ── Dati formattati (primo elemento + resto compatto, max 3 visibili) ──
     const [primo, ...resto] = entries;
+    const restoVisibile = resto.slice(0, 3);
+    const restoNascosti = resto.length - restoVisibile.length;
 
     // ── Render ─────────────────────────────────────────
     return (
         <DashboardCard
             icon={<CalendarCheck size={20} />}
             title="Prossimi pagamenti"
-            value={formatFull(primo.date)}
+            value={
+                <span className={importoClass(primo.type)}>
+                    {simbolo(primo.type)} {eur(primo.amount)}
+                </span>
+            }
             href="/ricorrenti"
             footer={
                 <span className="group inline-flex items-center gap-1 text-primary font-medium">
@@ -127,30 +130,31 @@ export default function ProssimiPagamentiCard() {
                 </span>
             }
         >
-            {/* Primo elemento: descrizione + importo (data già nel value grande) */}
-            <div className="flex items-center gap-1">
-                <b className="truncate" title={primo.description}>
-                    {primo.description || "—"}
-                </b>
-                {primo.source === "ricorrenza" && (
-                    <Repeat size={12} className="text-primary shrink-0" aria-label="Ricorrente" />
-                )}
-            </div>
-            <div className={`font-semibold ${importoClass(primo.type)}`}>
-                {simbolo(primo.type)} {eur(primo.amount)}
-            </div>
-            {primo.category_name && <div className="opacity-70">{primo.category_name}</div>}
+            <div className="flex flex-col gap-3">
+                {/* Primo elemento: descrizione + icona ricorrente + data breve (importo già nel value grande) */}
+                <div className="flex items-center gap-1 text-xs text-gray-400 font-normal">
+                    <span className="truncate" title={primo.description}>
+                        {primo.description || "—"}
+                    </span>
+                    {primo.source === "ricorrenza" && (
+                        <Repeat size={12} className="text-primary shrink-0" aria-label="Ricorrente" />
+                    )}
+                    <span className="shrink-0">· {formatShort(primo.date)}</span>
+                </div>
 
-            {/* Resto della lista: righe compatte */}
-            {resto.length > 0 && (
-                <ul className="mt-2 space-y-1">
-                    {resto.map((e) => (
-                        <li key={`${e.source}-${e.type}-${e.id}`}>
-                            <UpcomingRow entry={e} />
-                        </li>
-                    ))}
-                </ul>
-            )}
+                {/* Resto della lista: righe compatte, max 3 visibili */}
+                {restoVisibile.length > 0 && (
+                    <ul className="flex flex-col gap-1">
+                        {restoVisibile.map((e) => (
+                            <li key={`${e.source}-${e.type}-${e.id}`}>
+                                <UpcomingRow entry={e} />
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                {restoNascosti > 0 && <span className="text-[10px] text-gray-400">+{restoNascosti} altri</span>}
+            </div>
         </DashboardCard>
     );
 }
@@ -184,6 +188,8 @@ function UpcomingRow({ entry }: { entry: UpcomingEntry }) {
 // ----------------------------------------------------------------------
 // Descrizione file:
 // Lista compatta dei prossimi pagamenti/incassi (ricorrenze + spese/
-// entrate manuali future). Primo elemento in evidenza (stile `value`
-// grande di DashboardCard), resto in righe compatte con bordo colorato.
+// entrate manuali future). Value grande = importo del pagamento più
+// imminente (colorato per segno); sotto, descrizione + icona ricorrente
+// + data breve. Resto in righe compatte con bordo colorato, max 3
+// visibili con indicatore "+N altri" se ce ne sono di più.
 // ----------------------------------------------------------------------
