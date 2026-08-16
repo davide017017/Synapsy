@@ -201,7 +201,7 @@ export default function LogoElectricGlow({
                     priority
                     className={`
                         relative z-10
-                        h-8 w-auto
+                        h-9 w-auto
                         transition-transform duration-100
                         drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.35)]
                         ${isShocking ? "logo-electric-shake" : ""}

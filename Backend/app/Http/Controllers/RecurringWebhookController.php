@@ -48,7 +48,7 @@ class RecurringWebhookController extends Controller
         }
 
         // ── Trova le regole scadute ────────────────────────────────────────
-        $rules = RecurringOperation::where('is_active', true)
+        $rules = RecurringOperation::whereRaw('is_active = true')
             ->where('next_occurrence_date', '<=', Carbon::today()->endOfDay())
             ->get();
 

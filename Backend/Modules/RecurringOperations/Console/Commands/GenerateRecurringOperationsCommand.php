@@ -36,7 +36,7 @@ class GenerateRecurringOperationsCommand extends Command
 
         $this->info('🔍 Cerco regole ricorrenti scadute...');
 
-        $rulesToProcess = RecurringOperation::where('is_active', true)
+        $rulesToProcess = RecurringOperation::whereRaw('is_active = true')
             ->where('next_occurrence_date', '<=', Carbon::today()->endOfDay())
             ->get();
 

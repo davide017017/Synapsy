@@ -25,7 +25,7 @@ class RecurringCatchUpController extends Controller
         $today = Carbon::today();
 
         $rules = RecurringOperation::where('user_id', $user->id)
-            ->where('is_active', true)
+            ->whereRaw('is_active = true')
             ->where('next_occurrence_date', '<=', $today)
             ->where(function ($q) use ($today) {
                 $q->whereNull('end_date')

@@ -86,10 +86,10 @@ export default function Header() {
             >
                 {/* LOGO CENTRALE */}
                 {/* Logo centrato nella pagina */}
-                <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-[35%]">
+                <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-[20%]">
                     <LogoElectricGlow
-                        size={32}
-                        glowSize={30}
+                        size={38}
+                        glowSize={36}
                         spinSpeed="9s"
                         shockMinDelay={1200}
                         shockMaxDelay={3500}

@@ -113,7 +113,7 @@ class FinancialOverviewService {
       DB::raw("'spesa' as type"),
       DB::raw("'manuale' as source"),
     ])->where('user_id', $uid)
-      ->whereDate('date', '>=', $today)
+      ->whereDate('date', '>', $today)
       ->whereDate('date', '<=', $to);
 
     $entrate = DB::table('entrate')->select([
@@ -126,7 +126,7 @@ class FinancialOverviewService {
       DB::raw("'entrata' as type"),
       DB::raw("'manuale' as source"),
     ])->where('user_id', $uid)
-      ->whereDate('date', '>=', $today)
+      ->whereDate('date', '>', $today)
       ->whereDate('date', '<=', $to);
 
     $ricorrenze = DB::table('recurring_operations')->select([
@@ -141,7 +141,7 @@ class FinancialOverviewService {
     ])->where('user_id', $uid)
       ->whereRaw('is_active = true')
       ->whereNotNull('next_occurrence_date')
-      ->whereBetween('next_occurrence_date', [$today, $to]);
+      ->whereBetween('next_occurrence_date', [$today->copy()->addDay(), $to]);
 
     $union = $spese->unionAll($entrate)->unionAll($ricorrenze);
 
