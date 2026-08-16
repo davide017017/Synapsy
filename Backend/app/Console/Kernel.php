@@ -14,11 +14,9 @@ class Kernel extends ConsoleKernel {
   protected function schedule(Schedule $schedule): void {
     // =========================================================================
     // Modulo RecurringOperations – Generazione ricorrenze
+    // Rimosso: dead code su Render free tier, nessun worker queue attivo.
+    // Generazione ora via webhook cron-job.org + catch-up al login.
     // =========================================================================
-    $schedule->command('custom:generate-recurring-operations')
-      ->dailyAt('00:00')
-      ->withoutOverlapping()
-      ->appendOutputTo(storage_path('logs/recurring_generate.log'));
 
     // =========================================================================
     // Modulo FinancialOverview – Snapshot Giornaliero

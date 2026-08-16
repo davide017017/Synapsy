@@ -11,127 +11,132 @@ use Modules\Entrate\Models\Entrata;
 use Modules\RecurringOperations\Models\RecurringOperation;
 use Modules\Spese\Models\Spesa;
 
-class RecurringCatchUpController extends Controller
-{
-    public function catchUp(): JsonResponse
-    {
-        $user = auth('sanctum')->user();
+class RecurringCatchUpController extends Controller {
+  public function catchUp(): JsonResponse {
+    $user = auth('sanctum')->user();
 
-        $processed = 0;
-        $inserted  = 0;
-        $skipped   = 0;
-        $errors    = 0;
+    $processed = 0;
+    $inserted  = 0;
+    $skipped   = 0;
+    $errors    = 0;
 
-        $today = Carbon::today();
+    $today = Carbon::today();
 
-        $rules = RecurringOperation::where('user_id', $user->id)
-            ->whereRaw('is_active = true')
-            ->where('next_occurrence_date', '<=', $today)
-            ->where(function ($q) use ($today) {
-                $q->whereNull('end_date')
-                  ->orWhere('end_date', '>=', $today);
-            })
-            ->get();
+    $rules = RecurringOperation::where('user_id', $user->id)
+      ->whereRaw('is_active = true')
+      ->where('next_occurrence_date', '<=', $today)
+      ->where(function ($q) use ($today) {
+        $q->whereNull('end_date')
+          ->orWhere('end_date', '>=', $today);
+      })
+      ->get();
 
-        foreach ($rules as $rule) {
-            $processed++;
+    foreach ($rules as $rule) {
+      $processed++;
 
-            try {
-                $currentDate = Carbon::parse($rule->next_occurrence_date)->startOfDay();
-                $endDate     = $rule->end_date
-                    ? Carbon::parse($rule->end_date)->endOfDay()
-                    : null;
+      try {
+        $currentDate = Carbon::parse($rule->next_occurrence_date)->startOfDay();
+        $endDate     = $rule->end_date
+          ? Carbon::parse($rule->end_date)->endOfDay()
+          : null;
 
-                while (
-                    $currentDate->lessThanOrEqualTo($today->copy()->endOfDay()) &&
-                    ($endDate === null || $currentDate->lessThanOrEqualTo($endDate))
-                ) {
-                    if ($this->isDuplicate($rule, $currentDate)) {
-                        $skipped++;
-                    } else {
-                        $this->insertTransaction($rule, $currentDate);
-                        $inserted++;
-                    }
+        while (
+          $currentDate->lessThanOrEqualTo($today->copy()->endOfDay()) &&
+          ($endDate === null || $currentDate->lessThanOrEqualTo($endDate))
+        ) {
+          $this->insertTransaction($rule, $currentDate);
+          $inserted++;
 
-                    $currentDate = $this->calculateNextOccurrence(
-                        $currentDate,
-                        $rule->frequency,
-                        $rule->interval
-                    );
-                }
-
-                $rule->next_occurrence_date = $currentDate->startOfDay();
-
-                if ($endDate && $rule->next_occurrence_date->greaterThan($endDate)) {
-                    $rule->is_active = false;
-                }
-
-                $rule->save();
-
-            } catch (\Throwable $e) {
-                $errors++;
-                // Resetta la connessione per evitare che il 25P02 si propaghi
-                try { DB::statement('ROLLBACK'); } catch (\Throwable $_) {}
-                continue;
-            }
+          $currentDate = $this->calculateNextOccurrence(
+            $currentDate,
+            $rule->frequency,
+            $rule->interval
+          );
         }
 
-        return response()->json([
-            'success'   => true,
-            'processed' => $processed,
-            'inserted'  => $inserted,
-            'skipped'   => $skipped,
-            'errors'    => $errors,
-        ]);
+        $rule->next_occurrence_date = $currentDate->startOfDay();
+
+        if ($endDate && $rule->next_occurrence_date->greaterThan($endDate)) {
+          $rule->is_active = false;
+        }
+
+        $rule->save();
+      } catch (\Throwable $e) {
+        $errors++;
+        // Resetta la connessione per evitare che il 25P02 si propaghi
+        try {
+          DB::statement('ROLLBACK');
+        } catch (\Throwable $_) {
+        }
+        continue;
+      }
     }
 
-    // ============================
-    // Controllo duplicati
-    // Usa lo stesso unique constraint delle tabelle: [user_id, date, description]
-    // ============================
-    private function isDuplicate(RecurringOperation $rule, Carbon $date): bool
-    {
-        $model = $rule->type === 'entrata' ? Entrata::class : Spesa::class;
+    return response()->json([
+      'success'   => true,
+      'processed' => $processed,
+      'inserted'  => $inserted,
+      'skipped'   => $skipped,
+      'errors'    => $errors,
+    ]);
+  }
 
-        return $model::where('user_id', $rule->user_id)
-            ->whereDate('date', $date->toDateString())
-            ->where('description', $rule->description)
-            ->exists();
+  // ============================
+  // Risoluzione descrizione univoca
+  // (vincolo unico [user_id, date, description] su spese/entrate: in caso
+  // di collisione, aggiunge un suffisso incrementale "(2)", "(3)", ecc.
+  // finché non trova un valore libero, invece di far fallire l'insert)
+  // ============================
+  private function resolveUniqueDescription(RecurringOperation $rule, Carbon $date): string {
+    $model = $rule->type === 'entrata' ? Entrata::class : Spesa::class;
+
+    $candidate = $rule->description;
+    $suffix = 2;
+
+    while (
+      $model::where('user_id', $rule->user_id)
+      ->whereDate('date', $date->toDateString())
+      ->where('description', $candidate)
+      ->exists()
+    ) {
+      $candidate = "{$rule->description} ({$suffix})";
+      $suffix++;
     }
 
-    // ============================
-    // Insert — stessi campi e formato del Job ProcessRecurringOperation
-    // ============================
-    private function insertTransaction(RecurringOperation $rule, Carbon $date): void
-    {
-        $data = [
-            'user_id'     => $rule->user_id,
-            'amount'      => $rule->amount,
-            'date'        => $date,
-            'description' => $rule->description,
-            'category_id' => $rule->category_id,
-            'notes'       => 'Generata da regola ricorrente ID: ' . $rule->id
-                             . ($rule->notes ? " - {$rule->notes}" : ''),
-        ];
+    return $candidate;
+  }
 
-        match ($rule->type) {
-            'entrata' => Entrata::create($data),
-            'spesa'   => Spesa::create($data),
-            default   => throw new \InvalidArgumentException("Tipo non valido: {$rule->type}"),
-        };
-    }
+  // ============================
+  // Insert — stessi campi e formato del Job ProcessRecurringOperation
+  // ============================
+  private function insertTransaction(RecurringOperation $rule, Carbon $date): void {
+    $data = [
+      'user_id'     => $rule->user_id,
+      'amount'      => $rule->amount,
+      'date'        => $date,
+      'description' => $this->resolveUniqueDescription($rule, $date),
+      'category_id' => $rule->category_id,
+      'notes'       => 'Generata da regola ricorrente ID: ' . $rule->id
+        . ($rule->notes ? " - {$rule->notes}" : ''),
+    ];
 
-    // ============================
-    // Calcolo prossima occorrenza — identico al Job (monthly usa NoOverflow)
-    // ============================
-    private function calculateNextOccurrence(Carbon $date, string $frequency, int $interval): Carbon
-    {
-        return match ($frequency) {
-            'daily'    => $date->copy()->addDays($interval)->startOfDay(),
-            'weekly'   => $date->copy()->addWeeks($interval)->startOfDay(),
-            'monthly'  => $date->copy()->addMonthsNoOverflow($interval)->startOfDay(),
-            'annually' => $date->copy()->addYears($interval)->startOfDay(),
-            default    => throw new \InvalidArgumentException("Frequenza non valida: {$frequency}"),
-        };
-    }
+    match ($rule->type) {
+      'entrata' => Entrata::create($data),
+      'spesa'   => Spesa::create($data),
+      default   => throw new \InvalidArgumentException("Tipo non valido: {$rule->type}"),
+    };
+  }
+
+  // ============================
+  // Calcolo prossima occorrenza — identico al Job (monthly usa NoOverflow)
+  // ============================
+  private function calculateNextOccurrence(Carbon $date, string $frequency, int $interval): Carbon {
+    return match ($frequency) {
+      'daily'    => $date->copy()->addDays($interval)->startOfDay(),
+      'weekly'   => $date->copy()->addWeeks($interval)->startOfDay(),
+      'monthly'  => $date->copy()->addMonthsNoOverflow($interval)->startOfDay(),
+      'annually' => $date->copy()->addYears($interval)->startOfDay(),
+      default    => throw new \InvalidArgumentException("Frequenza non valida: {$frequency}"),
+    };
+  }
 }

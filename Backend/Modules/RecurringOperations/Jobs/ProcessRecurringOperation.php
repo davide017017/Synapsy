@@ -88,7 +88,7 @@ class ProcessRecurringOperation implements ShouldQueue
             'user_id' => $rule->user_id,
             'amount' => $rule->amount,
             'date' => $date,
-            'description' => $rule->description,
+            'description' => $this->resolveUniqueDescription($rule, $date),
             'category_id' => $rule->category_id,
             'notes' => "Generata da regola ricorrente ID: {$rule->id}".($rule->notes ? " - {$rule->notes}" : ''),
         ]);
@@ -105,12 +105,38 @@ class ProcessRecurringOperation implements ShouldQueue
             'user_id' => $rule->user_id,
             'amount' => $rule->amount,
             'date' => $date,
-            'description' => $rule->description,
+            'description' => $this->resolveUniqueDescription($rule, $date),
             'category_id' => $rule->category_id,
             'notes' => "Generata da regola ricorrente ID: {$rule->id}".($rule->notes ? " - {$rule->notes}" : ''),
         ]);
 
         Log::info("Spesa generata da regola ID {$rule->id} per {$date->toDateString()}");
+    }
+
+    // ============================
+    // Risoluzione descrizione univoca
+    // (vincolo unico [user_id, date, description] su spese/entrate: in caso
+    // di collisione, aggiunge un suffisso incrementale "(2)", "(3)", ecc.
+    // finché non trova un valore libero, invece di far fallire l'insert)
+    // ============================
+    protected function resolveUniqueDescription(RecurringOperation $rule, Carbon $date): string
+    {
+        $model = $rule->type === 'entrata' ? Entrata::class : Spesa::class;
+
+        $candidate = $rule->description;
+        $suffix = 2;
+
+        while (
+            $model::where('user_id', $rule->user_id)
+                ->whereDate('date', $date->toDateString())
+                ->where('description', $candidate)
+                ->exists()
+        ) {
+            $candidate = "{$rule->description} ({$suffix})";
+            $suffix++;
+        }
+
+        return $candidate;
     }
 
     // ============================
