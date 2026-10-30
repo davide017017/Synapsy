@@ -5,7 +5,8 @@
 // ║ - Bottone avatar + ≡ (toggle) nell'header                    ║
 // ║ - Pannello sotto l'header, apertura a cerchio dall'avatar    ║
 // ║   (clip-path), chiusura al contrario                         ║
-// ║ - Lista a nodi: Utente · Sessione · Logout (stile synapse)   ║
+// ║ - Lista a nodi: Utente · [info Sessione] · Logout            ║
+// ║   (Sessione: solo testo, countdown token, niente nodo)       ║
 // ║ - Logout a due tap: CONFERMA? (4s) → USCITA…                 ║
 // ║ - A11y: menu/menuitem, focus trap, frecce, ESC, focus torna  ║
 // ║ - Reduced motion: solo dissolvenza                           ║
@@ -15,7 +16,8 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LogOut, Menu, ShieldCheck, UserCircle } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { LogOut, Menu, UserCircle } from "lucide-react";
 import { useOnline } from "@/hooks/useOnline";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { trapTab } from "@/utils/focusTrap";
@@ -33,9 +35,28 @@ const PULSE_MS = 450;
 const CONFIRM_MS = 4000;
 const NODE_BG = "#0c1c16"; // ~ tono del gradiente all'altezza della lista
 
+const SESSION_ID = "user-menu-session";
+const TOKEN_WARN_MIN = 2;
+const WARN = "#f5a524";
+
+// Slot sulla linea: Utente (0) · blocco Sessione (1, solo separatore, niente nodo) · Logout (2)
 const UTENTE = 0;
-const SESSIONE = 1;
 const LOGOUT = 2;
+
+// ════════════════════════════════
+// Minuti alla scadenza del token backend (session.tokenExpiresAt, epoch s).
+// Ricalcolato ogni minuto; null se il dato non c'è.
+// ════════════════════════════════
+function useTokenMinutesLeft(expiresAt?: number) {
+    const [now, setNow] = useState(() => Date.now());
+    useEffect(() => {
+        setNow(Date.now());
+        const id = setInterval(() => setNow(Date.now()), 60_000);
+        return () => clearInterval(id);
+    }, [expiresAt]);
+    if (!expiresAt) return null;
+    return Math.max(0, Math.ceil((expiresAt * 1000 - now) / 60_000));
+}
 
 type Props = {
     open: boolean;
@@ -73,6 +94,8 @@ export default function UserMenu({ open, onToggle, onClose, username, avatarUrl,
     const router = useRouter();
     const online = useOnline();
     const reducedMotion = usePrefersReducedMotion();
+    const { data: session } = useSession();
+    const tokenMin = useTokenMinutesLeft(session?.tokenExpiresAt);
 
     const panelRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -152,10 +175,6 @@ export default function UserMenu({ open, onToggle, onClose, username, avatarUrl,
                 router.push("/profilo");
                 onClose();
             });
-        } else if (index === SESSIONE) {
-            // Nessuna azione: l'impulso ci viaggia sopra e annulla la conferma
-            resetConfirm();
-            travel(SESSIONE);
         } else if (confirm) {
             // Secondo tap entro 4s: logout reale
             clearTimeout(confirmTimer.current);
@@ -261,6 +280,7 @@ export default function UserMenu({ open, onToggle, onClose, username, avatarUrl,
                 ref={panelRef}
                 role="menu"
                 aria-label="Menu utente"
+                aria-describedby={SESSION_ID}
                 aria-hidden={!open}
                 onKeyDown={onKeyDown}
                 onTransitionEnd={onPanelTransitionEnd}
@@ -312,18 +332,29 @@ export default function UserMenu({ open, onToggle, onClose, username, avatarUrl,
                         `Profilo${username ? ` di ${username}` : ""}`,
                     )}
 
-                    {/* Sessione → nessuna azione */}
-                    {item(
-                        SESSIONE,
-                        <span className="flex items-center gap-1.5 text-[11px] uppercase tracking-[.14em]">
-                            <ShieldCheck size={16} strokeWidth={1.8} className="shrink-0" />
-                            Sessione
-                        </span>,
-                        <>
-                            <span style={{ color: online ? SYN.green : SYN.offline }}>●</span> {online ? "online" : "offline"}
-                        </>,
-                        `Sessione, ${online ? "online" : "offline"}`,
-                    )}
+                    {/* Sessione: blocco informativo, separatore tra Utente e Logout
+                        (non menuitem, niente focus, niente nodo; letto via aria-describedby) */}
+                    <li
+                        role="none"
+                        className="flex flex-col justify-center whitespace-nowrap text-[9px] leading-relaxed"
+                        style={{ height: RAIL.itemH, color: SYN.grey, ...synapseEnter(motion, 250, { blurPx: 5 }) }}
+                    >
+                        <span id={SESSION_ID} className="flex flex-col opacity-80">
+                            <span className="uppercase tracking-[.14em]">⊙ Sessione</span>
+                            <span>
+                                <span style={{ color: online ? SYN.green : SYN.offline }}>●</span>{" "}
+                                {online ? "online" : "offline"}
+                                {tokenMin !== null && (
+                                    <>
+                                        {" · "}
+                                        <span style={tokenMin < TOKEN_WARN_MIN ? { color: WARN } : undefined}>
+                                            {tokenMin === 0 ? "token scaduto" : `token scade tra ${tokenMin}min`}
+                                        </span>
+                                    </>
+                                )}
+                            </span>
+                        </span>
+                    </li>
 
                     {/* Logout a due tap */}
                     {item(

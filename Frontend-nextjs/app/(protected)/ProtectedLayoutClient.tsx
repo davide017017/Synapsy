@@ -65,8 +65,8 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
     // altrimenti l'app spostata non viene dipinta (resta visibile solo lo sfondo del menu).
     const depthStyle: React.CSSProperties = {
         transform: isMobileOpen
-            ? "perspective(1200px) translateX(232px) scale(.78) rotateY(-6deg)"
-            : "perspective(1200px) translateX(0) scale(1) rotateY(0)",
+            ? "perspective(1200px) translateX(232px) scale(.78)"
+            : "perspective(1200px) translateX(0) scale(1)",
         transformOrigin: "left center",
         backfaceVisibility: "hidden",
         WebkitBackfaceVisibility: "hidden",
