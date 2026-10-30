@@ -1,44 +1,20 @@
 "use client";
 
 // ╔══════════════════════════════════════════════╗
-// ║            Sidebar Component                ║
+// ║       Sidebar Component (solo desktop)      ║
+// ║  Mobile → MobileMenu.tsx (Depth + Synapse)  ║
 // ╚══════════════════════════════════════════════╝
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-    Home,
-    BarChart,
-    CalendarCheck,
-    Folder,
-    User,
-    Menu,
-    X,
-    ChevronLeft,
-    ChevronRight,
-    Sun,
-    Moon,
-    ListOrdered,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 import { useThemeContext } from "@/context/ThemeContext";
-import { useState, useEffect } from "react";
 
 import BetaBadge from "@/app/components/BetaBadge";
 import LegalLinks from "@/app/components/legal/LegalLinks";
 import { themeMeta } from "@/lib/themeUtils";
-
-// ────────────────────────────────
-// Configurazione navigazione
-// ────────────────────────────────
-const navItems = [
-    { href: "/", label: "Home", icon: <Home size={18} /> },
-    { href: "/panoramica", label: "Panoramica", icon: <BarChart size={18} /> },
-    { href: "/transazioni", label: "Transazioni", icon: <ListOrdered size={18} /> },
-    { href: "/ricorrenti", label: "Ricorrenti", icon: <CalendarCheck size={18} /> },
-    { href: "/categorie", label: "Categorie", icon: <Folder size={18} /> },
-    { href: "/profilo", label: "Profilo", icon: <User size={18} /> },
-];
+import { navItems } from "./navItems";
 
 // ────────────────────────────────
 // Temi custom opzionali
@@ -51,66 +27,17 @@ const extraThemes = ["emerald", "solarized"];
 export default function Sidebar() {
     // ========== Stato sidebar ==========
     const { isCollapsed, toggleSidebar } = useSidebar();
-    const [isOpenMobile, setIsOpenMobile] = useState(false);
-
-    // ─────────── LISTENER: chiusura da header ───────────
-    useEffect(() => {
-        const handleCloseSidebar = () => setIsOpenMobile(false);
-
-        window.addEventListener("closeSidebarMobile", handleCloseSidebar);
-        return () => window.removeEventListener("closeSidebarMobile", handleCloseSidebar);
-    }, []);
 
     const pathname = usePathname();
 
     // ========== Gestione temi ==========
     const { theme, setTheme } = useThemeContext();
-    const isDark = theme === "dark";
-
-    // ========== Helper ==========
-    const toggleMobile = () => {
-        const next = !isOpenMobile;
-
-        // se la sto aprendo → dico all'header di chiudere il suo menu
-        if (next) {
-            window.dispatchEvent(new Event("closeHeaderUserMenu"));
-        }
-
-        setIsOpenMobile(next);
-    };
 
     // ────────────────────────────────
     //           RENDER
     // ────────────────────────────────
     return (
         <>
-            {/* ========== Burger mobile ========== */}
-            <button
-                className="
-                    fixed left-4 z-50 md:hidden
-                    p-2 rounded-xl
-                    bg-black/50
-                    border border-primary/40
-                    text-primary
-                    shadow-[0_0_18px_rgba(20,184,138,0.25)]
-                    backdrop-blur-md
-                    transition-all duration-200
-                    hover:bg-primary/10
-                    active:scale-95
-                "
-                style={{ top: "calc(env(safe-area-inset-top) + 12px)" }}
-                onClick={toggleMobile}
-            >
-                {isOpenMobile ? <X size={20} /> : <Menu size={20} />}
-            </button>
-            {/* 🔹 OVERLAY MOBILE: click fuori chiude la sidebar */}
-            {isOpenMobile && (
-                <div
-                    className="fixed inset-0 z-10 bg-black/40 backdrop-blur-sm md:hidden"
-                    onClick={() => setIsOpenMobile(false)}
-                />
-            )}
-
             {/* ========== Collapse desktop ========== */}
             <button
                 onClick={toggleSidebar}
@@ -140,7 +67,7 @@ export default function Sidebar() {
                       border-r border-primary/20
                       text-white
                       shadow-[18px_0_60px_rgba(0,0,0,0.45)]                    transform transition-transform duration-300
-                    ${isOpenMobile ? "block" : "hidden"} md:block
+                    hidden md:block
                     ${isCollapsed ? "-translate-x-full md:-translate-x-56" : "translate-x-0"}`}
             >
                 {/* ----------- Logo ----------- */}
@@ -154,7 +81,6 @@ export default function Sidebar() {
                         transition-colors
                     "
                     style={{ paddingTop: "env(safe-area-inset-top)" }}
-                    onClick={() => setIsOpenMobile(false)}
                 >
                     <span
                         className="
@@ -174,13 +100,12 @@ export default function Sidebar() {
                 </Link>
                 {/* ----------- Navigazione ----------- */}
                 <nav className="p-2 space-y-1">
-                    {navItems.map(({ href, label, icon }) => {
+                    {navItems.map(({ href, label, Icon }) => {
                         const active = pathname === href;
                         return (
                             <Link
                                 key={href}
                                 href={href}
-                                onClick={() => setIsOpenMobile(false)}
                                 className={`group flex items-center gap-3
                                   px-4 py-2.5
                                   rounded-xl
@@ -197,7 +122,7 @@ export default function Sidebar() {
                                   }
                               `}
                             >
-                                {icon}
+                                <Icon size={18} />
                                 <span>{label}</span>
                             </Link>
                         );

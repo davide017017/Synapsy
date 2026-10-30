@@ -64,6 +64,8 @@ export function usePullToRefresh() {
         }
 
         function onTouchStart(e: TouchEvent) {
+            // Menu mobile aperto (vedi ProtectedLayoutClient): niente refresh
+            if (document.documentElement.dataset.mobileMenu === "open") return;
             if (window.scrollY > 0) return;
             if (hasScrolledAncestor(e.target)) return;
             startY = e.touches[0].clientY;

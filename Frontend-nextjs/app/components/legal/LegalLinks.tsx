@@ -6,11 +6,30 @@ import { ShieldCheck, ScrollText } from "lucide-react";
 
 interface Props {
     className?: string;
+    // "text": link testuali serif (menu mobile); default: pill attuali
+    variant?: "pill" | "text";
 }
 
-export default function LegalLinks({ className = "" }: Props) {
+export default function LegalLinks({ className = "", variant = "pill" }: Props) {
     const [showPrivacy, setShowPrivacy] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
+
+    if (variant === "text") {
+        const link = "[font-family:'Times_New_Roman',Tinos,serif] hover:text-[#3ddc97] transition-colors";
+        return (
+            <div className={className}>
+                <button type="button" onClick={() => setShowPrivacy(true)} className={link}>
+                    Privacy
+                </button>
+                <span className="mx-1 opacity-60">·</span>
+                <button type="button" onClick={() => setShowTerms(true)} className={link}>
+                    Termini
+                </button>
+                <PrivacyModal open={showPrivacy} onClose={() => setShowPrivacy(false)} />
+                <TermsModal open={showTerms} onClose={() => setShowTerms(false)} />
+            </div>
+        );
+    }
 
     return (
         <div className={`flex justify-center gap-3 ${className}`.trim()}>

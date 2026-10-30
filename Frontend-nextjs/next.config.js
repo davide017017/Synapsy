@@ -68,6 +68,14 @@ const nextConfig = {
     poweredByHeader: false,
 
     // ──────────────────────
+    // Info build (menu mobile: v{versione} · build #{commit})
+    // NEXT_PUBLIC_COMMIT_SHA arriva dall'ambiente, se definita
+    // ──────────────────────
+    env: {
+        NEXT_PUBLIC_APP_VERSION: require("./package.json").version,
+    },
+
+    // ──────────────────────
     // Security Headers
     // ──────────────────────
     async headers() {
