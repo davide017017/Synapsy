@@ -18,7 +18,10 @@ import { useSidebar } from "@/context/SidebarContext";
 import { useThemeContext, type Theme } from "@/context/ThemeContext";
 import LegalLinks from "@/app/components/legal/LegalLinks";
 import { themeMeta, availableThemes } from "@/lib/themeUtils";
+import { useOnline } from "@/hooks/useOnline";
+import { trapTab } from "@/utils/focusTrap";
 import { navItems } from "./navItems";
+import { SYN, EASE, type Rail, SynapseLine, SynapseNode, SynapsePulse, synapseEnter } from "./synapse";
 
 // ────────────────────────────────
 // Costanti animazione / geometria
@@ -26,16 +29,10 @@ import { navItems } from "./navItems";
 export const MENU_ID = "mobile-menu";
 export const MENU_TRIGGER_ID = "mobile-menu-trigger";
 
-const ITEM_H = 56; // altezza voce
-const LINE_X = 9; // centro linea (px dal bordo lista)
+const MENU_BG = "#060a09";
+const RAIL: Rail = { x: 9, itemH: 56, padLeft: 30 };
 const PULSE_MS = 500;
 const CLOSE_DELAY_MS = 250; // dopo la navigazione, prima di chiudere
-const EASE_ITEM = "cubic-bezier(.2,.9,.1,1)";
-const EASE_SPRING = "cubic-bezier(.34,1.6,.5,1)";
-
-const GREEN = "#3ddc97";
-const MUTED = "#a8bab3";
-const GREY = "#5f716a";
 
 // Stile condiviso ☰ / X: stesso aspetto (☰ fixed, X nel flusso del menu alla stessa posizione)
 const TRIGGER_CLASS = `
@@ -72,24 +69,6 @@ export function MobileMenuButton() {
     );
 }
 
-// ════════════════════════════════
-// Stato online/offline (nessuno stato di salute API esistente)
-// ════════════════════════════════
-function useOnline() {
-    const [online, setOnline] = useState(true);
-    useEffect(() => {
-        const update = () => setOnline(navigator.onLine);
-        update();
-        window.addEventListener("online", update);
-        window.addEventListener("offline", update);
-        return () => {
-            window.removeEventListener("online", update);
-            window.removeEventListener("offline", update);
-        };
-    }, []);
-    return online;
-}
-
 const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION;
 const COMMIT_SHA = process.env.NEXT_PUBLIC_COMMIT_SHA;
 
@@ -103,6 +82,7 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
     const { theme, setTheme } = useThemeContext();
     const pathname = usePathname();
     const router = useRouter();
+    // Stato online/offline (nessuno stato di salute API esistente)
     const online = useOnline();
 
     const menuRef = useRef<HTMLDivElement>(null);
@@ -138,18 +118,7 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
             closeMobile();
             return;
         }
-        if (e.key !== "Tab" || !menuRef.current) return;
-        const focusables = menuRef.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
-        if (!focusables.length) return;
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-        }
+        trapTab(e, menuRef.current);
     };
 
     // ── Click voce: naviga subito (la nuova pagina appare nell'app spostata),
@@ -167,16 +136,7 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
         navTimer.current = setTimeout(closeMobile, reducedMotion ? 0 : CLOSE_DELAY_MS);
     };
 
-    // ── Ingresso: da trasparente (+ sfocato) a nitido.
-    //    In chiusura resta nitido finché visibile; si azzera solo a menu già nascosto ──
-    const enter = (delay: number, from: string, blur = true) =>
-        reducedMotion
-            ? {}
-            : open
-              ? { opacity: 1, filter: "none", transform: "none", transition: `all 450ms ${EASE_ITEM} ${delay}ms` }
-              : visible
-                ? { opacity: 1, filter: "none", transform: "none", transition: "none" }
-                : { opacity: 0, filter: blur ? "blur(6px)" : "none", transform: from, transition: "none" };
+    const motion = { open, visible, reducedMotion };
 
     return (
         <div
@@ -190,7 +150,7 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
             className="md:hidden fixed inset-0 overflow-y-auto overscroll-contain font-mono"
             style={{
                 zIndex: reducedMotion ? 60 : 0,
-                background: "radial-gradient(90% 50% at 0 100%, #0f2a20 0, transparent 70%), #060a09",
+                background: `radial-gradient(90% 50% at 0 100%, #0f2a20 0, transparent 70%), ${MENU_BG}`,
                 // Depth: sparisce solo quando l'app è tornata in posizione (visible dal layout).
                 // Reduced motion: il menu è sopra l'app → dissolvenza propria.
                 visibility: (reducedMotion ? open : visible) ? "visible" : "hidden",
@@ -218,7 +178,7 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
                     </button>
                     <span
                         className="text-[14px] font-extrabold uppercase tracking-[.42em]"
-                        style={{ color: GREEN, textShadow: `0 0 12px ${GREEN}66` }}
+                        style={{ color: SYN.green, textShadow: `0 0 12px ${SYN.green}66` }}
                     >
                         Synapsi
                     </span>
@@ -227,34 +187,20 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
                 {/* ───────── Lista Synapse ───────── */}
                 <nav aria-label="Principale" className="relative mt-12 pl-[30px]">
                     {/* Linea verticale: si disegna dall'alto */}
-                    <span
-                        aria-hidden
-                        className="absolute top-2 bottom-2 w-[2px] origin-top"
-                        style={{
-                            left: LINE_X - 1,
-                            background: "#1d3a2f",
-                            transform: reducedMotion || visible ? "scaleY(1)" : "scaleY(0)",
-                            transition:
-                                !reducedMotion && open ? "transform 600ms cubic-bezier(.7,0,.2,1) 200ms" : "none",
-                        }}
+                    <SynapseLine
+                        rail={RAIL}
+                        drawn={reducedMotion || visible}
+                        animate={!reducedMotion && open}
+                        durationMs={600}
+                        delayMs={200}
                     />
 
                     {/* Impulso sul nodo attivo: viaggia lungo la linea */}
                     {pulseIndex >= 0 && (
-                        <span
-                            aria-hidden
-                            className="absolute top-0 h-3 w-3 rounded-full"
-                            style={{
-                                left: LINE_X - 6,
-                                background: GREEN,
-                                boxShadow: `0 0 0 4px rgba(61,220,151,.15), 0 0 18px ${GREEN}`,
-                                transform: `translateY(${pulseIndex * ITEM_H + ITEM_H / 2 - 6}px)`,
-                                transition:
-                                    target !== null && !reducedMotion
-                                        ? `transform ${PULSE_MS}ms cubic-bezier(.6,0,.2,1)`
-                                        : "none",
-                                zIndex: 1,
-                            }}
+                        <SynapsePulse
+                            rail={RAIL}
+                            index={pulseIndex}
+                            travelMs={target !== null && !reducedMotion ? PULSE_MS : 0}
                         />
                     )}
 
@@ -263,34 +209,25 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
                             const isCurrent = i === activeIndex;
                             const lit = i === pulseIndex;
                             return (
-                                <li key={href} className="relative" style={{ height: ITEM_H }}>
-                                    {/* Nodo */}
-                                    <span
-                                        aria-hidden
-                                        className="absolute h-1.5 w-1.5 rounded-full bg-[#060a09]"
-                                        style={{
-                                            left: LINE_X - 30 - 3,
-                                            top: ITEM_H / 2 - 3,
-                                            border: "1.5px solid #2d5546",
-                                        }}
-                                    />
+                                <li key={href} className="relative" style={{ height: RAIL.itemH }}>
+                                    <SynapseNode rail={RAIL} bg={MENU_BG} />
                                     <Link
                                         href={href}
                                         onClick={(e) => onSelect(e, i, href)}
                                         aria-current={isCurrent ? "page" : undefined}
                                         className="flex h-full flex-col justify-center rounded-lg outline-none focus-visible:ring-1 focus-visible:ring-[#3ddc97]/60"
-                                        style={enter(260 + 45 * i, "translateX(-10px)")}
+                                        style={synapseEnter(motion, 260 + 45 * i, { from: "translateX(-10px)" })}
                                     >
                                         <span
                                             className="flex items-center gap-2.5 text-[13px] uppercase tracking-[.18em] transition-colors duration-300"
-                                            style={{ color: lit ? GREEN : MUTED }}
+                                            style={{ color: lit ? SYN.green : SYN.muted }}
                                         >
                                             <Icon size={16} strokeWidth={1.8} />
                                             {label}
                                         </span>
                                         <span
                                             className="pl-[26px] text-[9.5px] transition-colors duration-300"
-                                            style={{ color: lit ? GREEN : GREY }}
+                                            style={{ color: lit ? SYN.green : SYN.grey }}
                                         >
                                             ~{href === "/" ? "/" : href}
                                         </span>
@@ -302,7 +239,10 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
                 </nav>
 
                 {/* ───────── Parte bassa ───────── */}
-                <div className="mt-auto space-y-4 pt-10" style={enter(450, "translateY(10px)", false)}>
+                <div
+                    className="mt-auto space-y-4 pt-10"
+                    style={synapseEnter(motion, 450, { from: "translateY(10px)", blurPx: 0 })}
+                >
                     {/* Pallini tema: uno per tema esistente */}
                     <div role="radiogroup" aria-label="Tema" className="flex items-center gap-3 pl-1">
                         {availableThemes.map((t) => {
@@ -322,7 +262,7 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
                                         border: `2px solid ${active ? "rgba(255,255,255,.9)" : "rgba(255,255,255,.12)"}`,
                                         boxShadow: active ? `0 0 12px ${themeMeta[t].color}88` : "none",
                                         transform: active ? "scale(1.18)" : "scale(1)",
-                                        transition: `transform 450ms ${EASE_SPRING}, border-color 200ms, box-shadow 200ms`,
+                                        transition: `transform 450ms ${EASE.spring}, border-color 200ms, box-shadow 200ms`,
                                     }}
                                 />
                             );
@@ -330,9 +270,10 @@ export default function MobileMenu({ reducedMotion, visible }: { reducedMotion: 
                     </div>
 
                     {/* Info tech */}
-                    <div className="space-y-0.5 text-[8.5px] leading-relaxed" style={{ color: GREY }}>
+                    <div className="space-y-0.5 text-[8.5px] leading-relaxed" style={{ color: SYN.grey }}>
                         <div>
-                            <span style={{ color: online ? GREEN : "#e5484d" }}>●</span> {online ? "online" : "offline"}
+                            <span style={{ color: online ? SYN.green : SYN.offline }}>●</span>{" "}
+                            {online ? "online" : "offline"}
                         </div>
                         {APP_VERSION && (
                             <div>

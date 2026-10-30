@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 
 import { signOut } from "next-auth/react";
 import { resetAllProviderCaches } from "@/context/resetCaches";
-import { LogOut, UserCircle, Menu } from "lucide-react";
+import { LogOut, UserCircle } from "lucide-react";
 import BetaBadge from "@/app/components/BetaBadge";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useUser } from "@/context/UserContext";
 import getAvatarUrl from "@/utils/avatar";
 import LogoElectricGlow from "@/app/components/ui/LogoElectricGlow";
+import UserMenu, { UserMenuScrim } from "./UserMenu";
 
 // ────────────────────────────────────────────────
 // Header principale
@@ -64,13 +65,8 @@ export default function Header() {
     // ────────────────────────────────────────────────
     return (
         <>
-            {/* OVERLAY FULLSCREEN: chiude cliccando fuori (solo mobile) */}
-            {isMobileMenuOpen && (
-                <div
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="fixed inset-x-0 top-12 bottom-0 z-10 sm:hidden backdrop-blur-sm bg-black/10"
-                />
-            )}
+            {/* SCRIM menu utente: fuori dall'<header>, sotto di lui (tap chiude) */}
+            <UserMenuScrim open={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
 
             <header
                 className="
@@ -163,90 +159,17 @@ export default function Header() {
                     </button>
                 </div>
 
-                {/* MOBILE: ICON BUTTON + MENU COMPATTO (solo sotto sm) */}
-                <div className="flex sm:hidden items-center ml-auto relative">
-                    <button
-                        type="button"
-                        onClick={handleToggleUserMenu}
-                        className="
-                            flex items-center gap-2
-                            px-2.5 py-1.5
-                            rounded-xl
-                            bg-black/50
-                            border border-primary/30
-                            text-primary
-                            shadow-[0_0_18px_hsl(var(--c-primary)/0.20)]
-                            backdrop-blur-md
-                            transition-all duration-200
-                            hover:bg-primary/10
-                            active:scale-95
-                            focus:outline-none focus:ring-2 focus:ring-primary/50
-                        "
-                        aria-label="Menu utente"
-                    >
-                        {avatarUrl ? (
-                            <Image
-                                src={avatarUrl}
-                                alt="Avatar utente"
-                                width={24}
-                                height={24}
-                                className="w-6 h-6 rounded-full object-cover"
-                            />
-                        ) : (
-                            <UserCircle size={20} className="text-primary" />
-                        )}
-                        <Menu size={18} className="text-primary/80" />
-                    </button>
-
-                    {/* Dropdown mobile */}
-                    {isMobileMenuOpen && (
-                        <div
-                            className="
-                                absolute right-0 top-[160%] z-50
-                                w-44
-                                overflow-hidden
-                                rounded-2xl
-                                bg-black/75
-                                border border-primary/20
-                                shadow-[0_18px_50px_rgba(0,0,0,0.45)]
-                                backdrop-blur-xl
-                            "
-                        >
-                            {username && (
-                                <Link
-                                    href="/profilo"
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="
-                                        flex items-center gap-2
-                                        px-3 py-2.5
-                                        font-mono text-xs tracking-[0.06em]
-                                        text-white/65 hover:text-primary
-                                        hover:bg-primary/10
-                                        transition-colors
-                                    "
-                                >
-                                    <UserCircle size={16} className="text-primary" />
-                                    <span className="truncate">{username}</span>
-                                </Link>
-                            )}
-
-                            <button
-                                type="button"
-                                onClick={handleLogout}
-                                className="
-                                  w-full flex items-center gap-2
-                                  px-3 py-2.5
-                                  font-mono text-xs tracking-[0.06em]
-                                  text-red-400/80 hover:text-red-300
-                                  hover:bg-red-500/10
-                                  transition-colors
-                              "
-                            >
-                                <LogOut size={16} />
-                                <span>Logout</span>
-                            </button>
-                        </div>
-                    )}
+                {/* MOBILE: BOTTONE AVATAR + MENU "SYNAPSE MINI" (solo sotto sm)
+                    Il wrapper NON è relative: il pannello si ancora all'header (top = header + 6px) */}
+                <div className="flex sm:hidden items-center ml-auto">
+                    <UserMenu
+                        open={isMobileMenuOpen}
+                        onToggle={handleToggleUserMenu}
+                        onClose={() => setIsMobileMenuOpen(false)}
+                        username={username}
+                        avatarUrl={avatarUrl}
+                        onLogout={handleLogout}
+                    />
                 </div>
             </header>
         </>
@@ -259,6 +182,6 @@ export default function Header() {
 // Questo componente gestisce l'header principale di Synapsi.
 // - Mostra logo centrale con badge "Beta".
 // - Su schermi grandi (≥ sm) mostra nome utente + pulsante Logout a destra.
-// - Su schermi piccoli (< sm) compatta tutto in un icon button che apre
-//   un piccolo menu con link al profilo e Logout, con overlay cliccabile
-//   che chiude il menu cliccando fuori.
+// - Su schermi piccoli (< sm) compatta tutto nel bottone avatar che apre
+//   UserMenu ("Synapse mini": profilo, sessione, logout a due tap) con
+//   scrim cliccabile che chiude il menu.

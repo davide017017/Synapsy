@@ -61,9 +61,15 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
         if (e.target === appRef.current && e.propertyName === "transform" && !isMobileOpen) setDepthOn(false);
     };
 
+    // iOS Safari: perspective() dentro il transform (non sul parent) + backface hidden,
+    // altrimenti l'app spostata non viene dipinta (resta visibile solo lo sfondo del menu).
     const depthStyle: React.CSSProperties = {
-        transform: isMobileOpen ? "translateX(232px) scale(.78) rotateY(-6deg)" : "translateX(0) scale(1) rotateY(0)",
+        transform: isMobileOpen
+            ? "perspective(1200px) translateX(232px) scale(.78) rotateY(-6deg)"
+            : "perspective(1200px) translateX(0) scale(1) rotateY(0)",
         transformOrigin: "left center",
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden",
         borderRadius: isMobileOpen ? 28 : 0,
         boxShadow: isMobileOpen ? "-30px 0 70px rgba(0,0,0,.7)" : "none",
         transition: `transform ${DEPTH_MS}ms ${DEPTH_EASE}, border-radius ${DEPTH_MS}ms ${DEPTH_EASE}, box-shadow ${DEPTH_MS}ms ${DEPTH_EASE}`,
@@ -129,12 +135,9 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
             <MobileMenu reducedMotion={reducedMotion} visible={menuVisible} />
 
             {/* ===== APP: si sposta in profondità quando il menu è aperto =====
-                Il parent (perspective) resta a tutta viewport sopra il menu: pointer-events-none,
+                Il parent resta a tutta viewport sopra il menu: pointer-events-none,
                 altrimenti intercetta i click sul menu scoperto. L'app riattiva i click per sé. */}
-            <div
-                className="pointer-events-none relative z-10 flex-1 min-w-0"
-                style={depth ? { perspective: "1200px" } : undefined}
-            >
+            <div className="pointer-events-none relative z-10 flex-1 min-w-0">
                 <div
                     ref={appRef}
                     className="pointer-events-auto relative h-full overflow-hidden bg-[hsl(var(--c-bg))]"
