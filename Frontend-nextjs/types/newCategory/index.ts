@@ -7,6 +7,7 @@ export type NewCategoryModalProps = {
 
 export type NewCategoryButtonProps = {
     label?: string;
+    compact?: boolean; // versione compatta per la Home mobile (flex-1, 30px)
     onSuccess?: () => void;
 };
 

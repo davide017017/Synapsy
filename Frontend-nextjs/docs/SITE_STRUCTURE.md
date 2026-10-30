@@ -10,7 +10,7 @@ Elenco delle pagine effettive con i principali componenti e modali associati.
   - TransazioniCard
   - RicorrentiCard
   - CategorieCard
-  - ProssimoPagamentoCard
+  - ProssimiPagamentiCard
   - Modali:
     - NewTransactionModal (da NewTransactionButton)
     - NewRicorrenzaModal (da NewRicorrenzaButton)

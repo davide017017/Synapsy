@@ -1,5 +1,6 @@
 export type NewTransactionButtonProps = {
     label?: string;
+    compact?: boolean; // versione compatta per la Home mobile (flex-1, 30px)
 };
 
 export type NewTransactionFormProps = {

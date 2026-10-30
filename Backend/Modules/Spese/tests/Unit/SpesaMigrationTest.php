@@ -3,7 +3,6 @@
 namespace Modules\Spese\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -33,18 +32,10 @@ class SpesaMigrationTest extends TestCase
         );
     }
 
-    // Helper per vincoli unici
+    // Helper per vincoli unici (Schema::getIndexes è indipendente dal driver)
     protected function hasUniqueIndex(string $table, array $columns): bool
     {
-        $indexRows = DB::select("SHOW INDEXES FROM {$table}");
-        $groupedIndexes = [];
-
-        foreach ($indexRows as $row) {
-            $groupedIndexes[$row->Key_name]['unique'] = ! $row->Non_unique;
-            $groupedIndexes[$row->Key_name]['columns'][] = $row->Column_name;
-        }
-
-        foreach ($groupedIndexes as $index) {
+        foreach (Schema::getIndexes($table) as $index) {
             if ($index['unique'] && $index['columns'] === $columns) {
                 return true;
             }

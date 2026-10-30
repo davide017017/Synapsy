@@ -28,16 +28,16 @@ export default function HeroSuggerimento() {
     return (
         <div className="flex flex-col h-full justify-center">
             <div className="px-4 text-center">
-                <h2 className="text-lg font-bold mb-2">Suggerimento 🌱</h2>
+                <h2 className="text-sm lg:text-lg font-bold mb-0.5 lg:mb-2">Suggerimento 🌱</h2>
 
                 {/* Suggerimento attuale */}
-                <p className="text-base min-h-[40px]">{heroSuggestions[index]}</p>
+                <p className="text-xs lg:text-base line-clamp-2 lg:line-clamp-none lg:min-h-[40px]">{heroSuggestions[index]}</p>
 
                 {/* Bottone cambio suggerimento */}
                 <button
                     onClick={next}
                     className="
-                        mt-3 px-4 py-1 rounded-xl
+                        mt-1 lg:mt-3 px-3 lg:px-4 py-0.5 lg:py-1 text-xs lg:text-base rounded-xl
                         bg-emerald-400 text-white font-semibold shadow
                         transition hover:bg-emerald-500 active:scale-95
                     "
@@ -45,7 +45,7 @@ export default function HeroSuggerimento() {
                     Nuovo suggerimento
                 </button>
 
-                <p className="text-sm text-gray-500 mt-2">(Presto suggerimenti personalizzati!)</p>
+                <p className="hidden lg:block text-sm text-gray-500 mt-2">(Presto suggerimenti personalizzati!)</p>
             </div>
         </div>
     );

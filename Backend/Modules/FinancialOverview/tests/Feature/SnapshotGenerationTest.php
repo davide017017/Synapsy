@@ -39,12 +39,14 @@ class SnapshotGenerationTest extends TestCase
 
         $this->service->snapshotMonthly($user, $date);
 
-        $this->assertDatabaseHas('financial_snapshots', [
-            'user_id' => $user->id,
-            'period_type' => 'monthly',
-            'period_start_date' => '2025-05-01',
-            'balance' => 700.00,
-        ]);
+        // whereDate: sqlite salva il cast 'date' come 'Y-m-d H:i:s'
+        $this->assertTrue(
+            FinancialSnapshot::where('user_id', $user->id)
+                ->where('period_type', 'monthly')
+                ->whereDate('period_start_date', '2025-05-01')
+                ->where('balance', 700.00)
+                ->exists()
+        );
     }
 
     #[Test]

@@ -7,7 +7,7 @@
 // orizzontale a 300% di larghezza.
 // ─────────────────────────────────────────
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import HeroWelcome from "./heroItems/HeroWelcome";
@@ -35,14 +35,29 @@ export default function HeroCarousel() {
 
     const current = slides[index];
 
+    // --- Swipe orizzontale (mobile: le frecce sono nascoste) ---
+    const touchX = useRef<number | null>(null);
+    const onTouchStart = (e: React.TouchEvent) => {
+        touchX.current = e.touches[0].clientX;
+    };
+    const onTouchEnd = (e: React.TouchEvent) => {
+        if (touchX.current === null) return;
+        const dx = e.changedTouches[0].clientX - touchX.current;
+        touchX.current = null;
+        if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
+    };
+
     return (
+        <div className="relative w-full max-w-full">
         <div
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
             className="
         relative
         w-full max-w-full
-        rounded-3xl shadow-2xl
+        rounded-[14px] lg:rounded-3xl shadow-2xl
         bg-gradient-radial from-primary/40 via-primary-light/10 to-transparent
-        py-4
+        lg:py-4
       "
         >
             {/* ───────────────────────────── */}
@@ -53,13 +68,13 @@ export default function HeroCarousel() {
           relative
           w-full
           overflow-hidden
-          rounded-2xl
-          min-h-[360px] sm:min-h-[380px]
+          rounded-[14px] lg:rounded-2xl
+          h-[104px] lg:h-auto lg:min-h-[380px]
           flex items-center justify-center
         "
             >
                 {/* wrapper interno: centra il contenuto */}
-                <div className="w-full h-full flex items-center justify-center px-2 sm:px-4 pt-1 sm:pt-2">
+                <div className="w-full h-full flex items-center justify-center px-2 lg:px-4 lg:pt-2">
                     <div className="w-full max-w-xl">{current.node}</div>
                 </div>
             </div>
@@ -71,6 +86,7 @@ export default function HeroCarousel() {
                 onClick={() => go(index - 1)}
                 aria-label="Precedente"
                 className="
+        hidden lg:block
         absolute
         left-4 top-[20%] -translate-y-1/2
         px-1.5 py-4
@@ -93,6 +109,7 @@ export default function HeroCarousel() {
                 onClick={() => go(index + 1)}
                 aria-label="Successivo"
                 className="
+        hidden lg:block
         absolute
         right-4 top-[20%] -translate-y-1/2
         px-1.5 py-4
@@ -111,14 +128,17 @@ export default function HeroCarousel() {
                 <ArrowRight size={21} strokeWidth={1.8} />
             </button>
 
+            </div>
+
             {/* ───────────────────────────── */}
             {/* Indicatori (dots)             */}
+            {/* mobile: sotto il box, attivo largo 14px */}
             {/* ───────────────────────────── */}
             <div
                 className="
-          absolute
-          bottom-4 left-1/2 -translate-x-1/2
-          flex space-x-2
+          mt-1.5 flex justify-center items-center gap-1
+          lg:mt-0 lg:gap-2
+          lg:absolute lg:bottom-4 lg:left-1/2 lg:-translate-x-1/2
         "
             >
                 {slides.map((s, i) => (
@@ -127,8 +147,8 @@ export default function HeroCarousel() {
                         onClick={() => setIndex(i)}
                         aria-label={`Vai a slide ${i + 1}`}
                         className={`
-              w-3 h-3 rounded-full
-              ${i === index ? "bg-white shadow" : "bg-white/30"}
+              h-[5px] rounded-full transition-all duration-300 lg:w-3 lg:h-3
+              ${i === index ? "w-[14px] bg-primary lg:bg-white lg:shadow" : "w-[5px] bg-white/30"}
             `}
                     />
                 ))}
@@ -150,4 +170,6 @@ export default function HeroCarousel() {
 //   • Il wrapper interno ha `flex items-center justify-center` per centrare il contenuto
 //     della slide sia orizzontalmente che verticalmente, entro `max-w-xl`.
 //   • Non usa track a larghezza multipla, quindi non crea overflow orizzontale.
+//   • Sotto lg (Home mobile): box alto 104px, frecce nascoste, swipe orizzontale
+//     per cambiare slide e pallini sotto il box (attivo largo 14px).
 // ─────────────────────────────────────────────

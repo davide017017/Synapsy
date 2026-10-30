@@ -5,11 +5,12 @@ import UltimiMesiCard from "./UltimiMesiCard";
 // future charts can be imported here
 
 const SLIDES = [
-    { id: "ultimi-mesi", component: <UltimiMesiCard /> },
+    { id: "ultimi-mesi", render: (compact: boolean) => <UltimiMesiCard compact={compact} /> },
     // add more slides here later
 ];
 
-export default function ChartsCarousel() {
+// compact: Home mobile → grafici in versione bassa
+export default function ChartsCarousel({ compact = false }: { compact?: boolean }) {
     const trackRef = useRef<HTMLDivElement>(null);
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -55,7 +56,7 @@ export default function ChartsCarousel() {
                         key={slide.id}
                         className="snap-center shrink-0 w-full"
                     >
-                        {slide.component}
+                        {slide.render(compact)}
                     </div>
                 ))}
             </div>

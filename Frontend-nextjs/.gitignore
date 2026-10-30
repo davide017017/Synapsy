@@ -58,3 +58,4 @@ _DEV-Scripts/
 coverage/
 
 Frontend-rn-exp
+tsconfig.tsbuildinfo

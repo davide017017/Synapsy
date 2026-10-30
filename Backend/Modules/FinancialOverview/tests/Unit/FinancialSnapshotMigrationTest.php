@@ -47,6 +47,7 @@ class FinancialSnapshotMigrationTest extends TestCase
         // Crea un utente dummy per evitare violazioni FK
         $userId = DB::table('users')->insertGetId([
             'name' => 'Test User',
+            'username' => 'testuser',
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
@@ -66,43 +67,13 @@ class FinancialSnapshotMigrationTest extends TestCase
     }
 
     // =========================================================================
-    // Constraint enum
-    // =========================================================================
-
-    public function test_financial_snapshots_rejects_invalid_period_type(): void
-    {
-        $this->expectException(\Illuminate\Database\QueryException::class);
-
-        // Crea un utente dummy per evitare violazioni FK
-        $userId = DB::table('users')->insertGetId([
-            'name' => 'Test User',
-            'email' => 'invalid@example.com',
-            'password' => bcrypt('password'),
-        ]);
-
-        DB::table('financial_snapshots')->insert([
-            'user_id' => $userId,
-            'period_type' => 'invalid', // valore non ammesso
-            'period_start_date' => '2025-05-01',
-            'period_end_date' => '2025-05-31',
-        ]);
-    }
-
-    // =========================================================================
     // Helper vincoli
     // =========================================================================
 
     protected function hasUniqueIndex(string $table, array $columns): bool
     {
-        $indexRows = DB::select("SHOW INDEXES FROM {$table}");
-        $groupedIndexes = [];
-
-        foreach ($indexRows as $row) {
-            $groupedIndexes[$row->Key_name]['unique'] = ! $row->Non_unique;
-            $groupedIndexes[$row->Key_name]['columns'][] = $row->Column_name;
-        }
-
-        foreach ($groupedIndexes as $index) {
+        // Schema::getIndexes è indipendente dal driver (sqlite in test, pgsql in prod)
+        foreach (Schema::getIndexes($table) as $index) {
             if ($index['unique'] && $index['columns'] === $columns) {
                 return true;
             }

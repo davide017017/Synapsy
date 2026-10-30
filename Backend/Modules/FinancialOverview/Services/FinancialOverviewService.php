@@ -284,7 +284,7 @@ class FinancialOverviewService {
       [
         'user_id' => $user->id,
         'period_type' => $periodType,
-        'period_start_date' => $start->toDateString(),
+        'period_start_date' => $start->copy()->startOfDay(),
       ],
       [
         'period_end_date' => $end->toDateString(),

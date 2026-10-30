@@ -168,7 +168,7 @@ class RecurringOperationController extends Controller
 
         $operations = RecurringOperation::query()
             ->where('user_id', $user->id)
-            ->where('is_active', true)
+            ->whereRaw('is_active = true')
             ->whereNotNull('next_occurrence_date')
             ->whereBetween('next_occurrence_date', [$from, $to])
             ->orderBy('next_occurrence_date')

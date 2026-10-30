@@ -29,9 +29,17 @@
         </testsuite>
 
         <testsuite name="Module - FinancialOverview">
-            <file>Modules/FinancialOverview/tests/Feature/TransactionsCategoryTest.php</file>
+            <directory>Modules/FinancialOverview/tests</directory>
         </testsuite>
-        
+
+        <testsuite name="Module - RecurringOperations">
+            <directory>Modules/RecurringOperations/tests</directory>
+        </testsuite>
+
+        <testsuite name="Module - Spese">
+            <directory>Modules/Spese/tests</directory>
+        </testsuite>
+
     </testsuites>
 
     <!-- =============================

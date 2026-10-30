@@ -37,32 +37,32 @@ export default function HeroSaldo() {
     return (
         <div className="flex flex-col h-full justify-center px-4 text-center">
             {/* Totale grande */}
-            <div className="mb-5">
-                <div className="text-base opacity-60">Saldo attuale</div>
-                <div className={`text-4xl font-bold ${color(totalBalance)}`}>{loading ? "—" : eur(totalBalance)}</div>
+            <div className="mb-1 lg:mb-5">
+                <div className="text-[10px] lg:text-base opacity-60">Saldo attuale</div>
+                <div className={`text-2xl lg:text-4xl font-bold ${color(totalBalance)}`}>{loading ? "—" : eur(totalBalance)}</div>
             </div>
 
             {/* Mini stats */}
-            <div className="grid grid-cols-3 gap-5 mt-2">
+            <div className="grid grid-cols-3 gap-2 lg:gap-5 lg:mt-2">
                 {/* Week */}
-                <div className="flex flex-col items-center gap-2">
-                    <CalendarDays className="w-6 h-6 opacity-70" />
-                    <div className="text-sm opacity-60">Week {currentWeek}</div>
-                    <div className={`text-base font-semibold ${color(weekBalance)}`}>{loading ? "—" : eur(weekBalance)}</div>
+                <div className="flex flex-col items-center lg:gap-2">
+                    <CalendarDays className="hidden lg:block w-6 h-6 opacity-70" />
+                    <div className="text-[10px] lg:text-sm opacity-60">Week {currentWeek}</div>
+                    <div className={`text-xs lg:text-base font-semibold ${color(weekBalance)}`}>{loading ? "—" : eur(weekBalance)}</div>
                 </div>
 
                 {/* Month */}
-                <div className="flex flex-col items-center gap-2">
-                    <Calendar className="w-6 h-6 opacity-70" />
-                    <div className="text-sm opacity-60">{monthLabel}</div>
-                    <div className={`text-base font-semibold ${color(monthBalance)}`}>{loading ? "—" : eur(monthBalance)}</div>
+                <div className="flex flex-col items-center lg:gap-2">
+                    <Calendar className="hidden lg:block w-6 h-6 opacity-70" />
+                    <div className="text-[10px] lg:text-sm opacity-60">{monthLabel}</div>
+                    <div className={`text-xs lg:text-base font-semibold ${color(monthBalance)}`}>{loading ? "—" : eur(monthBalance)}</div>
                 </div>
 
                 {/* Year */}
-                <div className="flex flex-col items-center gap-2">
-                    <BarChart3 className="w-6 h-6 opacity-70" />
-                    <div className="text-sm opacity-60">{currentYear}</div>
-                    <div className={`text-base font-semibold ${color(yearBalance)}`}>{loading ? "—" : eur(yearBalance)}</div>
+                <div className="flex flex-col items-center lg:gap-2">
+                    <BarChart3 className="hidden lg:block w-6 h-6 opacity-70" />
+                    <div className="text-[10px] lg:text-sm opacity-60">{currentYear}</div>
+                    <div className={`text-xs lg:text-base font-semibold ${color(yearBalance)}`}>{loading ? "—" : eur(yearBalance)}</div>
                 </div>
             </div>
         </div>

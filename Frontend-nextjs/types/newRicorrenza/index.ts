@@ -16,6 +16,7 @@ export type NewRicorrenzaFormProps = {
 
 export type NewRicorrenzaButtonProps = {
     label?: string;
+    compact?: boolean; // versione compatta per la Home mobile (flex-1, 30px)
     onSuccess?: (newRicorrenza: import("@/types/models/ricorrenza").Ricorrenza) => void;
 };
 

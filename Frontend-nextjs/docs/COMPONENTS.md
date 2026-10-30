@@ -9,7 +9,7 @@ Panoramica sintetica dei componenti principali. Per l'associazione completa pagi
 
 ## Home
 - HeroCarousel
-- CategorieCard, TransazioniCard, RicorrentiCard, ProssimoPagamentoCard
+- CategorieCard, TransazioniCard, RicorrentiCard, ProssimiPagamentiCard
 - NewTransactionButton, NewRicorrenzaButton, NewCategoryButton
 
 ## Transazioni

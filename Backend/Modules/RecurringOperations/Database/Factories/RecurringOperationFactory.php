@@ -314,8 +314,13 @@ class RecurringOperationFactory extends Factory
     }
 
     // =========================================================================
-    // STATI EXTRA: active/inactive, forUser, forCategory
+    // STATI EXTRA: income, active/inactive, forUser, forCategory
     // =========================================================================
+
+    public function income(): static
+    {
+        return $this->state(fn () => ['type' => 'entrata']);
+    }
 
     public function active(): static
     {

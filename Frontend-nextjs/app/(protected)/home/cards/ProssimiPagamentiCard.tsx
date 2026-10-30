@@ -2,33 +2,31 @@
 // ======================================================================
 // Card: lista compatta dei prossimi pagamenti/incassi.
 // Unisce ricorrenze + spese/entrate manuali con data futura (endpoint
-// /api/v1/financialoverview/upcoming). Fetch diretto (no context),
-// stesso pattern di autenticazione usato dai *Context esistenti.
+// /api/v1/financialoverview/upcoming) via useUpcomingPayments.
 // ======================================================================
 
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSession, signOut } from "next-auth/react";
 import { CalendarCheck, ArrowRight, Repeat } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
-import { fetchUpcomingPayments, UpcomingEntry } from "@/lib/api/upcomingApi";
+import { useUpcomingPayments } from "../hooks/useUpcomingPayments";
+import type { UpcomingEntry } from "@/lib/api/upcomingApi";
 import { parseYMD } from "@/lib/finance";
 import { eur } from "@/utils/formatCurrency";
 
 const LIMIT = 8;
 
 // ── Formattazione date (parseYMD, no shift di fuso) ────────
-function formatShort(dateStr: string): string {
+export function formatShort(dateStr: string): string {
     return parseYMD(dateStr).toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit" });
 }
 
 // ── Helpers stile per tipo (spesa/entrata) ─────────────────
-function importoClass(type: UpcomingEntry["type"]): string {
+export function importoClass(type: UpcomingEntry["type"]): string {
     return type === "spesa" ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400";
 }
-function simbolo(type: UpcomingEntry["type"]): string {
+export function simbolo(type: UpcomingEntry["type"]): string {
     return type === "spesa" ? "−" : "+";
 }
 
@@ -36,34 +34,7 @@ function simbolo(type: UpcomingEntry["type"]): string {
 // Componente principale
 // ===============================
 export default function ProssimiPagamentiCard() {
-    const { data: session } = useSession();
-    const token = session?.accessToken as string | undefined;
-
-    const [entries, setEntries] = useState<UpcomingEntry[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        if (!token) return;
-        const controller = new AbortController();
-
-        setLoading(true);
-        setError(null);
-
-        fetchUpcomingPayments(token, 30, LIMIT, controller.signal)
-            .then(setEntries)
-            .catch((e: any) => {
-                if (e?.name === "AbortError") return;
-                if (e?.message === "Unauthorized") {
-                    signOut({ callbackUrl: "/login" });
-                    return;
-                }
-                setError(e?.message || "Errore caricamento prossimi pagamenti");
-            })
-            .finally(() => setLoading(false));
-
-        return () => controller.abort();
-    }, [token]);
+    const { entries, loading, error } = useUpcomingPayments(30, LIMIT);
 
     // ── Loading ────────────────────────────────────────
     if (loading) {

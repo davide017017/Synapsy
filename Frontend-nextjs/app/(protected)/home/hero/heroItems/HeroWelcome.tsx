@@ -48,8 +48,9 @@ export default function HeroWelcome() {
             <section
                 className="
                     relative
-                    min-h-[300px]
-                    pt-3 pb-6
+                    h-[104px] lg:h-auto lg:min-h-[300px]
+                    flex flex-col justify-center
+                    lg:block lg:pt-3 lg:pb-6
                     text-center
                     overflow-hidden
                 "
@@ -86,7 +87,7 @@ export default function HeroWelcome() {
                     >
                         <div
                             className="
-        text-[12px] sm:text-sm
+        text-[9px] lg:text-sm
         tracking-[0.42em]
         font-semibold
         text-foreground/35 dark:text-foreground/45
@@ -103,8 +104,8 @@ export default function HeroWelcome() {
 
                         <div
                             className="
-        mt-1
-        text-3xl sm:text-4xl
+        mt-0.5 lg:mt-1
+        text-2xl lg:text-4xl
         tracking-[0.22em]
         font-extrabold
         text-primary
@@ -127,7 +128,7 @@ export default function HeroWelcome() {
                             transition={{ delay: 0.25, duration: 0.45, ease: "easeOut" }}
                             className="
         font-mono
-        text-[11px] sm:text-xs
+        text-[9px] lg:text-xs
         tracking-[0.28em]
         uppercase
         whitespace-nowrap
