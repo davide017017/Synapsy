@@ -24,7 +24,7 @@ function CategoryIcon({ cat, onEdit }: { cat: Category; onEdit: (cat: Category) 
             title={cat.name}
             aria-label={`Modifica ${cat.name}`}
             onClick={() => onEdit(cat)}
-            className="shrink-0 inline-flex items-center justify-center w-[26px] h-[26px] rounded-full shadow border border-white active:scale-95 transition-transform"
+            className="relative shrink-0 inline-flex items-center justify-center w-[26px] h-[26px] rounded-full shadow border border-white hover:z-10 focus-visible:z-10 active:z-10 active:scale-95 transition-transform"
             style={{ background: cat.color }}
         >
             <Icon size={14} color="#fff" />
@@ -67,15 +67,19 @@ export default function CategorieCompactCard() {
                 <span className="text-xs text-gray-400">Caricamento categorie...</span>
             ) : (
                 <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    {entrate.map((c) => (
-                        <CategoryIcon key={c.id} cat={c} onEdit={openModal} />
-                    ))}
+                    <div className="flex shrink-0 -space-x-2">
+                        {entrate.map((c) => (
+                            <CategoryIcon key={c.id} cat={c} onEdit={openModal} />
+                        ))}
+                    </div>
                     {entrate.length > 0 && spese.length > 0 && (
                         <span className="shrink-0 w-px h-5 mx-1 bg-gray-300 dark:bg-zinc-600" aria-hidden />
                     )}
-                    {spese.map((c) => (
-                        <CategoryIcon key={c.id} cat={c} onEdit={openModal} />
-                    ))}
+                    <div className="flex shrink-0 -space-x-2">
+                        {spese.map((c) => (
+                            <CategoryIcon key={c.id} cat={c} onEdit={openModal} />
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
@@ -85,7 +89,7 @@ export default function CategorieCompactCard() {
 // ----------------------------------------------------------------------
 // Descrizione file:
 // Versione compatta di CategorieCard per la Home mobile (≤ ~80px di
-// altezza). Titolo + totale, pill entrate/spese, icone 26px su una riga
-// scorrevole (scrollbar nascosta), entrate e spese separate da una linea
-// verticale. Tap su un'icona apre la modale di modifica (openModal(cat)).
+// altezza). Titolo + totale, pill entrate/spese, icone 26px sovrapposte
+// (-space-x-2) su una riga scorrevole (scrollbar nascosta), entrate e
+// spese separate da una linea verticale. Tap su un'icona apre la modale di modifica (openModal(cat)).
 // ----------------------------------------------------------------------
