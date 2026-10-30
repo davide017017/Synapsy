@@ -50,15 +50,15 @@ export default function ProssimiCard({ entries, loading, error }: Props) {
 
     return (
         <div className={`${HOME_CARD} flex flex-col gap-1`}>
-            {/* Titolo */}
-            <Link href="/ricorrenti" className={`flex items-center gap-1.5 ${HOME_TITLE}`}>
-                <CalendarCheck size={15} />
-                Prossimi
-            </Link>
-
-            {/* Sottotitolo ricorrenti */}
-            <Link href="/ricorrenti" className="font-mono text-[9px] tracking-[.08em] uppercase text-gray-400">
-                ⇄ {attive} ricorrenti · {eur(mensile)}/mese
+            {/* Titolo + sottotitolo ricorrenti sulla stessa riga */}
+            <Link href="/ricorrenti" className="flex items-center justify-between gap-2 min-w-0">
+                <span className={`flex shrink-0 items-center gap-1.5 ${HOME_TITLE}`}>
+                    <CalendarCheck size={15} />
+                    Prossimi
+                </span>
+                <span className="truncate font-mono text-[9px] tracking-[.08em] uppercase text-gray-400">
+                    ⇄ {attive} ricorrenti · {eur(mensile)}/mese
+                </span>
             </Link>
 
             {loading ? (

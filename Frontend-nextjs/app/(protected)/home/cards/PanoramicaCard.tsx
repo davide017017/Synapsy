@@ -108,10 +108,10 @@ export default function PanoramicaCard({ upcoming }: { upcoming: UpcomingEntry[]
 
   // ── Statistiche transazioni (stessa logica di TransazioniCard) ──
   const stats = useMemo(() => [
-    { label: "Totali", value: transactions.length },
-    { label: "Sett.", value: transactions.filter((t) => isThisWeek(t.date)).length },
-    { label: "Mese", value: transactions.filter((t) => isThisMonth(t.date)).length },
-    { label: "Anno", value: transactions.filter((t) => isThisYear(t.date)).length },
+    { label: "totali", value: transactions.length },
+    { label: "sett.", value: transactions.filter((t) => isThisWeek(t.date)).length },
+    { label: "mese", value: transactions.filter((t) => isThisMonth(t.date)).length },
+    { label: "anno", value: transactions.filter((t) => isThisYear(t.date)).length },
   ], [transactions]);
 
   // ── Swipe verticale: giù apre il mese, su lo richiude ──
@@ -236,14 +236,17 @@ export default function PanoramicaCard({ upcoming }: { upcoming: UpcomingEntry[]
           </div>
         </div>
 
-        {/* Statistiche transazioni: 4 colonne uguali, etichetta sopra / valore sotto */}
-        <Link href="/transazioni" className="grid grid-cols-4">
+        {/* Statistiche transazioni: una riga, 4 voci distribuite, contatore "tech" + etichetta accanto */}
+        <Link href="/transazioni" className="flex items-baseline justify-between whitespace-nowrap">
           {stats.map(({ label, value }) => (
-            <div key={label} className="flex flex-col items-center">
-              <span className="text-[10px] text-gray-400">{label}</span>
-              <b className={`${HOME_SERIF} text-[15px] font-bold leading-tight text-[hsl(var(--c-text))]`}>
+            <div key={label} className="flex items-baseline gap-1">
+              <b
+                className="font-mono text-lg font-bold leading-tight text-primary"
+                style={{ textShadow: "0 0 8px #3ddc97" }}
+              >
                 {loading ? "—" : value}
               </b>
+              <span className="font-mono text-[9px] text-gray-400">{label}</span>
             </div>
           ))}
         </Link>
@@ -270,6 +273,7 @@ export default function PanoramicaCard({ upcoming }: { upcoming: UpcomingEntry[]
 // animazione grid-template-rows 0fr→1fr (200ms). Tap su un giorno apre
 // DayTransactionsModal (condivisa con Panoramica): transazioni e
 // ricorrenze previste calcolate con le stesse chiavi giorno locali
-// (anyToLocalKey / buildRicorrenzeMap). Sotto, conteggi transazioni in
-// griglia 4 colonne come TransazioniCard; tap → /transazioni.
+// (anyToLocalKey / buildRicorrenzeMap). Sotto, conteggi transazioni su
+// una riga (contatore mono verde con glow + etichetta accanto), stessa
+// logica di TransazioniCard; tap → /transazioni.
 // ----------------------------------------------------------------------

@@ -62,15 +62,18 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
     };
 
     // iOS Safari: solo transform 2D (niente perspective/rotateY) + backface hidden,
-    // altrimenti l'app spostata non viene dipinta (resta visibile solo lo sfondo del menu).
+    // angoli con clip-path (non border-radius animato) e will-change per un layer
+    // proprio, altrimenti l'app spostata non viene dipinta (resta lo sfondo del menu).
     const depthStyle: React.CSSProperties = {
         transform: isMobileOpen ? "translateX(232px) scale(.78)" : "translateX(0) scale(1)",
         transformOrigin: "left center",
+        willChange: "transform",
         backfaceVisibility: "hidden",
         WebkitBackfaceVisibility: "hidden",
-        borderRadius: isMobileOpen ? 28 : 0,
+        borderRadius: 0,
+        clipPath: isMobileOpen ? "inset(0 round 28px)" : "none",
         boxShadow: isMobileOpen ? "-30px 0 70px rgba(0,0,0,.7)" : "none",
-        transition: `transform ${DEPTH_MS}ms ${DEPTH_EASE}, border-radius ${DEPTH_MS}ms ${DEPTH_EASE}, box-shadow ${DEPTH_MS}ms ${DEPTH_EASE}`,
+        transition: `transform ${DEPTH_MS}ms ${DEPTH_EASE}, box-shadow ${DEPTH_MS}ms ${DEPTH_EASE}`,
     };
 
     // ───── Menu aperto: blocca scroll, app inert, segnala al pull-to-refresh ─────
