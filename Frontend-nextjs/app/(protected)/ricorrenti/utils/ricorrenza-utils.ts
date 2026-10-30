@@ -87,16 +87,6 @@ export function ordinaPerFrequenza(arr: Ricorrenza[]): Ricorrenza[] {
     );
 }
 
-export function calcolaTotaliAnnuiPerFrequenza(ricorrenze: Ricorrenza[]): Record<string, number> {
-    const totali: Record<string, number> = {};
-    ricorrenze.forEach((r) => {
-        if (!r.frequenza || typeof r.importo !== "number" || isNaN(r.importo)) return;
-        if (!totali[r.frequenza]) totali[r.frequenza] = 0;
-        totali[r.frequenza] += r.importo;
-    });
-    return totali;
-}
-
 export function filtraPagamentiEntro(arr: Ricorrenza[], giorni: number = 7): Ricorrenza[] {
     const oggi = new Date();
     const finePeriodo = new Date(oggi);
@@ -288,6 +278,21 @@ export function getFreqPill(frequenza: string) {
     };
 
     return { label, style };
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║ 6. AGGREGAZIONE CONTEGGIO + TOTALE PER FREQUENZA    ║
+// ╚══════════════════════════════════════════════════════╝
+
+export function aggregaPerFrequenza(ricorrenze: Ricorrenza[]): Record<string, { count: number; totale: number }> {
+    const result: Record<string, { count: number; totale: number }> = {};
+    ricorrenze.forEach((r) => {
+        if (!r.frequenza || typeof r.importo !== "number" || Number.isNaN(r.importo)) return;
+        const bucket = result[r.frequenza] ?? (result[r.frequenza] = { count: 0, totale: 0 });
+        bucket.count += 1;
+        bucket.totale += r.importo;
+    });
+    return result;
 }
 
 // ============================

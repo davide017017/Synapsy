@@ -10,7 +10,7 @@ import { Repeat, ArrowRight } from "lucide-react";
 import DashboardCard from "./DashboardCard";
 import LoadingSpinnerCard from "./loading/LoadingSpinnerCard";
 import { useRicorrenze } from "@/context/RicorrenzeContext";
-import { freqToIt } from "@/app/(protected)/ricorrenti/utils/ricorrenza-utils";
+import { freqToIt, aggregaPerFrequenza } from "@/app/(protected)/ricorrenti/utils/ricorrenza-utils";
 import { eur } from "@/utils/formatCurrency";
 
 // Ordine canonico delle frequenze (stesso ordine/etichette IT di freqToIt)
@@ -39,15 +39,7 @@ export default function RicorrentiCard() {
         const totale = attive.length;
 
         // Conteggio + totale importo per frequenza in un solo passaggio su `attive`
-        // (calcolaTotaliAnnuiPerFrequenza espone solo il totale, non il conteggio:
-        // qui si aggregano insieme per evitare una seconda iterazione sui dati).
-        const perFrequenza: Record<string, { count: number; totale: number }> = {};
-        attive.forEach((r) => {
-            if (!r.frequenza || typeof r.importo !== "number" || Number.isNaN(r.importo)) return;
-            const bucket = perFrequenza[r.frequenza] ?? (perFrequenza[r.frequenza] = { count: 0, totale: 0 });
-            bucket.count += 1;
-            bucket.totale += r.importo;
-        });
+        const perFrequenza = aggregaPerFrequenza(attive);
 
         // Frequenze note (daily/weekly/monthly/annually) nell'ordine canonico,
         // poi eventuali valori legacy/non mappati (se presenti nei dati) in coda.
@@ -108,7 +100,7 @@ export default function RicorrentiCard() {
 // Card KPI ricorrenze. Usa RicorrenzeContext. Value grande = totale attive;
 // corpo = una riga per frequenza attiva, formato "{count} {label sing/plur}"
 // a sinistra e "{totale} €" a destra. Ordine canonico riusato da freqToIt
-// (ricorrenti/utils/ricorrenza-utils.ts); conteggio+totale per frequenza e
-// forme singolare/plurale delle label calcolati/mappati localmente (nessun
-// helper equivalente esiste altrove nel progetto). Footer = solo CTA.
+// (ricorrenti/utils/ricorrenza-utils.ts); conteggio+totale per frequenza da
+// aggregaPerFrequenza (stesso file). Forme singolare/plurale delle label
+// mappate localmente (nessun helper equivalente altrove). Footer = solo CTA.
 // ----------------------------------------------------------------------
