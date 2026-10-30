@@ -4,6 +4,7 @@
 // ============================
 
 import { Ricorrenza } from "@/types/models/ricorrenza";
+import type { Occorrenza } from "@/types/ricorrenti/liste";
 import { eur } from "@/utils/formatCurrency";
 
 // ╔══════════════════════════════════════════════════════╗
@@ -293,6 +294,71 @@ export function aggregaPerFrequenza(ricorrenze: Ricorrenza[]): Record<string, { 
         bucket.totale += r.importo;
     });
     return result;
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║ 7. RIEPILOGO MENSILE / ANNUO (barra + footer)       ║
+// ╚══════════════════════════════════════════════════════╝
+
+export function riepilogoTotali(ricorrenze: Ricorrenza[]) {
+    const aggregato = aggregaRicorrenzePerTipoEFrequenza(ricorrenze);
+    const speseAnnue = sommaTotaleAnnua(aggregato.spesa);
+    const entrateAnnue = sommaTotaleAnnua(aggregato.entrata);
+    const bilancioAnnuo = entrateAnnue - speseAnnue;
+    return {
+        aggregato,
+        speseAnnue,
+        entrateAnnue,
+        speseMensili: speseAnnue / 12,
+        entrateMensili: entrateAnnue / 12,
+        bilancioAnnuo,
+        bilancioMensile: bilancioAnnuo / 12,
+    };
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║ 8. OCCORRENZE FUTURE (finestre 7 / 7-30 giorni)     ║
+// ╚══════════════════════════════════════════════════════╝
+
+export function espandiOccorrenze(r: Ricorrenza, from: Date, to: Date): Occorrenza[] {
+    const step = freqToDays[normalizzaFrequenza(r.frequenza)] ?? 30;
+    const occs: Occorrenza[] = [];
+    const current = new Date(r.prossima);
+    if (current < from) {
+        const diffDays = Math.ceil((from.getTime() - current.getTime()) / (1000 * 3600 * 24));
+        current.setDate(current.getDate() + Math.ceil(diffDays / step) * step);
+    }
+    while (current <= to) {
+        occs.push({ ricorrenza: r, data: current.toISOString().slice(0, 10) });
+        current.setDate(current.getDate() + step);
+    }
+    return occs;
+}
+
+export function bilancioOccorrenze(arr: Occorrenza[]): number {
+    return arr.reduce((sum, o) => sum + (o.ricorrenza.type === "entrata" ? 1 : -1) * (o.ricorrenza.importo ?? 0), 0);
+}
+
+// Stesse finestre usate da gruppi lista e footer → subtotali sempre coerenti
+export function occorrenzePerFinestra(ricorrenze: Ricorrenza[]) {
+    const DAY = 24 * 60 * 60 * 1000;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const weekTo = new Date(today.getTime() + 6 * DAY);
+    const monthFrom = new Date(weekTo.getTime() + DAY);
+    const monthTo = new Date(today.getTime() + 29 * DAY);
+
+    const occorrenze7 = ricorrenze.flatMap((r) => espandiOccorrenze(r, today, weekTo));
+    const occorrenze30 = ricorrenze.flatMap((r) => espandiOccorrenze(r, monthFrom, monthTo));
+    occorrenze7.sort((a, b) => a.data.localeCompare(b.data));
+    occorrenze30.sort((a, b) => a.data.localeCompare(b.data));
+
+    return {
+        occorrenze7,
+        occorrenze30,
+        bilancio7: bilancioOccorrenze(occorrenze7),
+        bilancio30: bilancioOccorrenze(occorrenze30),
+    };
 }
 
 // ============================

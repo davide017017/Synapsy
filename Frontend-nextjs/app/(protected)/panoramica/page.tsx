@@ -10,7 +10,7 @@ import { useRicorrenze } from "@/context/RicorrenzeContext";
 import CalendarGrid from "./components/CalendarGrid";
 import CalendarGridSkeleton from "./components/skeleton/CalendarGridSkeleton";
 import NewTransactionButton from "../newTransaction/NewTransactionButton";
-import DayTransactionsModal from "./components/modal/DayTransactionsModal";
+import DayTransactionsModal from "@/app/components/modal/DayTransactionsModal";
 import MonthCategoriesCard from "./components/MonthCategoriesCard";
 import MonthTransactionsCard from "./components/MonthTransactionsCard";
 import { Transaction } from "@/types";

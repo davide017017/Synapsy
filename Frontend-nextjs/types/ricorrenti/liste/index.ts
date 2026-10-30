@@ -1,29 +1,37 @@
-import type { Dispatch, SetStateAction } from "react";
 import type { Ricorrenza } from "@/types/models/ricorrenza";
 
+export type FiltroRicorrenti = "tutti" | "settimana" | "mese" | "frequenza";
+
+export type Occorrenza = { ricorrenza: Ricorrenza; data: string };
+
 export type ListaProssimiPagamentiProps = {
-    pagamenti: Ricorrenza[];
-    filtro: "tutti" | "settimana" | "mese";
-    setFiltro: Dispatch<SetStateAction<"tutti" | "settimana" | "mese">>;
-    totaleSettimana: number;
-    totaleMese: number;
-    onEditOccorrenza?: (ric: Ricorrenza) => void;
-    onDeleteOccorrenza?: (ric: Ricorrenza) => void;
+    filtro: Exclude<FiltroRicorrenti, "frequenza">;
+    occorrenze7: Occorrenza[];
+    occorrenze30: Occorrenza[];
+    bilancio7: number;
+    bilancio30: number;
+    onEdit: (ric: Ricorrenza) => void;
+    onDelete: (ric: Ricorrenza) => void;
 };
 
 export type SectionOccorrenzeProps = {
     title: string;
-    occorrenze: { ricorrenza: Ricorrenza; data: string }[];
+    occorrenze: Occorrenza[];
     bilancio: number;
-    onEdit?: (ric: Ricorrenza) => void;
-    onDelete?: (ric: Ricorrenza) => void;
+    onEdit: (ric: Ricorrenza) => void;
+    onDelete: (ric: Ricorrenza) => void;
 };
 
 export type ListaRicorrenzePerFrequenzaProps = {
     ricorrenze: Ricorrenza[];
-    onEdit?: (r: Ricorrenza) => void;
-    onDelete?: (r: Ricorrenza) => Promise<void> | void;
+    onEdit: (r: Ricorrenza) => void;
+    onDelete: (r: Ricorrenza) => void;
 };
 
-export * from "./components";
-
+export type RigaRicorrenzaProps = {
+    r: Ricorrenza;
+    data: string;
+    showYear?: boolean;
+    onEdit: (r: Ricorrenza) => void;
+    onDelete: (r: Ricorrenza) => void;
+};

@@ -1,4 +1,4 @@
-// utils/ricorrenzeCalendarUtils.ts
+// utils/ricorrenzeCalendar.ts
 
 // ╔════════════════════════════════════════════════════════════════╗
 // ║   buildRicorrenzeMap — Occorrenze ricorrenze in un range date  ║
@@ -47,6 +47,7 @@ function advanceByFrequenza(date: Date, frequenza: string, interval: number): Da
         case "monthly":
             return addMonths(date, interval);
         case "annuale":
+        case "annually":
         case "yearly":
         case "annual":
             return addYears(date, interval);

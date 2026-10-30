@@ -1,28 +1,20 @@
 "use client";
 import Skeleton from "@/app/components/ui/Skeleton";
 
+// Stessa struttura del layout denso: header, barra, tab, righe, footer
 export default function RicorrentiPageSkeleton() {
     return (
-        <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[...Array(2)].map((_, i) => (
-                    <div key={i} className="p-4 rounded-2xl border border-bg-elevate bg-bg-elevate/60 shadow-md space-y-4">
-                        <Skeleton className="h-5 w-1/2" />
-                        <Skeleton className="h-6 w-32" />
-                    </div>
+        <div className="mx-auto max-w-3xl space-y-2">
+            <Skeleton className="h-10 w-full rounded-xl" />
+            <Skeleton className="h-9 w-full rounded-xl" />
+            <Skeleton className="h-8 w-full rounded-xl" />
+            <div className="rounded-xl border border-bg-elevate bg-bg-elevate/60 p-2 space-y-1.5">
+                <Skeleton className="h-5 w-1/3" />
+                {[...Array(8)].map((_, i) => (
+                    <Skeleton key={i} className="h-[26px] w-full" />
                 ))}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[...Array(2)].map((_, i) => (
-                    <div key={i} className="p-4 rounded-2xl border border-bg-elevate bg-bg-elevate/60 shadow-md space-y-3">
-                        <Skeleton className="h-5 w-1/3" />
-                        {[...Array(3)].map((_, j) => (
-                            <Skeleton key={j} className="h-4 w-full" />
-                        ))}
-                    </div>
-                ))}
-            </div>
+            <Skeleton className="h-9 w-full rounded-xl" />
         </div>
     );
 }
-

@@ -1,7 +1,7 @@
 // app/(protected)/home/cards/ProssimiCard.tsx
 // ======================================================================
 // Card Home mobile che unisce Ricorrenti + Prossimi pagamenti:
-// prossimo pagamento in grande, poi timeline delle voci successive.
+// timeline dei prossimi pagamenti (il più vicino in cima, stesso stile).
 // ======================================================================
 
 "use client";
@@ -71,37 +71,25 @@ export default function ProssimiCard({ entries, loading, error }: Props) {
                 </Link>
             ) : (
                 <>
-                    {/* Prossimo pagamento in grande */}
-                    <div className={`flex items-baseline gap-1 min-w-0 ${HOME_SERIF} text-[18px] font-bold ${importoClass(primo.type)}`}>
-                        <span className="shrink-0">
-                            {simbolo(primo.type)} {eur(primo.amount)} · {formatShort(primo.date)} ·
-                        </span>
-                        <span className="truncate" title={primo.description}>
-                            {label(primo)}
-                        </span>
-                    </div>
-
-                    {/* Timeline voci successive */}
-                    {timeline.length > 0 && (
-                        <ul className="flex flex-col">
-                            {timeline.map((e) => (
-                                <li
-                                    key={`${e.source}-${e.type}-${e.id}`}
-                                    className="flex items-center gap-2 py-[5px] border-b border-dashed border-gray-200 dark:border-zinc-700 text-[13px]"
-                                >
-                                    <span className="w-[34px] shrink-0 font-mono text-[10px] text-gray-400">
-                                        {formatShort(e.date)}
-                                    </span>
-                                    <span className={`flex-1 truncate ${HOME_SERIF}`} title={e.description}>
-                                        {label(e)}
-                                    </span>
-                                    <span className={`shrink-0 font-bold ${HOME_SERIF} ${importoClass(e.type)}`}>
-                                        {simbolo(e.type)} {eur(e.amount)}
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    {/* Timeline: il più vicino è la prima riga, stesso stile delle altre */}
+                    <ul className="flex flex-col">
+                        {[primo, ...timeline].map((e) => (
+                            <li
+                                key={`${e.source}-${e.type}-${e.id}`}
+                                className="flex items-center gap-2 py-[5px] border-b border-dashed border-gray-200 dark:border-zinc-700 text-[13px]"
+                            >
+                                <span className="w-[34px] shrink-0 font-mono text-[10px] text-gray-400">
+                                    {formatShort(e.date)}
+                                </span>
+                                <span className={`flex-1 truncate ${HOME_SERIF}`} title={e.description}>
+                                    {label(e)}
+                                </span>
+                                <span className={`shrink-0 font-bold ${HOME_SERIF} ${importoClass(e.type)}`}>
+                                    {simbolo(e.type)} {eur(e.amount)}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
 
                     {/* Altri → dettagli e gestione */}
                     <Link href="/ricorrenti" className="pt-1 text-[12px] font-medium text-primary">
@@ -118,7 +106,8 @@ export default function ProssimiCard({ entries, loading, error }: Props) {
 // Card "Prossimi" della Home mobile. Dati: entries da useUpcomingPayments
 // (passati da HomePage, condivisi col calendario) e ricorrenze attive da
 // RicorrenzeContext. Sottotitolo = n° ricorrenze attive + equivalente
-// mensile (totale annuo con frequencyAnnualMultiplier / 12). In grande il
-// pagamento più vicino (importo · data · nome), poi le 3 voci successive
-// e "+N altri →" verso /ricorrenti. Il backend restituisce max 20 voci.
+// mensile (totale annuo con frequencyAnnualMultiplier / 12). Timeline con
+// il pagamento più vicino + le 3 voci successive, tutte con la stessa riga
+// (data · nome · importo), e "+N altri →" verso /ricorrenti. Il backend
+// restituisce max 20 voci.
 // ----------------------------------------------------------------------

@@ -85,20 +85,27 @@ export default function Header() {
                 style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
             >
                 {/* LOGO CENTRALE */}
-                {/* Logo centrato nella pagina */}
-                <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-[20%]">
-                    <LogoElectricGlow
-                        size={38}
-                        glowSize={36}
-                        spinSpeed="9s"
-                        shockMinDelay={1200}
-                        shockMaxDelay={3500}
-                        shockDuration={600}
-                        shockIntensity={1.1}
-                        navigateTo="/"
-                        clickShockDuration={900}
-                        fullscreenBoltCount={18}
-                    />
+                {/* Centrato nell'area contenuto: sotto la safe area (stesso paddingTop dell'header)
+                    e sopra il py-2 inferiore, così resta allineato al bottone menu.
+                    pointer-events-none sul box a tutta larghezza: non blocca i bottoni ai lati */}
+                <div
+                    className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex items-center justify-center"
+                    style={{ top: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
+                >
+                    <div className="pointer-events-auto">
+                        <LogoElectricGlow
+                            size={38}
+                            glowSize={36}
+                            spinSpeed="9s"
+                            shockMinDelay={1200}
+                            shockMaxDelay={3500}
+                            shockDuration={600}
+                            shockIntensity={1.1}
+                            navigateTo="/"
+                            clickShockDuration={900}
+                            fullscreenBoltCount={18}
+                        />
+                    </div>
                 </div>
                 {/* DESKTOP: UTENTE + LOGOUT (da sm in su) */}
                 <div className="hidden sm:flex items-center gap-4 ml-auto">

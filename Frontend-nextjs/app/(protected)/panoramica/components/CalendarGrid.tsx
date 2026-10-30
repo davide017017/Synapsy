@@ -12,24 +12,11 @@ import type { CalendarGridProps } from "@/types";
 import DayCell from "./calendar/DayCell";
 import { useMediaQuery } from "usehooks-ts";
 import { getCalendarGrid } from "./calendar/utils/calendarUtils";
-import { buildRicorrenzeMap } from "./calendar/utils/ricorrenzeCalendarUtils";
+import { buildRicorrenzeMap } from "@/utils/ricorrenzeCalendar";
+import { localDateKey, anyToLocalKey } from "@/utils/date";
 import { motion, AnimatePresence } from "framer-motion";
 import WeekRow from "./calendar/WeekRow";
 import YearDropdown from "./calendar/YearDropdown";
-
-// ────────────────────────────────────────────────────────────────
-// Helpers date (LOCAL DAY KEY)
-// ────────────────────────────────────────────────────────────────
-const pad2 = (n: number) => String(n).padStart(2, "0");
-const localDateKey = (d: Date) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-const anyToLocalKey = (val: Date | string) => {
-    if (typeof val === "string") {
-        // se è "YYYY-MM-DD" è già day-only
-        if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
-        return localDateKey(new Date(val));
-    }
-    return localDateKey(val);
-};
 
 // ────────────────────────────────────────────────────────────────
 // Costanti UI

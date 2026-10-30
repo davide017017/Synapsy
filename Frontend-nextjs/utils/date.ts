@@ -42,3 +42,21 @@ export function toDateInputValue(date: Date): string {
     const tz = date.getTimezoneOffset() * 60000;
     return new Date(date.getTime() - tz).toISOString().split("T")[0];
 }
+
+// ============================================
+// Chiave giorno locale "YYYY-MM-DD" (calendari + modale giorno)
+// ============================================
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+export function localDateKey(d: Date): string {
+    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
+export function anyToLocalKey(val: Date | string): string {
+    if (typeof val === "string") {
+        // se è "YYYY-MM-DD" è già day-only
+        if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+        return localDateKey(new Date(val));
+    }
+    return localDateKey(val);
+}

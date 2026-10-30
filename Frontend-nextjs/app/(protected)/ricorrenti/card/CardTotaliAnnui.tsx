@@ -1,11 +1,15 @@
 "use client";
 
 // ╔══════════════════════════════════════════════════════════════╗
-// ║ CardTotaliAnnui.tsx — Riepilogo ricorrenze mese + anno      ║
+// ║ CardTotaliAnnui.tsx — Barra riepilogo mese + anno           ║
+// ║ Chiusa: MENSILE | SPESE | ENTRATE | ANNO                    ║
+// ║ Tap → dettaglio per frequenza (spese/entrate mese+anno,     ║
+// ║       saldo annuo) + riga totale                            ║
 // ╚══════════════════════════════════════════════════════════════╝
 
-import { Repeat, ArrowDown, ArrowUp } from "lucide-react";
-import { aggregaRicorrenzePerTipoEFrequenza, frequenzaOrder, sommaTotaleAnnua } from "../utils/ricorrenza-utils";
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { frequenzaOrder, riepilogoTotali } from "../utils/ricorrenza-utils";
 import type { CardTotaliAnnuiProps } from "@/types/ricorrenti/card";
 import { eur } from "@/utils/formatCurrency";
 
@@ -45,223 +49,111 @@ function saldoClass(val: number) {
     return "text-muted-foreground";
 }
 
-function bilancioClass(val: number) {
-    if (val > 0) return "text-[hsl(var(--c-total-positive-text))] bg-[hsl(var(--c-total-positive-bg))]/80";
-    if (val < 0) return "text-[hsl(var(--c-total-negative-text))] bg-[hsl(var(--c-total-negative-bg))]/80";
-    return "text-[hsl(var(--c-total-neutral-text))] bg-[hsl(var(--c-total-neutral-bg))]/80";
+function firmato(val: number) {
+    return `${val >= 0 ? "+" : "–"}${eur(Math.abs(val))}`;
+}
+
+const SPESE = "text-[hsl(var(--c-table-danger-2))]";
+const ENTRATE = "text-[hsl(var(--c-table-success-2))]";
+
+// Cella barra: label piccola sopra, valore sotto
+function Cella({ label, value, className }: { label: string; value: number; className: string }) {
+    return (
+        <div className="min-w-0 border-l border-primary/15 pl-2">
+            <div className="text-[8px] uppercase tracking-[0.12em] text-foreground/45">{label}</div>
+            <div className={`truncate text-[11px] font-bold tabular-nums ${className}`}>{eur(value)}</div>
+        </div>
+    );
+}
+
+// Cella dettaglio: /mese sopra, /anno sotto (unità nell'header colonna)
+function MeseAnno({ mese, anno, className }: { mese: number; anno: number; className: string }) {
+    return (
+        <div className={`min-w-0 text-right tabular-nums leading-tight ${className}`}>
+            <div className="truncate">{eur(mese)}</div>
+            <div className="truncate opacity-70">{eur(anno)}</div>
+        </div>
+    );
 }
 
 // ── componente ───────────────────────────────────────────────
 
 export default function CardTotaliAnnui({ ricorrenze }: CardTotaliAnnuiProps) {
-    const aggregato = aggregaRicorrenzePerTipoEFrequenza(ricorrenze);
+    const [aperto, setAperto] = useState(false);
+    const { aggregato, speseAnnue, entrateAnnue, speseMensili, entrateMensili, bilancioAnnuo } =
+        riepilogoTotali(ricorrenze);
 
-    const frequenze = Object.keys({ ...aggregato.spesa, ...aggregato.entrata })
-        .filter((x, i, arr) => arr.indexOf(x) === i)
-        .sort(
-            (a, b) =>
-                (frequenzaOrder[a as keyof typeof frequenzaOrder] ?? 99) -
-                (frequenzaOrder[b as keyof typeof frequenzaOrder] ?? 99),
-        );
+    const frequenze = Object.keys({ ...aggregato.spesa, ...aggregato.entrata }).sort(
+        (a, b) =>
+            (frequenzaOrder[a as keyof typeof frequenzaOrder] ?? 99) -
+            (frequenzaOrder[b as keyof typeof frequenzaOrder] ?? 99),
+    );
 
-    const totaleSpeseAnnue = sommaTotaleAnnua(aggregato.spesa);
-    const totaleEntrateAnnue = sommaTotaleAnnua(aggregato.entrata);
-    const totaleSpeseMensili = totaleSpeseAnnue / 12;
-    const totaleEntrateMensili = totaleEntrateAnnue / 12;
-    const bilancioAnnuo = totaleEntrateAnnue - totaleSpeseAnnue;
-    const bilancioMensile = bilancioAnnuo / 12;
+    const griglia = "grid grid-cols-[4.5rem_1fr_1fr_1fr] items-center gap-x-2";
 
     return (
-        <div
-            className="
-                rounded-2xl
-                border border-primary/20
-                bg-black/45
-                backdrop-blur-xl
-                p-3
-                flex flex-col gap-3
-                shadow-[0_18px_55px_rgba(0,0,0,0.24)]
-            "
-        >
-            {" "}
-            {/* Header */}
-            <div className="flex items-center gap-2 justify-center">
-                <Repeat className="w-5 h-5 text-primary drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.35)]" />
-
-                <span
-                    className="
-                      font-mono
-                      text-sm
-                      font-bold
-                      uppercase
-                      tracking-[0.14em]
-                      text-primary
-                      drop-shadow-[0_0_12px_hsl(var(--c-primary)/0.25)]
-                  "
-                >
-                    Riepilogo Ricorrenti
+        <div className="rounded-xl border border-primary/20 bg-black/45 font-mono backdrop-blur-xl shadow-[0_18px_55px_rgba(0,0,0,0.24)]">
+            {/* Barra */}
+            <button
+                type="button"
+                onClick={() => setAperto((a) => !a)}
+                aria-expanded={aperto}
+                aria-controls="riepilogo-dettaglio"
+                className="grid w-full grid-cols-[auto_1fr_1fr_1fr] items-center gap-x-2 px-2.5 py-1.5 text-left"
+            >
+                <span className="flex items-center gap-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
+                    Mensile
+                    <ChevronDown size={12} className={`transition-transform ${aperto ? "rotate-180" : ""}`} />
                 </span>
-            </div>
-            {/* Riga per frequenza */}
-            <div className="space-y-2">
-                {frequenze.map((freq) => {
-                    const f = normFreq(freq);
-                    const speseAnnue = aggregato.spesa[freq]?.totaleAnnuale ?? 0;
-                    const entrateAnnue = aggregato.entrata[freq]?.totaleAnnuale ?? 0;
-                    const speseMensili = speseAnnue / 12;
-                    const entrateMensili = entrateAnnue / 12;
-                    const saldoAnnuo = entrateAnnue - speseAnnue;
+                <Cella label="Spese" value={speseMensili} className={SPESE} />
+                <Cella label="Entrate" value={entrateMensili} className={ENTRATE} />
+                <Cella label="Anno" value={speseAnnue} className={SPESE} />
+            </button>
 
-                    return (
-                        <div
-                            key={freq}
-                            className="
-                                rounded-xl
-                                border border-primary/15
-                                bg-black/20
-                                px-3 py-2
-                                backdrop-blur-sm
-                            "
-                        >
-                            {/* Pill + saldo annuo */}
-                            <div className="flex items-center justify-between gap-2 mb-1.5">
+            {/* Dettaglio per frequenza */}
+            {aperto && (
+                <div id="riepilogo-dettaglio" className="border-t border-primary/15 px-2.5 py-1.5 text-[10px]">
+                    <div className={`${griglia} pb-1 text-[8px] uppercase tracking-[0.12em] text-foreground/45`}>
+                        <span>Freq.</span>
+                        <span className="text-right">Spese /m · /a</span>
+                        <span className="text-right">Entrate /m · /a</span>
+                        <span className="text-right">Saldo /a</span>
+                    </div>
+
+                    {frequenze.map((freq) => {
+                        const speseA = aggregato.spesa[freq]?.totaleAnnuale ?? 0;
+                        const entrateA = aggregato.entrata[freq]?.totaleAnnuale ?? 0;
+                        const saldoA = entrateA - speseA;
+                        const f = normFreq(freq);
+
+                        return (
+                            <div key={freq} className={`${griglia} border-t border-white/5 py-1`}>
                                 <span
-                                    className="
-                                        px-2 py-0.5
-                                        rounded-lg
-                                        font-mono
-                                        text-[10px]
-                                        font-bold
-                                        uppercase
-                                        tracking-[0.08em]
-                                    "
+                                    className="truncate rounded-md px-1 py-0.5 text-center text-[8px] font-bold uppercase tracking-[0.06em]"
                                     style={getFreqStyle(f)}
                                 >
-                                    {" "}
                                     {FREQ_LABEL[f] ?? freq}
                                 </span>
-                                <span className={`text-xs tabular-nums font-semibold ${saldoClass(saldoAnnuo)}`}>
-                                    {saldoAnnuo >= 0 ? "+" : "–"}
-                                    {eur(Math.abs(saldoAnnuo))}
-                                    <span className="opacity-50 ml-1 font-normal">/anno</span>
+                                <MeseAnno mese={speseA / 12} anno={speseA} className={SPESE} />
+                                <MeseAnno mese={entrateA / 12} anno={entrateA} className={ENTRATE} />
+                                <span className={`text-right font-semibold tabular-nums ${saldoClass(saldoA)}`}>
+                                    {firmato(saldoA)}
                                 </span>
                             </div>
+                        );
+                    })}
 
-                            {/* Spese / Entrate: /mese e /anno */}
-                            <div className="grid grid-cols-2 gap-2 text-xs tabular-nums">
-                                {/* Spese */}
-                                <div
-                                    className="
-                                      px-2 py-1.5
-                                      rounded-xl
-                                      border border-white/10
-                                      bg-black/15
-                                  "
-                                >
-                                    <div className="flex items-center gap-1 text-[hsl(var(--c-table-danger-2))] font-semibold mb-0.5">
-                                        <ArrowDown className="w-3 h-3 opacity-70" />
-                                        Spese
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="opacity-50">/mese</span>
-                                        <span className="font-mono text-[hsl(var(--c-table-danger-2))]">
-                                            {eur(speseMensili)}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="opacity-50">/anno</span>
-                                        <span className="font-mono text-[hsl(var(--c-table-danger-2))]">
-                                            {eur(speseAnnue)}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Entrate */}
-                                <div className="px-2 py-1 rounded-lg border border-[hsl(var(--c-table-divider))] bg-black/10">
-                                    <div className="flex items-center gap-1 text-[hsl(var(--c-table-success-2))] font-semibold mb-0.5">
-                                        <ArrowUp className="w-3 h-3 opacity-70" />
-                                        Entrate
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="opacity-50">/mese</span>
-                                        <span className="font-mono text-[hsl(var(--c-table-success-2))]">
-                                            {eur(entrateMensili)}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="opacity-50">/anno</span>
-                                        <span className="font-mono text-[hsl(var(--c-table-success-2))]">
-                                            {eur(entrateAnnue)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-            {/* Footer totali + bilancio */}
-            <div
-                className="
-                  rounded-xl
-                  border border-primary/15
-                  bg-black/20
-                  px-3 py-2
-                  space-y-1.5
-                  backdrop-blur-sm
-              "
-            >
-                {" "}
-                {/* Totali spese */}
-                <div className="grid grid-cols-[auto_1fr_1fr] items-center gap-x-3 text-xs tabular-nums">
-                    <span className="font-bold text-[hsl(var(--c-table-danger-2))] flex items-center gap-1">
-                        <ArrowDown className="w-3 h-3 opacity-70" />
-                        Spese
-                    </span>
-                    <span className="text-right font-mono text-[hsl(var(--c-table-danger-2))]">
-                        {eur(totaleSpeseMensili)}
-                        <span className="opacity-50 ml-0.5">/mese</span>
-                    </span>
-                    <span className="text-right font-mono text-[hsl(var(--c-table-danger-2))]">
-                        {eur(totaleSpeseAnnue)}
-                        <span className="opacity-50 ml-0.5">/anno</span>
-                    </span>
+                    {/* Totale */}
+                    <div className={`${griglia} border-t border-primary/20 pt-1 font-bold`}>
+                        <span className="text-[9px] uppercase tracking-[0.12em] text-primary">Totale</span>
+                        <MeseAnno mese={speseMensili} anno={speseAnnue} className={SPESE} />
+                        <MeseAnno mese={entrateMensili} anno={entrateAnnue} className={ENTRATE} />
+                        <span className={`text-right tabular-nums ${saldoClass(bilancioAnnuo)}`}>
+                            {firmato(bilancioAnnuo)}
+                        </span>
+                    </div>
                 </div>
-                {/* Totali entrate */}
-                <div className="grid grid-cols-[auto_1fr_1fr] items-center gap-x-3 text-xs tabular-nums">
-                    <span className="font-bold text-[hsl(var(--c-table-success-2))] flex items-center gap-1">
-                        <ArrowUp className="w-3 h-3 opacity-70" />
-                        Entrate
-                    </span>
-                    <span className="text-right font-mono text-[hsl(var(--c-table-success-2))]">
-                        {eur(totaleEntrateMensili)}
-                        <span className="opacity-50 ml-0.5">/mese</span>
-                    </span>
-                    <span className="text-right font-mono text-[hsl(var(--c-table-success-2))]">
-                        {eur(totaleEntrateAnnue)}
-                        <span className="opacity-50 ml-0.5">/anno</span>
-                    </span>
-                </div>
-                {/* Bilancio: due pill affiancate */}
-                <div className="flex gap-2 justify-center pt-1 flex-wrap">
-                    <span
-                        className={`font-mono text-xs font-bold px-3 py-1.5 rounded-xl border shadow-[0_0_14px_rgba(0,0,0,0.18)] ${bilancioClass(bilancioMensile)}`}
-                        style={{ borderColor: "hsl(var(--c-total-positive-border))" }}
-                    >
-                        {bilancioMensile >= 0 ? "+" : "–"}
-                        {eur(Math.abs(bilancioMensile))}
-                        <span className="opacity-70 ml-1 font-normal">/mese</span>
-                    </span>
-                    <span
-                        className={`font-mono text-xs font-bold px-3 py-1.5 rounded-xl border shadow-[0_0_14px_rgba(0,0,0,0.18)] ${bilancioClass(bilancioAnnuo)}`}
-                        style={{ borderColor: "hsl(var(--c-total-positive-border))" }}
-                    >
-                        {bilancioAnnuo >= 0 ? "+" : "–"}
-                        {eur(Math.abs(bilancioAnnuo))}
-                        <span className="opacity-70 ml-1 font-normal">/anno</span>
-                    </span>
-                </div>
-            </div>
+            )}
         </div>
     );
 }
