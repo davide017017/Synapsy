@@ -197,8 +197,6 @@ export const authOptions: NextAuthOptions = {
 
         async session({ session, token }) {
             (session as any).accessToken = token.accessToken;
-            // Scadenza token backend (epoch s): countdown nel menu utente
-            (session as any).tokenExpiresAt = token.tokenExpiresAt;
             (session.user as any).is_admin = token.isAdmin ?? false;
             (session.user as any).is_demo = token.isDemo ?? false;
             // Espone l'errore di refresh al client (per mostrare un avviso UX)

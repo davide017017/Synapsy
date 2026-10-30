@@ -138,7 +138,7 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
             <div className="pointer-events-none relative z-10 flex-1 min-w-0">
                 <div
                     ref={appRef}
-                    className="pointer-events-auto relative h-full overflow-hidden bg-[hsl(var(--c-bg))]"
+                    className="pointer-events-auto relative h-full bg-[hsl(var(--c-bg))]"
                     style={depth ? depthStyle : undefined}
                     onTransitionEnd={onAppTransitionEnd}
                 >

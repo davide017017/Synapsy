@@ -15,7 +15,6 @@ export const runtime = "nodejs";
 declare module "next-auth" {
     interface Session {
         accessToken?: string;
-        tokenExpiresAt?: number;
         error?: string;
     }
     interface User {
