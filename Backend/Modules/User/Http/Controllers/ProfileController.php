@@ -188,20 +188,24 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        /** @var \App\Models\User $user */
+        /** @var \Modules\User\Models\User $user */
         $user = $request->user();
 
-        Auth::logout();
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        if ($request->wantsJson()) {
-            return ApiResponse::success('Account disattivato. Potrai recuperarlo entro 30 giorni.');
+        // Web (sessione) → logout + invalidazione; API (sanctum) → revoca token.
+        // RequestGuard di sanctum non ha logout() e il gruppo 'api' non ha sessione.
+        if ($request->hasSession()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        } else {
+            $user->tokens()->delete();
         }
 
-        return Redirect::to('/');
+        $user->delete();
+
+        return $request->expectsJson()
+            ? ApiResponse::success('Account disattivato. Potrai recuperarlo entro 30 giorni.')
+            : Redirect::to('/');
     }
 
     // ============================

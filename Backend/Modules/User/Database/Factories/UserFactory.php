@@ -111,4 +111,12 @@ class UserFactory extends Factory
     {
         return $this->state(fn () => ['is_admin' => true]);
     }
+
+    /**
+     * Stato: utente demo (bloccato da PreventDemoUserModification).
+     */
+    public function demo(): static
+    {
+        return $this->state(fn () => ['is_demo' => true]);
+    }
 }

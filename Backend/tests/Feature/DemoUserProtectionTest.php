@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Modules\User\Models\User;
 use Tests\TestCase;
@@ -12,46 +11,42 @@ class DemoUserProtectionTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function createDemoUser(): User
+    public function test_cannot_update_profile(): void
     {
-        return User::factory()->create([
-            'email' => 'demo@synapsy.app',
-            'password' => Hash::make('password1234'),
-            'email_verified_at' => now(),
-        ]);
+        $user = User::factory()->demo()->create();
+        Sanctum::actingAs($user);
+
+        $this->putJson('/api/v1/profile', ['name' => 'Hacker', 'email' => $user->email])
+            ->assertStatus(403);
     }
 
-    public function test_demo_user_cannot_update_profile(): void
+    public function test_cannot_delete_profile(): void
     {
-        $user = $this->createDemoUser();
-        Sanctum::actingAs($user, ['*']);
+        $user = User::factory()->demo()->create(['password' => bcrypt('password')]);
+        Sanctum::actingAs($user);
 
-        $response = $this->putJson('/api/v1/profile', ['name' => 'New Name']);
-
-        $response->assertStatus(403);
+        $this->deleteJson('/api/v1/profile', ['password' => 'password'])
+            ->assertStatus(403);
     }
 
-    public function test_demo_user_cannot_delete_profile(): void
+    public function test_cannot_change_password(): void
     {
-        $user = $this->createDemoUser();
-        Sanctum::actingAs($user, ['*']);
+        $user = User::factory()->demo()->create(['password' => bcrypt('password')]);
+        Sanctum::actingAs($user);
 
-        $response = $this->deleteJson('/api/v1/profile', ['password' => 'password1234']);
-
-        $response->assertStatus(403);
+        $this->putJson('/api/v1/profile/change-password', [
+            'current_password'      => 'password',
+            'password'              => 'NewPass123!',
+            'password_confirmation' => 'NewPass123!',
+        ])->assertStatus(403);
     }
 
-    public function test_demo_user_cannot_change_password(): void
+    public function test_normal_user_can_delete_account(): void
     {
-        $user = $this->createDemoUser();
-        $this->actingAs($user);
+        $user = User::factory()->create(['password' => bcrypt('password')]);
+        Sanctum::actingAs($user);
 
-        $response = $this->put('/password', [
-            'current_password' => 'password1234',
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
-        ]);
-
-        $response->assertStatus(403);
+        $this->deleteJson('/api/v1/profile', ['password' => 'password'])
+            ->assertStatus(200);
     }
 }
