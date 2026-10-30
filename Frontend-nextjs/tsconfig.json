@@ -68,6 +68,7 @@
     "node_modules",
     "tailwind.config.ts",
     "postcss.config.*",
-    "next.config.*"
+    "next.config.*",
+    "out"
   ]
 }
