@@ -61,12 +61,10 @@ export default function ProtectedLayoutClient({ children }: { children: React.Re
         if (e.target === appRef.current && e.propertyName === "transform" && !isMobileOpen) setDepthOn(false);
     };
 
-    // iOS Safari: perspective() dentro il transform (non sul parent) + backface hidden,
+    // iOS Safari: solo transform 2D (niente perspective/rotateY) + backface hidden,
     // altrimenti l'app spostata non viene dipinta (resta visibile solo lo sfondo del menu).
     const depthStyle: React.CSSProperties = {
-        transform: isMobileOpen
-            ? "perspective(1200px) translateX(232px) scale(.78)"
-            : "perspective(1200px) translateX(0) scale(1)",
+        transform: isMobileOpen ? "translateX(232px) scale(.78)" : "translateX(0) scale(1)",
         transformOrigin: "left center",
         backfaceVisibility: "hidden",
         WebkitBackfaceVisibility: "hidden",
