@@ -131,78 +131,78 @@ export default function PanoramicaCard({ upcoming }: { upcoming: UpcomingEntry[]
 
       {/* Striscia settimana / mese intero: un solo blocco, così il pannello chiuso non aggiunge gap */}
       <div>
-      {/* Striscia settimana (si chiude quando il mese è aperto) */}
-      <div
-        className="grid transition-[grid-template-rows] duration-200 ease-in-out"
-        style={{ gridTemplateRows: expanded ? "0fr" : "1fr" }}
-      >
-        <div className="min-h-0 overflow-hidden">
-          <div className="grid grid-cols-7 gap-1">
-            {week.map((d, i) => {
-              const key = ymd(d);
-              const isToday = key === todayKey;
-              const dot = dotMap.get(key);
-              return (
-                <div
-                  key={key}
-                  className={[
-                    "flex flex-col items-center rounded-[9px] border pt-1 pb-1.5",
-                    isToday
-                      ? "bg-[#173a2c] border-primary text-primary"
-                      : "border-gray-200 dark:border-zinc-700",
-                  ].join(" ")}
-                >
-                  <span className={`font-mono text-[9px] ${isToday ? "text-primary" : "text-gray-400"}`}>
-                    {DAY_INITIALS[i]}
-                  </span>
-                  <span className={`${HOME_SERIF} text-[13px] font-bold leading-tight`}>{d.getDate()}</span>
-                  <span className="w-1 h-1 mt-0.5 rounded-full" style={dot ? dotStyle(dot) : undefined} />
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Mese intero (calendario attuale) */}
-      <div
-        className="grid transition-[grid-template-rows] duration-200 ease-in-out"
-        style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}
-      >
-        <div className="min-h-0 overflow-hidden">
-          <div className="grid grid-cols-7 gap-y-0.5">
-            {DAY_INITIALS.map((d, i) => (
-              <span key={i} className="text-[10px] text-gray-400 text-center">
-                {d}
-              </span>
-            ))}
-
-            {cells.map((day, i) => {
-              const key = day ? ymd(day) : null;
-              const dot = key ? dotMap.get(key) : undefined;
-              return (
-                <div key={i} className="flex flex-col items-center gap-[1px]">
-                  <span
+        {/* Striscia settimana (si chiude quando il mese è aperto) */}
+        <div
+          className="grid transition-[grid-template-rows] duration-200 ease-in-out"
+          style={{ gridTemplateRows: expanded ? "0fr" : "1fr" }}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="grid grid-cols-7 gap-1">
+              {week.map((d, i) => {
+                const key = ymd(d);
+                const isToday = key === todayKey;
+                const dot = dotMap.get(key);
+                return (
+                  <div
+                    key={key}
                     className={[
-                      "text-[10px] text-center w-5 h-5 flex items-center justify-center",
-                      key === todayKey
-                        ? "rounded-full bg-primary text-black font-semibold"
-                        : "",
+                      "flex flex-col items-center rounded-[9px] border pt-1 pb-1.5",
+                      isToday
+                        ? "bg-[#173a2c] border-primary text-primary"
+                        : "border-gray-200 dark:border-zinc-700",
                     ].join(" ")}
                   >
-                    {day?.getDate() ?? ""}
-                  </span>
-                  {dot ? (
-                    <span className="w-1 h-1 rounded-full" style={dotStyle(dot)} />
-                  ) : (
-                    <span className="w-1 h-1" />
-                  )}
-                </div>
-              );
-            })}
+                    <span className={`font-mono text-[9px] ${isToday ? "text-primary" : "text-gray-400"}`}>
+                      {DAY_INITIALS[i]}
+                    </span>
+                    <span className={`${HOME_SERIF} text-[13px] font-bold leading-tight`}>{d.getDate()}</span>
+                    <span className="w-1 h-1 mt-0.5 rounded-full" style={dot ? dotStyle(dot) : undefined} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* Mese intero (calendario attuale) */}
+        <div
+          className="grid transition-[grid-template-rows] duration-200 ease-in-out"
+          style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="grid grid-cols-7 gap-y-0.5">
+              {DAY_INITIALS.map((d, i) => (
+                <span key={i} className="text-[10px] text-gray-400 text-center">
+                  {d}
+                </span>
+              ))}
+
+              {cells.map((day, i) => {
+                const key = day ? ymd(day) : null;
+                const dot = key ? dotMap.get(key) : undefined;
+                return (
+                  <div key={i} className="flex flex-col items-center gap-[1px]">
+                    <span
+                      className={[
+                        "text-[10px] text-center w-5 h-5 flex items-center justify-center",
+                        key === todayKey
+                          ? "rounded-full bg-primary text-black font-semibold"
+                          : "",
+                      ].join(" ")}
+                    >
+                      {day?.getDate() ?? ""}
+                    </span>
+                    {dot ? (
+                      <span className="w-1 h-1 rounded-full" style={dotStyle(dot)} />
+                    ) : (
+                      <span className="w-1 h-1" />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Statistiche transazioni */}
